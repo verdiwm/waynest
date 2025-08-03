@@ -67,13 +67,13 @@ pub mod wayland {
                             code,
                             message
                         );
-                        self.error(client, sender_id, object_id, code, message)
+                        self.error(socket, sender_id, object_id, code, message)
                             .await
                     }
                     1u16 => {
                         let id = message.uint()?;
                         tracing::debug!("wl_display#{}.delete_id({})", sender_id, id);
-                        self.delete_id(client, sender_id, id).await
+                        self.delete_id(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -206,13 +206,13 @@ pub mod wayland {
                             interface,
                             version
                         );
-                        self.global(client, sender_id, name, interface, version)
+                        self.global(socket, sender_id, name, interface, version)
                             .await
                     }
                     1u16 => {
                         let name = message.uint()?;
                         tracing::debug!("wl_registry#{}.global_remove({})", sender_id, name);
-                        self.global_remove(client, sender_id, name).await
+                        self.global_remove(socket, sender_id, name).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -291,9 +291,7 @@ pub mod wayland {
                     0u16 => {
                         let callback_data = message.uint()?;
                         tracing::debug!("wl_callback#{}.done({})", sender_id, callback_data);
-                        let result = self.done(client, sender_id, callback_data).await;
-                        client.remove(sender_id);
-                        result
+                        self.done(socket, sender_id, callback_data).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -321,8 +319,8 @@ pub mod wayland {
             const VERSION: u32 = 6u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -382,8 +380,8 @@ pub mod wayland {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -913,7 +911,7 @@ pub mod wayland {
                     0u16 => {
                         let format = message.uint()?;
                         tracing::debug!("wl_shm#{}.format({})", sender_id, format);
-                        self.format(client, sender_id, format.try_into()?).await
+                        self.format(socket, sender_id, format.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1003,7 +1001,7 @@ pub mod wayland {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("wl_buffer#{}.release()", sender_id,);
-                        self.release(client, sender_id).await
+                        self.release(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1103,7 +1101,7 @@ pub mod wayland {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_data_offer#{}.offer(\"{}\")", sender_id, mime_type);
-                        self.offer(client, sender_id, mime_type).await
+                        self.offer(socket, sender_id, mime_type).await
                     }
                     1u16 => {
                         let source_actions = message.uint()?;
@@ -1112,13 +1110,13 @@ pub mod wayland {
                             sender_id,
                             source_actions
                         );
-                        self.source_actions(client, sender_id, source_actions.try_into()?)
+                        self.source_actions(socket, sender_id, source_actions.try_into()?)
                             .await
                     }
                     2u16 => {
                         let dnd_action = message.uint()?;
                         tracing::debug!("wl_data_offer#{}.action({})", sender_id, dnd_action);
-                        self.action(client, sender_id, dnd_action.try_into()?).await
+                        self.action(socket, sender_id, dnd_action.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1388,7 +1386,7 @@ pub mod wayland {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.target(client, sender_id, mime_type).await
+                        self.target(socket, sender_id, mime_type).await
                     }
                     1u16 => {
                         let mime_type = message
@@ -1401,24 +1399,24 @@ pub mod wayland {
                             mime_type,
                             fd.as_raw_fd()
                         );
-                        self.send(client, sender_id, mime_type, fd).await
+                        self.send(socket, sender_id, mime_type, fd).await
                     }
                     2u16 => {
                         tracing::debug!("wl_data_source#{}.cancelled()", sender_id,);
-                        self.cancelled(client, sender_id).await
+                        self.cancelled(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("wl_data_source#{}.dnd_drop_performed()", sender_id,);
-                        self.dnd_drop_performed(client, sender_id).await
+                        self.dnd_drop_performed(socket, sender_id).await
                     }
                     4u16 => {
                         tracing::debug!("wl_data_source#{}.dnd_finished()", sender_id,);
-                        self.dnd_finished(client, sender_id).await
+                        self.dnd_finished(socket, sender_id).await
                     }
                     5u16 => {
                         let dnd_action = message.uint()?;
                         tracing::debug!("wl_data_source#{}.action({})", sender_id, dnd_action);
-                        self.action(client, sender_id, dnd_action.try_into()?).await
+                        self.action(socket, sender_id, dnd_action.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1636,7 +1634,7 @@ pub mod wayland {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_data_device#{}.data_offer({})", sender_id, id);
-                        self.data_offer(client, sender_id, id).await
+                        self.data_offer(socket, sender_id, id).await
                     }
                     1u16 => {
                         let serial = message.uint()?;
@@ -1655,12 +1653,12 @@ pub mod wayland {
                             y,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.enter(client, sender_id, serial, surface, x, y, id)
+                        self.enter(socket, sender_id, serial, surface, x, y, id)
                             .await
                     }
                     2u16 => {
                         tracing::debug!("wl_data_device#{}.leave()", sender_id,);
-                        self.leave(client, sender_id).await
+                        self.leave(socket, sender_id).await
                     }
                     3u16 => {
                         let time = message.uint()?;
@@ -1673,11 +1671,11 @@ pub mod wayland {
                             x,
                             y
                         );
-                        self.motion(client, sender_id, time, x, y).await
+                        self.motion(socket, sender_id, time, x, y).await
                     }
                     4u16 => {
                         tracing::debug!("wl_data_device#{}.drop()", sender_id,);
-                        self.drop(client, sender_id).await
+                        self.drop(socket, sender_id).await
                     }
                     5u16 => {
                         let id = message.object()?;
@@ -1686,7 +1684,7 @@ pub mod wayland {
                             sender_id,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.selection(client, sender_id, id).await
+                        self.selection(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1897,8 +1895,8 @@ pub mod wayland {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1986,8 +1984,8 @@ pub mod wayland {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2107,7 +2105,7 @@ pub mod wayland {
                     0u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("wl_shell_surface#{}.ping({})", sender_id, serial);
-                        self.ping(client, sender_id, serial).await
+                        self.ping(socket, sender_id, serial).await
                     }
                     1u16 => {
                         let edges = message.uint()?;
@@ -2120,12 +2118,12 @@ pub mod wayland {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, edges.try_into()?, width, height)
+                        self.configure(socket, sender_id, edges.try_into()?, width, height)
                             .await
                     }
                     2u16 => {
                         tracing::debug!("wl_shell_surface#{}.popup_done()", sender_id,);
-                        self.popup_done(client, sender_id).await
+                        self.popup_done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2547,14 +2545,14 @@ pub mod wayland {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_surface#{}.enter({})", sender_id, output);
-                        self.enter(client, sender_id, output).await
+                        self.enter(socket, sender_id, output).await
                     }
                     1u16 => {
                         let output = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_surface#{}.leave({})", sender_id, output);
-                        self.leave(client, sender_id, output).await
+                        self.leave(socket, sender_id, output).await
                     }
                     2u16 => {
                         let factor = message.int()?;
@@ -2563,7 +2561,7 @@ pub mod wayland {
                             sender_id,
                             factor
                         );
-                        self.preferred_buffer_scale(client, sender_id, factor).await
+                        self.preferred_buffer_scale(socket, sender_id, factor).await
                     }
                     3u16 => {
                         let transform = message.uint()?;
@@ -2572,7 +2570,7 @@ pub mod wayland {
                             sender_id,
                             transform
                         );
-                        self.preferred_buffer_transform(client, sender_id, transform.try_into()?)
+                        self.preferred_buffer_transform(socket, sender_id, transform.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -3157,7 +3155,7 @@ pub mod wayland {
                     0u16 => {
                         let capabilities = message.uint()?;
                         tracing::debug!("wl_seat#{}.capabilities({})", sender_id, capabilities);
-                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                        self.capabilities(socket, sender_id, capabilities.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -3165,7 +3163,7 @@ pub mod wayland {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_seat#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3492,7 +3490,7 @@ pub mod wayland {
                             surface_x,
                             surface_y
                         );
-                        self.enter(client, sender_id, serial, surface, surface_x, surface_y)
+                        self.enter(socket, sender_id, serial, surface, surface_x, surface_y)
                             .await
                     }
                     1u16 => {
@@ -3501,7 +3499,7 @@ pub mod wayland {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_pointer#{}.leave({}, {})", sender_id, serial, surface);
-                        self.leave(client, sender_id, serial, surface).await
+                        self.leave(socket, sender_id, serial, surface).await
                     }
                     2u16 => {
                         let time = message.uint()?;
@@ -3514,7 +3512,7 @@ pub mod wayland {
                             surface_x,
                             surface_y
                         );
-                        self.motion(client, sender_id, time, surface_x, surface_y)
+                        self.motion(socket, sender_id, time, surface_x, surface_y)
                             .await
                     }
                     3u16 => {
@@ -3530,7 +3528,7 @@ pub mod wayland {
                             button,
                             state
                         );
-                        self.button(client, sender_id, serial, time, button, state.try_into()?)
+                        self.button(socket, sender_id, serial, time, button, state.try_into()?)
                             .await
                     }
                     4u16 => {
@@ -3544,24 +3542,24 @@ pub mod wayland {
                             axis,
                             value
                         );
-                        self.axis(client, sender_id, time, axis.try_into()?, value)
+                        self.axis(socket, sender_id, time, axis.try_into()?, value)
                             .await
                     }
                     5u16 => {
                         tracing::debug!("wl_pointer#{}.frame()", sender_id,);
-                        self.frame(client, sender_id).await
+                        self.frame(socket, sender_id).await
                     }
                     6u16 => {
                         let axis_source = message.uint()?;
                         tracing::debug!("wl_pointer#{}.axis_source({})", sender_id, axis_source);
-                        self.axis_source(client, sender_id, axis_source.try_into()?)
+                        self.axis_source(socket, sender_id, axis_source.try_into()?)
                             .await
                     }
                     7u16 => {
                         let time = message.uint()?;
                         let axis = message.uint()?;
                         tracing::debug!("wl_pointer#{}.axis_stop({}, {})", sender_id, time, axis);
-                        self.axis_stop(client, sender_id, time, axis.try_into()?)
+                        self.axis_stop(socket, sender_id, time, axis.try_into()?)
                             .await
                     }
                     8u16 => {
@@ -3573,7 +3571,7 @@ pub mod wayland {
                             axis,
                             discrete
                         );
-                        self.axis_discrete(client, sender_id, axis.try_into()?, discrete)
+                        self.axis_discrete(socket, sender_id, axis.try_into()?, discrete)
                             .await
                     }
                     9u16 => {
@@ -3585,7 +3583,7 @@ pub mod wayland {
                             axis,
                             value120
                         );
-                        self.axis_value120(client, sender_id, axis.try_into()?, value120)
+                        self.axis_value120(socket, sender_id, axis.try_into()?, value120)
                             .await
                     }
                     10u16 => {
@@ -3598,7 +3596,7 @@ pub mod wayland {
                             direction
                         );
                         self.axis_relative_direction(
-                            client,
+                            socket,
                             sender_id,
                             axis.try_into()?,
                             direction.try_into()?,
@@ -4066,7 +4064,7 @@ pub mod wayland {
                             fd.as_raw_fd(),
                             size
                         );
-                        self.keymap(client, sender_id, format.try_into()?, fd, size)
+                        self.keymap(socket, sender_id, format.try_into()?, fd, size)
                             .await
                     }
                     1u16 => {
@@ -4082,7 +4080,7 @@ pub mod wayland {
                             surface,
                             keys.len()
                         );
-                        self.enter(client, sender_id, serial, surface, keys).await
+                        self.enter(socket, sender_id, serial, surface, keys).await
                     }
                     2u16 => {
                         let serial = message.uint()?;
@@ -4090,7 +4088,7 @@ pub mod wayland {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_keyboard#{}.leave({}, {})", sender_id, serial, surface);
-                        self.leave(client, sender_id, serial, surface).await
+                        self.leave(socket, sender_id, serial, surface).await
                     }
                     3u16 => {
                         let serial = message.uint()?;
@@ -4105,7 +4103,7 @@ pub mod wayland {
                             key,
                             state
                         );
-                        self.key(client, sender_id, serial, time, key, state.try_into()?)
+                        self.key(socket, sender_id, serial, time, key, state.try_into()?)
                             .await
                     }
                     4u16 => {
@@ -4124,7 +4122,7 @@ pub mod wayland {
                             group
                         );
                         self.modifiers(
-                            client,
+                            socket,
                             sender_id,
                             serial,
                             mods_depressed,
@@ -4143,7 +4141,7 @@ pub mod wayland {
                             rate,
                             delay
                         );
-                        self.repeat_info(client, sender_id, rate, delay).await
+                        self.repeat_info(socket, sender_id, rate, delay).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4332,7 +4330,7 @@ pub mod wayland {
                             x,
                             y
                         );
-                        self.down(client, sender_id, serial, time, surface, id, x, y)
+                        self.down(socket, sender_id, serial, time, surface, id, x, y)
                             .await
                     }
                     1u16 => {
@@ -4340,7 +4338,7 @@ pub mod wayland {
                         let time = message.uint()?;
                         let id = message.int()?;
                         tracing::debug!("wl_touch#{}.up({}, {}, {})", sender_id, serial, time, id);
-                        self.up(client, sender_id, serial, time, id).await
+                        self.up(socket, sender_id, serial, time, id).await
                     }
                     2u16 => {
                         let time = message.uint()?;
@@ -4355,15 +4353,15 @@ pub mod wayland {
                             x,
                             y
                         );
-                        self.motion(client, sender_id, time, id, x, y).await
+                        self.motion(socket, sender_id, time, id, x, y).await
                     }
                     3u16 => {
                         tracing::debug!("wl_touch#{}.frame()", sender_id,);
-                        self.frame(client, sender_id).await
+                        self.frame(socket, sender_id).await
                     }
                     4u16 => {
                         tracing::debug!("wl_touch#{}.cancel()", sender_id,);
-                        self.cancel(client, sender_id).await
+                        self.cancel(socket, sender_id).await
                     }
                     5u16 => {
                         let id = message.int()?;
@@ -4376,7 +4374,7 @@ pub mod wayland {
                             major,
                             minor
                         );
-                        self.shape(client, sender_id, id, major, minor).await
+                        self.shape(socket, sender_id, id, major, minor).await
                     }
                     6u16 => {
                         let id = message.int()?;
@@ -4387,7 +4385,7 @@ pub mod wayland {
                             id,
                             orientation
                         );
-                        self.orientation(client, sender_id, id, orientation).await
+                        self.orientation(socket, sender_id, id, orientation).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4682,7 +4680,7 @@ pub mod wayland {
                             transform
                         );
                         self.geometry(
-                            client,
+                            socket,
                             sender_id,
                             x,
                             y,
@@ -4708,31 +4706,31 @@ pub mod wayland {
                             height,
                             refresh
                         );
-                        self.mode(client, sender_id, flags.try_into()?, width, height, refresh)
+                        self.mode(socket, sender_id, flags.try_into()?, width, height, refresh)
                             .await
                     }
                     2u16 => {
                         tracing::debug!("wl_output#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     3u16 => {
                         let factor = message.int()?;
                         tracing::debug!("wl_output#{}.scale({})", sender_id, factor);
-                        self.scale(client, sender_id, factor).await
+                        self.scale(socket, sender_id, factor).await
                     }
                     4u16 => {
                         let name = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_output#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     5u16 => {
                         let description = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_output#{}.description(\"{}\")", sender_id, description);
-                        self.description(client, sender_id, description).await
+                        self.description(socket, sender_id, description).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4931,8 +4929,8 @@ pub mod wayland {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5053,8 +5051,8 @@ pub mod wayland {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5201,8 +5199,8 @@ pub mod wayland {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5373,8 +5371,8 @@ pub mod wayland {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]

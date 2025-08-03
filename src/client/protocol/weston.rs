@@ -262,7 +262,7 @@ pub mod color_management_v1 {
                             sender_id,
                             render_intent
                         );
-                        self.supported_intent(client, sender_id, render_intent.try_into()?)
+                        self.supported_intent(socket, sender_id, render_intent.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -272,7 +272,7 @@ pub mod color_management_v1 {
                             sender_id,
                             feature
                         );
-                        self.supported_feature(client, sender_id, feature.try_into()?)
+                        self.supported_feature(socket, sender_id, feature.try_into()?)
                             .await
                     }
                     2u16 => {
@@ -282,7 +282,7 @@ pub mod color_management_v1 {
                             sender_id,
                             tf
                         );
-                        self.supported_tf_named(client, sender_id, tf.try_into()?)
+                        self.supported_tf_named(socket, sender_id, tf.try_into()?)
                             .await
                     }
                     3u16 => {
@@ -292,7 +292,7 @@ pub mod color_management_v1 {
                             sender_id,
                             primaries
                         );
-                        self.supported_primaries_named(client, sender_id, primaries.try_into()?)
+                        self.supported_primaries_named(socket, sender_id, primaries.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -496,7 +496,7 @@ pub mod color_management_v1 {
                             "xx_color_management_output_v4#{}.image_description_changed()",
                             sender_id,
                         );
-                        self.image_description_changed(client, sender_id).await
+                        self.image_description_changed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -618,8 +618,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -758,7 +758,7 @@ pub mod color_management_v1 {
                             "xx_color_management_feedback_surface_v4#{}.preferred_changed()",
                             sender_id,
                         );
-                        self.preferred_changed(client, sender_id).await
+                        self.preferred_changed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -904,8 +904,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1090,8 +1090,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1601,7 +1601,7 @@ pub mod color_management_v1 {
                             cause,
                             msg
                         );
-                        self.failed(client, sender_id, cause.try_into()?, msg).await
+                        self.failed(socket, sender_id, cause.try_into()?, msg).await
                     }
                     1u16 => {
                         let identity = message.uint()?;
@@ -1610,7 +1610,7 @@ pub mod color_management_v1 {
                             sender_id,
                             identity
                         );
-                        self.ready(client, sender_id, identity).await
+                        self.ready(socket, sender_id, identity).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1731,9 +1731,7 @@ pub mod color_management_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("xx_image_description_info_v4#{}.done()", sender_id,);
-                        let result = self.done(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.done(socket, sender_id).await
                     }
                     1u16 => {
                         let icc = message.fd()?;
@@ -1744,7 +1742,7 @@ pub mod color_management_v1 {
                             icc.as_raw_fd(),
                             icc_size
                         );
-                        self.icc_file(client, sender_id, icc, icc_size).await
+                        self.icc_file(socket, sender_id, icc, icc_size).await
                     }
                     2u16 => {
                         let r_x = message.int()?;
@@ -1767,7 +1765,7 @@ pub mod color_management_v1 {
                             w_x,
                             w_y
                         );
-                        self.primaries(client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
+                        self.primaries(socket, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
                             .await
                     }
                     3u16 => {
@@ -1777,7 +1775,7 @@ pub mod color_management_v1 {
                             sender_id,
                             primaries
                         );
-                        self.primaries_named(client, sender_id, primaries.try_into()?)
+                        self.primaries_named(socket, sender_id, primaries.try_into()?)
                             .await
                     }
                     4u16 => {
@@ -1787,7 +1785,7 @@ pub mod color_management_v1 {
                             sender_id,
                             eexp
                         );
-                        self.tf_power(client, sender_id, eexp).await
+                        self.tf_power(socket, sender_id, eexp).await
                     }
                     5u16 => {
                         let tf = message.uint()?;
@@ -1796,7 +1794,7 @@ pub mod color_management_v1 {
                             sender_id,
                             tf
                         );
-                        self.tf_named(client, sender_id, tf.try_into()?).await
+                        self.tf_named(socket, sender_id, tf.try_into()?).await
                     }
                     6u16 => {
                         let min_lum = message.uint()?;
@@ -1809,7 +1807,7 @@ pub mod color_management_v1 {
                             max_lum,
                             reference_lum
                         );
-                        self.luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                        self.luminances(socket, sender_id, min_lum, max_lum, reference_lum)
                             .await
                     }
                     7u16 => {
@@ -1834,7 +1832,7 @@ pub mod color_management_v1 {
                             w_y
                         );
                         self.target_primaries(
-                            client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            socket, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                         )
                         .await
                     }
@@ -1847,7 +1845,7 @@ pub mod color_management_v1 {
                             min_lum,
                             max_lum
                         );
-                        self.target_luminance(client, sender_id, min_lum, max_lum)
+                        self.target_luminance(socket, sender_id, min_lum, max_lum)
                             .await
                     }
                     9u16 => {
@@ -1857,7 +1855,7 @@ pub mod color_management_v1 {
                             sender_id,
                             max_cll
                         );
-                        self.target_max_cll(client, sender_id, max_cll).await
+                        self.target_max_cll(socket, sender_id, max_cll).await
                     }
                     10u16 => {
                         let max_fall = message.uint()?;
@@ -1866,7 +1864,7 @@ pub mod color_management_v1 {
                             sender_id,
                             max_fall
                         );
-                        self.target_max_fall(client, sender_id, max_fall).await
+                        self.target_max_fall(socket, sender_id, max_fall).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2046,7 +2044,7 @@ pub mod ivi_application {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, width, height).await
+                        self.configure(socket, sender_id, width, height).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2123,8 +2121,8 @@ pub mod ivi_application {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2249,7 +2247,7 @@ pub mod ivi_hmi_controller {
                             sender_id,
                             is_controlled
                         );
-                        self.workspace_end_control(client, sender_id, is_controlled)
+                        self.workspace_end_control(socket, sender_id, is_controlled)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -2359,8 +2357,8 @@ pub mod text_cursor_position {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2472,8 +2470,8 @@ pub mod weston_content_protection {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2637,7 +2635,7 @@ pub mod weston_content_protection {
                             sender_id,
                             r#type
                         );
-                        self.status(client, sender_id, r#type.try_into()?).await
+                        self.status(socket, sender_id, r#type.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2802,7 +2800,7 @@ pub mod weston_debug {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.available(client, sender_id, name, description).await
+                        self.available(socket, sender_id, name, description).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2886,7 +2884,7 @@ pub mod weston_debug {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("weston_debug_stream_v1#{}.complete()", sender_id,);
-                        self.complete(client, sender_id).await
+                        self.complete(socket, sender_id).await
                     }
                     1u16 => {
                         let message = message.string()?;
@@ -2897,7 +2895,7 @@ pub mod weston_debug {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.failure(client, sender_id, message).await
+                        self.failure(socket, sender_id, message).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3073,7 +3071,7 @@ pub mod weston_desktop {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, edges, surface, width, height)
+                        self.configure(socket, sender_id, edges, surface, width, height)
                             .await
                     }
                     1u16 => {
@@ -3081,7 +3079,7 @@ pub mod weston_desktop {
                             "weston_desktop_shell#{}.prepare_lock_surface()",
                             sender_id,
                         );
-                        self.prepare_lock_surface(client, sender_id).await
+                        self.prepare_lock_surface(socket, sender_id).await
                     }
                     2u16 => {
                         let cursor = message.uint()?;
@@ -3090,7 +3088,7 @@ pub mod weston_desktop {
                             sender_id,
                             cursor
                         );
-                        self.grab_cursor(client, sender_id, cursor).await
+                        self.grab_cursor(socket, sender_id, cursor).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3252,8 +3250,8 @@ pub mod weston_desktop {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3323,8 +3321,8 @@ pub mod weston_direct_display {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3441,8 +3439,8 @@ pub mod weston_output_capture {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3564,7 +3562,7 @@ pub mod weston_output_capture {
                             sender_id,
                             drm_format
                         );
-                        self.format(client, sender_id, drm_format).await
+                        self.format(socket, sender_id, drm_format).await
                     }
                     1u16 => {
                         let width = message.int()?;
@@ -3575,15 +3573,15 @@ pub mod weston_output_capture {
                             width,
                             height
                         );
-                        self.size(client, sender_id, width, height).await
+                        self.size(socket, sender_id, width, height).await
                     }
                     2u16 => {
                         tracing::debug!("weston_capture_source_v1#{}.complete()", sender_id,);
-                        self.complete(client, sender_id).await
+                        self.complete(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("weston_capture_source_v1#{}.retry()", sender_id,);
-                        self.retry(client, sender_id).await
+                        self.retry(socket, sender_id).await
                     }
                     4u16 => {
                         let msg = message.string()?;
@@ -3592,7 +3590,7 @@ pub mod weston_output_capture {
                             sender_id,
                             msg.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.failed(client, sender_id, msg).await
+                        self.failed(socket, sender_id, msg).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3793,7 +3791,7 @@ pub mod weston_test {
                         let x = message.fixed()?;
                         let y = message.fixed()?;
                         tracing::debug!("weston_test#{}.pointer_position({}, {})", sender_id, x, y);
-                        self.pointer_position(client, sender_id, x, y).await
+                        self.pointer_position(socket, sender_id, x, y).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4070,7 +4068,7 @@ pub mod weston_test {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("weston_test_runner#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4196,7 +4194,7 @@ pub mod weston_touch_calibration {
                             device,
                             head
                         );
-                        self.touch_device(client, sender_id, device, head).await
+                        self.touch_device(socket, sender_id, device, head).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4383,18 +4381,18 @@ pub mod weston_touch_calibration {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, width, height).await
+                        self.configure(socket, sender_id, width, height).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "weston_touch_calibrator#{}.cancel_calibration()",
                             sender_id,
                         );
-                        self.cancel_calibration(client, sender_id).await
+                        self.cancel_calibration(socket, sender_id).await
                     }
                     2u16 => {
                         tracing::debug!("weston_touch_calibrator#{}.invalid_touch()", sender_id,);
-                        self.invalid_touch(client, sender_id).await
+                        self.invalid_touch(socket, sender_id).await
                     }
                     3u16 => {
                         let time = message.uint()?;
@@ -4409,7 +4407,7 @@ pub mod weston_touch_calibration {
                             x,
                             y
                         );
-                        self.down(client, sender_id, time, id, x, y).await
+                        self.down(socket, sender_id, time, id, x, y).await
                     }
                     4u16 => {
                         let time = message.uint()?;
@@ -4420,7 +4418,7 @@ pub mod weston_touch_calibration {
                             time,
                             id
                         );
-                        self.up(client, sender_id, time, id).await
+                        self.up(socket, sender_id, time, id).await
                     }
                     5u16 => {
                         let time = message.uint()?;
@@ -4435,15 +4433,15 @@ pub mod weston_touch_calibration {
                             x,
                             y
                         );
-                        self.motion(client, sender_id, time, id, x, y).await
+                        self.motion(socket, sender_id, time, id, x, y).await
                     }
                     6u16 => {
                         tracing::debug!("weston_touch_calibrator#{}.frame()", sender_id,);
-                        self.frame(client, sender_id).await
+                        self.frame(socket, sender_id).await
                     }
                     7u16 => {
                         tracing::debug!("weston_touch_calibrator#{}.cancel()", sender_id,);
-                        self.cancel(client, sender_id).await
+                        self.cancel(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4627,7 +4625,7 @@ pub mod weston_touch_calibration {
                             x,
                             y
                         );
-                        self.result(client, sender_id, x, y).await
+                        self.result(socket, sender_id, x, y).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

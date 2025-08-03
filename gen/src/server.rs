@@ -38,12 +38,12 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
             let handler_args = if dispatchers.is_empty() {
                 quote! {
-                    _client: &mut crate::server::Client,
+                    _socket: &mut crate::wire::Socket,
                     _sender_id: crate::wire::ObjectId,
                 }
             } else {
                 quote! {
-                    client: &mut crate::server::Client,
+                    socket: &mut crate::wire::Socket,
                     sender_id: crate::wire::ObjectId,
                 }
             };
@@ -54,6 +54,8 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                 pub mod #module_name {
                     #[allow(unused)]
                     use std::os::fd::AsRawFd;
+                    #[allow(unused)]
+                    use futures_util::SinkExt;
 
                     #(#enums)*
 
@@ -108,7 +110,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         let name = make_ident(request.name.to_snek_case());
         let mut args = vec![
             quote! {&self },
-            quote! {client: &mut crate::server::Client},
+            quote! {socket: &mut crate::wire::Socket},
             quote! {sender_id: crate::wire::ObjectId},
         ];
 
@@ -144,7 +146,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         let mut args = vec![
             quote! {&self },
-            quote! {client: &mut crate::server::Client},
+            quote! {socket: &mut crate::wire::Socket},
             quote! {sender_id: crate::wire::ObjectId},
         ];
 
@@ -247,8 +249,8 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
                         #(#build_args)*
                         .build();
 
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, #opcode, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

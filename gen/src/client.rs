@@ -41,6 +41,18 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                 quote! {use futures_util::SinkExt;}
             };
 
+            let handler_args = if dispatchers.is_empty() {
+                quote! {
+                    _socket: &mut crate::wire::Socket,
+                    _sender_id: crate::wire::ObjectId,
+                }
+            } else {
+                quote! {
+                    socket: &mut crate::wire::Socket,
+                    sender_id: crate::wire::ObjectId,
+                }
+            };
+
             inner_modules.push(quote! {
                 #(#docs)*
                 #[allow(clippy::too_many_arguments)]
@@ -58,8 +70,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
                         async fn handle_event(
                             &self,
-                            socket: &mut crate::wire::Socket,
-                            sender_id: crate::wire::ObjectId,
+                            #handler_args
                             message: &mut crate::wire::Message,
                         ) -> crate::client::Result<()> {
                             #[allow(clippy::match_single_binding)]

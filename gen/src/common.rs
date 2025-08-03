@@ -3,7 +3,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 
 use crate::{
-    parser::{ArgType, Interface, Message, MessageType},
+    parser::{ArgType, Interface, Message},
     utils::make_ident,
 };
 
@@ -20,7 +20,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
 
-        let mut args = vec![quote! { client }, quote! { sender_id }];
+        let mut args = vec![quote! { socket }, quote! { sender_id }];
         let mut setters = Vec::new();
 
         for arg in &request.args {
@@ -79,24 +79,12 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
             request = request.name.to_snek_case()
         );
 
-        let result = if request.ty == Some(MessageType::Destructor) {
-            quote! {
-                let result = self.#name(#(#args),*).await;
-                client.remove(sender_id);
-                result
-            }
-        } else {
-            quote! {
-                self.#name(#(#args),*).await
-            }
-        };
-
         let inner = quote! {
             #opcode => {
                 #(#setters)*
 
                 tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
-                #result
+                self.#name(#(#args),*).await
             }
         };
 

@@ -18,8 +18,8 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -205,7 +205,7 @@ pub mod frog_color_management_v1 {
                             max_full_frame_luminance
                         );
                         self.preferred_metadata(
-                            client,
+                            socket,
                             sender_id,
                             transfer_function.try_into()?,
                             output_display_primary_red_x,
@@ -419,8 +419,8 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -506,8 +506,8 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]

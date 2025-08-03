@@ -209,21 +209,21 @@ pub mod drm {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_drm#{}.device(\"{}\")", sender_id, name);
-                        self.device(client, sender_id, name).await
+                        self.device(socket, sender_id, name).await
                     }
                     1u16 => {
                         let format = message.uint()?;
                         tracing::debug!("wl_drm#{}.format({})", sender_id, format);
-                        self.format(client, sender_id, format).await
+                        self.format(socket, sender_id, format).await
                     }
                     2u16 => {
                         tracing::debug!("wl_drm#{}.authenticated()", sender_id,);
-                        self.authenticated(client, sender_id).await
+                        self.authenticated(socket, sender_id).await
                     }
                     3u16 => {
                         let value = message.uint()?;
                         tracing::debug!("wl_drm#{}.capabilities({})", sender_id, value);
-                        self.capabilities(client, sender_id, value).await
+                        self.capabilities(socket, sender_id, value).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

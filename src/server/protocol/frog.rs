@@ -9,6 +9,8 @@ pub mod frog_color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_management_factory_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
         pub trait FrogColorManagementFactoryV1: crate::server::Dispatcher {
@@ -16,7 +18,7 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -28,9 +30,7 @@ pub mod frog_color_management_v1 {
                                 "frog_color_management_factory_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let surface = message
@@ -45,7 +45,7 @@ pub mod frog_color_management_v1 {
                                 surface,
                                 callback
                             );
-                            self.get_color_managed_surface(client, sender_id, surface, callback)
+                            self.get_color_managed_surface(socket, sender_id, surface, callback)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -54,12 +54,12 @@ pub mod frog_color_management_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn get_color_managed_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
@@ -73,6 +73,8 @@ pub mod frog_color_management_v1 {
     #[doc = "Including all known enums associated with a given version."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_managed_surface {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Extended information on the transfer functions described"]
@@ -170,7 +172,7 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -179,9 +181,7 @@ pub mod frog_color_management_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let transfer_function = message.uint()?;
@@ -191,7 +191,7 @@ pub mod frog_color_management_v1 {
                                 transfer_function
                             );
                             self.set_known_transfer_function(
-                                client,
+                                socket,
                                 sender_id,
                                 transfer_function.try_into()?,
                             )
@@ -205,7 +205,7 @@ pub mod frog_color_management_v1 {
                                 primaries
                             );
                             self.set_known_container_color_volume(
-                                client,
+                                socket,
                                 sender_id,
                                 primaries.try_into()?,
                             )
@@ -218,7 +218,7 @@ pub mod frog_color_management_v1 {
                                 sender_id,
                                 render_intent
                             );
-                            self.set_render_intent(client, sender_id, render_intent.try_into()?)
+                            self.set_render_intent(socket, sender_id, render_intent.try_into()?)
                                 .await
                         }
                         4u16 => {
@@ -251,7 +251,7 @@ pub mod frog_color_management_v1 {
                                 max_fall
                             );
                             self.set_hdr_metadata(
-                                client,
+                                socket,
                                 sender_id,
                                 mastering_display_primary_red_x,
                                 mastering_display_primary_red_y,
@@ -277,18 +277,18 @@ pub mod frog_color_management_v1 {
             #[doc = "values."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_known_transfer_function(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_known_container_color_volume(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -300,7 +300,7 @@ pub mod frog_color_management_v1 {
             #[doc = "(including utilizing negatives out of the 709 gamut triangle)"]
             fn set_render_intent(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -312,7 +312,7 @@ pub mod frog_color_management_v1 {
             #[doc = "outside of the scope of this protocol."]
             fn set_hdr_metadata(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mastering_display_primary_red_x: u32,
                 mastering_display_primary_red_y: u32,
@@ -335,7 +335,7 @@ pub mod frog_color_management_v1 {
             #[doc = "rather what the compositor thinks would be best for a given surface."]
             fn preferred_metadata(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
                 output_display_primary_red_x: u32,
@@ -381,8 +381,8 @@ pub mod frog_color_management_v1 {
                         .put_uint(min_luminance)
                         .put_uint(max_full_frame_luminance)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -405,6 +405,8 @@ pub mod frog_fifo_v1 {
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_manager_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
@@ -436,7 +438,7 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -445,9 +447,7 @@ pub mod frog_fifo_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -462,7 +462,7 @@ pub mod frog_fifo_v1 {
                                 id,
                                 surface
                             );
-                            self.get_fifo(client, sender_id, id, surface).await
+                            self.get_fifo(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -473,7 +473,7 @@ pub mod frog_fifo_v1 {
             #[doc = "are not affected."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Establish a fifo object for a surface that may be used to add"]
@@ -486,7 +486,7 @@ pub mod frog_fifo_v1 {
             #[doc = "performing wl_surface.attach operations should use this protocol."]
             fn get_fifo(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -497,6 +497,8 @@ pub mod frog_fifo_v1 {
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_surface_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
@@ -528,7 +530,7 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -537,17 +539,15 @@ pub mod frog_fifo_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
-                            self.set_barrier(client, sender_id).await
+                            self.set_barrier(socket, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", sender_id,);
-                            self.wait_barrier(client, sender_id).await
+                            self.wait_barrier(socket, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!("frog_fifo_surface_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -569,7 +569,7 @@ pub mod frog_fifo_v1 {
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
             fn set_barrier(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Indicate that this content update is not ready while a"]
@@ -587,7 +587,7 @@ pub mod frog_fifo_v1 {
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
             fn wait_barrier(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -597,7 +597,7 @@ pub mod frog_fifo_v1 {
             #[doc = "unaffected by this object's destruction."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }

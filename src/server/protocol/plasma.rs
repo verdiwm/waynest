@@ -5,6 +5,8 @@ pub mod appmenu {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenuManager: crate::server::Dispatcher {
@@ -12,7 +14,7 @@ pub mod appmenu {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -32,13 +34,11 @@ pub mod appmenu {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_appmenu_manager#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -46,14 +46,14 @@ pub mod appmenu {
             }
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -64,6 +64,8 @@ pub mod appmenu {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenu: crate::server::Dispatcher {
@@ -71,7 +73,7 @@ pub mod appmenu {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -91,14 +93,12 @@ pub mod appmenu {
                                 service_name,
                                 object_path
                             );
-                            self.set_address(client, sender_id, service_name, object_path)
+                            self.set_address(socket, sender_id, service_name, object_path)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_appmenu#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -108,14 +108,14 @@ pub mod appmenu {
             #[doc = "Strings should be formatted in Latin-1 matching the relevant DBus specifications."]
             fn set_address(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 service_name: String,
                 object_path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -126,6 +126,8 @@ pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlurManager: crate::server::Dispatcher {
@@ -133,7 +135,7 @@ pub mod blur {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -153,7 +155,7 @@ pub mod blur {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -164,7 +166,7 @@ pub mod blur {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            self.unset(socket, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -172,14 +174,14 @@ pub mod blur {
             }
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -188,6 +190,8 @@ pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlur: crate::server::Dispatcher {
@@ -195,7 +199,7 @@ pub mod blur {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -204,7 +208,7 @@ pub mod blur {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -215,13 +219,11 @@ pub mod blur {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            self.set_region(socket, sender_id, region).await
                         }
                         2u16 => {
                             tracing::debug!("org_kde_kwin_blur#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -229,18 +231,18 @@ pub mod blur {
             }
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_region(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -251,6 +253,8 @@ pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrastManager: crate::server::Dispatcher {
@@ -258,7 +262,7 @@ pub mod contrast {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -278,7 +282,7 @@ pub mod contrast {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -289,7 +293,7 @@ pub mod contrast {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            self.unset(socket, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -297,14 +301,14 @@ pub mod contrast {
             }
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -313,6 +317,8 @@ pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrast: crate::server::Dispatcher {
@@ -320,7 +326,7 @@ pub mod contrast {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -329,7 +335,7 @@ pub mod contrast {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -340,7 +346,7 @@ pub mod contrast {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            self.set_region(socket, sender_id, region).await
                         }
                         2u16 => {
                             let contrast = message.fixed()?;
@@ -349,7 +355,7 @@ pub mod contrast {
                                 sender_id,
                                 contrast
                             );
-                            self.set_contrast(client, sender_id, contrast).await
+                            self.set_contrast(socket, sender_id, contrast).await
                         }
                         3u16 => {
                             let intensity = message.fixed()?;
@@ -358,7 +364,7 @@ pub mod contrast {
                                 sender_id,
                                 intensity
                             );
-                            self.set_intensity(client, sender_id, intensity).await
+                            self.set_intensity(socket, sender_id, intensity).await
                         }
                         4u16 => {
                             let saturation = message.fixed()?;
@@ -367,13 +373,11 @@ pub mod contrast {
                                 sender_id,
                                 saturation
                             );
-                            self.set_saturation(client, sender_id, saturation).await
+                            self.set_saturation(socket, sender_id, saturation).await
                         }
                         5u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         6u16 => {
                             let red = message.int()?;
@@ -388,12 +392,12 @@ pub mod contrast {
                                 blue,
                                 alpha
                             );
-                            self.set_frost(client, sender_id, red, green, blue, alpha)
+                            self.set_frost(socket, sender_id, red, green, blue, alpha)
                                 .await
                         }
                         7u16 => {
                             tracing::debug!("org_kde_kwin_contrast#{}.unset_frost()", sender_id,);
-                            self.unset_frost(client, sender_id).await
+                            self.unset_frost(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -401,36 +405,36 @@ pub mod contrast {
             }
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_region(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_contrast(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 contrast: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_intensity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 intensity: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_saturation(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 saturation: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "enables 'frost' variant of contrast effect."]
@@ -443,7 +447,7 @@ pub mod contrast {
             #[doc = "should be based off of the \"main\" background colour of the surface."]
             fn set_frost(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 red: i32,
                 green: i32,
@@ -452,7 +456,7 @@ pub mod contrast {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset_frost(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -473,6 +477,8 @@ pub mod dpms {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager: crate::server::Dispatcher {
@@ -480,7 +486,7 @@ pub mod dpms {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -500,7 +506,7 @@ pub mod dpms {
                                 id,
                                 output
                             );
-                            self.get(client, sender_id, id, output).await
+                            self.get(socket, sender_id, id, output).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -509,7 +515,7 @@ pub mod dpms {
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
             fn get(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
@@ -525,6 +531,8 @@ pub mod dpms {
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -559,7 +567,7 @@ pub mod dpms {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -569,13 +577,11 @@ pub mod dpms {
                         0u16 => {
                             let mode = message.uint()?;
                             tracing::debug!("org_kde_kwin_dpms#{}.set({})", sender_id, mode);
-                            self.set(client, sender_id, mode).await
+                            self.set(socket, sender_id, mode).await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_dpms#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -589,13 +595,13 @@ pub mod dpms {
             #[doc = "Instead the client should listen for the mode event."]
             fn set(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
@@ -603,7 +609,7 @@ pub mod dpms {
             #[doc = "make sense (e.g. nested compositors)."]
             fn supported(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 supported: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -616,8 +622,8 @@ pub mod dpms {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(supported)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -629,15 +635,15 @@ pub mod dpms {
             #[doc = "The event is also pushed whenever the state changes."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", sender_id, mode);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -648,14 +654,14 @@ pub mod dpms {
             #[doc = "state changes have been pushed."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_dpms#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -680,6 +686,8 @@ pub mod fake_input {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_fake_input {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput: crate::server::Dispatcher {
@@ -687,7 +695,7 @@ pub mod fake_input {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -707,7 +715,7 @@ pub mod fake_input {
                                 application,
                                 reason
                             );
-                            self.authenticate(client, sender_id, application, reason)
+                            self.authenticate(socket, sender_id, application, reason)
                                 .await
                         }
                         1u16 => {
@@ -719,7 +727,7 @@ pub mod fake_input {
                                 delta_x,
                                 delta_y
                             );
-                            self.pointer_motion(client, sender_id, delta_x, delta_y)
+                            self.pointer_motion(socket, sender_id, delta_x, delta_y)
                                 .await
                         }
                         2u16 => {
@@ -731,7 +739,7 @@ pub mod fake_input {
                                 button,
                                 state
                             );
-                            self.button(client, sender_id, button, state).await
+                            self.button(socket, sender_id, button, state).await
                         }
                         3u16 => {
                             let axis = message.uint()?;
@@ -742,7 +750,7 @@ pub mod fake_input {
                                 axis,
                                 value
                             );
-                            self.axis(client, sender_id, axis, value).await
+                            self.axis(socket, sender_id, axis, value).await
                         }
                         4u16 => {
                             let id = message.uint()?;
@@ -755,7 +763,7 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.touch_down(client, sender_id, id, x, y).await
+                            self.touch_down(socket, sender_id, id, x, y).await
                         }
                         5u16 => {
                             let id = message.uint()?;
@@ -768,7 +776,7 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.touch_motion(client, sender_id, id, x, y).await
+                            self.touch_motion(socket, sender_id, id, x, y).await
                         }
                         6u16 => {
                             let id = message.uint()?;
@@ -777,15 +785,15 @@ pub mod fake_input {
                                 sender_id,
                                 id
                             );
-                            self.touch_up(client, sender_id, id).await
+                            self.touch_up(socket, sender_id, id).await
                         }
                         7u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", sender_id,);
-                            self.touch_cancel(client, sender_id).await
+                            self.touch_cancel(socket, sender_id).await
                         }
                         8u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", sender_id,);
-                            self.touch_frame(client, sender_id).await
+                            self.touch_frame(socket, sender_id).await
                         }
                         9u16 => {
                             let x = message.fixed()?;
@@ -796,7 +804,7 @@ pub mod fake_input {
                                 x,
                                 y
                             );
-                            self.pointer_motion_absolute(client, sender_id, x, y).await
+                            self.pointer_motion_absolute(socket, sender_id, x, y).await
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -807,13 +815,11 @@ pub mod fake_input {
                                 button,
                                 state
                             );
-                            self.keyboard_key(client, sender_id, button, state).await
+                            self.keyboard_key(socket, sender_id, button, state).await
                         }
                         11u16 => {
                             tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -826,28 +832,28 @@ pub mod fake_input {
             #[doc = "this very privileged interface."]
             fn authenticate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 application: String,
                 reason: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn pointer_motion(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 delta_x: crate::wire::Fixed,
                 delta_y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn button(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn axis(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 axis: u32,
                 value: crate::wire::Fixed,
@@ -856,7 +862,7 @@ pub mod fake_input {
             #[doc = "coordinates."]
             fn touch_down(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
                 x: crate::wire::Fixed,
@@ -865,7 +871,7 @@ pub mod fake_input {
             #[doc = "A client should use this request to send touch motion to specific position."]
             fn touch_motion(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
                 x: crate::wire::Fixed,
@@ -874,7 +880,7 @@ pub mod fake_input {
             #[doc = "A client should use this request to send touch up event."]
             fn touch_up(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -882,32 +888,32 @@ pub mod fake_input {
             #[doc = "touch event."]
             fn touch_cancel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A client should use this request to send touch frame event."]
             fn touch_frame(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn pointer_motion_absolute(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn keyboard_key(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -941,6 +947,8 @@ pub mod fullscreen_shell {
     #[doc = "simply attaching a new buffer."]
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
@@ -1052,7 +1060,7 @@ pub mod fullscreen_shell {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1061,9 +1069,7 @@ pub mod fullscreen_shell {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("_wl_fullscreen_shell#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         1u16 => {
                             let surface = message.object()?;
@@ -1080,7 +1086,7 @@ pub mod fullscreen_shell {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.present_surface(client, sender_id, surface, method, output)
+                            self.present_surface(socket, sender_id, surface, method, output)
                                 .await
                         }
                         2u16 => {
@@ -1103,7 +1109,7 @@ pub mod fullscreen_shell {
                                 feedback
                             );
                             self.present_surface_for_mode(
-                                client, sender_id, surface, output, framerate, feedback,
+                                socket, sender_id, surface, output, framerate, feedback,
                             )
                             .await
                         }
@@ -1118,7 +1124,7 @@ pub mod fullscreen_shell {
             #[doc = "to free some of those bindings."]
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Present a surface on the given output."]
@@ -1140,7 +1146,7 @@ pub mod fullscreen_shell {
             #[doc = "ignored."]
             fn present_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: Option<crate::wire::ObjectId>,
                 method: u32,
@@ -1185,7 +1191,7 @@ pub mod fullscreen_shell {
             #[doc = "output."]
             fn present_surface_for_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
@@ -1202,7 +1208,7 @@ pub mod fullscreen_shell {
             #[doc = "receive all the capability events."]
             fn capability(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 capability: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1215,8 +1221,8 @@ pub mod fullscreen_shell {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(capability)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1226,6 +1232,8 @@ pub mod fullscreen_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
         pub trait WlFullscreenShellModeFeedback: crate::server::Dispatcher {
@@ -1233,7 +1241,7 @@ pub mod fullscreen_shell {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1252,7 +1260,7 @@ pub mod fullscreen_shell {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn mode_successful(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1261,8 +1269,8 @@ pub mod fullscreen_shell {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1275,7 +1283,7 @@ pub mod fullscreen_shell {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn mode_failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1284,8 +1292,8 @@ pub mod fullscreen_shell {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1298,7 +1306,7 @@ pub mod fullscreen_shell {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn present_cancelled(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1307,8 +1315,8 @@ pub mod fullscreen_shell {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1328,6 +1336,8 @@ pub mod idle {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdle: crate::server::Dispatcher {
@@ -1335,7 +1345,7 @@ pub mod idle {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1357,7 +1367,7 @@ pub mod idle {
                                 seat,
                                 timeout
                             );
-                            self.get_idle_timeout(client, sender_id, id, seat, timeout)
+                            self.get_idle_timeout(socket, sender_id, id, seat, timeout)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -1366,7 +1376,7 @@ pub mod idle {
             }
             fn get_idle_timeout(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -1377,6 +1387,8 @@ pub mod idle {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle_timeout {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdleTimeout: crate::server::Dispatcher {
@@ -1384,7 +1396,7 @@ pub mod idle {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1393,16 +1405,14 @@ pub mod idle {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_idle_timeout#{}.simulate_user_activity()",
                                 sender_id,
                             );
-                            self.simulate_user_activity(client, sender_id).await
+                            self.simulate_user_activity(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1410,38 +1420,38 @@ pub mod idle {
             }
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn simulate_user_activity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn idle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_idle_timeout#{}.idle()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn resumed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_idle_timeout#{}.resumed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1458,6 +1468,8 @@ pub mod kde_external_brightness_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_external_brightness_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessV1: crate::server::Dispatcher {
@@ -1465,7 +1477,7 @@ pub mod kde_external_brightness_v1 {
             const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1474,9 +1486,7 @@ pub mod kde_external_brightness_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_external_brightness_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -1487,7 +1497,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_brightness_control(client, sender_id, id).await
+                            self.create_brightness_control(socket, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1495,12 +1505,12 @@ pub mod kde_external_brightness_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn create_brightness_control(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1513,6 +1523,8 @@ pub mod kde_external_brightness_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_external_brightness_device_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessDeviceV1: crate::server::Dispatcher {
@@ -1520,7 +1532,7 @@ pub mod kde_external_brightness_v1 {
             const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1532,9 +1544,7 @@ pub mod kde_external_brightness_v1 {
                                 "kde_external_brightness_device_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let internal = message.uint()?;
@@ -1543,7 +1553,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 internal
                             );
-                            self.set_internal(client, sender_id, internal).await
+                            self.set_internal(socket, sender_id, internal).await
                         }
                         2u16 => {
                             let string = message
@@ -1554,7 +1564,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 string
                             );
-                            self.set_edid(client, sender_id, string).await
+                            self.set_edid(socket, sender_id, string).await
                         }
                         3u16 => {
                             let value = message.uint()?;
@@ -1563,14 +1573,14 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_max_brightness(client, sender_id, value).await
+                            self.set_max_brightness(socket, sender_id, value).await
                         }
                         4u16 => {
                             tracing::debug!(
                                 "kde_external_brightness_device_v1#{}.commit()",
                                 sender_id,
                             );
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         5u16 => {
                             let value = message.uint()?;
@@ -1579,7 +1589,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_observed_brightness(client, sender_id, value).await
+                            self.set_observed_brightness(socket, sender_id, value).await
                         }
                         6u16 => {
                             let value = message.uint()?;
@@ -1588,7 +1598,7 @@ pub mod kde_external_brightness_v1 {
                                 sender_id,
                                 value
                             );
-                            self.set_uses_ddc_ci(client, sender_id, value).await
+                            self.set_uses_ddc_ci(socket, sender_id, value).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1596,30 +1606,30 @@ pub mod kde_external_brightness_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_internal(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 internal: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_edid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 string: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_max_brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The client can set this to notify the compositor of the device's initial brightness."]
@@ -1628,7 +1638,7 @@ pub mod kde_external_brightness_v1 {
             #[doc = "The compositor is free to use or ignore this value as it sees fit."]
             fn set_observed_brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1638,7 +1648,7 @@ pub mod kde_external_brightness_v1 {
             #[doc = "longevity/wear-out."]
             fn set_uses_ddc_ci(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1647,7 +1657,7 @@ pub mod kde_external_brightness_v1 {
             #[doc = "or commit again with set_observed_brightness specifying the changed brightness."]
             fn requested_brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1658,8 +1668,8 @@ pub mod kde_external_brightness_v1 {
                         value
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(value).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1679,6 +1689,8 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_lockscreen_overlay_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -1708,7 +1720,7 @@ pub mod kde_lockscreen_overlay_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1724,13 +1736,11 @@ pub mod kde_lockscreen_overlay_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.allow(client, sender_id, surface).await
+                            self.allow(socket, sender_id, surface).await
                         }
                         1u16 => {
                             tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1739,14 +1749,14 @@ pub mod kde_lockscreen_overlay_v1 {
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
             fn allow(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This won't affect the surface previously marked with the allow request."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -1777,6 +1787,8 @@ pub mod kde_output_device_v2 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
@@ -2021,7 +2033,7 @@ pub mod kde_output_device_v2 {
             const VERSION: u32 = 16u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2037,7 +2049,7 @@ pub mod kde_output_device_v2 {
             #[doc = "any of the properties change."]
             fn geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -2071,8 +2083,8 @@ pub mod kde_output_device_v2 {
                         .put_string(Some(model))
                         .put_int(transform)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2081,7 +2093,7 @@ pub mod kde_output_device_v2 {
             #[doc = "sent if the output is enabled."]
             fn current_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2094,8 +2106,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(mode))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2120,7 +2132,7 @@ pub mod kde_output_device_v2 {
             #[doc = "kde_output_device_v2.transform."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2129,8 +2141,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(mode))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2142,14 +2154,14 @@ pub mod kde_output_device_v2 {
             #[doc = "even if multiple events successively announce them."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2174,7 +2186,7 @@ pub mod kde_output_device_v2 {
             #[doc = "a higher detail image."]
             fn scale(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 factor: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2182,8 +2194,8 @@ pub mod kde_output_device_v2 {
                     tracing::debug!("-> kde_output_device_v2#{}.scale({})", sender_id, factor);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_fixed(factor).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2196,7 +2208,7 @@ pub mod kde_output_device_v2 {
             #[doc = "et al. properties of the outputdevice."]
             fn edid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 raw: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2205,8 +2217,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(raw))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2218,7 +2230,7 @@ pub mod kde_output_device_v2 {
             #[doc = "enabled or disabled."]
             fn enabled(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 enabled: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2226,8 +2238,8 @@ pub mod kde_output_device_v2 {
                     tracing::debug!("-> kde_output_device_v2#{}.enabled({})", sender_id, enabled);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(enabled).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2237,7 +2249,7 @@ pub mod kde_output_device_v2 {
             #[doc = "persistent across restarts. An empty uuid is considered invalid."]
             fn uuid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 uuid: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2246,8 +2258,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(uuid))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2255,7 +2267,7 @@ pub mod kde_output_device_v2 {
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
             fn serial_number(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial_number: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2268,8 +2280,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(serial_number))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2277,7 +2289,7 @@ pub mod kde_output_device_v2 {
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
             fn eisa_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 eisa_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2290,8 +2302,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(eisa_id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2300,7 +2312,7 @@ pub mod kde_output_device_v2 {
             #[doc = "done event."]
             fn capabilities(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: Capability,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2313,8 +2325,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(flags.bits())
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2323,7 +2335,7 @@ pub mod kde_output_device_v2 {
             #[doc = "first done event."]
             fn overscan(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 overscan: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2336,8 +2348,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(overscan)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2346,7 +2358,7 @@ pub mod kde_output_device_v2 {
             #[doc = "refresh rate."]
             fn vrr_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 vrr_policy: VrrPolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2359,8 +2371,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(vrr_policy as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2368,7 +2380,7 @@ pub mod kde_output_device_v2 {
             #[doc = "What rgb range the compositor is using for this output"]
             fn rgb_range(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 rgb_range: RgbRange,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2381,8 +2393,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(rgb_range as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2390,7 +2402,7 @@ pub mod kde_output_device_v2 {
             #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
             fn name(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2399,8 +2411,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 14u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2408,7 +2420,7 @@ pub mod kde_output_device_v2 {
             #[doc = "Whether or not high dynamic range is enabled for this output"]
             fn high_dynamic_range(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hdr_enabled: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2421,8 +2433,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(hdr_enabled)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 15u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2432,7 +2444,7 @@ pub mod kde_output_device_v2 {
             #[doc = "doesn't necessarily translate to the same brightness on the screen."]
             fn sdr_brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 sdr_brightness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2445,8 +2457,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(sdr_brightness)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 16u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2454,7 +2466,7 @@ pub mod kde_output_device_v2 {
             #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
             fn wide_color_gamut(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 wcg_enabled: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2467,15 +2479,15 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(wcg_enabled)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 17u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 17u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn auto_rotate_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 policy: AutoRotatePolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2488,15 +2500,15 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(policy as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 18u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 18u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn icc_profile_path(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 profile_path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2509,15 +2521,15 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(profile_path))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 19u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 19u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn brightness_metadata(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 max_peak_brightness: u32,
                 max_frame_average_brightness: u32,
@@ -2536,15 +2548,15 @@ pub mod kde_output_device_v2 {
                         .put_uint(max_frame_average_brightness)
                         .put_uint(min_brightness)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 20u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 20u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn brightness_overrides(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 max_peak_brightness: i32,
                 max_average_brightness: i32,
@@ -2563,8 +2575,8 @@ pub mod kde_output_device_v2 {
                         .put_int(max_average_brightness)
                         .put_int(min_brightness)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 21u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 21u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2573,7 +2585,7 @@ pub mod kde_output_device_v2 {
             #[doc = "default experience on many modern sRGB screens."]
             fn sdr_gamut_wideness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 gamut_wideness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2586,15 +2598,15 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(gamut_wideness)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 22u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 22u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn color_profile_source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 source: ColorProfileSource,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2607,8 +2619,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(source as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 23u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 23u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2621,7 +2633,7 @@ pub mod kde_output_device_v2 {
             #[doc = "This is currently only supported / meaningful while HDR is active."]
             fn brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 brightness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2634,15 +2646,15 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(brightness)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 24u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 24u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn color_power_tradeoff(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 preference: ColorPowerTradeoff,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2655,8 +2667,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(preference as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 25u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 25u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2669,7 +2681,7 @@ pub mod kde_output_device_v2 {
             #[doc = "means the output is not dimmed."]
             fn dimming(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 multiplier: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2682,15 +2694,15 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(multiplier)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 26u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 26u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn replication_source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 source: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2703,8 +2715,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(source))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 27u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 27u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2713,7 +2725,7 @@ pub mod kde_output_device_v2 {
             #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
             fn ddc_ci_allowed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 allowed: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2725,8 +2737,8 @@ pub mod kde_output_device_v2 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(allowed).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 28u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 28u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2734,7 +2746,7 @@ pub mod kde_output_device_v2 {
             #[doc = "This limits the amount of bits per color that are sent to the display."]
             fn max_bits_per_color(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 max_bpc: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2746,15 +2758,15 @@ pub mod kde_output_device_v2 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(max_bpc).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 29u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 29u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn max_bits_per_color_range(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 min_value: u32,
                 max_value: u32,
@@ -2770,15 +2782,15 @@ pub mod kde_output_device_v2 {
                         .put_uint(min_value)
                         .put_uint(max_value)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 30u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 30u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn automatic_max_bits_per_color_limit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 max_bpc_limit: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2791,8 +2803,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(max_bpc_limit)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 31u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 31u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2804,7 +2816,7 @@ pub mod kde_output_device_v2 {
             #[doc = "usage."]
             fn edr_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 policy: EdrPolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2817,8 +2829,8 @@ pub mod kde_output_device_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(policy as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 32u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 32u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2836,6 +2848,8 @@ pub mod kde_output_device_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_mode_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceModeV2: crate::server::Dispatcher {
@@ -2843,7 +2857,7 @@ pub mod kde_output_device_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2860,7 +2874,7 @@ pub mod kde_output_device_v2 {
             #[doc = "may be scaled or transformed."]
             fn size(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -2876,8 +2890,8 @@ pub mod kde_output_device_v2 {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2886,7 +2900,7 @@ pub mod kde_output_device_v2 {
             #[doc = "sent if the mode has a fixed refresh rate."]
             fn refresh(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 refresh: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2898,8 +2912,8 @@ pub mod kde_output_device_v2 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(refresh).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2907,14 +2921,14 @@ pub mod kde_output_device_v2 {
             #[doc = "This event advertises this mode as preferred."]
             fn preferred(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2924,14 +2938,14 @@ pub mod kde_output_device_v2 {
             #[doc = "resources associated with it."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2986,6 +3000,8 @@ pub mod kde_output_management_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_management_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2: crate::server::Dispatcher {
@@ -2993,7 +3009,7 @@ pub mod kde_output_management_v2 {
             const VERSION: u32 = 16u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3009,7 +3025,7 @@ pub mod kde_output_management_v2 {
                                 sender_id,
                                 id
                             );
-                            self.create_configuration(client, sender_id, id).await
+                            self.create_configuration(socket, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3019,7 +3035,7 @@ pub mod kde_output_management_v2 {
             #[doc = "output devices."]
             fn create_configuration(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -3039,6 +3055,8 @@ pub mod kde_output_management_v2 {
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_configuration_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
@@ -3217,7 +3235,7 @@ pub mod kde_output_management_v2 {
             const VERSION: u32 = 16u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3235,7 +3253,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable
                             );
-                            self.enable(client, sender_id, outputdevice, enable).await
+                            self.enable(socket, sender_id, outputdevice, enable).await
                         }
                         1u16 => {
                             let outputdevice = message
@@ -3250,7 +3268,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 mode
                             );
-                            self.mode(client, sender_id, outputdevice, mode).await
+                            self.mode(socket, sender_id, outputdevice, mode).await
                         }
                         2u16 => {
                             let outputdevice = message
@@ -3263,7 +3281,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 transform
                             );
-                            self.transform(client, sender_id, outputdevice, transform)
+                            self.transform(socket, sender_id, outputdevice, transform)
                                 .await
                         }
                         3u16 => {
@@ -3279,7 +3297,7 @@ pub mod kde_output_management_v2 {
                                 x,
                                 y
                             );
-                            self.position(client, sender_id, outputdevice, x, y).await
+                            self.position(socket, sender_id, outputdevice, x, y).await
                         }
                         4u16 => {
                             let outputdevice = message
@@ -3292,17 +3310,15 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 scale
                             );
-                            self.scale(client, sender_id, outputdevice, scale).await
+                            self.scale(socket, sender_id, outputdevice, scale).await
                         }
                         5u16 => {
                             tracing::debug!("kde_output_configuration_v2#{}.apply()", sender_id,);
-                            self.apply(client, sender_id).await
+                            self.apply(socket, sender_id).await
                         }
                         6u16 => {
                             tracing::debug!("kde_output_configuration_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         7u16 => {
                             let outputdevice = message
@@ -3315,7 +3331,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 overscan
                             );
-                            self.overscan(client, sender_id, outputdevice, overscan)
+                            self.overscan(socket, sender_id, outputdevice, overscan)
                                 .await
                         }
                         8u16 => {
@@ -3329,7 +3345,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 policy
                             );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                            self.set_vrr_policy(socket, sender_id, outputdevice, policy.try_into()?)
                                 .await
                         }
                         9u16 => {
@@ -3344,7 +3360,7 @@ pub mod kde_output_management_v2 {
                                 rgb_range
                             );
                             self.set_rgb_range(
-                                client,
+                                socket,
                                 sender_id,
                                 outputdevice,
                                 rgb_range.try_into()?,
@@ -3360,7 +3376,7 @@ pub mod kde_output_management_v2 {
                                 sender_id,
                                 output
                             );
-                            self.set_primary_output(client, sender_id, output).await
+                            self.set_primary_output(socket, sender_id, output).await
                         }
                         11u16 => {
                             let outputdevice = message
@@ -3373,7 +3389,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 priority
                             );
-                            self.set_priority(client, sender_id, outputdevice, priority)
+                            self.set_priority(socket, sender_id, outputdevice, priority)
                                 .await
                         }
                         12u16 => {
@@ -3387,7 +3403,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable_hdr
                             );
-                            self.set_high_dynamic_range(client, sender_id, outputdevice, enable_hdr)
+                            self.set_high_dynamic_range(socket, sender_id, outputdevice, enable_hdr)
                                 .await
                         }
                         13u16 => {
@@ -3401,7 +3417,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 sdr_brightness
                             );
-                            self.set_sdr_brightness(client, sender_id, outputdevice, sdr_brightness)
+                            self.set_sdr_brightness(socket, sender_id, outputdevice, sdr_brightness)
                                 .await
                         }
                         14u16 => {
@@ -3415,7 +3431,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 enable_wcg
                             );
-                            self.set_wide_color_gamut(client, sender_id, outputdevice, enable_wcg)
+                            self.set_wide_color_gamut(socket, sender_id, outputdevice, enable_wcg)
                                 .await
                         }
                         15u16 => {
@@ -3430,7 +3446,7 @@ pub mod kde_output_management_v2 {
                                 policy
                             );
                             self.set_auto_rotate_policy(
-                                client,
+                                socket,
                                 sender_id,
                                 outputdevice,
                                 policy.try_into()?,
@@ -3450,7 +3466,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 profile_path
                             );
-                            self.set_icc_profile_path(client, sender_id, outputdevice, profile_path)
+                            self.set_icc_profile_path(socket, sender_id, outputdevice, profile_path)
                                 .await
                         }
                         17u16 => {
@@ -3469,7 +3485,7 @@ pub mod kde_output_management_v2 {
                                 min_brightness
                             );
                             self.set_brightness_overrides(
-                                client,
+                                socket,
                                 sender_id,
                                 outputdevice,
                                 max_peak_brightness,
@@ -3490,7 +3506,7 @@ pub mod kde_output_management_v2 {
                                 gamut_wideness
                             );
                             self.set_sdr_gamut_wideness(
-                                client,
+                                socket,
                                 sender_id,
                                 outputdevice,
                                 gamut_wideness,
@@ -3509,7 +3525,7 @@ pub mod kde_output_management_v2 {
                                 color_profile_source
                             );
                             self.set_color_profile_source(
-                                client,
+                                socket,
                                 sender_id,
                                 outputdevice,
                                 color_profile_source.try_into()?,
@@ -3527,7 +3543,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 brightness
                             );
-                            self.set_brightness(client, sender_id, outputdevice, brightness)
+                            self.set_brightness(socket, sender_id, outputdevice, brightness)
                                 .await
                         }
                         21u16 => {
@@ -3542,7 +3558,7 @@ pub mod kde_output_management_v2 {
                                 preference
                             );
                             self.set_color_power_tradeoff(
-                                client,
+                                socket,
                                 sender_id,
                                 outputdevice,
                                 preference.try_into()?,
@@ -3560,7 +3576,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 multiplier
                             );
-                            self.set_dimming(client, sender_id, outputdevice, multiplier)
+                            self.set_dimming(socket, sender_id, outputdevice, multiplier)
                                 .await
                         }
                         23u16 => {
@@ -3576,7 +3592,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 source
                             );
-                            self.set_replication_source(client, sender_id, outputdevice, source)
+                            self.set_replication_source(socket, sender_id, outputdevice, source)
                                 .await
                         }
                         24u16 => {
@@ -3590,7 +3606,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 allowed
                             );
-                            self.set_ddc_ci_allowed(client, sender_id, outputdevice, allowed)
+                            self.set_ddc_ci_allowed(socket, sender_id, outputdevice, allowed)
                                 .await
                         }
                         25u16 => {
@@ -3604,7 +3620,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 max_bpc
                             );
-                            self.set_max_bits_per_color(client, sender_id, outputdevice, max_bpc)
+                            self.set_max_bits_per_color(socket, sender_id, outputdevice, max_bpc)
                                 .await
                         }
                         26u16 => {
@@ -3618,7 +3634,7 @@ pub mod kde_output_management_v2 {
                                 outputdevice,
                                 policy
                             );
-                            self.set_edr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                            self.set_edr_policy(socket, sender_id, outputdevice, policy.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -3628,7 +3644,7 @@ pub mod kde_output_management_v2 {
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable: i32,
@@ -3636,7 +3652,7 @@ pub mod kde_output_management_v2 {
             #[doc = "Sets the mode for a given output."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 mode: crate::wire::ObjectId,
@@ -3644,7 +3660,7 @@ pub mod kde_output_management_v2 {
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 transform: i32,
@@ -3658,7 +3674,7 @@ pub mod kde_output_management_v2 {
             #[doc = "stacked horizontally, vertically, or both on each other."]
             fn position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 x: i32,
@@ -3667,7 +3683,7 @@ pub mod kde_output_management_v2 {
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
@@ -3679,18 +3695,18 @@ pub mod kde_output_management_v2 {
             #[doc = "will be posted if the apply request is called the second time."]
             fn apply(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 overscan: u32,
@@ -3699,7 +3715,7 @@ pub mod kde_output_management_v2 {
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: VrrPolicy,
@@ -3707,14 +3723,14 @@ pub mod kde_output_management_v2 {
             #[doc = "Whether full or limited color range should be used"]
             fn set_rgb_range(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 rgb_range: RgbRange,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_primary_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -3723,7 +3739,7 @@ pub mod kde_output_management_v2 {
             #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
             fn set_priority(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 priority: u32,
@@ -3731,7 +3747,7 @@ pub mod kde_output_management_v2 {
             #[doc = "Sets whether or not the output should be set to HDR mode."]
             fn set_high_dynamic_range(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable_hdr: u32,
@@ -3740,7 +3756,7 @@ pub mod kde_output_management_v2 {
             #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
             fn set_sdr_brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 sdr_brightness: u32,
@@ -3748,28 +3764,28 @@ pub mod kde_output_management_v2 {
             #[doc = "Whether or not the output should use a wide color gamut"]
             fn set_wide_color_gamut(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable_wcg: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_auto_rotate_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: AutoRotatePolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_icc_profile_path(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 profile_path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_brightness_overrides(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 max_peak_brightness: i32,
@@ -3780,14 +3796,14 @@ pub mod kde_output_management_v2 {
             #[doc = "default experience on many modern sRGB screens."]
             fn set_sdr_gamut_wideness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 gamut_wideness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_color_profile_source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 color_profile_source: ColorProfileSource,
@@ -3802,14 +3818,14 @@ pub mod kde_output_management_v2 {
             #[doc = "versions 9 and above."]
             fn set_brightness(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 brightness: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_color_power_tradeoff(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 preference: ColorPowerTradeoff,
@@ -3825,7 +3841,7 @@ pub mod kde_output_management_v2 {
             #[doc = "also supported."]
             fn set_dimming(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 multiplier: u32,
@@ -3834,14 +3850,14 @@ pub mod kde_output_management_v2 {
             #[doc = "viewport from."]
             fn set_replication_source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 source: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_ddc_ci_allowed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 allowed: u32,
@@ -3849,7 +3865,7 @@ pub mod kde_output_management_v2 {
             #[doc = "This limits the amount of bits per color that are sent to the display."]
             fn set_max_bits_per_color(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 max_bpc: u32,
@@ -3861,7 +3877,7 @@ pub mod kde_output_management_v2 {
             #[doc = "usage."]
             fn set_edr_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: EdrPolicy,
@@ -3870,14 +3886,14 @@ pub mod kde_output_management_v2 {
             #[doc = "."]
             fn applied(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_configuration_v2#{}.applied()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3885,14 +3901,14 @@ pub mod kde_output_management_v2 {
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_configuration_v2#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3901,7 +3917,7 @@ pub mod kde_output_management_v2 {
             #[doc = "sent before the failure event."]
             fn failure_reason(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 reason: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3914,8 +3930,8 @@ pub mod kde_output_management_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(reason))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3935,6 +3951,8 @@ pub mod kde_output_order_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_order_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1: crate::server::Dispatcher {
@@ -3942,7 +3960,7 @@ pub mod kde_output_order_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3951,9 +3969,7 @@ pub mod kde_output_order_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_output_order_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3961,13 +3977,13 @@ pub mod kde_output_order_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Specifies the output identified by their wl_output.name."]
             fn output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3980,8 +3996,8 @@ pub mod kde_output_order_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(output_name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3989,14 +4005,14 @@ pub mod kde_output_order_v1 {
             #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> kde_output_order_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4016,6 +4032,8 @@ pub mod kde_primary_output_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_primary_output_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1: crate::server::Dispatcher {
@@ -4023,7 +4041,7 @@ pub mod kde_primary_output_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4032,9 +4050,7 @@ pub mod kde_primary_output_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_primary_output_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4042,13 +4058,13 @@ pub mod kde_primary_output_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
             fn primary_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4061,8 +4077,8 @@ pub mod kde_primary_output_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(output_name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4086,6 +4102,8 @@ pub mod kde_screen_edge_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_screen_edge_manager_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -4152,7 +4170,7 @@ pub mod kde_screen_edge_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4161,9 +4179,7 @@ pub mod kde_screen_edge_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -4181,7 +4197,7 @@ pub mod kde_screen_edge_v1 {
                                 surface
                             );
                             self.get_auto_hide_screen_edge(
-                                client,
+                                socket,
                                 sender_id,
                                 id,
                                 border.try_into()?,
@@ -4197,7 +4213,7 @@ pub mod kde_screen_edge_v1 {
             #[doc = "with this manager."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new auto hide screen edge object associated with the specified"]
@@ -4214,7 +4230,7 @@ pub mod kde_screen_edge_v1 {
             #[doc = "does not have layer_surface role."]
             fn get_auto_hide_screen_edge(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 border: Border,
@@ -4239,6 +4255,8 @@ pub mod kde_screen_edge_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_auto_hide_screen_edge_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
         pub trait KdeAutoHideScreenEdgeV1: crate::server::Dispatcher {
@@ -4246,7 +4264,7 @@ pub mod kde_screen_edge_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4255,23 +4273,21 @@ pub mod kde_screen_edge_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "kde_auto_hide_screen_edge_v1#{}.deactivate()",
                                 sender_id,
                             );
-                            self.deactivate(client, sender_id).await
+                            self.deactivate(socket, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "kde_auto_hide_screen_edge_v1#{}.activate()",
                                 sender_id,
                             );
-                            self.activate(client, sender_id).await
+                            self.activate(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4281,20 +4297,20 @@ pub mod kde_screen_edge_v1 {
             #[doc = "it will be deactivated and the surface will be made visible."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Deactivate the screen edge. The surface will be made visible."]
             fn deactivate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
             #[doc = "edge is triggered."]
             fn activate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -4305,6 +4321,8 @@ pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_keystate {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -4373,7 +4391,7 @@ pub mod keystate {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4382,13 +4400,11 @@ pub mod keystate {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", sender_id,);
-                            self.fetch_states(client, sender_id).await
+                            self.fetch_states(socket, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!("org_kde_kwin_keystate#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4396,17 +4412,17 @@ pub mod keystate {
             }
             fn fetch_states(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn state_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 key: u32,
                 state: u32,
@@ -4422,8 +4438,8 @@ pub mod keystate {
                         .put_uint(key)
                         .put_uint(state)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4436,6 +4452,8 @@ pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop_management {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktopManagement: crate::server::Dispatcher {
@@ -4443,7 +4461,7 @@ pub mod org_kde_plasma_virtual_desktop {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4463,7 +4481,7 @@ pub mod org_kde_plasma_virtual_desktop {
                                 id,
                                 desktop_id
                             );
-                            self.get_virtual_desktop(client, sender_id, id, desktop_id)
+                            self.get_virtual_desktop(socket, sender_id, id, desktop_id)
                                 .await
                         }
                         1u16 => {
@@ -4477,7 +4495,7 @@ pub mod org_kde_plasma_virtual_desktop {
                                 name,
                                 position
                             );
-                            self.request_create_virtual_desktop(client, sender_id, name, position)
+                            self.request_create_virtual_desktop(socket, sender_id, name, position)
                                 .await
                         }
                         2u16 => {
@@ -4489,7 +4507,7 @@ pub mod org_kde_plasma_virtual_desktop {
                                 sender_id,
                                 desktop_id
                             );
-                            self.request_remove_virtual_desktop(client, sender_id, desktop_id)
+                            self.request_remove_virtual_desktop(socket, sender_id, desktop_id)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -4504,7 +4522,7 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "version of the extension."]
             fn get_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 desktop_id: String,
@@ -4512,7 +4530,7 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
             fn request_create_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 position: u32,
@@ -4520,13 +4538,13 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
             fn request_remove_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn desktop_created(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
                 position: u32,
@@ -4542,15 +4560,15 @@ pub mod org_kde_plasma_virtual_desktop {
                         .put_string(Some(desktop_id))
                         .put_uint(position)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn desktop_removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4563,8 +4581,8 @@ pub mod org_kde_plasma_virtual_desktop {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(desktop_id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4576,7 +4594,7 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "atomic, even if they happen via multiple events."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -4585,15 +4603,15 @@ pub mod org_kde_plasma_virtual_desktop {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn rows(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 rows: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4604,8 +4622,8 @@ pub mod org_kde_plasma_virtual_desktop {
                         rows
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(rows).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4615,6 +4633,8 @@ pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktop: crate::server::Dispatcher {
@@ -4622,7 +4642,7 @@ pub mod org_kde_plasma_virtual_desktop {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4634,7 +4654,7 @@ pub mod org_kde_plasma_virtual_desktop {
                                 "org_kde_plasma_virtual_desktop#{}.request_activate()",
                                 sender_id,
                             );
-                            self.request_activate(client, sender_id).await
+                            self.request_activate(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4643,13 +4663,13 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
             fn request_activate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
             fn desktop_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 desktop_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4662,15 +4682,15 @@ pub mod org_kde_plasma_virtual_desktop {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(desktop_id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn name(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4683,8 +4703,8 @@ pub mod org_kde_plasma_virtual_desktop {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4693,7 +4713,7 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "Windows associated to this virtual desktop will be shown."]
             fn activated(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -4702,8 +4722,8 @@ pub mod org_kde_plasma_virtual_desktop {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4711,7 +4731,7 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "Windows that were associated only to this desktop will be hidden."]
             fn deactivated(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -4720,8 +4740,8 @@ pub mod org_kde_plasma_virtual_desktop {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4733,14 +4753,14 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "atomic, even if they happen via multiple events."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4749,14 +4769,14 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "All windows will lose the association to this desktop."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4784,6 +4804,8 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "being hotplugged via a physical connector."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputdevice {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
@@ -4956,7 +4978,7 @@ pub mod org_kde_kwin_outputdevice {
             const VERSION: u32 = 4u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4972,7 +4994,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "any of the properties change."]
             fn geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -5006,8 +5028,8 @@ pub mod org_kde_kwin_outputdevice {
                         .put_string(Some(model))
                         .put_int(transform)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5035,7 +5057,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "org_kde_kwin_outputconfiguration object."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: u32,
                 width: i32,
@@ -5060,8 +5082,8 @@ pub mod org_kde_kwin_outputdevice {
                         .put_int(refresh)
                         .put_int(mode_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5073,14 +5095,14 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "even if multiple events successively announce them."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_outputdevice#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5105,7 +5127,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "a higher detail image."]
             fn scale(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 factor: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5116,8 +5138,8 @@ pub mod org_kde_kwin_outputdevice {
                         factor
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(factor).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5130,7 +5152,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "et al. properties of the outputdevice."]
             fn edid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 raw: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5143,8 +5165,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(raw))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5156,7 +5178,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "enabled or disabled."]
             fn enabled(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 enabled: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5168,8 +5190,8 @@ pub mod org_kde_kwin_outputdevice {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(enabled).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5179,7 +5201,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "persistent across restarts. An empty uuid is considered invalid."]
             fn uuid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 uuid: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5192,8 +5214,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(uuid))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5221,7 +5243,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "configuring the window manager you want to use that."]
             fn scalef(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 factor: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5233,8 +5255,8 @@ pub mod org_kde_kwin_outputdevice {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_fixed(factor).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5248,7 +5270,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "The array elements are unsigned 16bit integers."]
             fn colorcurves(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 red: Vec<u8>,
                 green: Vec<u8>,
@@ -5267,8 +5289,8 @@ pub mod org_kde_kwin_outputdevice {
                         .put_array(green)
                         .put_array(blue)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5276,7 +5298,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
             fn serial_number(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial_number: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5289,8 +5311,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(serial_number))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5298,7 +5320,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
             fn eisa_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 eisa_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5311,8 +5333,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(eisa_id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5321,7 +5343,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "done event."]
             fn capabilities(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: Capability,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5334,8 +5356,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(flags.bits())
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5344,7 +5366,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "first done event."]
             fn overscan(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 overscan: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5357,8 +5379,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(overscan)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5367,7 +5389,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "refresh rate."]
             fn vrr_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 vrr_policy: VrrPolicy,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5380,8 +5402,8 @@ pub mod org_kde_kwin_outputdevice {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(vrr_policy as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5432,6 +5454,8 @@ pub mod outputmanagement {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputmanagement {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinOutputmanagement: crate::server::Dispatcher {
@@ -5439,7 +5463,7 @@ pub mod outputmanagement {
             const VERSION: u32 = 4u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5455,7 +5479,7 @@ pub mod outputmanagement {
                                 sender_id,
                                 id
                             );
-                            self.create_configuration(client, sender_id, id).await
+                            self.create_configuration(socket, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -5465,7 +5489,7 @@ pub mod outputmanagement {
             #[doc = "output devices."]
             fn create_configuration(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -5485,6 +5509,8 @@ pub mod outputmanagement {
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputconfiguration {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Describes when the compositor may employ variable refresh rate"]
@@ -5518,7 +5544,7 @@ pub mod outputmanagement {
             const VERSION: u32 = 4u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5536,7 +5562,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 enable
                             );
-                            self.enable(client, sender_id, outputdevice, enable).await
+                            self.enable(socket, sender_id, outputdevice, enable).await
                         }
                         1u16 => {
                             let outputdevice = message
@@ -5549,7 +5575,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 mode_id
                             );
-                            self.mode(client, sender_id, outputdevice, mode_id).await
+                            self.mode(socket, sender_id, outputdevice, mode_id).await
                         }
                         2u16 => {
                             let outputdevice = message
@@ -5562,7 +5588,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 transform
                             );
-                            self.transform(client, sender_id, outputdevice, transform)
+                            self.transform(socket, sender_id, outputdevice, transform)
                                 .await
                         }
                         3u16 => {
@@ -5578,7 +5604,7 @@ pub mod outputmanagement {
                                 x,
                                 y
                             );
-                            self.position(client, sender_id, outputdevice, x, y).await
+                            self.position(socket, sender_id, outputdevice, x, y).await
                         }
                         4u16 => {
                             let outputdevice = message
@@ -5591,14 +5617,14 @@ pub mod outputmanagement {
                                 outputdevice,
                                 scale
                             );
-                            self.scale(client, sender_id, outputdevice, scale).await
+                            self.scale(socket, sender_id, outputdevice, scale).await
                         }
                         5u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_outputconfiguration#{}.apply()",
                                 sender_id,
                             );
-                            self.apply(client, sender_id).await
+                            self.apply(socket, sender_id).await
                         }
                         6u16 => {
                             let outputdevice = message
@@ -5611,7 +5637,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 scale
                             );
-                            self.scalef(client, sender_id, outputdevice, scale).await
+                            self.scalef(socket, sender_id, outputdevice, scale).await
                         }
                         7u16 => {
                             let outputdevice = message
@@ -5628,7 +5654,7 @@ pub mod outputmanagement {
                                 green.len(),
                                 blue.len()
                             );
-                            self.colorcurves(client, sender_id, outputdevice, red, green, blue)
+                            self.colorcurves(socket, sender_id, outputdevice, red, green, blue)
                                 .await
                         }
                         8u16 => {
@@ -5636,9 +5662,7 @@ pub mod outputmanagement {
                                 "org_kde_kwin_outputconfiguration#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         9u16 => {
                             let outputdevice = message
@@ -5651,7 +5675,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 overscan
                             );
-                            self.overscan(client, sender_id, outputdevice, overscan)
+                            self.overscan(socket, sender_id, outputdevice, overscan)
                                 .await
                         }
                         10u16 => {
@@ -5665,7 +5689,7 @@ pub mod outputmanagement {
                                 outputdevice,
                                 policy
                             );
-                            self.set_vrr_policy(client, sender_id, outputdevice, policy.try_into()?)
+                            self.set_vrr_policy(socket, sender_id, outputdevice, policy.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -5675,7 +5699,7 @@ pub mod outputmanagement {
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 enable: i32,
@@ -5683,7 +5707,7 @@ pub mod outputmanagement {
             #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 mode_id: i32,
@@ -5691,7 +5715,7 @@ pub mod outputmanagement {
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 transform: i32,
@@ -5705,7 +5729,7 @@ pub mod outputmanagement {
             #[doc = "stacked horizontally, vertically, or both on each other."]
             fn position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 x: i32,
@@ -5714,7 +5738,7 @@ pub mod outputmanagement {
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 scale: i32,
@@ -5723,14 +5747,14 @@ pub mod outputmanagement {
             #[doc = "object to all outputs on the server side."]
             fn apply(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             #[doc = "Sending both scale and scalef is undefined."]
             fn scalef(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 scale: crate::wire::Fixed,
@@ -5742,7 +5766,7 @@ pub mod outputmanagement {
             #[doc = "internally, for example to shift color temperature at night."]
             fn colorcurves(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 red: Vec<u8>,
@@ -5751,13 +5775,13 @@ pub mod outputmanagement {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 overscan: u32,
@@ -5766,7 +5790,7 @@ pub mod outputmanagement {
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 outputdevice: crate::wire::ObjectId,
                 policy: VrrPolicy,
@@ -5775,7 +5799,7 @@ pub mod outputmanagement {
             #[doc = "."]
             fn applied(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -5784,8 +5808,8 @@ pub mod outputmanagement {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5793,14 +5817,14 @@ pub mod outputmanagement {
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5820,6 +5844,8 @@ pub mod plasma_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_shell {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell: crate::server::Dispatcher {
@@ -5827,7 +5853,7 @@ pub mod plasma_shell {
             const VERSION: u32 = 8u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5847,7 +5873,7 @@ pub mod plasma_shell {
                                 id,
                                 surface
                             );
-                            self.get_surface(client, sender_id, id, surface).await
+                            self.get_surface(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -5859,7 +5885,7 @@ pub mod plasma_shell {
             #[doc = "surface."]
             fn get_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -5878,6 +5904,8 @@ pub mod plasma_shell {
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_surface {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -5967,7 +5995,7 @@ pub mod plasma_shell {
             const VERSION: u32 = 8u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5976,9 +6004,7 @@ pub mod plasma_shell {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_surface#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let output = message
@@ -5989,7 +6015,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 output
                             );
-                            self.set_output(client, sender_id, output).await
+                            self.set_output(socket, sender_id, output).await
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -6000,7 +6026,7 @@ pub mod plasma_shell {
                                 x,
                                 y
                             );
-                            self.set_position(client, sender_id, x, y).await
+                            self.set_position(socket, sender_id, x, y).await
                         }
                         3u16 => {
                             let role = message.uint()?;
@@ -6009,7 +6035,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 role
                             );
-                            self.set_role(client, sender_id, role).await
+                            self.set_role(socket, sender_id, role).await
                         }
                         4u16 => {
                             let flag = message.uint()?;
@@ -6018,7 +6044,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 flag
                             );
-                            self.set_panel_behavior(client, sender_id, flag).await
+                            self.set_panel_behavior(socket, sender_id, flag).await
                         }
                         5u16 => {
                             let skip = message.uint()?;
@@ -6027,21 +6053,21 @@ pub mod plasma_shell {
                                 sender_id,
                                 skip
                             );
-                            self.set_skip_taskbar(client, sender_id, skip).await
+                            self.set_skip_taskbar(socket, sender_id, skip).await
                         }
                         6u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
                                 sender_id,
                             );
-                            self.panel_auto_hide_hide(client, sender_id).await
+                            self.panel_auto_hide_hide(socket, sender_id).await
                         }
                         7u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.panel_auto_hide_show()",
                                 sender_id,
                             );
-                            self.panel_auto_hide_show(client, sender_id).await
+                            self.panel_auto_hide_show(socket, sender_id).await
                         }
                         8u16 => {
                             let takes_focus = message.uint()?;
@@ -6050,7 +6076,7 @@ pub mod plasma_shell {
                                 sender_id,
                                 takes_focus
                             );
-                            self.set_panel_takes_focus(client, sender_id, takes_focus)
+                            self.set_panel_takes_focus(socket, sender_id, takes_focus)
                                 .await
                         }
                         9u16 => {
@@ -6060,14 +6086,14 @@ pub mod plasma_shell {
                                 sender_id,
                                 skip
                             );
-                            self.set_skip_switcher(client, sender_id, skip).await
+                            self.set_skip_switcher(socket, sender_id, skip).await
                         }
                         10u16 => {
                             tracing::debug!(
                                 "org_kde_plasma_surface#{}.open_under_cursor()",
                                 sender_id,
                             );
-                            self.open_under_cursor(client, sender_id).await
+                            self.open_under_cursor(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6079,7 +6105,7 @@ pub mod plasma_shell {
             #[doc = "The shell surface role is lost and wl_surface is unmapped."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Assign an output to this shell surface."]
@@ -6088,7 +6114,7 @@ pub mod plasma_shell {
             #[doc = "called."]
             fn set_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6101,7 +6127,7 @@ pub mod plasma_shell {
             #[doc = "to this surface."]
             fn set_position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -6201,7 +6227,7 @@ pub mod plasma_shell {
             #[doc = "Only one surface per output can have the lock role."]
             fn set_role(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 role: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6212,14 +6238,14 @@ pub mod plasma_shell {
             #[doc = "Deprecated in Plasma 6. Setting this flag will have no effect. Applications should use layer shell where appropriate."]
             fn set_panel_behavior(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flag: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
             fn set_skip_taskbar(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6235,14 +6261,14 @@ pub mod plasma_shell {
             #[doc = "The client can also request to show the panel again with the request panel_auto_hide_show."]
             fn panel_auto_hide_hide(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
             #[doc = "again which got hidden with panel_auto_hide_hide."]
             fn panel_auto_hide_show(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
@@ -6250,14 +6276,14 @@ pub mod plasma_shell {
             #[doc = "org_kde_plasma_surface."]
             fn set_panel_takes_focus(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 takes_focus: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
             fn set_skip_switcher(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6265,13 +6291,13 @@ pub mod plasma_shell {
             #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
             fn open_under_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "An auto-hiding panel got hidden by the compositor."]
             fn auto_hidden_panel_hidden(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -6280,8 +6306,8 @@ pub mod plasma_shell {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6289,7 +6315,7 @@ pub mod plasma_shell {
             #[doc = "An auto-hiding panel got shown by the compositor."]
             fn auto_hidden_panel_shown(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -6298,8 +6324,8 @@ pub mod plasma_shell {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6322,6 +6348,8 @@ pub mod plasma_window_management {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window_management {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -6412,7 +6440,7 @@ pub mod plasma_window_management {
             const VERSION: u32 = 19u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6426,7 +6454,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 state
                             );
-                            self.show_desktop(client, sender_id, state).await
+                            self.show_desktop(socket, sender_id, state).await
                         }
                         1u16 => {
                             let id = message
@@ -6439,7 +6467,7 @@ pub mod plasma_window_management {
                                 id,
                                 internal_window_id
                             );
-                            self.get_window(client, sender_id, id, internal_window_id)
+                            self.get_window(socket, sender_id, id, internal_window_id)
                                 .await
                         }
                         2u16 => {
@@ -6455,7 +6483,7 @@ pub mod plasma_window_management {
                                 id,
                                 internal_window_uuid
                             );
-                            self.get_window_by_uuid(client, sender_id, id, internal_window_uuid)
+                            self.get_window_by_uuid(socket, sender_id, id, internal_window_uuid)
                                 .await
                         }
                         3u16 => {
@@ -6467,7 +6495,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 stacking_order
                             );
-                            self.get_stacking_order(client, sender_id, stacking_order)
+                            self.get_stacking_order(socket, sender_id, stacking_order)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -6477,28 +6505,28 @@ pub mod plasma_window_management {
             #[doc = "Tell the compositor to show/hide the desktop."]
             fn show_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Deprecated: use get_window_by_uuid"]
             fn get_window(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 internal_window_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn get_window_by_uuid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 internal_window_uuid: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn get_stacking_order(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 stacking_order: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6508,7 +6536,7 @@ pub mod plasma_window_management {
             #[doc = "On binding the interface the current state is sent."]
             fn show_desktop_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6519,8 +6547,8 @@ pub mod plasma_window_management {
                         state
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6528,7 +6556,7 @@ pub mod plasma_window_management {
             #[doc = "This event will be sent immediately after a window is mapped."]
             fn window(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6539,8 +6567,8 @@ pub mod plasma_window_management {
                         id
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6550,7 +6578,7 @@ pub mod plasma_window_management {
             #[doc = "With version 17 this event is deprecated and will no longer be sent."]
             fn stacking_order_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 ids: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6561,8 +6589,8 @@ pub mod plasma_window_management {
                         ids.len()
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(ids).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6572,7 +6600,7 @@ pub mod plasma_window_management {
             #[doc = "With version 17 this event is deprecated and will no longer be sent."]
             fn stacking_order_uuid_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 uuids: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6585,8 +6613,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(uuids))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6594,7 +6622,7 @@ pub mod plasma_window_management {
             #[doc = "This event will be sent immediately after a window is mapped."]
             fn window_with_uuid(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
                 uuid: String,
@@ -6610,8 +6638,8 @@ pub mod plasma_window_management {
                         .put_uint(id)
                         .put_string(Some(uuid))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6619,7 +6647,7 @@ pub mod plasma_window_management {
             #[doc = "This event will be sent when stacking order changed."]
             fn stacking_order_changed_2(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -6628,8 +6656,8 @@ pub mod plasma_window_management {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6642,6 +6670,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow: crate::server::Dispatcher {
@@ -6649,7 +6679,7 @@ pub mod plasma_window_management {
             const VERSION: u32 = 18u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6665,7 +6695,7 @@ pub mod plasma_window_management {
                                 flags,
                                 state
                             );
-                            self.set_state(client, sender_id, flags, state).await
+                            self.set_state(socket, sender_id, flags, state).await
                         }
                         1u16 => {
                             let number = message.uint()?;
@@ -6674,7 +6704,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 number
                             );
-                            self.set_virtual_desktop(client, sender_id, number).await
+                            self.set_virtual_desktop(socket, sender_id, number).await
                         }
                         2u16 => {
                             let panel = message
@@ -6694,7 +6724,7 @@ pub mod plasma_window_management {
                                 height
                             );
                             self.set_minimized_geometry(
-                                client, sender_id, panel, x, y, width, height,
+                                socket, sender_id, panel, x, y, width, height,
                             )
                             .await
                         }
@@ -6707,26 +6737,24 @@ pub mod plasma_window_management {
                                 sender_id,
                                 panel
                             );
-                            self.unset_minimized_geometry(client, sender_id, panel)
+                            self.unset_minimized_geometry(socket, sender_id, panel)
                                 .await
                         }
                         4u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.close()", sender_id,);
-                            self.close(client, sender_id).await
+                            self.close(socket, sender_id).await
                         }
                         5u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.request_move()", sender_id,);
-                            self.request_move(client, sender_id).await
+                            self.request_move(socket, sender_id).await
                         }
                         6u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.request_resize()", sender_id,);
-                            self.request_resize(client, sender_id).await
+                            self.request_resize(socket, sender_id).await
                         }
                         7u16 => {
                             tracing::debug!("org_kde_plasma_window#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         8u16 => {
                             let fd = message.fd()?;
@@ -6735,7 +6763,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.get_icon(client, sender_id, fd).await
+                            self.get_icon(socket, sender_id, fd).await
                         }
                         9u16 => {
                             let id = message
@@ -6746,7 +6774,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_enter_virtual_desktop(client, sender_id, id)
+                            self.request_enter_virtual_desktop(socket, sender_id, id)
                                 .await
                         }
                         10u16 => {
@@ -6754,7 +6782,7 @@ pub mod plasma_window_management {
                                 "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
                                 sender_id,
                             );
-                            self.request_enter_new_virtual_desktop(client, sender_id)
+                            self.request_enter_new_virtual_desktop(socket, sender_id)
                                 .await
                         }
                         11u16 => {
@@ -6766,7 +6794,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_leave_virtual_desktop(client, sender_id, id)
+                            self.request_leave_virtual_desktop(socket, sender_id, id)
                                 .await
                         }
                         12u16 => {
@@ -6778,7 +6806,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_enter_activity(client, sender_id, id).await
+                            self.request_enter_activity(socket, sender_id, id).await
                         }
                         13u16 => {
                             let id = message
@@ -6789,7 +6817,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 id
                             );
-                            self.request_leave_activity(client, sender_id, id).await
+                            self.request_leave_activity(socket, sender_id, id).await
                         }
                         14u16 => {
                             let output = message
@@ -6800,7 +6828,7 @@ pub mod plasma_window_management {
                                 sender_id,
                                 output
                             );
-                            self.send_to_output(client, sender_id, output).await
+                            self.send_to_output(socket, sender_id, output).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6813,7 +6841,7 @@ pub mod plasma_window_management {
             #[doc = "supposed to be set, the state bitfield the value for the set flags"]
             fn set_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: u32,
                 state: u32,
@@ -6826,7 +6854,7 @@ pub mod plasma_window_management {
             #[doc = "state in the bitfield."]
             fn set_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 number: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6834,7 +6862,7 @@ pub mod plasma_window_management {
             #[doc = "The geometry is relative to a panel in particular."]
             fn set_minimized_geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 panel: crate::wire::ObjectId,
                 x: u32,
@@ -6845,39 +6873,39 @@ pub mod plasma_window_management {
             #[doc = "Remove the task geometry information for a particular panel."]
             fn unset_minimized_geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 panel: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Close this window."]
             fn close(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request an interactive move for this window."]
             fn request_move(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request an interactive resize for this window."]
             fn request_resize(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Removes the resource bound for this org_kde_plasma_window."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The compositor will write the window icon into the provided file descriptor."]
             #[doc = "The data is a serialized QIcon with QDataStream."]
             fn get_icon(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6885,7 +6913,7 @@ pub mod plasma_window_management {
             #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
             fn request_enter_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -6894,41 +6922,41 @@ pub mod plasma_window_management {
             #[doc = "it will create a new virtual desktop and assign the window to it."]
             fn request_enter_new_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
             fn request_leave_virtual_desktop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
             fn request_enter_activity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
             fn request_leave_activity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests this window to be displayed in a specific output."]
             fn send_to_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event will be sent as soon as the window title is changed."]
             fn title_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 title: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6941,8 +6969,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(title))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6951,7 +6979,7 @@ pub mod plasma_window_management {
             #[doc = "identifier is changed."]
             fn app_id_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6964,8 +6992,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6975,7 +7003,7 @@ pub mod plasma_window_management {
             #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
             fn state_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6986,8 +7014,8 @@ pub mod plasma_window_management {
                         flags
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(flags).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6999,7 +7027,7 @@ pub mod plasma_window_management {
             #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
             fn virtual_desktop_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 number: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7010,8 +7038,8 @@ pub mod plasma_window_management {
                         number
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(number).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7019,7 +7047,7 @@ pub mod plasma_window_management {
             #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
             fn themed_icon_name_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7032,8 +7060,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7042,14 +7070,14 @@ pub mod plasma_window_management {
             #[doc = "and its surface is unmapped."]
             fn unmapped(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7059,14 +7087,14 @@ pub mod plasma_window_management {
             #[doc = "initial_state event."]
             fn initial_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7077,7 +7105,7 @@ pub mod plasma_window_management {
             #[doc = "org_kde_plasma_window does not have a parent window."]
             fn parent_window(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7092,8 +7120,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(parent)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7102,7 +7130,7 @@ pub mod plasma_window_management {
             #[doc = "The coordinates are in absolute coordinates of the windowing system."]
             fn geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -7124,8 +7152,8 @@ pub mod plasma_window_management {
                         .put_uint(width)
                         .put_uint(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7136,14 +7164,14 @@ pub mod plasma_window_management {
             #[doc = "The client can request the icon using get_icon."]
             fn icon_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7152,7 +7180,7 @@ pub mod plasma_window_management {
             #[doc = "This should be set once before the initial_state is sent."]
             fn pid_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 pid: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7163,8 +7191,8 @@ pub mod plasma_window_management {
                         pid
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(pid).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7172,7 +7200,7 @@ pub mod plasma_window_management {
             #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
             fn virtual_desktop_entered(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7185,8 +7213,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7195,7 +7223,7 @@ pub mod plasma_window_management {
             #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
             fn virtual_desktop_left(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 is: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7208,8 +7236,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(is))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7218,7 +7246,7 @@ pub mod plasma_window_management {
             #[doc = "for the window has changed."]
             fn application_menu(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 service_name: String,
                 object_path: String,
@@ -7234,8 +7262,8 @@ pub mod plasma_window_management {
                         .put_string(Some(service_name))
                         .put_string(Some(object_path))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7243,7 +7271,7 @@ pub mod plasma_window_management {
             #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
             fn activity_entered(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7256,8 +7284,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 14u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7266,7 +7294,7 @@ pub mod plasma_window_management {
             #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
             fn activity_left(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7279,8 +7307,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 15u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7289,7 +7317,7 @@ pub mod plasma_window_management {
             #[doc = "This is only set for XWayland windows."]
             fn resource_name_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 resource_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7302,8 +7330,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(resource_name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 16u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7312,7 +7340,7 @@ pub mod plasma_window_management {
             #[doc = "The coordinates are in absolute coordinates of the windowing system."]
             fn client_geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -7334,8 +7362,8 @@ pub mod plasma_window_management {
                         .put_uint(width)
                         .put_uint(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 17u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 17u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7347,6 +7375,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation_feedback {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivationFeedback: crate::server::Dispatcher {
@@ -7354,7 +7384,7 @@ pub mod plasma_window_management {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7366,9 +7396,7 @@ pub mod plasma_window_management {
                                 "org_kde_plasma_activation_feedback#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7378,7 +7406,7 @@ pub mod plasma_window_management {
             #[doc = "by this manager object will be unaffected."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Will be issued when an app is set to be activated. It offers"]
@@ -7386,7 +7414,7 @@ pub mod plasma_window_management {
             #[doc = "and the extent of the activation."]
             fn activation(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7399,8 +7427,8 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7410,6 +7438,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivation: crate::server::Dispatcher {
@@ -7417,7 +7447,7 @@ pub mod plasma_window_management {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7426,9 +7456,7 @@ pub mod plasma_window_management {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_plasma_activation#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7438,12 +7466,12 @@ pub mod plasma_window_management {
             #[doc = "longer be used."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn app_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7456,22 +7484,22 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn finished(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_activation#{}.finished()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7484,6 +7512,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_stacking_order {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaStackingOrder: crate::server::Dispatcher {
@@ -7491,7 +7521,7 @@ pub mod plasma_window_management {
             const VERSION: u32 = 17u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7504,7 +7534,7 @@ pub mod plasma_window_management {
             }
             fn window(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 uuid: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7517,22 +7547,22 @@ pub mod plasma_window_management {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(uuid))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7545,6 +7575,8 @@ pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_access_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteAccessManager: crate::server::Dispatcher {
@@ -7552,7 +7584,7 @@ pub mod remote_access {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7570,7 +7602,7 @@ pub mod remote_access {
                                 buffer,
                                 internal_buffer_id
                             );
-                            self.get_buffer(client, sender_id, buffer, internal_buffer_id)
+                            self.get_buffer(socket, sender_id, buffer, internal_buffer_id)
                                 .await
                         }
                         1u16 => {
@@ -7578,9 +7610,7 @@ pub mod remote_access {
                                 "org_kde_kwin_remote_access_manager#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7588,19 +7618,19 @@ pub mod remote_access {
             }
             fn get_buffer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 internal_buffer_id: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn buffer_ready(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: i32,
                 output: crate::wire::ObjectId,
@@ -7616,8 +7646,8 @@ pub mod remote_access {
                         .put_int(id)
                         .put_object(Some(output))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7627,6 +7657,8 @@ pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_buffer {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteBuffer: crate::server::Dispatcher {
@@ -7634,7 +7666,7 @@ pub mod remote_access {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7643,9 +7675,7 @@ pub mod remote_access {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7653,12 +7683,12 @@ pub mod remote_access {
             }
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn gbm_handle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
                 width: u32,
@@ -7683,8 +7713,8 @@ pub mod remote_access {
                         .put_uint(stride)
                         .put_uint(format)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7698,6 +7728,8 @@ pub mod server_decoration_palette {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPaletteManager: crate::server::Dispatcher {
@@ -7705,7 +7737,7 @@ pub mod server_decoration_palette {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7725,7 +7757,7 @@ pub mod server_decoration_palette {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7733,7 +7765,7 @@ pub mod server_decoration_palette {
             }
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -7744,6 +7776,8 @@ pub mod server_decoration_palette {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPalette: crate::server::Dispatcher {
@@ -7751,7 +7785,7 @@ pub mod server_decoration_palette {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7767,16 +7801,14 @@ pub mod server_decoration_palette {
                                 sender_id,
                                 palette
                             );
-                            self.set_palette(client, sender_id, palette).await
+                            self.set_palette(socket, sender_id, palette).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "org_kde_kwin_server_decoration_palette#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7787,13 +7819,13 @@ pub mod server_decoration_palette {
             #[doc = "The server may choose not to follow the requested style."]
             fn set_palette(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 palette: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -7810,6 +7842,8 @@ pub mod server_decoration {
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_manager {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -7845,7 +7879,7 @@ pub mod server_decoration {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7865,7 +7899,7 @@ pub mod server_decoration {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7883,7 +7917,7 @@ pub mod server_decoration {
             #[doc = "to the server that it does not want a server-side deco."]
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -7896,7 +7930,7 @@ pub mod server_decoration {
             #[doc = "The server may change the default mode at any time."]
             fn default_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7907,8 +7941,8 @@ pub mod server_decoration {
                         mode
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7917,6 +7951,8 @@ pub mod server_decoration {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -7952,7 +7988,7 @@ pub mod server_decoration {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7964,9 +8000,7 @@ pub mod server_decoration {
                                 "org_kde_kwin_server_decoration#{}.release()",
                                 sender_id,
                             );
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         1u16 => {
                             let mode = message.uint()?;
@@ -7975,7 +8009,7 @@ pub mod server_decoration {
                                 sender_id,
                                 mode
                             );
-                            self.request_mode(client, sender_id, mode).await
+                            self.request_mode(socket, sender_id, mode).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7983,12 +8017,12 @@ pub mod server_decoration {
             }
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn request_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -8007,7 +8041,7 @@ pub mod server_decoration {
             #[doc = "prevent a feedback loop."]
             fn mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8018,8 +8052,8 @@ pub mod server_decoration {
                         mode
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(mode).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8032,6 +8066,8 @@ pub mod shadow {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadowManager: crate::server::Dispatcher {
@@ -8039,7 +8075,7 @@ pub mod shadow {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8059,7 +8095,7 @@ pub mod shadow {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -8070,13 +8106,11 @@ pub mod shadow {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            self.unset(socket, sender_id, surface).await
                         }
                         2u16 => {
                             tracing::debug!("org_kde_kwin_shadow_manager#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8084,27 +8118,29 @@ pub mod shadow {
             }
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow_manager object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
@@ -8113,7 +8149,7 @@ pub mod shadow {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8122,7 +8158,7 @@ pub mod shadow {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         1u16 => {
                             let buffer = message
@@ -8133,7 +8169,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_left(client, sender_id, buffer).await
+                            self.attach_left(socket, sender_id, buffer).await
                         }
                         2u16 => {
                             let buffer = message
@@ -8144,7 +8180,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top_left(client, sender_id, buffer).await
+                            self.attach_top_left(socket, sender_id, buffer).await
                         }
                         3u16 => {
                             let buffer = message
@@ -8155,7 +8191,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top(client, sender_id, buffer).await
+                            self.attach_top(socket, sender_id, buffer).await
                         }
                         4u16 => {
                             let buffer = message
@@ -8166,7 +8202,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_top_right(client, sender_id, buffer).await
+                            self.attach_top_right(socket, sender_id, buffer).await
                         }
                         5u16 => {
                             let buffer = message
@@ -8177,7 +8213,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_right(client, sender_id, buffer).await
+                            self.attach_right(socket, sender_id, buffer).await
                         }
                         6u16 => {
                             let buffer = message
@@ -8188,7 +8224,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom_right(client, sender_id, buffer).await
+                            self.attach_bottom_right(socket, sender_id, buffer).await
                         }
                         7u16 => {
                             let buffer = message
@@ -8199,7 +8235,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom(client, sender_id, buffer).await
+                            self.attach_bottom(socket, sender_id, buffer).await
                         }
                         8u16 => {
                             let buffer = message
@@ -8210,7 +8246,7 @@ pub mod shadow {
                                 sender_id,
                                 buffer
                             );
-                            self.attach_bottom_left(client, sender_id, buffer).await
+                            self.attach_bottom_left(socket, sender_id, buffer).await
                         }
                         9u16 => {
                             let offset = message.fixed()?;
@@ -8219,7 +8255,7 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_left_offset(client, sender_id, offset).await
+                            self.set_left_offset(socket, sender_id, offset).await
                         }
                         10u16 => {
                             let offset = message.fixed()?;
@@ -8228,7 +8264,7 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_top_offset(client, sender_id, offset).await
+                            self.set_top_offset(socket, sender_id, offset).await
                         }
                         11u16 => {
                             let offset = message.fixed()?;
@@ -8237,7 +8273,7 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_right_offset(client, sender_id, offset).await
+                            self.set_right_offset(socket, sender_id, offset).await
                         }
                         12u16 => {
                             let offset = message.fixed()?;
@@ -8246,13 +8282,11 @@ pub mod shadow {
                                 sender_id,
                                 offset
                             );
-                            self.set_bottom_offset(client, sender_id, offset).await
+                            self.set_bottom_offset(socket, sender_id, offset).await
                         }
                         13u16 => {
                             tracing::debug!("org_kde_kwin_shadow#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8260,78 +8294,78 @@ pub mod shadow {
             }
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_left(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_top_left(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_top(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_top_right(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_right(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_bottom_right(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_bottom(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn attach_bottom_left(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_left_offset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_top_offset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_right_offset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_bottom_offset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 offset: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -8341,7 +8375,7 @@ pub mod shadow {
             #[doc = "commit the wl_surface to apply the change."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -8352,6 +8386,8 @@ pub mod slide {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlideManager: crate::server::Dispatcher {
@@ -8359,7 +8395,7 @@ pub mod slide {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8379,7 +8415,7 @@ pub mod slide {
                                 id,
                                 surface
                             );
-                            self.create(client, sender_id, id, surface).await
+                            self.create(socket, sender_id, id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -8390,7 +8426,7 @@ pub mod slide {
                                 sender_id,
                                 surface
                             );
-                            self.unset(client, sender_id, surface).await
+                            self.unset(socket, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8398,14 +8434,14 @@ pub mod slide {
             }
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -8418,6 +8454,8 @@ pub mod slide {
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -8452,7 +8490,7 @@ pub mod slide {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8461,7 +8499,7 @@ pub mod slide {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         1u16 => {
                             let location = message.uint()?;
@@ -8470,7 +8508,7 @@ pub mod slide {
                                 sender_id,
                                 location
                             );
-                            self.set_location(client, sender_id, location).await
+                            self.set_location(socket, sender_id, location).await
                         }
                         2u16 => {
                             let offset = message.int()?;
@@ -8479,13 +8517,11 @@ pub mod slide {
                                 sender_id,
                                 offset
                             );
-                            self.set_offset(client, sender_id, offset).await
+                            self.set_offset(socket, sender_id, offset).await
                         }
                         3u16 => {
                             tracing::debug!("org_kde_kwin_slide#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8493,24 +8529,24 @@ pub mod slide {
             }
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_location(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 location: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_offset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 offset: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -8521,6 +8557,8 @@ pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
     pub mod qt_surface_extension {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
         pub trait QtSurfaceExtension: crate::server::Dispatcher {
@@ -8528,7 +8566,7 @@ pub mod surface_extension {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8548,7 +8586,7 @@ pub mod surface_extension {
                                 id,
                                 surface
                             );
-                            self.get_extended_surface(client, sender_id, id, surface)
+                            self.get_extended_surface(socket, sender_id, id, surface)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -8557,7 +8595,7 @@ pub mod surface_extension {
             }
             fn get_extended_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -8566,6 +8604,8 @@ pub mod surface_extension {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod qt_extended_surface {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -8626,7 +8666,7 @@ pub mod surface_extension {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8644,7 +8684,7 @@ pub mod surface_extension {
                                 name,
                                 value.len()
                             );
-                            self.update_generic_property(client, sender_id, name, value)
+                            self.update_generic_property(socket, sender_id, name, value)
                                 .await
                         }
                         1u16 => {
@@ -8654,7 +8694,7 @@ pub mod surface_extension {
                                 sender_id,
                                 orientation
                             );
-                            self.set_content_orientation_mask(client, sender_id, orientation)
+                            self.set_content_orientation_mask(socket, sender_id, orientation)
                                 .await
                         }
                         2u16 => {
@@ -8664,15 +8704,15 @@ pub mod surface_extension {
                                 sender_id,
                                 flags
                             );
-                            self.set_window_flags(client, sender_id, flags).await
+                            self.set_window_flags(socket, sender_id, flags).await
                         }
                         3u16 => {
                             tracing::debug!("qt_extended_surface#{}.raise()", sender_id,);
-                            self.raise(client, sender_id).await
+                            self.raise(socket, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("qt_extended_surface#{}.lower()", sender_id,);
-                            self.lower(client, sender_id).await
+                            self.lower(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8680,36 +8720,36 @@ pub mod surface_extension {
             }
             fn update_generic_property(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 value: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_content_orientation_mask(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 orientation: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_window_flags(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn raise(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn lower(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn onscreen_visibility(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 visible: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8721,15 +8761,15 @@ pub mod surface_extension {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(visible).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn set_generic_property(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 value: Vec<u8>,
@@ -8745,22 +8785,22 @@ pub mod surface_extension {
                         .put_string(Some(name))
                         .put_array(value)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn close(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> qt_extended_surface#{}.close()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8794,6 +8834,8 @@ pub mod text_input_unstable_v2 {
     #[doc = "invalidates all current state information."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
@@ -9000,7 +9042,7 @@ pub mod text_input_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9009,31 +9051,29 @@ pub mod text_input_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v2#{}.enable({})", sender_id, surface);
-                            self.enable(client, sender_id, surface).await
+                            self.enable(socket, sender_id, surface).await
                         }
                         2u16 => {
                             let surface = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v2#{}.disable({})", sender_id, surface);
-                            self.disable(client, sender_id, surface).await
+                            self.disable(socket, sender_id, surface).await
                         }
                         3u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            self.show_input_panel(socket, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("zwp_text_input_v2#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            self.hide_input_panel(socket, sender_id).await
                         }
                         5u16 => {
                             let text = message
@@ -9048,7 +9088,7 @@ pub mod text_input_unstable_v2 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
+                            self.set_surrounding_text(socket, sender_id, text, cursor, anchor)
                                 .await
                         }
                         6u16 => {
@@ -9061,7 +9101,7 @@ pub mod text_input_unstable_v2 {
                                 purpose
                             );
                             self.set_content_type(
-                                client,
+                                socket,
                                 sender_id,
                                 hint.try_into()?,
                                 purpose.try_into()?,
@@ -9081,7 +9121,7 @@ pub mod text_input_unstable_v2 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
+                            self.set_cursor_rectangle(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         8u16 => {
@@ -9093,7 +9133,7 @@ pub mod text_input_unstable_v2 {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
+                            self.set_preferred_language(socket, sender_id, language)
                                 .await
                         }
                         9u16 => {
@@ -9105,7 +9145,7 @@ pub mod text_input_unstable_v2 {
                                 serial,
                                 reason
                             );
-                            self.update_state(client, sender_id, serial, reason.try_into()?)
+                            self.update_state(socket, sender_id, serial, reason.try_into()?)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -9116,7 +9156,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "through this wp_text_input object"]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Enable text input in a surface (usually when a text entry inside of it"]
@@ -9127,7 +9167,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "when it has the current text (or keyboard) focus and is enabled."]
             fn enable(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -9135,7 +9175,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "text entry inside the surface)."]
             fn disable(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -9146,13 +9186,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "keyboard."]
             fn show_input_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
@@ -9172,7 +9212,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "longer than 4000 bytes."]
             fn set_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 cursor: i32,
@@ -9186,7 +9226,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "none hint should be assumed."]
             fn set_content_type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
@@ -9198,7 +9238,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "cursor."]
             fn set_cursor_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -9214,7 +9254,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "tracks languages of contacts."]
             fn set_preferred_language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -9241,7 +9281,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "after update_state in these cases."]
             fn update_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 reason: UpdateState,
@@ -9252,7 +9292,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "the keyboard focus."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
@@ -9268,8 +9308,8 @@ pub mod text_input_unstable_v2 {
                         .put_uint(serial)
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9284,7 +9324,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "the keyboard focus."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
@@ -9300,8 +9340,8 @@ pub mod text_input_unstable_v2 {
                         .put_uint(serial)
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9317,7 +9357,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "a virtual keyboard."]
             fn input_panel_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 state: InputPanelVisibility,
                 x: i32,
@@ -9342,8 +9382,8 @@ pub mod text_input_unstable_v2 {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9359,7 +9399,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "events occurring directly before preedit_string."]
             fn preedit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 commit: String,
@@ -9375,8 +9415,8 @@ pub mod text_input_unstable_v2 {
                         .put_string(Some(text))
                         .put_string(Some(commit))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9389,7 +9429,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_styling(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: u32,
                 length: u32,
@@ -9408,8 +9448,8 @@ pub mod text_input_unstable_v2 {
                         .put_uint(length)
                         .put_uint(style as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9424,7 +9464,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9435,8 +9475,8 @@ pub mod text_input_unstable_v2 {
                         index
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9450,7 +9490,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "Any previously set composing text should be removed."]
             fn commit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9463,8 +9503,8 @@ pub mod text_input_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(text))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9477,7 +9517,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "The text between anchor and index should be selected."]
             fn cursor_position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 anchor: i32,
@@ -9493,8 +9533,8 @@ pub mod text_input_unstable_v2 {
                         .put_int(index)
                         .put_int(anchor)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9508,7 +9548,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "or preedit_string event."]
             fn delete_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 before_length: u32,
                 after_length: u32,
@@ -9524,8 +9564,8 @@ pub mod text_input_unstable_v2 {
                         .put_uint(before_length)
                         .put_uint(after_length)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9535,7 +9575,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "bitmask in the keysym event."]
             fn modifiers_map(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 map: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9546,8 +9586,8 @@ pub mod text_input_unstable_v2 {
                         map.len()
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9560,7 +9600,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "(where the modifier indices are set by the modifiers_map event)"]
             fn keysym(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 sym: u32,
@@ -9582,8 +9622,8 @@ pub mod text_input_unstable_v2 {
                         .put_uint(state)
                         .put_uint(modifiers)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9592,7 +9632,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "format language tag."]
             fn language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9605,8 +9645,8 @@ pub mod text_input_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(language))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9618,7 +9658,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "direction text is laid out properly."]
             fn text_direction(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 direction: TextDirection,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9631,8 +9671,8 @@ pub mod text_input_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(direction as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9642,7 +9682,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "set_surrounding_text request on the following state information updates."]
             fn configure_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 before_cursor: i32,
                 after_cursor: i32,
@@ -9658,8 +9698,8 @@ pub mod text_input_unstable_v2 {
                         .put_int(before_cursor)
                         .put_int(after_cursor)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9670,7 +9710,7 @@ pub mod text_input_unstable_v2 {
             #[doc = "set_content_hint, ...) and update_state."]
             fn input_method_changed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 flags: u32,
@@ -9686,8 +9726,8 @@ pub mod text_input_unstable_v2 {
                         .put_uint(serial)
                         .put_uint(flags)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 14u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9698,6 +9738,8 @@ pub mod text_input_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV2: crate::server::Dispatcher {
@@ -9705,7 +9747,7 @@ pub mod text_input_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9714,9 +9756,7 @@ pub mod text_input_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -9731,7 +9771,7 @@ pub mod text_input_unstable_v2 {
                                 id,
                                 seat
                             );
-                            self.get_text_input(client, sender_id, id, seat).await
+                            self.get_text_input(socket, sender_id, id, seat).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9740,13 +9780,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "Destroy the wp_text_input_manager object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new text-input object for a given seat."]
             fn get_text_input(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -9777,6 +9817,8 @@ pub mod text {
     #[doc = "which are based on an outdated state (for example after a reset)."]
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
@@ -9969,7 +10011,7 @@ pub mod text {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9989,26 +10031,26 @@ pub mod text {
                                 seat,
                                 surface
                             );
-                            self.activate(client, sender_id, seat, surface).await
+                            self.activate(socket, sender_id, seat, surface).await
                         }
                         1u16 => {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("wl_text_input#{}.deactivate({})", sender_id, seat);
-                            self.deactivate(client, sender_id, seat).await
+                            self.deactivate(socket, sender_id, seat).await
                         }
                         2u16 => {
                             tracing::debug!("wl_text_input#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            self.show_input_panel(socket, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!("wl_text_input#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            self.hide_input_panel(socket, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("wl_text_input#{}.reset()", sender_id,);
-                            self.reset(client, sender_id).await
+                            self.reset(socket, sender_id).await
                         }
                         5u16 => {
                             let text = message
@@ -10023,7 +10065,7 @@ pub mod text {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
+                            self.set_surrounding_text(socket, sender_id, text, cursor, anchor)
                                 .await
                         }
                         6u16 => {
@@ -10035,7 +10077,7 @@ pub mod text {
                                 hint,
                                 purpose
                             );
-                            self.set_content_type(client, sender_id, hint, purpose)
+                            self.set_content_type(socket, sender_id, hint, purpose)
                                 .await
                         }
                         7u16 => {
@@ -10051,7 +10093,7 @@ pub mod text {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
+                            self.set_cursor_rectangle(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         8u16 => {
@@ -10063,13 +10105,13 @@ pub mod text {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
+                            self.set_preferred_language(socket, sender_id, language)
                                 .await
                         }
                         9u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("wl_text_input#{}.commit_state({})", sender_id, serial);
-                            self.commit_state(client, sender_id, serial).await
+                            self.commit_state(socket, sender_id, serial).await
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -10080,7 +10122,7 @@ pub mod text {
                                 button,
                                 index
                             );
-                            self.invoke_action(client, sender_id, button, index).await
+                            self.invoke_action(socket, sender_id, button, index).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10094,7 +10136,7 @@ pub mod text {
             #[doc = "is emitted on successful activation."]
             fn activate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -10104,20 +10146,20 @@ pub mod text {
             #[doc = "for activation."]
             fn deactivate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             fn show_input_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Should be called by an editor widget when the input state should be"]
@@ -10125,7 +10167,7 @@ pub mod text {
             #[doc = "input method flow."]
             fn reset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
@@ -10135,7 +10177,7 @@ pub mod text {
             #[doc = "text anchor is the same as cursor."]
             fn set_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 cursor: u32,
@@ -10150,14 +10192,14 @@ pub mod text {
             #[doc = "should be assumed."]
             fn set_content_type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hint: u32,
                 purpose: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_cursor_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -10173,19 +10215,19 @@ pub mod text {
             #[doc = "languages of contacts."]
             fn set_preferred_language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn commit_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn invoke_action(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 index: u32,
@@ -10194,7 +10236,7 @@ pub mod text {
             #[doc = "response to an activate request."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10203,8 +10245,8 @@ pub mod text {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10214,14 +10256,14 @@ pub mod text {
             #[doc = "destroyed."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_text_input#{}.leave()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10231,7 +10273,7 @@ pub mod text {
             #[doc = "bitmask in the keysym event."]
             fn modifiers_map(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 map: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10242,8 +10284,8 @@ pub mod text {
                         map.len()
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10251,7 +10293,7 @@ pub mod text {
             #[doc = "Notify when the visibility state of the input panel changed."]
             fn input_panel_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10262,8 +10304,8 @@ pub mod text {
                         state
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10279,7 +10321,7 @@ pub mod text {
             #[doc = "events occurring directly before preedit_string."]
             fn preedit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
@@ -10298,8 +10340,8 @@ pub mod text {
                         .put_string(Some(text))
                         .put_string(Some(commit))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10313,7 +10355,7 @@ pub mod text {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_styling(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: u32,
                 length: u32,
@@ -10332,8 +10374,8 @@ pub mod text {
                         .put_uint(length)
                         .put_uint(style)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10345,15 +10387,15 @@ pub mod text {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_text_input#{}.preedit_cursor({})", sender_id, index);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10367,7 +10409,7 @@ pub mod text {
             #[doc = "Any previously set composing text should be removed."]
             fn commit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
@@ -10383,8 +10425,8 @@ pub mod text {
                         .put_uint(serial)
                         .put_string(Some(text))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10395,7 +10437,7 @@ pub mod text {
             #[doc = "event."]
             fn cursor_position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 anchor: i32,
@@ -10411,8 +10453,8 @@ pub mod text {
                         .put_int(index)
                         .put_int(anchor)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10427,7 +10469,7 @@ pub mod text {
             #[doc = "event."]
             fn delete_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 length: u32,
@@ -10443,8 +10485,8 @@ pub mod text {
                         .put_int(index)
                         .put_uint(length)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10457,7 +10499,7 @@ pub mod text {
             #[doc = "(where the modifier indices are set by the modifiers_map event)"]
             fn keysym(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -10482,8 +10524,8 @@ pub mod text {
                         .put_uint(state)
                         .put_uint(modifiers)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10492,7 +10534,7 @@ pub mod text {
             #[doc = "format language tag."]
             fn language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 language: String,
@@ -10508,8 +10550,8 @@ pub mod text {
                         .put_uint(serial)
                         .put_string(Some(language))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10521,7 +10563,7 @@ pub mod text {
             #[doc = "direction text is laid out properly."]
             fn text_direction(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 direction: u32,
@@ -10537,8 +10579,8 @@ pub mod text {
                         .put_uint(serial)
                         .put_uint(direction)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10549,6 +10591,8 @@ pub mod text {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input_manager {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
         pub trait WlTextInputManager: crate::server::Dispatcher {
@@ -10556,7 +10600,7 @@ pub mod text {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10572,7 +10616,7 @@ pub mod text {
                                 sender_id,
                                 id
                             );
-                            self.create_text_input(client, sender_id, id).await
+                            self.create_text_input(socket, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10581,7 +10625,7 @@ pub mod text {
             #[doc = "Creates a new text-input object."]
             fn create_text_input(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -10592,6 +10636,8 @@ pub mod text {
 pub mod wl_eglstream_controller {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_eglstream_controller {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
@@ -10664,7 +10710,7 @@ pub mod wl_eglstream_controller {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10685,7 +10731,7 @@ pub mod wl_eglstream_controller {
                                 wl_resource
                             );
                             self.attach_eglstream_consumer(
-                                client,
+                                socket,
                                 sender_id,
                                 wl_surface,
                                 wl_resource,
@@ -10708,7 +10754,7 @@ pub mod wl_eglstream_controller {
                                 attribs.len()
                             );
                             self.attach_eglstream_consumer_attribs(
-                                client,
+                                socket,
                                 sender_id,
                                 wl_surface,
                                 wl_resource,
@@ -10724,7 +10770,7 @@ pub mod wl_eglstream_controller {
             #[doc = "and attaches a consumer to it."]
             fn attach_eglstream_consumer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 wl_surface: crate::wire::ObjectId,
                 wl_resource: crate::wire::ObjectId,
@@ -10733,7 +10779,7 @@ pub mod wl_eglstream_controller {
             #[doc = "and attaches a consumer to it using the given attributes."]
             fn attach_eglstream_consumer_attribs(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 wl_surface: crate::wire::ObjectId,
                 wl_resource: crate::wire::ObjectId,
@@ -10750,6 +10796,8 @@ pub mod zkde_screencast_unstable_v1 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_unstable_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -10785,7 +10833,7 @@ pub mod zkde_screencast_unstable_v1 {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10807,7 +10855,7 @@ pub mod zkde_screencast_unstable_v1 {
                                 output,
                                 pointer
                             );
-                            self.stream_output(client, sender_id, stream, output, pointer)
+                            self.stream_output(socket, sender_id, stream, output, pointer)
                                 .await
                         }
                         1u16 => {
@@ -10825,14 +10873,12 @@ pub mod zkde_screencast_unstable_v1 {
                                 window_uuid,
                                 pointer
                             );
-                            self.stream_window(client, sender_id, stream, window_uuid, pointer)
+                            self.stream_window(socket, sender_id, stream, window_uuid, pointer)
                                 .await
                         }
                         2u16 => {
                             tracing::debug!("zkde_screencast_unstable_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         3u16 => {
                             let stream = message
@@ -10856,7 +10902,7 @@ pub mod zkde_screencast_unstable_v1 {
                                 pointer
                             );
                             self.stream_virtual_output(
-                                client, sender_id, stream, name, width, height, scale, pointer,
+                                socket, sender_id, stream, name, width, height, scale, pointer,
                             )
                             .await
                         }
@@ -10882,7 +10928,7 @@ pub mod zkde_screencast_unstable_v1 {
                                 pointer
                             );
                             self.stream_region(
-                                client, sender_id, stream, x, y, width, height, scale, pointer,
+                                socket, sender_id, stream, x, y, width, height, scale, pointer,
                             )
                             .await
                         }
@@ -10912,7 +10958,7 @@ pub mod zkde_screencast_unstable_v1 {
                                 pointer
                             );
                             self.stream_virtual_output_with_description(
-                                client,
+                                socket,
                                 sender_id,
                                 stream,
                                 name,
@@ -10930,7 +10976,7 @@ pub mod zkde_screencast_unstable_v1 {
             }
             fn stream_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 stream: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
@@ -10938,7 +10984,7 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_window(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 stream: crate::wire::ObjectId,
                 window_uuid: String,
@@ -10947,12 +10993,12 @@ pub mod zkde_screencast_unstable_v1 {
             #[doc = "Destroy the zkde_screencast_unstable_v1 object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_virtual_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 stream: crate::wire::ObjectId,
                 name: String,
@@ -10965,7 +11011,7 @@ pub mod zkde_screencast_unstable_v1 {
             #[doc = "factor for the region if the given scale is 0.0."]
             fn stream_region(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 stream: crate::wire::ObjectId,
                 x: i32,
@@ -10977,7 +11023,7 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn stream_virtual_output_with_description(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 stream: crate::wire::ObjectId,
                 name: String,
@@ -10992,6 +11038,8 @@ pub mod zkde_screencast_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1: crate::server::Dispatcher {
@@ -10999,7 +11047,7 @@ pub mod zkde_screencast_unstable_v1 {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11011,9 +11059,7 @@ pub mod zkde_screencast_unstable_v1 {
                                 "zkde_screencast_stream_unstable_v1#{}.close()",
                                 sender_id,
                             );
-                            let result = self.close(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.close(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -11021,12 +11067,12 @@ pub mod zkde_screencast_unstable_v1 {
             }
             fn close(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn closed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -11035,15 +11081,15 @@ pub mod zkde_screencast_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn created(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 node: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11054,15 +11100,15 @@ pub mod zkde_screencast_unstable_v1 {
                         node
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(node).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 error: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11075,8 +11121,8 @@ pub mod zkde_screencast_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(error))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

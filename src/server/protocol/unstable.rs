@@ -36,6 +36,8 @@ pub mod fullscreen_shell_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_fullscreen_shell_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -149,7 +151,7 @@ pub mod fullscreen_shell_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -158,9 +160,7 @@ pub mod fullscreen_shell_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_fullscreen_shell_v1#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         1u16 => {
                             let surface = message.object()?;
@@ -178,7 +178,7 @@ pub mod fullscreen_shell_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
                             self.present_surface(
-                                client,
+                                socket,
                                 sender_id,
                                 surface,
                                 method.try_into()?,
@@ -206,7 +206,7 @@ pub mod fullscreen_shell_unstable_v1 {
                                 feedback
                             );
                             self.present_surface_for_mode(
-                                client, sender_id, surface, output, framerate, feedback,
+                                socket, sender_id, surface, output, framerate, feedback,
                             )
                             .await
                         }
@@ -221,7 +221,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "to free some of those bindings."]
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Present a surface on the given output."]
@@ -247,7 +247,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "error."]
             fn present_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: Option<crate::wire::ObjectId>,
                 method: PresentMethod,
@@ -296,7 +296,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "error."]
             fn present_surface_for_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
@@ -313,7 +313,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "receive all the capability events."]
             fn capability(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 capability: Capability,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -326,8 +326,8 @@ pub mod fullscreen_shell_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(capability as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -337,6 +337,8 @@ pub mod fullscreen_shell_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_fullscreen_shell_mode_feedback_v1 interface. See the module level documentation for more info"]
         pub trait ZwpFullscreenShellModeFeedbackV1: crate::server::Dispatcher {
@@ -344,7 +346,7 @@ pub mod fullscreen_shell_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -363,7 +365,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn mode_successful(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -372,8 +374,8 @@ pub mod fullscreen_shell_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -386,7 +388,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn mode_failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -395,8 +397,8 @@ pub mod fullscreen_shell_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -409,7 +411,7 @@ pub mod fullscreen_shell_unstable_v1 {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn present_cancelled(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -418,8 +420,8 @@ pub mod fullscreen_shell_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -444,6 +446,8 @@ pub mod idle_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_idle_inhibit_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_idle_inhibit_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpIdleInhibitManagerV1: crate::server::Dispatcher {
@@ -451,7 +455,7 @@ pub mod idle_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -460,9 +464,7 @@ pub mod idle_inhibit_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_idle_inhibit_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -477,7 +479,7 @@ pub mod idle_inhibit_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.create_inhibitor(client, sender_id, id, surface).await
+                            self.create_inhibitor(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -486,13 +488,13 @@ pub mod idle_inhibit_unstable_v1 {
             #[doc = "Destroy the inhibit manager."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new inhibitor object associated with the given surface."]
             fn create_inhibitor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -514,6 +516,8 @@ pub mod idle_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_idle_inhibitor_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_idle_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwpIdleInhibitorV1: crate::server::Dispatcher {
@@ -521,7 +525,7 @@ pub mod idle_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -530,9 +534,7 @@ pub mod idle_inhibit_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_idle_inhibitor_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -541,7 +543,7 @@ pub mod idle_inhibit_unstable_v1 {
             #[doc = "Remove the inhibitor effect from the associated wl_surface."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -575,6 +577,8 @@ pub mod input_method_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_method_context_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_input_method_context_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputMethodContextV1: crate::server::Dispatcher {
@@ -582,7 +586,7 @@ pub mod input_method_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -591,9 +595,7 @@ pub mod input_method_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_input_method_context_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let serial = message.uint()?;
@@ -606,7 +608,7 @@ pub mod input_method_unstable_v1 {
                                 serial,
                                 text
                             );
-                            self.commit_string(client, sender_id, serial, text).await
+                            self.commit_string(socket, sender_id, serial, text).await
                         }
                         2u16 => {
                             let serial = message.uint()?;
@@ -623,7 +625,7 @@ pub mod input_method_unstable_v1 {
                                 text,
                                 commit
                             );
-                            self.preedit_string(client, sender_id, serial, text, commit)
+                            self.preedit_string(socket, sender_id, serial, text, commit)
                                 .await
                         }
                         3u16 => {
@@ -637,7 +639,7 @@ pub mod input_method_unstable_v1 {
                                 length,
                                 style
                             );
-                            self.preedit_styling(client, sender_id, index, length, style)
+                            self.preedit_styling(socket, sender_id, index, length, style)
                                 .await
                         }
                         4u16 => {
@@ -647,7 +649,7 @@ pub mod input_method_unstable_v1 {
                                 sender_id,
                                 index
                             );
-                            self.preedit_cursor(client, sender_id, index).await
+                            self.preedit_cursor(socket, sender_id, index).await
                         }
                         5u16 => {
                             let index = message.int()?;
@@ -658,7 +660,7 @@ pub mod input_method_unstable_v1 {
                                 index,
                                 length
                             );
-                            self.delete_surrounding_text(client, sender_id, index, length)
+                            self.delete_surrounding_text(socket, sender_id, index, length)
                                 .await
                         }
                         6u16 => {
@@ -670,7 +672,7 @@ pub mod input_method_unstable_v1 {
                                 index,
                                 anchor
                             );
-                            self.cursor_position(client, sender_id, index, anchor).await
+                            self.cursor_position(socket, sender_id, index, anchor).await
                         }
                         7u16 => {
                             let map = message.array()?;
@@ -679,7 +681,7 @@ pub mod input_method_unstable_v1 {
                                 sender_id,
                                 map.len()
                             );
-                            self.modifiers_map(client, sender_id, map).await
+                            self.modifiers_map(socket, sender_id, map).await
                         }
                         8u16 => {
                             let serial = message.uint()?;
@@ -696,7 +698,7 @@ pub mod input_method_unstable_v1 {
                                 state,
                                 modifiers
                             );
-                            self.keysym(client, sender_id, serial, time, sym, state, modifiers)
+                            self.keysym(socket, sender_id, serial, time, sym, state, modifiers)
                                 .await
                         }
                         9u16 => {
@@ -708,7 +710,7 @@ pub mod input_method_unstable_v1 {
                                 sender_id,
                                 keyboard
                             );
-                            self.grab_keyboard(client, sender_id, keyboard).await
+                            self.grab_keyboard(socket, sender_id, keyboard).await
                         }
                         10u16 => {
                             let serial = message.uint()?;
@@ -723,7 +725,7 @@ pub mod input_method_unstable_v1 {
                                 key,
                                 state
                             );
-                            self.key(client, sender_id, serial, time, key, state).await
+                            self.key(socket, sender_id, serial, time, key, state).await
                         }
                         11u16 => {
                             let serial = message.uint()?;
@@ -741,7 +743,7 @@ pub mod input_method_unstable_v1 {
                                 group
                             );
                             self.modifiers(
-                                client,
+                                socket,
                                 sender_id,
                                 serial,
                                 mods_depressed,
@@ -762,7 +764,7 @@ pub mod input_method_unstable_v1 {
                                 serial,
                                 language
                             );
-                            self.language(client, sender_id, serial, language).await
+                            self.language(socket, sender_id, serial, language).await
                         }
                         13u16 => {
                             let serial = message.uint()?;
@@ -773,7 +775,7 @@ pub mod input_method_unstable_v1 {
                                 serial,
                                 direction
                             );
-                            self.text_direction(client, sender_id, serial, direction)
+                            self.text_direction(socket, sender_id, serial, direction)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -782,7 +784,7 @@ pub mod input_method_unstable_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Send the commit string text for insertion to the application."]
@@ -796,7 +798,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "Any previously set composing text will be removed."]
             fn commit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
@@ -810,7 +812,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "processed by the text_input."]
             fn preedit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
@@ -824,7 +826,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "This request should be sent before sending a preedit_string request."]
             fn preedit_styling(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: u32,
                 length: u32,
@@ -838,7 +840,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "This request should be sent before sending a preedit_string request."]
             fn preedit_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -848,7 +850,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "a commit_string request."]
             fn delete_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 length: u32,
@@ -865,14 +867,14 @@ pub mod input_method_unstable_v1 {
             #[doc = "a commit_string request."]
             fn cursor_position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 anchor: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn modifiers_map(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 map: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -882,7 +884,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "event convention. Sym is an XKB keysym, state is a wl_keyboard key_state."]
             fn keysym(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -896,7 +898,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "text like it is done for CJK languages."]
             fn grab_keyboard(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 keyboard: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -908,7 +910,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "For generating custom key events use the keysym request instead."]
             fn key(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -921,7 +923,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "from the wl_keyboard::modifiers event."]
             fn modifiers(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 mods_depressed: u32,
@@ -931,14 +933,14 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn text_direction(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 direction: u32,
@@ -950,7 +952,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "there is no selected text then anchor is the same as cursor."]
             fn surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 cursor: u32,
@@ -969,29 +971,29 @@ pub mod input_method_unstable_v1 {
                         .put_uint(cursor)
                         .put_uint(anchor)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn reset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_input_method_context_v1#{}.reset()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn content_type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hint: u32,
                 purpose: u32,
@@ -1007,15 +1009,15 @@ pub mod input_method_unstable_v1 {
                         .put_uint(hint)
                         .put_uint(purpose)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn invoke_action(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 index: u32,
@@ -1031,15 +1033,15 @@ pub mod input_method_unstable_v1 {
                         .put_uint(button)
                         .put_uint(index)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn commit_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1051,15 +1053,15 @@ pub mod input_method_unstable_v1 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn preferred_language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1072,8 +1074,8 @@ pub mod input_method_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(language))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1087,6 +1089,8 @@ pub mod input_method_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_method_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_input_method_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputMethodV1: crate::server::Dispatcher {
@@ -1094,7 +1098,7 @@ pub mod input_method_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1109,7 +1113,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "which allows communication with the text input."]
             fn activate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1118,8 +1122,8 @@ pub mod input_method_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1129,7 +1133,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "handled."]
             fn deactivate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 context: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1142,8 +1146,8 @@ pub mod input_method_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(context))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1154,6 +1158,8 @@ pub mod input_method_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_panel_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_input_panel_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputPanelV1: crate::server::Dispatcher {
@@ -1161,7 +1167,7 @@ pub mod input_method_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1181,7 +1187,7 @@ pub mod input_method_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.get_input_panel_surface(client, sender_id, id, surface)
+                            self.get_input_panel_surface(socket, sender_id, id, surface)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -1190,7 +1196,7 @@ pub mod input_method_unstable_v1 {
             }
             fn get_input_panel_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -1199,6 +1205,8 @@ pub mod input_method_unstable_v1 {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_panel_surface_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -1227,7 +1235,7 @@ pub mod input_method_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1245,14 +1253,14 @@ pub mod input_method_unstable_v1 {
                                 output,
                                 position
                             );
-                            self.set_toplevel(client, sender_id, output, position).await
+                            self.set_toplevel(socket, sender_id, output, position).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_input_panel_surface_v1#{}.set_overlay_panel()",
                                 sender_id,
                             );
-                            self.set_overlay_panel(client, sender_id).await
+                            self.set_overlay_panel(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1263,7 +1271,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "A keyboard surface is only shown when a text input is active."]
             fn set_toplevel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 position: u32,
@@ -1274,7 +1282,7 @@ pub mod input_method_unstable_v1 {
             #[doc = "a text input is active."]
             fn set_overlay_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -1298,6 +1306,8 @@ pub mod input_timestamps_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_timestamps_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_input_timestamps_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputTimestampsManagerV1: crate::server::Dispatcher {
@@ -1305,7 +1315,7 @@ pub mod input_timestamps_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1317,9 +1327,7 @@ pub mod input_timestamps_unstable_v1 {
                                 "zwp_input_timestamps_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -1334,7 +1342,7 @@ pub mod input_timestamps_unstable_v1 {
                                 id,
                                 keyboard
                             );
-                            self.get_keyboard_timestamps(client, sender_id, id, keyboard)
+                            self.get_keyboard_timestamps(socket, sender_id, id, keyboard)
                                 .await
                         }
                         2u16 => {
@@ -1350,7 +1358,7 @@ pub mod input_timestamps_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_pointer_timestamps(client, sender_id, id, pointer)
+                            self.get_pointer_timestamps(socket, sender_id, id, pointer)
                                 .await
                         }
                         3u16 => {
@@ -1366,7 +1374,7 @@ pub mod input_timestamps_unstable_v1 {
                                 id,
                                 touch
                             );
-                            self.get_touch_timestamps(client, sender_id, id, touch)
+                            self.get_touch_timestamps(socket, sender_id, id, touch)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -1378,7 +1386,7 @@ pub mod input_timestamps_unstable_v1 {
             #[doc = "affected."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new input timestamps object that represents a subscription"]
@@ -1391,7 +1399,7 @@ pub mod input_timestamps_unstable_v1 {
             #[doc = "by calling zwp_input_timestamps_v1.destroy."]
             fn get_keyboard_timestamps(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 keyboard: crate::wire::ObjectId,
@@ -1406,7 +1414,7 @@ pub mod input_timestamps_unstable_v1 {
             #[doc = "by calling zwp_input_timestamps_v1.destroy."]
             fn get_pointer_timestamps(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -1421,7 +1429,7 @@ pub mod input_timestamps_unstable_v1 {
             #[doc = "by calling zwp_input_timestamps_v1.destroy."]
             fn get_touch_timestamps(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 touch: crate::wire::ObjectId,
@@ -1434,6 +1442,8 @@ pub mod input_timestamps_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_timestamps_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_input_timestamps_v1 interface. See the module level documentation for more info"]
         pub trait ZwpInputTimestampsV1: crate::server::Dispatcher {
@@ -1441,7 +1451,7 @@ pub mod input_timestamps_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1450,9 +1460,7 @@ pub mod input_timestamps_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_input_timestamps_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1463,7 +1471,7 @@ pub mod input_timestamps_unstable_v1 {
             #[doc = "timestamp events will be emitted."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The timestamp event is associated with the first subsequent input event"]
@@ -1482,7 +1490,7 @@ pub mod input_timestamps_unstable_v1 {
             #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
             fn timestamp(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
@@ -1501,8 +1509,8 @@ pub mod input_timestamps_unstable_v1 {
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1529,6 +1537,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[doc = "A global interface used for inhibiting the compositor keyboard shortcuts."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_keyboard_shortcuts_inhibit_manager_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -1558,7 +1568,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1570,9 +1580,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                                 "zwp_keyboard_shortcuts_inhibit_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -1591,7 +1599,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                                 surface,
                                 seat
                             );
-                            self.inhibit_shortcuts(client, sender_id, id, surface, seat)
+                            self.inhibit_shortcuts(socket, sender_id, id, surface, seat)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -1601,7 +1609,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             #[doc = "Destroy the keyboard shortcuts inhibitor manager."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new keyboard shortcuts inhibitor object associated with"]
@@ -1611,7 +1619,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             #[doc = "a protocol error \"already_inhibited\" is raised by the compositor."]
             fn inhibit_shortcuts(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -1655,6 +1663,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_keyboard_shortcuts_inhibitor_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibitor_v1 interface. See the module level documentation for more info"]
         pub trait ZwpKeyboardShortcutsInhibitorV1: crate::server::Dispatcher {
@@ -1662,7 +1672,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1674,9 +1684,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                                 "zwp_keyboard_shortcuts_inhibitor_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1685,7 +1693,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             #[doc = "Remove the keyboard shortcuts inhibitor from the associated wl_surface."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event indicates that the shortcut inhibitor is active."]
@@ -1701,7 +1709,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             #[doc = "offered by the compositor."]
             fn active(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1710,8 +1718,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1720,7 +1728,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             #[doc = "normal shortcuts processing is restored by the compositor."]
             fn inactive(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1729,8 +1737,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1811,6 +1819,8 @@ pub mod linux_dmabuf_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufV1: crate::server::Dispatcher {
@@ -1818,7 +1828,7 @@ pub mod linux_dmabuf_unstable_v1 {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1827,9 +1837,7 @@ pub mod linux_dmabuf_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let params_id = message
@@ -1840,7 +1848,7 @@ pub mod linux_dmabuf_unstable_v1 {
                                 sender_id,
                                 params_id
                             );
-                            self.create_params(client, sender_id, params_id).await
+                            self.create_params(socket, sender_id, params_id).await
                         }
                         2u16 => {
                             let id = message
@@ -1851,7 +1859,7 @@ pub mod linux_dmabuf_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_default_feedback(client, sender_id, id).await
+                            self.get_default_feedback(socket, sender_id, id).await
                         }
                         3u16 => {
                             let id = message
@@ -1866,7 +1874,7 @@ pub mod linux_dmabuf_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.get_surface_feedback(client, sender_id, id, surface)
+                            self.get_surface_feedback(socket, sender_id, id, surface)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -1877,7 +1885,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "remain valid."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This temporary object is used to collect multiple dmabuf handles into"]
@@ -1886,7 +1894,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "received."]
             fn create_params(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 params_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1896,7 +1904,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "(see get_surface_feedback)."]
             fn get_default_feedback(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1908,7 +1916,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "the feedback object becomes inert."]
             fn get_surface_feedback(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -1926,7 +1934,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "get_surface_feedback."]
             fn format(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1934,8 +1942,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     tracing::debug!("-> zwp_linux_dmabuf_v1#{}.format({})", sender_id, format);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(format).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1965,7 +1973,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "get_surface_feedback."]
             fn modifier(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifier_hi: u32,
@@ -1984,8 +1992,8 @@ pub mod linux_dmabuf_unstable_v1 {
                         .put_uint(modifier_hi)
                         .put_uint(modifier_lo)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2008,6 +2016,8 @@ pub mod linux_dmabuf_unstable_v1 {
     #[doc = "be given in any order. Each plane index can be set only once."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_params_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -2071,7 +2081,7 @@ pub mod linux_dmabuf_unstable_v1 {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2080,9 +2090,7 @@ pub mod linux_dmabuf_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let fd = message.fd()?;
@@ -2102,7 +2110,7 @@ pub mod linux_dmabuf_unstable_v1 {
                                 modifier_lo
                             );
                             self.add(
-                                client,
+                                socket,
                                 sender_id,
                                 fd,
                                 plane_idx,
@@ -2126,7 +2134,7 @@ pub mod linux_dmabuf_unstable_v1 {
                                 format,
                                 flags
                             );
-                            self.create(client, sender_id, width, height, format, flags.try_into()?)
+                            self.create(socket, sender_id, width, height, format, flags.try_into()?)
                                 .await
                         }
                         3u16 => {
@@ -2147,7 +2155,7 @@ pub mod linux_dmabuf_unstable_v1 {
                                 flags
                             );
                             self.create_immed(
-                                client,
+                                socket,
                                 sender_id,
                                 buffer_id,
                                 width,
@@ -2165,7 +2173,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "wl_buffer creation."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request adds one dmabuf to the set in this"]
@@ -2189,7 +2197,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "was already set."]
             fn add(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
                 plane_idx: u32,
@@ -2259,7 +2267,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "cancel the buffer creation, it can just destroy this object."]
             fn create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -2291,7 +2299,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "same restrictions."]
             fn create_immed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer_id: crate::wire::ObjectId,
                 width: i32,
@@ -2306,7 +2314,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "zwp_linux_buffer_params_v1 object."]
             fn created(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2319,8 +2327,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(buffer))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2333,14 +2341,14 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "zwp_linux_buffer_params_v1 object."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_linux_buffer_params_v1#{}.failed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2375,6 +2383,8 @@ pub mod linux_dmabuf_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -2394,7 +2404,7 @@ pub mod linux_dmabuf_unstable_v1 {
             const VERSION: u32 = 5u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2403,9 +2413,7 @@ pub mod linux_dmabuf_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -2415,7 +2423,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "use the wp_linux_dmabuf_feedback object anymore."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
@@ -2425,14 +2433,14 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "seen as atomic, even if they happen via multiple events."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2453,7 +2461,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "store duplicate format + modifier pairs in the table."]
             fn format_table(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
                 size: u32,
@@ -2469,8 +2477,8 @@ pub mod linux_dmabuf_unstable_v1 {
                         .put_fd(fd)
                         .put_uint(size)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2500,7 +2508,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "must force the buffer to have a linear layout."]
             fn main_device(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 device: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2512,8 +2520,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_array(device).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2524,7 +2532,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "next tranche will have a lower preference."]
             fn tranche_done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2533,8 +2541,8 @@ pub mod linux_dmabuf_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2567,7 +2575,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
             fn tranche_target_device(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 device: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2579,8 +2587,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_array(device).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2611,7 +2619,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "wp_linux_buffer_params.create request."]
             fn tranche_formats(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 indices: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2624,8 +2632,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_array(indices)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2640,7 +2648,7 @@ pub mod linux_dmabuf_unstable_v1 {
             #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
             fn tranche_flags(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: TrancheFlags,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2653,8 +2661,8 @@ pub mod linux_dmabuf_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(flags.bits())
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -2685,6 +2693,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_explicit_synchronization_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
@@ -2713,7 +2723,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2725,9 +2735,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 "zwp_linux_explicit_synchronization_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -2742,7 +2750,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.get_synchronization(client, sender_id, id, surface)
+                            self.get_synchronization(socket, sender_id, id, surface)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -2754,7 +2762,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "factory, shall not be affected by this request."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
@@ -2770,7 +2778,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "to avoid raising a synchronization_exists protocol error."]
             fn get_synchronization(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -2809,6 +2817,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[doc = "additional buffer types."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_surface_synchronization_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -2853,7 +2863,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2865,9 +2875,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 "zwp_linux_surface_synchronization_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let fd = message.fd()?;
@@ -2876,7 +2884,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 sender_id,
                                 fd.as_raw_fd()
                             );
-                            self.set_acquire_fence(client, sender_id, fd).await
+                            self.set_acquire_fence(socket, sender_id, fd).await
                         }
                         2u16 => {
                             let release = message
@@ -2887,7 +2895,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                                 sender_id,
                                 release
                             );
-                            self.get_release(client, sender_id, release).await
+                            self.get_release(socket, sender_id, release).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -2903,7 +2911,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "affected by this request."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the acquire fence that must be signaled before the compositor"]
@@ -2931,7 +2939,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "error is raised."]
             fn set_acquire_fence(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -2954,7 +2962,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "error is raised."]
             fn get_release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 release: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -2980,6 +2988,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_release_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_linux_buffer_release_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxBufferReleaseV1: crate::server::Dispatcher {
@@ -2987,7 +2997,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3011,7 +3021,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "This event destroys the zwp_linux_buffer_release_v1 object."]
             fn fenced_release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 fence: rustix::fd::OwnedFd,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3022,8 +3032,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                         fence.as_raw_fd()
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_fd(fence).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3041,7 +3051,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             #[doc = "This event destroys the zwp_linux_buffer_release_v1 object."]
             fn immediate_release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -3050,8 +3060,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3094,6 +3104,8 @@ pub mod pointer_constraints_unstable_v1 {
     #[doc = "'already_constrained' error will be raised."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_constraints_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These errors can be emitted in response to wp_pointer_constraints"]
@@ -3150,7 +3162,7 @@ pub mod pointer_constraints_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3159,9 +3171,7 @@ pub mod pointer_constraints_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_constraints_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -3187,7 +3197,7 @@ pub mod pointer_constraints_unstable_v1 {
                                 lifetime
                             );
                             self.lock_pointer(
-                                client,
+                                socket,
                                 sender_id,
                                 id,
                                 surface,
@@ -3221,7 +3231,7 @@ pub mod pointer_constraints_unstable_v1 {
                                 lifetime
                             );
                             self.confine_pointer(
-                                client,
+                                socket,
                                 sender_id,
                                 id,
                                 surface,
@@ -3239,7 +3249,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "pointer constraints object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The lock_pointer request lets the client request to disable movements of"]
@@ -3278,7 +3288,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "are unaffected."]
             fn lock_pointer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -3305,7 +3315,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "information."]
             fn confine_pointer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -3341,6 +3351,8 @@ pub mod pointer_constraints_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_locked_pointer_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_locked_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLockedPointerV1: crate::server::Dispatcher {
@@ -3348,7 +3360,7 @@ pub mod pointer_constraints_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3357,9 +3369,7 @@ pub mod pointer_constraints_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_locked_pointer_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let surface_x = message.fixed()?;
@@ -3370,7 +3380,7 @@ pub mod pointer_constraints_unstable_v1 {
                                 surface_x,
                                 surface_y
                             );
-                            self.set_cursor_position_hint(client, sender_id, surface_x, surface_y)
+                            self.set_cursor_position_hint(socket, sender_id, surface_x, surface_y)
                                 .await
                         }
                         2u16 => {
@@ -3382,7 +3392,7 @@ pub mod pointer_constraints_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            self.set_region(socket, sender_id, region).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3392,7 +3402,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "unlock the pointer."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the cursor position hint relative to the top left corner of the"]
@@ -3407,7 +3417,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "wl_surface.commit."]
             fn set_cursor_position_hint(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_x: crate::wire::Fixed,
                 surface_y: crate::wire::Fixed,
@@ -3419,21 +3429,21 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "For details about the lock region, see wp_locked_pointer."]
             fn set_region(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notification that the pointer lock of the seat's pointer is activated."]
             fn locked(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_locked_pointer_v1#{}.locked()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3446,14 +3456,14 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "reactivate in the future."]
             fn unlocked(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_locked_pointer_v1#{}.unlocked()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3479,6 +3489,8 @@ pub mod pointer_constraints_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_confined_pointer_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_confined_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpConfinedPointerV1: crate::server::Dispatcher {
@@ -3486,7 +3498,7 @@ pub mod pointer_constraints_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3495,9 +3507,7 @@ pub mod pointer_constraints_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_confined_pointer_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let region = message.object()?;
@@ -3508,7 +3518,7 @@ pub mod pointer_constraints_unstable_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_region(client, sender_id, region).await
+                            self.set_region(socket, sender_id, region).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3518,7 +3528,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "unconfine the pointer."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set a new region used to confine the pointer."]
@@ -3537,7 +3547,7 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "For details about the confine region, see wp_confined_pointer."]
             fn set_region(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -3545,14 +3555,14 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "activated."]
             fn confined(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_confined_pointer_v1#{}.confined()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3565,14 +3575,14 @@ pub mod pointer_constraints_unstable_v1 {
             #[doc = "reactivate in the future."]
             fn unconfined(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_confined_pointer_v1#{}.unconfined()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3601,6 +3611,8 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gestures_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_pointer_gestures_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGesturesV1: crate::server::Dispatcher {
@@ -3608,7 +3620,7 @@ pub mod pointer_gestures_unstable_v1 {
             const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3628,7 +3640,7 @@ pub mod pointer_gestures_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_swipe_gesture(client, sender_id, id, pointer).await
+                            self.get_swipe_gesture(socket, sender_id, id, pointer).await
                         }
                         1u16 => {
                             let id = message
@@ -3643,13 +3655,11 @@ pub mod pointer_gestures_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_pinch_gesture(client, sender_id, id, pointer).await
+                            self.get_pinch_gesture(socket, sender_id, id, pointer).await
                         }
                         2u16 => {
                             tracing::debug!("zwp_pointer_gestures_v1#{}.release()", sender_id,);
-                            let result = self.release(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.release(socket, sender_id).await
                         }
                         3u16 => {
                             let id = message
@@ -3664,7 +3674,7 @@ pub mod pointer_gestures_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_hold_gesture(client, sender_id, id, pointer).await
+                            self.get_hold_gesture(socket, sender_id, id, pointer).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3674,7 +3684,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "wl_pointer_gesture_swipe interface for details."]
             fn get_swipe_gesture(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -3683,7 +3693,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "wl_pointer_gesture_pinch interface for details."]
             fn get_pinch_gesture(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -3692,14 +3702,14 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "created via this gesture object remain valid."]
             fn release(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a hold gesture object. See the"]
             #[doc = "wl_pointer_gesture_hold interface for details."]
             fn get_hold_gesture(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -3724,6 +3734,8 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_swipe_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_pointer_gesture_swipe_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGestureSwipeV1: crate::server::Dispatcher {
@@ -3731,7 +3743,7 @@ pub mod pointer_gestures_unstable_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3740,9 +3752,7 @@ pub mod pointer_gestures_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_swipe_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3750,14 +3760,14 @@ pub mod pointer_gestures_unstable_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent when a multi-finger swipe gesture is detected"]
             #[doc = "on the device."]
             fn begin(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -3779,8 +3789,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_object(Some(surface))
                         .put_uint(fingers)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3792,7 +3802,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "center of the gesture compared to the previous event."]
             fn update(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 dx: crate::wire::Fixed,
@@ -3811,8 +3821,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_fixed(dx)
                         .put_fixed(dy)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3826,7 +3836,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "implementation-dependent."]
             fn end(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -3845,8 +3855,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_uint(time)
                         .put_int(cancelled)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3871,6 +3881,8 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_pinch_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_pointer_gesture_pinch_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGesturePinchV1: crate::server::Dispatcher {
@@ -3878,7 +3890,7 @@ pub mod pointer_gestures_unstable_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3887,9 +3899,7 @@ pub mod pointer_gestures_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_pinch_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -3897,14 +3907,14 @@ pub mod pointer_gestures_unstable_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent when a multi-finger pinch gesture is detected"]
             #[doc = "on the device."]
             fn begin(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -3926,8 +3936,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_object(Some(surface))
                         .put_uint(fingers)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3946,7 +3956,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "pointer_gesture_pinch.begin or pointer_gesture_pinch.update event."]
             fn update(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 dx: crate::wire::Fixed,
@@ -3971,8 +3981,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_fixed(scale)
                         .put_fixed(rotation)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -3986,7 +3996,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "implementation-dependent."]
             fn end(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -4005,8 +4015,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_uint(time)
                         .put_int(cancelled)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4033,6 +4043,8 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_hold_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_pointer_gesture_hold_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPointerGestureHoldV1: crate::server::Dispatcher {
@@ -4040,7 +4052,7 @@ pub mod pointer_gestures_unstable_v1 {
             const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4049,9 +4061,7 @@ pub mod pointer_gestures_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_pointer_gesture_hold_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4059,13 +4069,13 @@ pub mod pointer_gestures_unstable_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent when a hold gesture is detected on the device."]
             fn begin(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -4087,8 +4097,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_object(Some(surface))
                         .put_uint(fingers)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4104,7 +4114,7 @@ pub mod pointer_gestures_unstable_v1 {
             #[doc = "implementation-dependent."]
             fn end(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -4123,8 +4133,8 @@ pub mod pointer_gestures_unstable_v1 {
                         .put_uint(time)
                         .put_int(cancelled)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4182,6 +4192,8 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_primary_selection_device_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionDeviceManagerV1: crate::server::Dispatcher {
@@ -4189,7 +4201,7 @@ pub mod wp_primary_selection_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4205,7 +4217,7 @@ pub mod wp_primary_selection_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_source(client, sender_id, id).await
+                            self.create_source(socket, sender_id, id).await
                         }
                         1u16 => {
                             let id = message
@@ -4220,16 +4232,14 @@ pub mod wp_primary_selection_unstable_v1 {
                                 id,
                                 seat
                             );
-                            self.get_device(client, sender_id, id, seat).await
+                            self.get_device(socket, sender_id, id, seat).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_device_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4238,14 +4248,14 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "Create a new primary selection source."]
             fn create_source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new data device for a given seat."]
             fn get_device(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -4253,13 +4263,15 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "Destroy the primary selection device manager."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_primary_selection_device_v1 interface. See the module level documentation for more info"]
@@ -4268,7 +4280,7 @@ pub mod wp_primary_selection_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4286,16 +4298,14 @@ pub mod wp_primary_selection_unstable_v1 {
                                     .map_or("null".to_string(), |v| v.to_string()),
                                 serial
                             );
-                            self.set_selection(client, sender_id, source, serial).await
+                            self.set_selection(socket, sender_id, source, serial).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_device_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4307,7 +4317,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "To unset the selection, set the source to NULL."]
             fn set_selection(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
                 serial: u32,
@@ -4315,7 +4325,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "Destroy the primary selection device."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Introduces a new wp_primary_selection_offer object that may be used"]
@@ -4325,7 +4335,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "types."]
             fn data_offer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 offer: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4338,8 +4348,8 @@ pub mod wp_primary_selection_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(offer))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4355,7 +4365,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "previous selection data_offer, if any, upon receiving this event."]
             fn selection(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4366,8 +4376,8 @@ pub mod wp_primary_selection_unstable_v1 {
                         id.as_ref().map_or("null".to_string(), |v| v.to_string())
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4382,6 +4392,8 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_offer_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_primary_selection_offer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionOfferV1: crate::server::Dispatcher {
@@ -4389,7 +4401,7 @@ pub mod wp_primary_selection_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4407,16 +4419,14 @@ pub mod wp_primary_selection_unstable_v1 {
                                 mime_type,
                                 fd.as_raw_fd()
                             );
-                            self.receive(client, sender_id, mime_type, fd).await
+                            self.receive(socket, sender_id, mime_type, fd).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_offer_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4433,7 +4443,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "closes its end, at which point the transfer is complete."]
             fn receive(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
@@ -4441,7 +4451,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "Destroy the primary selection offer."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating announcing the"]
@@ -4450,7 +4460,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "mime type."]
             fn offer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4463,8 +4473,8 @@ pub mod wp_primary_selection_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(mime_type))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4477,6 +4487,8 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_source_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_primary_selection_source_v1 interface. See the module level documentation for more info"]
         pub trait ZwpPrimarySelectionSourceV1: crate::server::Dispatcher {
@@ -4484,7 +4496,7 @@ pub mod wp_primary_selection_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4500,16 +4512,14 @@ pub mod wp_primary_selection_unstable_v1 {
                                 sender_id,
                                 mime_type
                             );
-                            self.offer(client, sender_id, mime_type).await
+                            self.offer(socket, sender_id, mime_type).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "zwp_primary_selection_source_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4519,14 +4529,14 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "targets. Can be called several times to offer multiple types."]
             fn offer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the primary selection source."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request for the current primary selection contents from the client."]
@@ -4534,7 +4544,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "close it."]
             fn send(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
@@ -4550,8 +4560,8 @@ pub mod wp_primary_selection_unstable_v1 {
                         .put_string(Some(mime_type))
                         .put_fd(fd)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4560,7 +4570,7 @@ pub mod wp_primary_selection_unstable_v1 {
             #[doc = "clean up and destroy this primary selection source."]
             fn cancelled(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -4569,8 +4579,8 @@ pub mod wp_primary_selection_unstable_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4607,6 +4617,8 @@ pub mod relative_pointer_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_relative_pointer_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_relative_pointer_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpRelativePointerManagerV1: crate::server::Dispatcher {
@@ -4614,7 +4626,7 @@ pub mod relative_pointer_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4626,9 +4638,7 @@ pub mod relative_pointer_unstable_v1 {
                                 "zwp_relative_pointer_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -4643,7 +4653,7 @@ pub mod relative_pointer_unstable_v1 {
                                 id,
                                 pointer
                             );
-                            self.get_relative_pointer(client, sender_id, id, pointer)
+                            self.get_relative_pointer(socket, sender_id, id, pointer)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -4654,14 +4664,14 @@ pub mod relative_pointer_unstable_v1 {
             #[doc = "relative pointer manager object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a relative pointer interface given a wl_pointer object. See the"]
             #[doc = "wp_relative_pointer interface for more details."]
             fn get_relative_pointer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -4675,6 +4685,8 @@ pub mod relative_pointer_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_relative_pointer_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_relative_pointer_v1 interface. See the module level documentation for more info"]
         pub trait ZwpRelativePointerV1: crate::server::Dispatcher {
@@ -4682,7 +4694,7 @@ pub mod relative_pointer_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4691,9 +4703,7 @@ pub mod relative_pointer_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_relative_pointer_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4701,7 +4711,7 @@ pub mod relative_pointer_unstable_v1 {
             }
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Relative x/y pointer motion from the pointer of the seat associated with"]
@@ -4736,7 +4746,7 @@ pub mod relative_pointer_unstable_v1 {
             #[doc = "object is associated with."]
             fn relative_motion(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 utime_hi: u32,
                 utime_lo: u32,
@@ -4764,8 +4774,8 @@ pub mod relative_pointer_unstable_v1 {
                         .put_fixed(dx_unaccel)
                         .put_fixed(dy_unaccel)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4866,6 +4876,8 @@ pub mod tablet_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV1: crate::server::Dispatcher {
@@ -4873,7 +4885,7 @@ pub mod tablet_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4893,14 +4905,12 @@ pub mod tablet_unstable_v1 {
                                 tablet_seat,
                                 seat
                             );
-                            self.get_tablet_seat(client, sender_id, tablet_seat, seat)
+                            self.get_tablet_seat(socket, sender_id, tablet_seat, seat)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4910,7 +4920,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "provides access to all graphics tablets in this seat."]
             fn get_tablet_seat(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tablet_seat: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -4919,7 +4929,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -4930,6 +4940,8 @@ pub mod tablet_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_seat_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV1: crate::server::Dispatcher {
@@ -4937,7 +4949,7 @@ pub mod tablet_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4946,9 +4958,7 @@ pub mod tablet_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -4958,7 +4968,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
@@ -4967,7 +4977,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "sent through the wp_tablet interface."]
             fn tablet_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4976,8 +4986,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -4988,7 +4998,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "type, etc.) is sent through the wp_tablet_tool interface."]
             fn tool_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4997,8 +5007,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5027,6 +5037,8 @@ pub mod tablet_unstable_v1 {
     #[doc = "considered part of the same hardware state change."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
@@ -5172,7 +5184,7 @@ pub mod tablet_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5195,15 +5207,13 @@ pub mod tablet_unstable_v1 {
                                 hotspot_y
                             );
                             self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                socket, sender_id, serial, surface, hotspot_x, hotspot_y,
                             )
                             .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_tool_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -5243,7 +5253,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "seats."]
             fn set_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: Option<crate::wire::ObjectId>,
@@ -5253,7 +5263,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "This destroys the client's resource for this tool object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
@@ -5263,7 +5273,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "wp_tablet_tool.done event."]
             fn r#type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tool_type: Type,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5272,8 +5282,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(tool_type as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5295,7 +5305,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "wp_tablet_tool.done event."]
             fn hardware_serial(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
@@ -5311,8 +5321,8 @@ pub mod tablet_unstable_v1 {
                         .put_uint(hardware_serial_hi)
                         .put_uint(hardware_serial_lo)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5329,7 +5339,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "wp_tablet_tool.done event."]
             fn hardware_id_wacom(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
@@ -5345,8 +5355,8 @@ pub mod tablet_unstable_v1 {
                         .put_uint(hardware_id_hi)
                         .put_uint(hardware_id_lo)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5360,7 +5370,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "wp_tablet_tool.done event."]
             fn capability(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 capability: Capability,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5373,8 +5383,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(capability as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5384,14 +5394,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "be complete and finalize initialization of the tool."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5412,14 +5422,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "the object."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5435,7 +5445,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "within the same frame as the proximity_in event."]
             fn proximity_in(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 tablet: crate::wire::ObjectId,
@@ -5454,8 +5464,8 @@ pub mod tablet_unstable_v1 {
                         .put_object(Some(tablet))
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5474,14 +5484,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "proximity of the tablet."]
             fn proximity_out(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.proximity_out()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5500,7 +5510,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "exceeded."]
             fn down(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5508,8 +5518,8 @@ pub mod tablet_unstable_v1 {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.down({})", sender_id, serial);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5532,14 +5542,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "threshold."]
             fn up(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.up()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5547,7 +5557,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "Sent whenever a tablet tool moves."]
             fn motion(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
@@ -5558,8 +5568,8 @@ pub mod tablet_unstable_v1 {
                         .put_fixed(x)
                         .put_fixed(y)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5571,7 +5581,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "contact. See the down and up events for more details."]
             fn pressure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 pressure: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5580,8 +5590,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(pressure)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5593,7 +5603,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "contact. See the down and up events for more details."]
             fn distance(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 distance: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5602,8 +5612,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(distance)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5614,7 +5624,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "positive x or y axis."]
             fn tilt(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tilt_x: i32,
                 tilt_y: i32,
@@ -5630,8 +5640,8 @@ pub mod tablet_unstable_v1 {
                         .put_int(tilt_x)
                         .put_int(tilt_y)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5641,7 +5651,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "logical neutral position."]
             fn rotation(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 degrees: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5649,8 +5659,8 @@ pub mod tablet_unstable_v1 {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.rotation({})", sender_id, degrees);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(degrees).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 14u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5662,7 +5672,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "The slider is available on e.g. the Wacom Airbrush tool."]
             fn slider(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 position: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5670,8 +5680,8 @@ pub mod tablet_unstable_v1 {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.slider({})", sender_id, position);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(position).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 15u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5690,7 +5700,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "have different degrees values."]
             fn wheel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 degrees: i32,
                 clicks: i32,
@@ -5706,8 +5716,8 @@ pub mod tablet_unstable_v1 {
                         .put_int(degrees)
                         .put_int(clicks)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 16u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5720,7 +5730,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "details."]
             fn button(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 button: u32,
@@ -5739,8 +5749,8 @@ pub mod tablet_unstable_v1 {
                         .put_uint(button)
                         .put_uint(state as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 17u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 17u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5751,15 +5761,15 @@ pub mod tablet_unstable_v1 {
             #[doc = "one hardware event."]
             fn frame(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v1#{}.frame({})", sender_id, time);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 18u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 18u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5777,6 +5787,8 @@ pub mod tablet_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV1: crate::server::Dispatcher {
@@ -5784,7 +5796,7 @@ pub mod tablet_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5793,9 +5805,7 @@ pub mod tablet_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -5804,14 +5814,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "This destroys the client's resource for this tablet object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent in the initial burst of events before the"]
             #[doc = "wp_tablet.done event."]
             fn name(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5820,8 +5830,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5830,7 +5840,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "wp_tablet.done event."]
             fn id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 vid: u32,
                 pid: u32,
@@ -5841,8 +5851,8 @@ pub mod tablet_unstable_v1 {
                         .put_uint(vid)
                         .put_uint(pid)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5863,7 +5873,7 @@ pub mod tablet_unstable_v1 {
             #[doc = "wp_tablet.done event."]
             fn path(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5872,8 +5882,8 @@ pub mod tablet_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(path))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5884,14 +5894,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "of the tablet."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -5903,14 +5913,14 @@ pub mod tablet_unstable_v1 {
             #[doc = "the object."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_v1#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6006,6 +6016,8 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2: crate::server::Dispatcher {
@@ -6013,7 +6025,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6033,14 +6045,12 @@ pub mod tablet_unstable_v2 {
                                 tablet_seat,
                                 seat
                             );
-                            self.get_tablet_seat(client, sender_id, tablet_seat, seat)
+                            self.get_tablet_seat(socket, sender_id, tablet_seat, seat)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6050,7 +6060,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "provides access to all graphics tablets in this seat."]
             fn get_tablet_seat(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tablet_seat: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -6059,7 +6069,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -6070,6 +6080,8 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2: crate::server::Dispatcher {
@@ -6077,7 +6089,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6086,9 +6098,7 @@ pub mod tablet_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6098,7 +6108,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
@@ -6107,7 +6117,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "sent through the wp_tablet interface."]
             fn tablet_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6116,8 +6126,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6128,7 +6138,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "type, etc.) is sent through the wp_tablet_tool interface."]
             fn tool_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6137,8 +6147,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6155,7 +6165,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "interface."]
             fn pad_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6164,8 +6174,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(id))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6194,6 +6204,8 @@ pub mod tablet_unstable_v2 {
     #[doc = "considered part of the same hardware state change."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
@@ -6339,7 +6351,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6362,15 +6374,13 @@ pub mod tablet_unstable_v2 {
                                 hotspot_y
                             );
                             self.set_cursor(
-                                client, sender_id, serial, surface, hotspot_x, hotspot_y,
+                                socket, sender_id, serial, surface, hotspot_x, hotspot_y,
                             )
                             .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6408,7 +6418,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "protocol error is raised."]
             fn set_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: Option<crate::wire::ObjectId>,
@@ -6418,7 +6428,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "This destroys the client's resource for this tool object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
@@ -6428,7 +6438,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_tool.done event."]
             fn r#type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tool_type: Type,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6437,8 +6447,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(tool_type as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6460,7 +6470,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_tool.done event."]
             fn hardware_serial(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
@@ -6476,8 +6486,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(hardware_serial_hi)
                         .put_uint(hardware_serial_lo)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6494,7 +6504,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_tool.done event."]
             fn hardware_id_wacom(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
@@ -6510,8 +6520,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(hardware_id_hi)
                         .put_uint(hardware_id_lo)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6525,7 +6535,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_tool.done event."]
             fn capability(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 capability: Capability,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6538,8 +6548,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(capability as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6549,14 +6559,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "be complete and finalize initialization of the tool."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6577,14 +6587,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "the object."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6600,7 +6610,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "within the same frame as the proximity_in event."]
             fn proximity_in(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 tablet: crate::wire::ObjectId,
@@ -6619,8 +6629,8 @@ pub mod tablet_unstable_v2 {
                         .put_object(Some(tablet))
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6639,14 +6649,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "proximity of the tablet."]
             fn proximity_out(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.proximity_out()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6665,7 +6675,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "exceeded."]
             fn down(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6673,8 +6683,8 @@ pub mod tablet_unstable_v2 {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.down({})", sender_id, serial);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6697,14 +6707,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "threshold."]
             fn up(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.up()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6712,7 +6722,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "Sent whenever a tablet tool moves."]
             fn motion(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
@@ -6723,8 +6733,8 @@ pub mod tablet_unstable_v2 {
                         .put_fixed(x)
                         .put_fixed(y)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6736,7 +6746,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "contact. See the down and up events for more details."]
             fn pressure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 pressure: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6745,8 +6755,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(pressure)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6758,7 +6768,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "contact. See the down and up events for more details."]
             fn distance(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 distance: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6767,8 +6777,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(distance)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6779,7 +6789,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "positive x or y axis."]
             fn tilt(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tilt_x: crate::wire::Fixed,
                 tilt_y: crate::wire::Fixed,
@@ -6795,8 +6805,8 @@ pub mod tablet_unstable_v2 {
                         .put_fixed(tilt_x)
                         .put_fixed(tilt_y)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6806,7 +6816,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "logical neutral position."]
             fn rotation(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 degrees: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6815,8 +6825,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_fixed(degrees)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 14u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6828,7 +6838,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "The slider is available on e.g. the Wacom Airbrush tool."]
             fn slider(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 position: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6836,8 +6846,8 @@ pub mod tablet_unstable_v2 {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.slider({})", sender_id, position);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_int(position).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 15u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6856,7 +6866,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "have different degrees values."]
             fn wheel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 degrees: crate::wire::Fixed,
                 clicks: i32,
@@ -6872,8 +6882,8 @@ pub mod tablet_unstable_v2 {
                         .put_fixed(degrees)
                         .put_int(clicks)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 16u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6886,7 +6896,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "details."]
             fn button(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 button: u32,
@@ -6905,8 +6915,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(button)
                         .put_uint(state as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 17u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 17u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6917,15 +6927,15 @@ pub mod tablet_unstable_v2 {
             #[doc = "one hardware event."]
             fn frame(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_tool_v2#{}.frame({})", sender_id, time);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 18u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 18u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -6943,6 +6953,8 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletV2: crate::server::Dispatcher {
@@ -6950,7 +6962,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6959,9 +6971,7 @@ pub mod tablet_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -6970,7 +6980,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "This destroys the client's resource for this tablet object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A descriptive name for the tablet device."]
@@ -6981,7 +6991,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet.done event."]
             fn name(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -6990,8 +7000,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7005,7 +7015,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet.done event."]
             fn id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 vid: u32,
                 pid: u32,
@@ -7016,8 +7026,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(vid)
                         .put_uint(pid)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7038,7 +7048,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet.done event."]
             fn path(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7047,8 +7057,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(path))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7059,14 +7069,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "of the tablet."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7078,14 +7088,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "the object."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_v2#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7099,6 +7109,8 @@ pub mod tablet_unstable_v2 {
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_ring_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Describes the source types for ring events. This indicates to the"]
@@ -7132,7 +7144,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7150,14 +7162,12 @@ pub mod tablet_unstable_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, description, serial)
+                            self.set_feedback(socket, sender_id, description, serial)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7184,7 +7194,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "ignored."]
             fn set_feedback(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 description: String,
                 serial: u32,
@@ -7192,7 +7202,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "This destroys the client's resource for this ring object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Source information for ring events."]
@@ -7209,7 +7219,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "no event is sent."]
             fn source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 source: Source,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7218,8 +7228,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(source as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7230,7 +7240,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "north of the ring in the pad's current rotation."]
             fn angle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 degrees: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7239,8 +7249,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_fixed(degrees)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7257,14 +7267,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "event should be considered as the start of a new interaction."]
             fn stop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.stop()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7284,15 +7294,15 @@ pub mod tablet_unstable_v2 {
             #[doc = "angle, frame, etc."]
             fn frame(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.frame({})", sender_id, time);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7306,6 +7316,8 @@ pub mod tablet_unstable_v2 {
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_strip_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Describes the source types for strip events. This indicates to the"]
@@ -7339,7 +7351,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7357,14 +7369,12 @@ pub mod tablet_unstable_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, description, serial)
+                            self.set_feedback(socket, sender_id, description, serial)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7391,7 +7401,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "ignored."]
             fn set_feedback(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 description: String,
                 serial: u32,
@@ -7399,7 +7409,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "This destroys the client's resource for this strip object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Source information for strip events."]
@@ -7416,7 +7426,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "no event is sent."]
             fn source(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 source: Source,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7429,8 +7439,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(source as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7442,7 +7452,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "the pad's current rotation."]
             fn position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 position: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7455,8 +7465,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(position)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7473,14 +7483,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "event should be considered as the start of a new interaction."]
             fn stop(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.stop()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7501,15 +7511,15 @@ pub mod tablet_unstable_v2 {
             #[doc = "position, frame, etc."]
             fn frame(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.frame({})", sender_id, time);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(time).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7540,6 +7550,8 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2: crate::server::Dispatcher {
@@ -7547,7 +7559,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7556,9 +7568,7 @@ pub mod tablet_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7568,7 +7578,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
@@ -7585,7 +7595,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "will be sent with an empty array."]
             fn buttons(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buttons: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7598,8 +7608,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_array(buttons)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7611,7 +7621,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_pad_group.done event."]
             fn ring(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 ring: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7620,8 +7630,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(ring))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7633,7 +7643,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_pad_group.done event."]
             fn strip(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 strip: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7642,8 +7652,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(strip))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7662,15 +7672,15 @@ pub mod tablet_unstable_v2 {
             #[doc = "more than one mode is available."]
             fn modes(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 modes: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_group_v2#{}.modes({})", sender_id, modes);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(modes).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7681,14 +7691,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "of the tablet group."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_group_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7722,7 +7732,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "for each changed ring or strip."]
             fn mode_switch(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 serial: u32,
@@ -7741,8 +7751,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(serial)
                         .put_uint(mode)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7773,6 +7783,8 @@ pub mod tablet_unstable_v2 {
     #[doc = "although different groups may have different active modes."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Describes the physical state of a button that caused the button"]
@@ -7807,7 +7819,7 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7827,14 +7839,12 @@ pub mod tablet_unstable_v2 {
                                 description,
                                 serial
                             );
-                            self.set_feedback(client, sender_id, button, description, serial)
+                            self.set_feedback(socket, sender_id, button, description, serial)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -7866,7 +7876,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "be ignored."]
             fn set_feedback(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 description: String,
@@ -7876,7 +7886,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
@@ -7886,7 +7896,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_pad.done event. At least one group will be announced."]
             fn group(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 pad_group: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7895,8 +7905,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(pad_group))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7913,7 +7923,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "wp_tablet_pad.done event."]
             fn path(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 path: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7922,8 +7932,8 @@ pub mod tablet_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(path))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7936,7 +7946,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "button is available."]
             fn buttons(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buttons: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -7944,8 +7954,8 @@ pub mod tablet_unstable_v2 {
                     tracing::debug!("-> zwp_tablet_pad_v2#{}.buttons({})", sender_id, buttons);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(buttons).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7955,14 +7965,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "be complete and finalize initialization of the pad."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_v2#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7970,7 +7980,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "Sent whenever the physical state of a button changes."]
             fn button(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 time: u32,
                 button: u32,
@@ -7989,8 +7999,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(button)
                         .put_uint(state as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -7998,7 +8008,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "Notification that this pad is focused on the specified surface."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 tablet: crate::wire::ObjectId,
@@ -8017,8 +8027,8 @@ pub mod tablet_unstable_v2 {
                         .put_object(Some(tablet))
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8027,7 +8037,7 @@ pub mod tablet_unstable_v2 {
             #[doc = "surface."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 surface: crate::wire::ObjectId,
@@ -8043,8 +8053,8 @@ pub mod tablet_unstable_v2 {
                         .put_uint(serial)
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8057,14 +8067,14 @@ pub mod tablet_unstable_v2 {
             #[doc = "the pad itself."]
             fn removed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_tablet_pad_v2#{}.removed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8105,6 +8115,8 @@ pub mod text_input_unstable_v1 {
     #[doc = "interface version number is reset."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "auto completion, correction and capitalization"] const Default = 7u32 ; # [doc = "hidden and sensitive text"] const Password = 192u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
@@ -8250,7 +8262,7 @@ pub mod text_input_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8270,26 +8282,26 @@ pub mod text_input_unstable_v1 {
                                 seat,
                                 surface
                             );
-                            self.activate(client, sender_id, seat, surface).await
+                            self.activate(socket, sender_id, seat, surface).await
                         }
                         1u16 => {
                             let seat = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zwp_text_input_v1#{}.deactivate({})", sender_id, seat);
-                            self.deactivate(client, sender_id, seat).await
+                            self.deactivate(socket, sender_id, seat).await
                         }
                         2u16 => {
                             tracing::debug!("zwp_text_input_v1#{}.show_input_panel()", sender_id,);
-                            self.show_input_panel(client, sender_id).await
+                            self.show_input_panel(socket, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!("zwp_text_input_v1#{}.hide_input_panel()", sender_id,);
-                            self.hide_input_panel(client, sender_id).await
+                            self.hide_input_panel(socket, sender_id).await
                         }
                         4u16 => {
                             tracing::debug!("zwp_text_input_v1#{}.reset()", sender_id,);
-                            self.reset(client, sender_id).await
+                            self.reset(socket, sender_id).await
                         }
                         5u16 => {
                             let text = message
@@ -8304,7 +8316,7 @@ pub mod text_input_unstable_v1 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
+                            self.set_surrounding_text(socket, sender_id, text, cursor, anchor)
                                 .await
                         }
                         6u16 => {
@@ -8317,7 +8329,7 @@ pub mod text_input_unstable_v1 {
                                 purpose
                             );
                             self.set_content_type(
-                                client,
+                                socket,
                                 sender_id,
                                 hint.try_into()?,
                                 purpose.try_into()?,
@@ -8337,7 +8349,7 @@ pub mod text_input_unstable_v1 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
+                            self.set_cursor_rectangle(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         8u16 => {
@@ -8349,7 +8361,7 @@ pub mod text_input_unstable_v1 {
                                 sender_id,
                                 language
                             );
-                            self.set_preferred_language(client, sender_id, language)
+                            self.set_preferred_language(socket, sender_id, language)
                                 .await
                         }
                         9u16 => {
@@ -8359,7 +8371,7 @@ pub mod text_input_unstable_v1 {
                                 sender_id,
                                 serial
                             );
-                            self.commit_state(client, sender_id, serial).await
+                            self.commit_state(socket, sender_id, serial).await
                         }
                         10u16 => {
                             let button = message.uint()?;
@@ -8370,7 +8382,7 @@ pub mod text_input_unstable_v1 {
                                 button,
                                 index
                             );
-                            self.invoke_action(client, sender_id, button, index).await
+                            self.invoke_action(socket, sender_id, button, index).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8385,7 +8397,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "is emitted on successful activation."]
             fn activate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -8395,20 +8407,20 @@ pub mod text_input_unstable_v1 {
             #[doc = "for activation."]
             fn deactivate(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             fn show_input_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Should be called by an editor widget when the input state should be"]
@@ -8416,7 +8428,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "input method flow."]
             fn reset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
@@ -8426,7 +8438,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "text anchor, then it is the same as cursor."]
             fn set_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 cursor: u32,
@@ -8441,14 +8453,14 @@ pub mod text_input_unstable_v1 {
             #[doc = "should be assumed."]
             fn set_content_type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_cursor_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -8464,19 +8476,19 @@ pub mod text_input_unstable_v1 {
             #[doc = "application which tracks languages of contacts."]
             fn set_preferred_language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 language: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn commit_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn invoke_action(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 button: u32,
                 index: u32,
@@ -8485,7 +8497,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "response to an activate request."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8494,8 +8506,8 @@ pub mod text_input_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8505,14 +8517,14 @@ pub mod text_input_unstable_v1 {
             #[doc = "destroyed."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zwp_text_input_v1#{}.leave()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8522,7 +8534,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "bitmask in the keysym event."]
             fn modifiers_map(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 map: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8533,8 +8545,8 @@ pub mod text_input_unstable_v1 {
                         map.len()
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_array(map).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8542,7 +8554,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "Notify when the visibility state of the input panel changed."]
             fn input_panel_state(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8553,8 +8565,8 @@ pub mod text_input_unstable_v1 {
                         state
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8570,7 +8582,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "events occurring directly before preedit_string."]
             fn preedit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
@@ -8589,8 +8601,8 @@ pub mod text_input_unstable_v1 {
                         .put_string(Some(text))
                         .put_string(Some(commit))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8604,7 +8616,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_styling(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: u32,
                 length: u32,
@@ -8623,8 +8635,8 @@ pub mod text_input_unstable_v1 {
                         .put_uint(length)
                         .put_uint(style as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8636,7 +8648,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_cursor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8647,8 +8659,8 @@ pub mod text_input_unstable_v1 {
                         index
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_int(index).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8662,7 +8674,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "Any previously set composing text should be removed."]
             fn commit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 text: String,
@@ -8678,8 +8690,8 @@ pub mod text_input_unstable_v1 {
                         .put_uint(serial)
                         .put_string(Some(text))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8690,7 +8702,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "event."]
             fn cursor_position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 anchor: i32,
@@ -8706,8 +8718,8 @@ pub mod text_input_unstable_v1 {
                         .put_int(index)
                         .put_int(anchor)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8722,7 +8734,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "event."]
             fn delete_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 index: i32,
                 length: u32,
@@ -8738,8 +8750,8 @@ pub mod text_input_unstable_v1 {
                         .put_int(index)
                         .put_uint(length)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8752,7 +8764,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "(where the modifier indices are set by the modifiers_map event)"]
             fn keysym(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 time: u32,
@@ -8777,8 +8789,8 @@ pub mod text_input_unstable_v1 {
                         .put_uint(state)
                         .put_uint(modifiers)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8787,7 +8799,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "RFC-3066 format language tag."]
             fn language(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 language: String,
@@ -8803,8 +8815,8 @@ pub mod text_input_unstable_v1 {
                         .put_uint(serial)
                         .put_string(Some(language))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8816,7 +8828,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "direction text is laid out properly."]
             fn text_direction(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
                 direction: TextDirection,
@@ -8832,8 +8844,8 @@ pub mod text_input_unstable_v1 {
                         .put_uint(serial)
                         .put_uint(direction as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -8844,6 +8856,8 @@ pub mod text_input_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_text_input_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV1: crate::server::Dispatcher {
@@ -8851,7 +8865,7 @@ pub mod text_input_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -8867,7 +8881,7 @@ pub mod text_input_unstable_v1 {
                                 sender_id,
                                 id
                             );
-                            self.create_text_input(client, sender_id, id).await
+                            self.create_text_input(socket, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -8876,7 +8890,7 @@ pub mod text_input_unstable_v1 {
             #[doc = "Creates a new text_input object."]
             fn create_text_input(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -8928,6 +8942,8 @@ pub mod text_input_unstable_v3 {
     #[doc = "needs to be resent by the client."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v3 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Reason for the change of surrounding text or cursor posision."]
@@ -9038,7 +9054,7 @@ pub mod text_input_unstable_v3 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9047,17 +9063,15 @@ pub mod text_input_unstable_v3 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.enable()", sender_id,);
-                            self.enable(client, sender_id).await
+                            self.enable(socket, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.disable()", sender_id,);
-                            self.disable(client, sender_id).await
+                            self.disable(socket, sender_id).await
                         }
                         3u16 => {
                             let text = message
@@ -9072,7 +9086,7 @@ pub mod text_input_unstable_v3 {
                                 cursor,
                                 anchor
                             );
-                            self.set_surrounding_text(client, sender_id, text, cursor, anchor)
+                            self.set_surrounding_text(socket, sender_id, text, cursor, anchor)
                                 .await
                         }
                         4u16 => {
@@ -9082,7 +9096,7 @@ pub mod text_input_unstable_v3 {
                                 sender_id,
                                 cause
                             );
-                            self.set_text_change_cause(client, sender_id, cause.try_into()?)
+                            self.set_text_change_cause(socket, sender_id, cause.try_into()?)
                                 .await
                         }
                         5u16 => {
@@ -9095,7 +9109,7 @@ pub mod text_input_unstable_v3 {
                                 purpose
                             );
                             self.set_content_type(
-                                client,
+                                socket,
                                 sender_id,
                                 hint.try_into()?,
                                 purpose.try_into()?,
@@ -9115,12 +9129,12 @@ pub mod text_input_unstable_v3 {
                                 width,
                                 height
                             );
-                            self.set_cursor_rectangle(client, sender_id, x, y, width, height)
+                            self.set_cursor_rectangle(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         7u16 => {
                             tracing::debug!("zwp_text_input_v3#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9130,7 +9144,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "through this wp_text_input object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Requests text input on the surface previously obtained from the enter"]
@@ -9163,7 +9177,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "zwp_text_input_v3.commit request."]
             fn enable(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Explicitly disable text input on the current surface (typically when"]
@@ -9173,7 +9187,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "the next zwp_text_input_v3.commit request."]
             fn disable(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sets the surrounding plain text around the input, excluding the preedit"]
@@ -9209,7 +9223,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "get applied, subsequent attempts to change them may have no effect."]
             fn set_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: String,
                 cursor: i32,
@@ -9231,7 +9245,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "The initial value of cause is input_method."]
             fn set_text_change_cause(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 cause: ChangeCause,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -9248,7 +9262,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "is normal."]
             fn set_content_type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
@@ -9272,7 +9286,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "no effect."]
             fn set_cursor_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -9304,7 +9318,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "events."]
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
@@ -9317,7 +9331,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "text-input object."]
             fn enter(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9326,8 +9340,8 @@ pub mod text_input_unstable_v3 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9345,7 +9359,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "the keyboard focus."]
             fn leave(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9354,8 +9368,8 @@ pub mod text_input_unstable_v3 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9380,7 +9394,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "cursor_end and cursor_hidden are all 0."]
             fn preedit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: Option<String>,
                 cursor_begin: i32,
@@ -9399,8 +9413,8 @@ pub mod text_input_unstable_v3 {
                         .put_int(cursor_begin)
                         .put_int(cursor_end)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9415,7 +9429,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "The initial value of text is an empty string."]
             fn commit_string(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 text: Option<String>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9427,8 +9441,8 @@ pub mod text_input_unstable_v3 {
                     );
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_string(text).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9449,7 +9463,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "The initial values of both before_length and after_length are 0."]
             fn delete_surrounding_text(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 before_length: u32,
                 after_length: u32,
@@ -9465,8 +9479,8 @@ pub mod text_input_unstable_v3 {
                         .put_uint(before_length)
                         .put_uint(after_length)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9500,7 +9514,7 @@ pub mod text_input_unstable_v3 {
             #[doc = "receiving a zwp_text_input_v3.done event with a matching serial."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9508,8 +9522,8 @@ pub mod text_input_unstable_v3 {
                     tracing::debug!("-> zwp_text_input_v3#{}.done({})", sender_id, serial);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9520,6 +9534,8 @@ pub mod text_input_unstable_v3 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v3 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV3: crate::server::Dispatcher {
@@ -9527,7 +9543,7 @@ pub mod text_input_unstable_v3 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9536,9 +9552,7 @@ pub mod text_input_unstable_v3 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zwp_text_input_manager_v3#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -9553,7 +9567,7 @@ pub mod text_input_unstable_v3 {
                                 id,
                                 seat
                             );
-                            self.get_text_input(client, sender_id, id, seat).await
+                            self.get_text_input(socket, sender_id, id, seat).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9562,13 +9576,13 @@ pub mod text_input_unstable_v3 {
             #[doc = "Destroy the wp_text_input_manager object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Creates a new text-input object for a given seat."]
             fn get_text_input(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -9603,6 +9617,8 @@ pub mod xdg_decoration_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_decoration_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_decoration_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgDecorationManagerV1: crate::server::Dispatcher {
@@ -9610,7 +9626,7 @@ pub mod xdg_decoration_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9619,9 +9635,7 @@ pub mod xdg_decoration_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_decoration_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -9636,7 +9650,7 @@ pub mod xdg_decoration_unstable_v1 {
                                 id,
                                 toplevel
                             );
-                            self.get_toplevel_decoration(client, sender_id, id, toplevel)
+                            self.get_toplevel_decoration(socket, sender_id, id, toplevel)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -9647,7 +9661,7 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "with the manager."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new decoration object associated with the given toplevel."]
@@ -9659,7 +9673,7 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "errors."]
             fn get_toplevel_decoration(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
@@ -9674,6 +9688,8 @@ pub mod xdg_decoration_unstable_v1 {
     #[doc = "xdg_toplevel."]
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_toplevel_decoration_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -9737,7 +9753,7 @@ pub mod xdg_decoration_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9746,9 +9762,7 @@ pub mod xdg_decoration_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_toplevel_decoration_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let mode = message.uint()?;
@@ -9757,14 +9771,14 @@ pub mod xdg_decoration_unstable_v1 {
                                 sender_id,
                                 mode
                             );
-                            self.set_mode(client, sender_id, mode.try_into()?).await
+                            self.set_mode(socket, sender_id, mode.try_into()?).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "zxdg_toplevel_decoration_v1#{}.unset_mode()",
                                 sender_id,
                             );
-                            self.unset_mode(client, sender_id).await
+                            self.unset_mode(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9774,7 +9788,7 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "commit."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the toplevel surface decoration mode. This informs the compositor"]
@@ -9800,7 +9814,7 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "error is raised by the compositor."]
             fn set_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: Mode,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -9810,7 +9824,7 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "This request has the same semantics as set_mode."]
             fn unset_mode(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The configure event configures the effective decoration mode. The"]
@@ -9822,7 +9836,7 @@ pub mod xdg_decoration_unstable_v1 {
             #[doc = "obeyed by the client."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 mode: Mode,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9835,8 +9849,8 @@ pub mod xdg_decoration_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(mode as u32)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -9880,6 +9894,8 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exporter_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_exporter_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgExporterV1: crate::server::Dispatcher {
@@ -9887,7 +9903,7 @@ pub mod xdg_foreign_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9896,9 +9912,7 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exporter_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -9913,7 +9927,7 @@ pub mod xdg_foreign_unstable_v1 {
                                 id,
                                 surface
                             );
-                            self.export(client, sender_id, id, surface).await
+                            self.export(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9923,7 +9937,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "used."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The export request exports the passed surface so that it can later be"]
@@ -9936,7 +9950,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "surfaces may be exported."]
             fn export(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -9949,6 +9963,8 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_importer_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_importer_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgImporterV1: crate::server::Dispatcher {
@@ -9956,7 +9972,7 @@ pub mod xdg_foreign_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -9965,9 +9981,7 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_importer_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -9982,7 +9996,7 @@ pub mod xdg_foreign_unstable_v1 {
                                 id,
                                 handle
                             );
-                            self.import(client, sender_id, id, handle).await
+                            self.import(socket, sender_id, id, handle).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -9992,7 +10006,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "used."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The import request imports a surface from any client given a handle"]
@@ -10002,7 +10016,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "manipulate its relationship using it. See xdg_imported for details."]
             fn import(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 handle: String,
@@ -10016,6 +10030,8 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exported_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_exported_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgExportedV1: crate::server::Dispatcher {
@@ -10023,7 +10039,7 @@ pub mod xdg_foreign_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10032,9 +10048,7 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exported_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10045,7 +10059,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "given the handle sent via xdg_exported.handle."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The handle event contains the unique handle of this exported surface"]
@@ -10054,7 +10068,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "used to import the surface multiple times."]
             fn handle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 handle: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10063,8 +10077,8 @@ pub mod xdg_foreign_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(handle))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10077,6 +10091,8 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_imported_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_imported_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgImportedV1: crate::server::Dispatcher {
@@ -10084,7 +10100,7 @@ pub mod xdg_foreign_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10093,9 +10109,7 @@ pub mod xdg_foreign_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_imported_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let surface = message
@@ -10106,7 +10120,7 @@ pub mod xdg_foreign_unstable_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.set_parent_of(client, sender_id, surface).await
+                            self.set_parent_of(socket, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10117,7 +10131,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "be invalidated."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the imported surface as the parent of some surface of the client."]
@@ -10126,7 +10140,7 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "semantics as xdg_surface.set_parent."]
             fn set_parent_of(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -10136,14 +10150,14 @@ pub mod xdg_foreign_unstable_v1 {
             #[doc = "destroyed, if the handle used for importing was invalid."]
             fn destroyed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zxdg_imported_v1#{}.destroyed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10187,6 +10201,8 @@ pub mod xdg_foreign_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exporter_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These errors can be emitted in response to invalid xdg_exporter"]
         #[doc = "requests."]
@@ -10217,7 +10233,7 @@ pub mod xdg_foreign_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10226,9 +10242,7 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exporter_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -10243,7 +10257,7 @@ pub mod xdg_foreign_unstable_v2 {
                                 id,
                                 surface
                             );
-                            self.export_toplevel(client, sender_id, id, surface).await
+                            self.export_toplevel(socket, sender_id, id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10253,7 +10267,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "used."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The export_toplevel request exports the passed surface so that it can later be"]
@@ -10267,7 +10281,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "protocol error is sent."]
             fn export_toplevel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -10280,6 +10294,8 @@ pub mod xdg_foreign_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_importer_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_importer_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgImporterV2: crate::server::Dispatcher {
@@ -10287,7 +10303,7 @@ pub mod xdg_foreign_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10296,9 +10312,7 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_importer_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -10313,7 +10327,7 @@ pub mod xdg_foreign_unstable_v2 {
                                 id,
                                 handle
                             );
-                            self.import_toplevel(client, sender_id, id, handle).await
+                            self.import_toplevel(socket, sender_id, id, handle).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10323,7 +10337,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "used."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The import_toplevel request imports a surface from any client given a handle"]
@@ -10333,7 +10347,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "manipulate its relationship using it. See xdg_imported for details."]
             fn import_toplevel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 handle: String,
@@ -10347,6 +10361,8 @@ pub mod xdg_foreign_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exported_v2 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_exported_v2 interface. See the module level documentation for more info"]
         pub trait ZxdgExportedV2: crate::server::Dispatcher {
@@ -10354,7 +10370,7 @@ pub mod xdg_foreign_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10363,9 +10379,7 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_exported_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10376,7 +10390,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "given the handle sent via xdg_exported.handle."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The handle event contains the unique handle of this exported surface"]
@@ -10385,7 +10399,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "may be used to import the surface multiple times."]
             fn handle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 handle: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10394,8 +10408,8 @@ pub mod xdg_foreign_unstable_v2 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(handle))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10407,6 +10421,8 @@ pub mod xdg_foreign_unstable_v2 {
     #[doc = "relationships between its own surfaces and the imported surface."]
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_imported_v2 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These errors can be emitted in response to invalid xdg_imported"]
@@ -10438,7 +10454,7 @@ pub mod xdg_foreign_unstable_v2 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10447,9 +10463,7 @@ pub mod xdg_foreign_unstable_v2 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_imported_v2#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let surface = message
@@ -10460,7 +10474,7 @@ pub mod xdg_foreign_unstable_v2 {
                                 sender_id,
                                 surface
                             );
-                            self.set_parent_of(client, sender_id, surface).await
+                            self.set_parent_of(socket, sender_id, surface).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10471,7 +10485,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "be invalidated."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the imported surface as the parent of some surface of the client."]
@@ -10481,7 +10495,7 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "semantics as xdg_toplevel.set_parent."]
             fn set_parent_of(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -10491,14 +10505,14 @@ pub mod xdg_foreign_unstable_v2 {
             #[doc = "destroyed, if the handle used for importing was invalid."]
             fn destroyed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zxdg_imported_v2#{}.destroyed()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10539,6 +10553,8 @@ pub mod xdg_output_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_output_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgOutputManagerV1: crate::server::Dispatcher {
@@ -10546,7 +10562,7 @@ pub mod xdg_output_unstable_v1 {
             const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10555,9 +10571,7 @@ pub mod xdg_output_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_output_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -10572,7 +10586,7 @@ pub mod xdg_output_unstable_v1 {
                                 id,
                                 output
                             );
-                            self.get_xdg_output(client, sender_id, id, output).await
+                            self.get_xdg_output(socket, sender_id, id, output).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10584,13 +10598,13 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "Any objects already created through this instance are not affected."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates a new xdg_output object for the given wl_output."]
             fn get_xdg_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
@@ -10609,6 +10623,8 @@ pub mod xdg_output_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_output_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zxdg_output_v1 interface. See the module level documentation for more info"]
         pub trait ZxdgOutputV1: crate::server::Dispatcher {
@@ -10616,7 +10632,7 @@ pub mod xdg_output_unstable_v1 {
             const VERSION: u32 = 3u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10625,9 +10641,7 @@ pub mod xdg_output_unstable_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_output_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10637,7 +10651,7 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "going to use the xdg_output object anymore."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The position event describes the location of the wl_output within"]
@@ -10648,7 +10662,7 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "of the output changes within the global compositor space."]
             fn logical_position(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -10664,8 +10678,8 @@ pub mod xdg_output_unstable_v1 {
                         .put_int(x)
                         .put_int(y)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10702,7 +10716,7 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "mode(see wl_output.mode) or transform (see wl_output.transform)."]
             fn logical_size(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -10718,8 +10732,8 @@ pub mod xdg_output_unstable_v1 {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10735,14 +10749,14 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "instead."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zxdg_output_v1#{}.done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10770,7 +10784,7 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "Compositors must still support this event."]
             fn name(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10779,8 +10793,8 @@ pub mod xdg_output_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10805,7 +10819,7 @@ pub mod xdg_output_unstable_v1 {
             #[doc = "wl_output.description. Compositors must still support this event."]
             fn description(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 description: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10818,8 +10832,8 @@ pub mod xdg_output_unstable_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(description))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -10835,6 +10849,8 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = "desktop environments."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_shell {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "The 'current' member of this enum gives the version of the"]
@@ -10898,7 +10914,7 @@ pub mod xdg_shell_unstable_v5 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -10907,9 +10923,7 @@ pub mod xdg_shell_unstable_v5 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("xdg_shell#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let version = message.int()?;
@@ -10918,7 +10932,7 @@ pub mod xdg_shell_unstable_v5 {
                                 sender_id,
                                 version
                             );
-                            self.use_unstable_version(client, sender_id, version).await
+                            self.use_unstable_version(socket, sender_id, version).await
                         }
                         2u16 => {
                             let id = message
@@ -10933,7 +10947,7 @@ pub mod xdg_shell_unstable_v5 {
                                 id,
                                 surface
                             );
-                            self.get_xdg_surface(client, sender_id, id, surface).await
+                            self.get_xdg_surface(socket, sender_id, id, surface).await
                         }
                         3u16 => {
                             let id = message
@@ -10963,14 +10977,14 @@ pub mod xdg_shell_unstable_v5 {
                                 y
                             );
                             self.get_xdg_popup(
-                                client, sender_id, id, surface, parent, seat, serial, x, y,
+                                socket, sender_id, id, surface, parent, seat, serial, x, y,
                             )
                             .await
                         }
                         4u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("xdg_shell#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            self.pong(socket, sender_id, serial).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -10983,7 +10997,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "and will result in a protocol error."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Negotiate the unstable version of the interface.  This"]
@@ -10993,7 +11007,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "the xdg-shell protocol is stable."]
             fn use_unstable_version(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 version: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11007,7 +11021,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "xdg_surface is and how it is used."]
             fn get_xdg_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -11025,7 +11039,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "xdg_popup is and how it is used."]
             fn get_xdg_popup(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -11039,7 +11053,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "the client may be deemed unresponsive."]
             fn pong(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11056,7 +11070,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "always respond to any xdg_shell object it created."]
             fn ping(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11064,8 +11078,8 @@ pub mod xdg_shell_unstable_v5 {
                     tracing::debug!("-> xdg_shell#{}.ping({})", sender_id, serial);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -11093,6 +11107,8 @@ pub mod xdg_shell_unstable_v5 {
     #[doc = "committed both an xdg_surface state and a buffer."]
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_surface {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These values are used to indicate which edge of a surface"]
@@ -11187,7 +11203,7 @@ pub mod xdg_shell_unstable_v5 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11196,9 +11212,7 @@ pub mod xdg_shell_unstable_v5 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("xdg_surface#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let parent = message.object()?;
@@ -11209,21 +11223,21 @@ pub mod xdg_shell_unstable_v5 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_parent(client, sender_id, parent).await
+                            self.set_parent(socket, sender_id, parent).await
                         }
                         2u16 => {
                             let title = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_surface#{}.set_title(\"{}\")", sender_id, title);
-                            self.set_title(client, sender_id, title).await
+                            self.set_title(socket, sender_id, title).await
                         }
                         3u16 => {
                             let app_id = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("xdg_surface#{}.set_app_id(\"{}\")", sender_id, app_id);
-                            self.set_app_id(client, sender_id, app_id).await
+                            self.set_app_id(socket, sender_id, app_id).await
                         }
                         4u16 => {
                             let seat = message
@@ -11240,7 +11254,7 @@ pub mod xdg_shell_unstable_v5 {
                                 x,
                                 y
                             );
-                            self.show_window_menu(client, sender_id, seat, serial, x, y)
+                            self.show_window_menu(socket, sender_id, seat, serial, x, y)
                                 .await
                         }
                         5u16 => {
@@ -11249,7 +11263,7 @@ pub mod xdg_shell_unstable_v5 {
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             let serial = message.uint()?;
                             tracing::debug!("xdg_surface#{}.move({}, {})", sender_id, seat, serial);
-                            self.r#move(client, sender_id, seat, serial).await
+                            self.r#move(socket, sender_id, seat, serial).await
                         }
                         6u16 => {
                             let seat = message
@@ -11264,12 +11278,12 @@ pub mod xdg_shell_unstable_v5 {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges).await
+                            self.resize(socket, sender_id, seat, serial, edges).await
                         }
                         7u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("xdg_surface#{}.ack_configure({})", sender_id, serial);
-                            self.ack_configure(client, sender_id, serial).await
+                            self.ack_configure(socket, sender_id, serial).await
                         }
                         8u16 => {
                             let x = message.int()?;
@@ -11284,16 +11298,16 @@ pub mod xdg_shell_unstable_v5 {
                                 width,
                                 height
                             );
-                            self.set_window_geometry(client, sender_id, x, y, width, height)
+                            self.set_window_geometry(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         9u16 => {
                             tracing::debug!("xdg_surface#{}.set_maximized()", sender_id,);
-                            self.set_maximized(client, sender_id).await
+                            self.set_maximized(socket, sender_id).await
                         }
                         10u16 => {
                             tracing::debug!("xdg_surface#{}.unset_maximized()", sender_id,);
-                            self.unset_maximized(client, sender_id).await
+                            self.unset_maximized(socket, sender_id).await
                         }
                         11u16 => {
                             let output = message.object()?;
@@ -11304,15 +11318,15 @@ pub mod xdg_shell_unstable_v5 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            self.set_fullscreen(socket, sender_id, output).await
                         }
                         12u16 => {
                             tracing::debug!("xdg_surface#{}.unset_fullscreen()", sender_id,);
-                            self.unset_fullscreen(client, sender_id).await
+                            self.unset_fullscreen(socket, sender_id).await
                         }
                         13u16 => {
                             tracing::debug!("xdg_surface#{}.set_minimized()", sender_id,);
-                            self.set_minimized(client, sender_id).await
+                            self.set_minimized(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -11323,7 +11337,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "maximization, fullscreen, and so on, will be lost."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the \"parent\" of this surface. This window should be stacked"]
@@ -11335,7 +11349,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "is raised."]
             fn set_parent(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11348,7 +11362,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "The string must be encoded in UTF-8."]
             fn set_title(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 title: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11374,7 +11388,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "[0] http://standards.freedesktop.org/desktop-entry-spec/"]
             fn set_app_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11391,7 +11405,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "like a button press, key press, or touch down event."]
             fn show_window_menu(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -11416,7 +11430,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "that the device focus will return when the move is completed."]
             fn r#move(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -11453,7 +11467,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "appropriate cursor image."]
             fn resize(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -11480,7 +11494,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "configure event the client is responding to."]
             fn ack_configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11510,7 +11524,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "The width and height must be greater than zero."]
             fn set_window_geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -11540,7 +11554,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "futile."]
             fn set_maximized(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Unmaximize the surface."]
@@ -11567,7 +11581,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "futile."]
             fn unset_maximized(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the surface fullscreen."]
@@ -11581,13 +11595,13 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "black borders filling the rest of the output."]
             fn set_fullscreen(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset_fullscreen(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that the compositor minimize your surface. There is no"]
@@ -11600,7 +11614,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "similar compositor features."]
             fn set_minimized(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The configure event asks the client to resize its surface or to"]
@@ -11629,7 +11643,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "event it received."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -11651,8 +11665,8 @@ pub mod xdg_shell_unstable_v5 {
                         .put_array(states)
                         .put_uint(serial)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -11667,14 +11681,14 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "a dialog to ask the user to save their data..."]
             fn close(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> xdg_surface#{}.close()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -11735,6 +11749,8 @@ pub mod xdg_shell_unstable_v5 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_popup {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
         pub trait XdgPopup: crate::server::Dispatcher {
@@ -11742,7 +11758,7 @@ pub mod xdg_shell_unstable_v5 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11751,9 +11767,7 @@ pub mod xdg_shell_unstable_v5 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("xdg_popup#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -11766,7 +11780,7 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "will be sent."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
@@ -11774,14 +11788,14 @@ pub mod xdg_shell_unstable_v5 {
             #[doc = "point."]
             fn popup_done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> xdg_popup#{}.popup_done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -11797,6 +11811,8 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "desktop environments."]
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_shell_v6 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -11841,7 +11857,7 @@ pub mod xdg_shell_unstable_v6 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11850,9 +11866,7 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_shell_v6#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -11863,7 +11877,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 id
                             );
-                            self.create_positioner(client, sender_id, id).await
+                            self.create_positioner(socket, sender_id, id).await
                         }
                         2u16 => {
                             let id = message
@@ -11878,12 +11892,12 @@ pub mod xdg_shell_unstable_v6 {
                                 id,
                                 surface
                             );
-                            self.get_xdg_surface(client, sender_id, id, surface).await
+                            self.get_xdg_surface(socket, sender_id, id, surface).await
                         }
                         3u16 => {
                             let serial = message.uint()?;
                             tracing::debug!("zxdg_shell_v6#{}.pong({})", sender_id, serial);
-                            self.pong(client, sender_id, serial).await
+                            self.pong(socket, sender_id, serial).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -11896,7 +11910,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "and will result in a protocol error."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a positioner object. A positioner object is used to position"]
@@ -11904,7 +11918,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "and xdg_surface.get_popup for details."]
             fn create_positioner(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11921,7 +11935,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "xdg_surface is and how it is used."]
             fn get_xdg_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -11930,7 +11944,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "the client may be deemed unresponsive. See xdg_shell.ping."]
             fn pong(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -11947,7 +11961,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "always respond to any xdg_shell object it created."]
             fn ping(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -11955,8 +11969,8 @@ pub mod xdg_shell_unstable_v6 {
                     tracing::debug!("-> zxdg_shell_v6#{}.ping({})", sender_id, serial);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -11984,6 +11998,8 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "positioning a surface raises an error."]
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_positioner_v6 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -12049,7 +12065,7 @@ pub mod xdg_shell_unstable_v6 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -12058,9 +12074,7 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_positioner_v6#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let width = message.int()?;
@@ -12071,7 +12085,7 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_size(client, sender_id, width, height).await
+                            self.set_size(socket, sender_id, width, height).await
                         }
                         2u16 => {
                             let x = message.int()?;
@@ -12086,7 +12100,7 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_anchor_rect(client, sender_id, x, y, width, height)
+                            self.set_anchor_rect(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         3u16 => {
@@ -12096,7 +12110,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 anchor
                             );
-                            self.set_anchor(client, sender_id, anchor.try_into()?).await
+                            self.set_anchor(socket, sender_id, anchor.try_into()?).await
                         }
                         4u16 => {
                             let gravity = message.uint()?;
@@ -12105,7 +12119,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 gravity
                             );
-                            self.set_gravity(client, sender_id, gravity.try_into()?)
+                            self.set_gravity(socket, sender_id, gravity.try_into()?)
                                 .await
                         }
                         5u16 => {
@@ -12115,7 +12129,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 constraint_adjustment
                             );
-                            self.set_constraint_adjustment(client, sender_id, constraint_adjustment)
+                            self.set_constraint_adjustment(socket, sender_id, constraint_adjustment)
                                 .await
                         }
                         6u16 => {
@@ -12127,7 +12141,7 @@ pub mod xdg_shell_unstable_v6 {
                                 x,
                                 y
                             );
-                            self.set_offset(client, sender_id, x, y).await
+                            self.set_offset(socket, sender_id, x, y).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -12136,7 +12150,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the size of the surface that is to be positioned with the positioner"]
@@ -12146,7 +12160,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "If a zero or negative size is set the invalid_input error is raised."]
             fn set_size(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -12163,7 +12177,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "If a zero or negative size is set the invalid_input error is raised."]
             fn set_anchor_rect(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -12182,7 +12196,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "the invalid_input error is raised."]
             fn set_anchor(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 anchor: Anchor,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12197,7 +12211,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "invalid_input error is raised."]
             fn set_gravity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 gravity: Gravity,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12216,7 +12230,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "The default adjustment is none."]
             fn set_constraint_adjustment(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 constraint_adjustment: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12233,7 +12247,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "with some user interface element placed somewhere in the popup surface."]
             fn set_offset(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -12273,6 +12287,8 @@ pub mod xdg_shell_unstable_v6 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_surface_v6 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
@@ -12304,7 +12320,7 @@ pub mod xdg_shell_unstable_v6 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -12313,16 +12329,14 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_surface_v6#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!("zxdg_surface_v6#{}.get_toplevel({})", sender_id, id);
-                            self.get_toplevel(client, sender_id, id).await
+                            self.get_toplevel(socket, sender_id, id).await
                         }
                         2u16 => {
                             let id = message
@@ -12341,7 +12355,7 @@ pub mod xdg_shell_unstable_v6 {
                                 parent,
                                 positioner
                             );
-                            self.get_popup(client, sender_id, id, parent, positioner)
+                            self.get_popup(socket, sender_id, id, parent, positioner)
                                 .await
                         }
                         3u16 => {
@@ -12357,7 +12371,7 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_window_geometry(client, sender_id, x, y, width, height)
+                            self.set_window_geometry(socket, sender_id, x, y, width, height)
                                 .await
                         }
                         4u16 => {
@@ -12367,7 +12381,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 serial
                             );
-                            self.ack_configure(client, sender_id, serial).await
+                            self.ack_configure(socket, sender_id, serial).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -12379,7 +12393,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "is raised."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This creates an xdg_toplevel object for the given xdg_surface and gives"]
@@ -12390,7 +12404,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "xdg_toplevel is and how it is used."]
             fn get_toplevel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12402,7 +12416,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "xdg_popup is and how it is used."]
             fn get_popup(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 parent: crate::wire::ObjectId,
@@ -12433,7 +12447,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "subsurfaces."]
             fn set_window_geometry(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -12464,7 +12478,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "error is raised."]
             fn ack_configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12486,7 +12500,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "to one, it is free to discard all but the last event it received."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -12494,8 +12508,8 @@ pub mod xdg_shell_unstable_v6 {
                     tracing::debug!("-> zxdg_surface_v6#{}.configure({})", sender_id, serial);
                     let (payload, fds) =
                         crate::wire::PayloadBuilder::new().put_uint(serial).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -12509,6 +12523,8 @@ pub mod xdg_shell_unstable_v6 {
     #[doc = "resize and move."]
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_toplevel_v6 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "These values are used to indicate which edge of a surface"]
@@ -12591,7 +12607,7 @@ pub mod xdg_shell_unstable_v6 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -12600,9 +12616,7 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let parent = message.object()?;
@@ -12613,7 +12627,7 @@ pub mod xdg_shell_unstable_v6 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_parent(client, sender_id, parent).await
+                            self.set_parent(socket, sender_id, parent).await
                         }
                         2u16 => {
                             let title = message
@@ -12624,7 +12638,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 title
                             );
-                            self.set_title(client, sender_id, title).await
+                            self.set_title(socket, sender_id, title).await
                         }
                         3u16 => {
                             let app_id = message
@@ -12635,7 +12649,7 @@ pub mod xdg_shell_unstable_v6 {
                                 sender_id,
                                 app_id
                             );
-                            self.set_app_id(client, sender_id, app_id).await
+                            self.set_app_id(socket, sender_id, app_id).await
                         }
                         4u16 => {
                             let seat = message
@@ -12652,7 +12666,7 @@ pub mod xdg_shell_unstable_v6 {
                                 x,
                                 y
                             );
-                            self.show_window_menu(client, sender_id, seat, serial, x, y)
+                            self.show_window_menu(socket, sender_id, seat, serial, x, y)
                                 .await
                         }
                         5u16 => {
@@ -12666,7 +12680,7 @@ pub mod xdg_shell_unstable_v6 {
                                 seat,
                                 serial
                             );
-                            self.r#move(client, sender_id, seat, serial).await
+                            self.r#move(socket, sender_id, seat, serial).await
                         }
                         6u16 => {
                             let seat = message
@@ -12681,7 +12695,7 @@ pub mod xdg_shell_unstable_v6 {
                                 serial,
                                 edges
                             );
-                            self.resize(client, sender_id, seat, serial, edges).await
+                            self.resize(socket, sender_id, seat, serial, edges).await
                         }
                         7u16 => {
                             let width = message.int()?;
@@ -12692,7 +12706,7 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_max_size(client, sender_id, width, height).await
+                            self.set_max_size(socket, sender_id, width, height).await
                         }
                         8u16 => {
                             let width = message.int()?;
@@ -12703,15 +12717,15 @@ pub mod xdg_shell_unstable_v6 {
                                 width,
                                 height
                             );
-                            self.set_min_size(client, sender_id, width, height).await
+                            self.set_min_size(socket, sender_id, width, height).await
                         }
                         9u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.set_maximized()", sender_id,);
-                            self.set_maximized(client, sender_id).await
+                            self.set_maximized(socket, sender_id).await
                         }
                         10u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.unset_maximized()", sender_id,);
-                            self.unset_maximized(client, sender_id).await
+                            self.unset_maximized(socket, sender_id).await
                         }
                         11u16 => {
                             let output = message.object()?;
@@ -12722,15 +12736,15 @@ pub mod xdg_shell_unstable_v6 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_fullscreen(client, sender_id, output).await
+                            self.set_fullscreen(socket, sender_id, output).await
                         }
                         12u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.unset_fullscreen()", sender_id,);
-                            self.unset_fullscreen(client, sender_id).await
+                            self.unset_fullscreen(socket, sender_id).await
                         }
                         13u16 => {
                             tracing::debug!("zxdg_toplevel_v6#{}.set_minimized()", sender_id,);
-                            self.set_minimized(client, sender_id).await
+                            self.set_minimized(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -12741,7 +12755,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "maximization, fullscreen, and so on, will be lost."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Set the \"parent\" of this surface. This window should be stacked"]
@@ -12753,7 +12767,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "is raised."]
             fn set_parent(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12766,7 +12780,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "The string must be encoded in UTF-8."]
             fn set_title(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 title: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12792,7 +12806,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "[0] http://standards.freedesktop.org/desktop-entry-spec/"]
             fn set_app_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -12809,7 +12823,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "like a button press, key press, or touch down event."]
             fn show_window_menu(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -12834,7 +12848,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "that the device focus will return when the move is completed."]
             fn r#move(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -12871,7 +12885,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "appropriate cursor image."]
             fn resize(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -12912,7 +12926,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "zxdg_shell_v6.invalid_surface_state error being raised."]
             fn set_max_size(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -12952,7 +12966,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "zxdg_shell_v6.invalid_surface_state error being raised."]
             fn set_min_size(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -12980,7 +12994,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "futile."]
             fn set_maximized(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Unmaximize the surface."]
@@ -13007,7 +13021,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "to match the request with the event is futile."]
             fn unset_maximized(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Make the surface fullscreen."]
@@ -13021,13 +13035,13 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "black borders filling the rest of the output."]
             fn set_fullscreen(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unset_fullscreen(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Request that the compositor minimize your surface. There is no"]
@@ -13040,7 +13054,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "similar compositor features."]
             fn set_minimized(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This configure event asks the client to resize its toplevel surface or"]
@@ -13064,7 +13078,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "xdg_surface.configure and xdg_surface.ack_configure for details."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -13083,8 +13097,8 @@ pub mod xdg_shell_unstable_v6 {
                         .put_int(height)
                         .put_array(states)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -13099,14 +13113,14 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "a dialog to ask the user to save their data, etc."]
             fn close(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zxdg_toplevel_v6#{}.close()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -13149,6 +13163,8 @@ pub mod xdg_shell_unstable_v6 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_popup_v6 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
@@ -13177,7 +13193,7 @@ pub mod xdg_shell_unstable_v6 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -13186,9 +13202,7 @@ pub mod xdg_shell_unstable_v6 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("zxdg_popup_v6#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let seat = message
@@ -13201,7 +13215,7 @@ pub mod xdg_shell_unstable_v6 {
                                 seat,
                                 serial
                             );
-                            self.grab(client, sender_id, seat, serial).await
+                            self.grab(socket, sender_id, seat, serial).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -13214,7 +13228,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "will be sent."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request makes the created popup take an explicit grab. An explicit"]
@@ -13260,7 +13274,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "will always have keyboard focus."]
             fn grab(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
                 serial: u32,
@@ -13274,7 +13288,7 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "window geometry of the parent surface."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -13296,8 +13310,8 @@ pub mod xdg_shell_unstable_v6 {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -13307,14 +13321,14 @@ pub mod xdg_shell_unstable_v6 {
             #[doc = "point."]
             fn popup_done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> zxdg_popup_v6#{}.popup_done()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -13365,6 +13379,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwpXwaylandKeyboardGrabManagerV1: crate::server::Dispatcher {
@@ -13372,7 +13388,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -13384,9 +13400,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                                 "zwp_xwayland_keyboard_grab_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -13405,7 +13419,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                                 surface,
                                 seat
                             );
-                            self.grab_keyboard(client, sender_id, id, surface, seat)
+                            self.grab_keyboard(socket, sender_id, id, surface, seat)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -13415,7 +13429,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             #[doc = "Destroy the keyboard grab manager."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The grab_keyboard request asks for a grab of the keyboard, forcing"]
@@ -13439,7 +13453,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             #[doc = "is nominally active."]
             fn grab_keyboard(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -13451,6 +13465,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_v1 interface. See the module level documentation for more info"]
         pub trait ZwpXwaylandKeyboardGrabV1: crate::server::Dispatcher {
@@ -13458,7 +13474,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -13470,9 +13486,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                                 "zwp_xwayland_keyboard_grab_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -13482,7 +13496,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             #[doc = "will ungrab the keyboard."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }

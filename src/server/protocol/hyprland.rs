@@ -10,6 +10,8 @@ pub mod hyprland_ctm_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_ctm_control_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
@@ -38,7 +40,7 @@ pub mod hyprland_ctm_control_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -73,7 +75,7 @@ pub mod hyprland_ctm_control_v1 {
                                 mat8
                             );
                             self.set_ctm_for_output(
-                                client, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
+                                socket, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
                                 mat6, mat7, mat8,
                             )
                             .await
@@ -83,16 +85,14 @@ pub mod hyprland_ctm_control_v1 {
                                 "hyprland_ctm_control_manager_v1#{}.commit()",
                                 sender_id,
                             );
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         2u16 => {
                             tracing::debug!(
                                 "hyprland_ctm_control_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -113,7 +113,7 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = "that output will get its CTM reset to an identity matrix."]
             fn set_ctm_for_output(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 mat0: crate::wire::Fixed,
@@ -129,7 +129,7 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "All objects created by the manager will still remain valid, until their"]
@@ -138,7 +138,7 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = "The CTMs of all outputs will be reset to an identity matrix."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent if another manager was bound by any client"]
@@ -149,14 +149,14 @@ pub mod hyprland_ctm_control_v1 {
             #[doc = "The client should destroy the manager after receiving this event."]
             fn blocked(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.blocked()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -173,6 +173,8 @@ pub mod hyprland_focus_grab_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabManagerV1: crate::server::Dispatcher {
@@ -180,7 +182,7 @@ pub mod hyprland_focus_grab_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -196,16 +198,14 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 grab
                             );
-                            self.create_grab(client, sender_id, grab).await
+                            self.create_grab(socket, sender_id, grab).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_focus_grab_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -214,7 +214,7 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "Create a surface grab object."]
             fn create_grab(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 grab: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -222,7 +222,7 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "This doesn't destroy existing focus grab objects."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -245,6 +245,8 @@ pub mod hyprland_focus_grab_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabV1: crate::server::Dispatcher {
@@ -252,7 +254,7 @@ pub mod hyprland_focus_grab_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -268,7 +270,7 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.add_surface(client, sender_id, surface).await
+                            self.add_surface(socket, sender_id, surface).await
                         }
                         1u16 => {
                             let surface = message
@@ -279,17 +281,15 @@ pub mod hyprland_focus_grab_v1 {
                                 sender_id,
                                 surface
                             );
-                            self.remove_surface(client, sender_id, surface).await
+                            self.remove_surface(socket, sender_id, surface).await
                         }
                         2u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.commit()", sender_id,);
-                            self.commit(client, sender_id).await
+                            self.commit(socket, sender_id).await
                         }
                         3u16 => {
                             tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -302,7 +302,7 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "Does not take effect until commit is called."]
             fn add_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -315,7 +315,7 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "Does not take effect until commit is called."]
             fn remove_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -326,27 +326,27 @@ pub mod hyprland_focus_grab_v1 {
             #[doc = "become inert."]
             fn commit(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Destroy the grab object and remove the grab if active."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
             #[doc = "regardless of cause."]
             fn cleared(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_focus_grab_v1#{}.cleared()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -361,6 +361,8 @@ pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object is a manager which offers requests to create global shortcuts."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcuts_manager_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -390,7 +392,7 @@ pub mod hyprland_global_shortcuts_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -423,7 +425,7 @@ pub mod hyprland_global_shortcuts_v1 {
                                 trigger_description
                             );
                             self.register_shortcut(
-                                client,
+                                socket,
                                 sender_id,
                                 shortcut,
                                 id,
@@ -438,9 +440,7 @@ pub mod hyprland_global_shortcuts_v1 {
                                 "hyprland_global_shortcuts_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -455,7 +455,7 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "In the case of a duplicate app_id + id combination, the already_taken protocol error is raised."]
             fn register_shortcut(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 shortcut: crate::wire::ObjectId,
                 id: String,
@@ -467,7 +467,7 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -476,6 +476,8 @@ pub mod hyprland_global_shortcuts_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandGlobalShortcutV1: crate::server::Dispatcher {
@@ -483,7 +485,7 @@ pub mod hyprland_global_shortcuts_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -492,9 +494,7 @@ pub mod hyprland_global_shortcuts_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -503,7 +503,7 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The keystroke was pressed."]
@@ -511,7 +511,7 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "tv_ values hold the timestamp of the occurrence."]
             fn pressed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
@@ -530,8 +530,8 @@ pub mod hyprland_global_shortcuts_v1 {
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -541,7 +541,7 @@ pub mod hyprland_global_shortcuts_v1 {
             #[doc = "tv_ values hold the timestamp of the occurrence."]
             fn released(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
@@ -560,8 +560,8 @@ pub mod hyprland_global_shortcuts_v1 {
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -576,6 +576,8 @@ pub mod hyprland_lock_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_lock_notifier_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_lock_notifier_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandLockNotifierV1: crate::server::Dispatcher {
@@ -583,7 +585,7 @@ pub mod hyprland_lock_notify_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -592,9 +594,7 @@ pub mod hyprland_lock_notify_v1 {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("hyprland_lock_notifier_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             let id = message
@@ -605,7 +605,7 @@ pub mod hyprland_lock_notify_v1 {
                                 sender_id,
                                 id
                             );
-                            self.get_lock_notification(client, sender_id, id).await
+                            self.get_lock_notification(socket, sender_id, id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -615,7 +615,7 @@ pub mod hyprland_lock_notify_v1 {
             #[doc = "remain valid."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Create a new lock notification object."]
@@ -624,7 +624,7 @@ pub mod hyprland_lock_notify_v1 {
             #[doc = "the locked event shall be sent immediately."]
             fn get_lock_notification(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -646,6 +646,8 @@ pub mod hyprland_lock_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_lock_notification_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_lock_notification_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandLockNotificationV1: crate::server::Dispatcher {
@@ -653,7 +655,7 @@ pub mod hyprland_lock_notify_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -665,9 +667,7 @@ pub mod hyprland_lock_notify_v1 {
                                 "hyprland_lock_notification_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -676,7 +676,7 @@ pub mod hyprland_lock_notify_v1 {
             #[doc = "Destroy the notification object."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This event is sent when the wayland session is locked."]
@@ -685,14 +685,14 @@ pub mod hyprland_lock_notify_v1 {
             #[doc = "unlock event in-between."]
             fn locked(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_lock_notification_v1#{}.locked()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -704,14 +704,14 @@ pub mod hyprland_lock_notify_v1 {
             #[doc = "event prior to any locked event."]
             fn unlocked(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_lock_notification_v1#{}.unlocked()", sender_id,);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -725,6 +725,8 @@ pub mod hyprland_surface_v1 {
     #[doc = "This interface allows a client to create hyprland surface objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_surface_manager_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -754,7 +756,7 @@ pub mod hyprland_surface_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -774,14 +776,12 @@ pub mod hyprland_surface_v1 {
                                 id,
                                 surface
                             );
-                            self.get_hyprland_surface(client, sender_id, id, surface)
+                            self.get_hyprland_surface(socket, sender_id, id, surface)
                                 .await
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -793,7 +793,7 @@ pub mod hyprland_surface_v1 {
             #[doc = "even from a different manager, creation is a protocol error."]
             fn get_hyprland_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -802,7 +802,7 @@ pub mod hyprland_surface_v1 {
             #[doc = "This does not destroy existing surface objects."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -813,6 +813,8 @@ pub mod hyprland_surface_v1 {
     #[doc = "destroyed as well. All other operations are a protocol error."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_surface_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -845,7 +847,7 @@ pub mod hyprland_surface_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -859,13 +861,11 @@ pub mod hyprland_surface_v1 {
                                 sender_id,
                                 opacity
                             );
-                            self.set_opacity(client, sender_id, opacity).await
+                            self.set_opacity(socket, sender_id, opacity).await
                         }
                         1u16 => {
                             tracing::debug!("hyprland_surface_v1#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         2u16 => {
                             let region = message.object()?;
@@ -876,7 +876,7 @@ pub mod hyprland_surface_v1 {
                                     .as_ref()
                                     .map_or("null".to_string(), |v| v.to_string())
                             );
-                            self.set_visible_region(client, sender_id, region).await
+                            self.set_visible_region(socket, sender_id, region).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -891,7 +891,7 @@ pub mod hyprland_surface_v1 {
             #[doc = "Does not take effect until wl_surface.commit is called."]
             fn set_opacity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 opacity: crate::wire::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -899,7 +899,7 @@ pub mod hyprland_surface_v1 {
             #[doc = "by this interface to their default values on the next wl_surface.commit."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "This request sets the region of the surface that contains visible content."]
@@ -923,7 +923,7 @@ pub mod hyprland_surface_v1 {
             #[doc = "Does not take effect until wl_surface.commit is called."]
             fn set_visible_region(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -941,6 +941,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelExportManagerV1: crate::server::Dispatcher {
@@ -948,7 +950,7 @@ pub mod hyprland_toplevel_export_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -968,7 +970,7 @@ pub mod hyprland_toplevel_export_v1 {
                                 overlay_cursor,
                                 handle
                             );
-                            self.capture_toplevel(client, sender_id, frame, overlay_cursor, handle)
+                            self.capture_toplevel(socket, sender_id, frame, overlay_cursor, handle)
                                 .await
                         }
                         1u16 => {
@@ -976,9 +978,7 @@ pub mod hyprland_toplevel_export_v1 {
                                 "hyprland_toplevel_export_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         2u16 => {
                             let frame = message
@@ -996,7 +996,7 @@ pub mod hyprland_toplevel_export_v1 {
                                 handle
                             );
                             self.capture_toplevel_with_wlr_toplevel_handle(
-                                client,
+                                socket,
                                 sender_id,
                                 frame,
                                 overlay_cursor,
@@ -1020,7 +1020,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "For example, for d161e7b0 it would be 3512854448."]
             fn capture_toplevel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
@@ -1030,13 +1030,13 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Same as capture_toplevel, but with a zwlr_foreign_toplevel_handle_v1 handle."]
             fn capture_toplevel_with_wlr_toplevel_handle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
                 overlay_cursor: i32,
@@ -1061,6 +1061,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_frame_v1 {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -1105,7 +1107,7 @@ pub mod hyprland_toplevel_export_v1 {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1123,16 +1125,14 @@ pub mod hyprland_toplevel_export_v1 {
                                 buffer,
                                 ignore_damage
                             );
-                            self.copy(client, sender_id, buffer, ignore_damage).await
+                            self.copy(socket, sender_id, buffer, ignore_damage).await
                         }
                         1u16 => {
                             tracing::debug!(
                                 "hyprland_toplevel_export_frame_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1150,7 +1150,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "arg is set to a non-zero value."]
             fn copy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 ignore_damage: i32,
@@ -1158,7 +1158,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
@@ -1166,7 +1166,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "if wl_shm buffers are supported."]
             fn buffer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
@@ -1188,8 +1188,8 @@ pub mod hyprland_toplevel_export_v1 {
                         .put_uint(height)
                         .put_uint(stride)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1206,7 +1206,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "and a ready event is the total damage since the prior ready event."]
             fn damage(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 x: u32,
                 y: u32,
@@ -1228,8 +1228,8 @@ pub mod hyprland_toplevel_export_v1 {
                         .put_uint(width)
                         .put_uint(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1238,7 +1238,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "\"ready\" event."]
             fn flags(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 flags: Flags,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1251,8 +1251,8 @@ pub mod hyprland_toplevel_export_v1 {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(flags.bits())
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1271,7 +1271,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "After receiving this event, the client should destroy the object."]
             fn ready(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
@@ -1290,8 +1290,8 @@ pub mod hyprland_toplevel_export_v1 {
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1301,7 +1301,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "After receiving this event, the client should destroy the object."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1310,8 +1310,8 @@ pub mod hyprland_toplevel_export_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1321,7 +1321,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "created if linux-dmabuf buffers are supported."]
             fn linux_dmabuf(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 format: u32,
                 width: u32,
@@ -1340,8 +1340,8 @@ pub mod hyprland_toplevel_export_v1 {
                         .put_uint(width)
                         .put_uint(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1352,7 +1352,7 @@ pub mod hyprland_toplevel_export_v1 {
             #[doc = "types, and send a \"copy\" request."]
             fn buffer_done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1361,8 +1361,8 @@ pub mod hyprland_toplevel_export_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1378,6 +1378,8 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_mapping_manager_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_mapping_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelMappingManagerV1: crate::server::Dispatcher {
@@ -1385,7 +1387,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1405,7 +1407,7 @@ pub mod hyprland_toplevel_mapping_v1 {
                                 handle,
                                 toplevel
                             );
-                            self.get_window_for_toplevel(client, sender_id, handle, toplevel)
+                            self.get_window_for_toplevel(socket, sender_id, handle, toplevel)
                                 .await
                         }
                         1u16 => {
@@ -1421,7 +1423,7 @@ pub mod hyprland_toplevel_mapping_v1 {
                                 handle,
                                 toplevel
                             );
-                            self.get_window_for_toplevel_wlr(client, sender_id, handle, toplevel)
+                            self.get_window_for_toplevel_wlr(socket, sender_id, handle, toplevel)
                                 .await
                         }
                         2u16 => {
@@ -1429,9 +1431,7 @@ pub mod hyprland_toplevel_mapping_v1 {
                                 "hyprland_toplevel_mapping_manager_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1440,7 +1440,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             #[doc = "Get the window address for a toplevel."]
             fn get_window_for_toplevel(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 handle: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
@@ -1448,7 +1448,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             #[doc = "Get the window address for a wlr toplevel."]
             fn get_window_for_toplevel_wlr(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 handle: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
@@ -1457,7 +1457,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             #[doc = "request has been called."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -1470,6 +1470,8 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_window_mapping_handle_v1 {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_window_mapping_handle_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelWindowMappingHandleV1: crate::server::Dispatcher {
@@ -1477,7 +1479,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1489,9 +1491,7 @@ pub mod hyprland_toplevel_mapping_v1 {
                                 "hyprland_toplevel_window_mapping_handle_v1#{}.destroy()",
                                 sender_id,
                             );
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1500,14 +1500,14 @@ pub mod hyprland_toplevel_mapping_v1 {
             #[doc = "Destroy the handle. This request can be sent at any time by the client."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The full 64bit window address. The `address` field contains the lower 32 bits whilst the"]
             #[doc = "`address_hi` contains the upper 32 bits"]
             fn window_address(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 address_hi: u32,
                 address: u32,
@@ -1523,8 +1523,8 @@ pub mod hyprland_toplevel_mapping_v1 {
                         .put_uint(address_hi)
                         .put_uint(address)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1533,7 +1533,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             #[doc = "exist (anymore)."]
             fn failed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1542,8 +1542,8 @@ pub mod hyprland_toplevel_mapping_v1 {
                         sender_id,
                     );
                     let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

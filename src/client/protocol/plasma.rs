@@ -14,8 +14,8 @@ pub mod appmenu {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -68,8 +68,8 @@ pub mod appmenu {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -124,8 +124,8 @@ pub mod blur {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -178,8 +178,8 @@ pub mod blur {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -242,8 +242,8 @@ pub mod contrast {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -296,8 +296,8 @@ pub mod contrast {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -456,8 +456,8 @@ pub mod dpms {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -538,16 +538,16 @@ pub mod dpms {
                     0u16 => {
                         let supported = message.uint()?;
                         tracing::debug!("org_kde_kwin_dpms#{}.supported({})", sender_id, supported);
-                        self.supported(client, sender_id, supported).await
+                        self.supported(socket, sender_id, supported).await
                     }
                     1u16 => {
                         let mode = message.uint()?;
                         tracing::debug!("org_kde_kwin_dpms#{}.mode({})", sender_id, mode);
-                        self.mode(client, sender_id, mode).await
+                        self.mode(socket, sender_id, mode).await
                     }
                     2u16 => {
                         tracing::debug!("org_kde_kwin_dpms#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -640,8 +640,8 @@ pub mod fake_input {
             const VERSION: u32 = 5u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1009,7 +1009,7 @@ pub mod fullscreen_shell {
                             sender_id,
                             capability
                         );
-                        self.capability(client, sender_id, capability).await
+                        self.capability(socket, sender_id, capability).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1165,21 +1165,21 @@ pub mod fullscreen_shell {
                             "_wl_fullscreen_shell_mode_feedback#{}.mode_successful()",
                             sender_id,
                         );
-                        self.mode_successful(client, sender_id).await
+                        self.mode_successful(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "_wl_fullscreen_shell_mode_feedback#{}.mode_failed()",
                             sender_id,
                         );
-                        self.mode_failed(client, sender_id).await
+                        self.mode_failed(socket, sender_id).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "_wl_fullscreen_shell_mode_feedback#{}.present_cancelled()",
                             sender_id,
                         );
-                        self.present_cancelled(client, sender_id).await
+                        self.present_cancelled(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1240,8 +1240,8 @@ pub mod idle {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1289,11 +1289,11 @@ pub mod idle {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_idle_timeout#{}.idle()", sender_id,);
-                        self.idle(client, sender_id).await
+                        self.idle(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("org_kde_kwin_idle_timeout#{}.resumed()", sender_id,);
-                        self.resumed(client, sender_id).await
+                        self.resumed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1355,8 +1355,8 @@ pub mod kde_external_brightness_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1424,7 +1424,7 @@ pub mod kde_external_brightness_v1 {
                             sender_id,
                             value
                         );
-                        self.requested_brightness(client, sender_id, value).await
+                        self.requested_brightness(socket, sender_id, value).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1605,8 +1605,8 @@ pub mod kde_lockscreen_overlay_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1947,7 +1947,7 @@ pub mod kde_output_device_v2 {
                             transform
                         );
                         self.geometry(
-                            client,
+                            socket,
                             sender_id,
                             x,
                             y,
@@ -1969,42 +1969,42 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             mode
                         );
-                        self.current_mode(client, sender_id, mode).await
+                        self.current_mode(socket, sender_id, mode).await
                     }
                     2u16 => {
                         let mode = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("kde_output_device_v2#{}.mode({})", sender_id, mode);
-                        self.mode(client, sender_id, mode).await
+                        self.mode(socket, sender_id, mode).await
                     }
                     3u16 => {
                         tracing::debug!("kde_output_device_v2#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     4u16 => {
                         let factor = message.fixed()?;
                         tracing::debug!("kde_output_device_v2#{}.scale({})", sender_id, factor);
-                        self.scale(client, sender_id, factor).await
+                        self.scale(socket, sender_id, factor).await
                     }
                     5u16 => {
                         let raw = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
-                        self.edid(client, sender_id, raw).await
+                        self.edid(socket, sender_id, raw).await
                     }
                     6u16 => {
                         let enabled = message.int()?;
                         tracing::debug!("kde_output_device_v2#{}.enabled({})", sender_id, enabled);
-                        self.enabled(client, sender_id, enabled).await
+                        self.enabled(socket, sender_id, enabled).await
                     }
                     7u16 => {
                         let uuid = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("kde_output_device_v2#{}.uuid(\"{}\")", sender_id, uuid);
-                        self.uuid(client, sender_id, uuid).await
+                        self.uuid(socket, sender_id, uuid).await
                     }
                     8u16 => {
                         let serialNumber = message
@@ -2015,7 +2015,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             serialNumber
                         );
-                        self.serial_number(client, sender_id, serialNumber).await
+                        self.serial_number(socket, sender_id, serialNumber).await
                     }
                     9u16 => {
                         let eisaId = message
@@ -2026,7 +2026,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             eisaId
                         );
-                        self.eisa_id(client, sender_id, eisaId).await
+                        self.eisa_id(socket, sender_id, eisaId).await
                     }
                     10u16 => {
                         let flags = message.uint()?;
@@ -2035,7 +2035,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             flags
                         );
-                        self.capabilities(client, sender_id, flags.try_into()?)
+                        self.capabilities(socket, sender_id, flags.try_into()?)
                             .await
                     }
                     11u16 => {
@@ -2045,7 +2045,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             overscan
                         );
-                        self.overscan(client, sender_id, overscan).await
+                        self.overscan(socket, sender_id, overscan).await
                     }
                     12u16 => {
                         let vrr_policy = message.uint()?;
@@ -2054,7 +2054,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             vrr_policy
                         );
-                        self.vrr_policy(client, sender_id, vrr_policy.try_into()?)
+                        self.vrr_policy(socket, sender_id, vrr_policy.try_into()?)
                             .await
                     }
                     13u16 => {
@@ -2064,7 +2064,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             rgb_range
                         );
-                        self.rgb_range(client, sender_id, rgb_range.try_into()?)
+                        self.rgb_range(socket, sender_id, rgb_range.try_into()?)
                             .await
                     }
                     14u16 => {
@@ -2072,7 +2072,7 @@ pub mod kde_output_device_v2 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("kde_output_device_v2#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     15u16 => {
                         let hdr_enabled = message.uint()?;
@@ -2081,7 +2081,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             hdr_enabled
                         );
-                        self.high_dynamic_range(client, sender_id, hdr_enabled)
+                        self.high_dynamic_range(socket, sender_id, hdr_enabled)
                             .await
                     }
                     16u16 => {
@@ -2091,7 +2091,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             sdr_brightness
                         );
-                        self.sdr_brightness(client, sender_id, sdr_brightness).await
+                        self.sdr_brightness(socket, sender_id, sdr_brightness).await
                     }
                     17u16 => {
                         let wcg_enabled = message.uint()?;
@@ -2100,7 +2100,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             wcg_enabled
                         );
-                        self.wide_color_gamut(client, sender_id, wcg_enabled).await
+                        self.wide_color_gamut(socket, sender_id, wcg_enabled).await
                     }
                     18u16 => {
                         let policy = message.uint()?;
@@ -2109,7 +2109,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             policy
                         );
-                        self.auto_rotate_policy(client, sender_id, policy.try_into()?)
+                        self.auto_rotate_policy(socket, sender_id, policy.try_into()?)
                             .await
                     }
                     19u16 => {
@@ -2121,7 +2121,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             profile_path
                         );
-                        self.icc_profile_path(client, sender_id, profile_path).await
+                        self.icc_profile_path(socket, sender_id, profile_path).await
                     }
                     20u16 => {
                         let max_peak_brightness = message.uint()?;
@@ -2135,7 +2135,7 @@ pub mod kde_output_device_v2 {
                             min_brightness
                         );
                         self.brightness_metadata(
-                            client,
+                            socket,
                             sender_id,
                             max_peak_brightness,
                             max_frame_average_brightness,
@@ -2155,7 +2155,7 @@ pub mod kde_output_device_v2 {
                             min_brightness
                         );
                         self.brightness_overrides(
-                            client,
+                            socket,
                             sender_id,
                             max_peak_brightness,
                             max_average_brightness,
@@ -2170,7 +2170,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             gamut_wideness
                         );
-                        self.sdr_gamut_wideness(client, sender_id, gamut_wideness)
+                        self.sdr_gamut_wideness(socket, sender_id, gamut_wideness)
                             .await
                     }
                     23u16 => {
@@ -2180,7 +2180,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             source
                         );
-                        self.color_profile_source(client, sender_id, source.try_into()?)
+                        self.color_profile_source(socket, sender_id, source.try_into()?)
                             .await
                     }
                     24u16 => {
@@ -2190,7 +2190,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             brightness
                         );
-                        self.brightness(client, sender_id, brightness).await
+                        self.brightness(socket, sender_id, brightness).await
                     }
                     25u16 => {
                         let preference = message.uint()?;
@@ -2199,7 +2199,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             preference
                         );
-                        self.color_power_tradeoff(client, sender_id, preference.try_into()?)
+                        self.color_power_tradeoff(socket, sender_id, preference.try_into()?)
                             .await
                     }
                     26u16 => {
@@ -2209,7 +2209,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             multiplier
                         );
-                        self.dimming(client, sender_id, multiplier).await
+                        self.dimming(socket, sender_id, multiplier).await
                     }
                     27u16 => {
                         let source = message
@@ -2220,7 +2220,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             source
                         );
-                        self.replication_source(client, sender_id, source).await
+                        self.replication_source(socket, sender_id, source).await
                     }
                     28u16 => {
                         let allowed = message.uint()?;
@@ -2229,7 +2229,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             allowed
                         );
-                        self.ddc_ci_allowed(client, sender_id, allowed).await
+                        self.ddc_ci_allowed(socket, sender_id, allowed).await
                     }
                     29u16 => {
                         let max_bpc = message.uint()?;
@@ -2238,7 +2238,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             max_bpc
                         );
-                        self.max_bits_per_color(client, sender_id, max_bpc).await
+                        self.max_bits_per_color(socket, sender_id, max_bpc).await
                     }
                     30u16 => {
                         let min_value = message.uint()?;
@@ -2249,7 +2249,7 @@ pub mod kde_output_device_v2 {
                             min_value,
                             max_value
                         );
-                        self.max_bits_per_color_range(client, sender_id, min_value, max_value)
+                        self.max_bits_per_color_range(socket, sender_id, min_value, max_value)
                             .await
                     }
                     31u16 => {
@@ -2259,7 +2259,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             max_bpc_limit
                         );
-                        self.automatic_max_bits_per_color_limit(client, sender_id, max_bpc_limit)
+                        self.automatic_max_bits_per_color_limit(socket, sender_id, max_bpc_limit)
                             .await
                     }
                     32u16 => {
@@ -2269,7 +2269,7 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             policy
                         );
-                        self.edr_policy(client, sender_id, policy.try_into()?).await
+                        self.edr_policy(socket, sender_id, policy.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2615,7 +2615,7 @@ pub mod kde_output_device_v2 {
                             width,
                             height
                         );
-                        self.size(client, sender_id, width, height).await
+                        self.size(socket, sender_id, width, height).await
                     }
                     1u16 => {
                         let refresh = message.int()?;
@@ -2624,15 +2624,15 @@ pub mod kde_output_device_v2 {
                             sender_id,
                             refresh
                         );
-                        self.refresh(client, sender_id, refresh).await
+                        self.refresh(socket, sender_id, refresh).await
                     }
                     2u16 => {
                         tracing::debug!("kde_output_device_mode_v2#{}.preferred()", sender_id,);
-                        self.preferred(client, sender_id).await
+                        self.preferred(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("kde_output_device_mode_v2#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2728,8 +2728,8 @@ pub mod kde_output_management_v2 {
             const VERSION: u32 = 16u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2960,11 +2960,11 @@ pub mod kde_output_management_v2 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("kde_output_configuration_v2#{}.applied()", sender_id,);
-                        self.applied(client, sender_id).await
+                        self.applied(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("kde_output_configuration_v2#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     2u16 => {
                         let reason = message
@@ -2975,7 +2975,7 @@ pub mod kde_output_management_v2 {
                             sender_id,
                             reason
                         );
-                        self.failure_reason(client, sender_id, reason).await
+                        self.failure_reason(socket, sender_id, reason).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3600,11 +3600,11 @@ pub mod kde_output_order_v1 {
                             sender_id,
                             output_name
                         );
-                        self.output(client, sender_id, output_name).await
+                        self.output(socket, sender_id, output_name).await
                     }
                     1u16 => {
                         tracing::debug!("kde_output_order_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3672,7 +3672,7 @@ pub mod kde_primary_output_v1 {
                             sender_id,
                             output_name
                         );
-                        self.primary_output(client, sender_id, output_name).await
+                        self.primary_output(socket, sender_id, output_name).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3782,8 +3782,8 @@ pub mod kde_screen_edge_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3866,8 +3866,8 @@ pub mod kde_screen_edge_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4008,7 +4008,7 @@ pub mod keystate {
                             key,
                             state
                         );
-                        self.state_changed(client, sender_id, key, state).await
+                        self.state_changed(socket, sender_id, key, state).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4077,7 +4077,7 @@ pub mod org_kde_plasma_virtual_desktop {
                             desktop_id,
                             position
                         );
-                        self.desktop_created(client, sender_id, desktop_id, position)
+                        self.desktop_created(socket, sender_id, desktop_id, position)
                             .await
                     }
                     1u16 => {
@@ -4089,14 +4089,14 @@ pub mod org_kde_plasma_virtual_desktop {
                             sender_id,
                             desktop_id
                         );
-                        self.desktop_removed(client, sender_id, desktop_id).await
+                        self.desktop_removed(socket, sender_id, desktop_id).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "org_kde_plasma_virtual_desktop_management#{}.done()",
                             sender_id,
                         );
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     3u16 => {
                         let rows = message.uint()?;
@@ -4105,7 +4105,7 @@ pub mod org_kde_plasma_virtual_desktop {
                             sender_id,
                             rows
                         );
-                        self.rows(client, sender_id, rows).await
+                        self.rows(socket, sender_id, rows).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4233,7 +4233,7 @@ pub mod org_kde_plasma_virtual_desktop {
                             sender_id,
                             desktop_id
                         );
-                        self.desktop_id(client, sender_id, desktop_id).await
+                        self.desktop_id(socket, sender_id, desktop_id).await
                     }
                     1u16 => {
                         let name = message
@@ -4244,26 +4244,26 @@ pub mod org_kde_plasma_virtual_desktop {
                             sender_id,
                             name
                         );
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     2u16 => {
                         tracing::debug!("org_kde_plasma_virtual_desktop#{}.activated()", sender_id,);
-                        self.activated(client, sender_id).await
+                        self.activated(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!(
                             "org_kde_plasma_virtual_desktop#{}.deactivated()",
                             sender_id,
                         );
-                        self.deactivated(client, sender_id).await
+                        self.deactivated(socket, sender_id).await
                     }
                     4u16 => {
                         tracing::debug!("org_kde_plasma_virtual_desktop#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     5u16 => {
                         tracing::debug!("org_kde_plasma_virtual_desktop#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4554,7 +4554,7 @@ pub mod org_kde_kwin_outputdevice {
                             transform
                         );
                         self.geometry(
-                            client,
+                            socket,
                             sender_id,
                             x,
                             y,
@@ -4582,12 +4582,12 @@ pub mod org_kde_kwin_outputdevice {
                             refresh,
                             mode_id
                         );
-                        self.mode(client, sender_id, flags, width, height, refresh, mode_id)
+                        self.mode(socket, sender_id, flags, width, height, refresh, mode_id)
                             .await
                     }
                     2u16 => {
                         tracing::debug!("org_kde_kwin_outputdevice#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     3u16 => {
                         let factor = message.int()?;
@@ -4596,7 +4596,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             factor
                         );
-                        self.scale(client, sender_id, factor).await
+                        self.scale(socket, sender_id, factor).await
                     }
                     4u16 => {
                         let raw = message
@@ -4607,7 +4607,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             raw
                         );
-                        self.edid(client, sender_id, raw).await
+                        self.edid(socket, sender_id, raw).await
                     }
                     5u16 => {
                         let enabled = message.int()?;
@@ -4616,7 +4616,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             enabled
                         );
-                        self.enabled(client, sender_id, enabled).await
+                        self.enabled(socket, sender_id, enabled).await
                     }
                     6u16 => {
                         let uuid = message
@@ -4627,7 +4627,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             uuid
                         );
-                        self.uuid(client, sender_id, uuid).await
+                        self.uuid(socket, sender_id, uuid).await
                     }
                     7u16 => {
                         let factor = message.fixed()?;
@@ -4636,7 +4636,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             factor
                         );
-                        self.scalef(client, sender_id, factor).await
+                        self.scalef(socket, sender_id, factor).await
                     }
                     8u16 => {
                         let red = message.array()?;
@@ -4649,7 +4649,7 @@ pub mod org_kde_kwin_outputdevice {
                             green.len(),
                             blue.len()
                         );
-                        self.colorcurves(client, sender_id, red, green, blue).await
+                        self.colorcurves(socket, sender_id, red, green, blue).await
                     }
                     9u16 => {
                         let serialNumber = message
@@ -4660,7 +4660,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             serialNumber
                         );
-                        self.serial_number(client, sender_id, serialNumber).await
+                        self.serial_number(socket, sender_id, serialNumber).await
                     }
                     10u16 => {
                         let eisaId = message
@@ -4671,7 +4671,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             eisaId
                         );
-                        self.eisa_id(client, sender_id, eisaId).await
+                        self.eisa_id(socket, sender_id, eisaId).await
                     }
                     11u16 => {
                         let flags = message.uint()?;
@@ -4680,7 +4680,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             flags
                         );
-                        self.capabilities(client, sender_id, flags.try_into()?)
+                        self.capabilities(socket, sender_id, flags.try_into()?)
                             .await
                     }
                     12u16 => {
@@ -4690,7 +4690,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             overscan
                         );
-                        self.overscan(client, sender_id, overscan).await
+                        self.overscan(socket, sender_id, overscan).await
                     }
                     13u16 => {
                         let vrr_policy = message.uint()?;
@@ -4699,7 +4699,7 @@ pub mod org_kde_kwin_outputdevice {
                             sender_id,
                             vrr_policy
                         );
-                        self.vrr_policy(client, sender_id, vrr_policy.try_into()?)
+                        self.vrr_policy(socket, sender_id, vrr_policy.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -4952,8 +4952,8 @@ pub mod outputmanagement {
             const VERSION: u32 = 4u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5039,11 +5039,11 @@ pub mod outputmanagement {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("org_kde_kwin_outputconfiguration#{}.applied()", sender_id,);
-                        self.applied(client, sender_id).await
+                        self.applied(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5308,8 +5308,8 @@ pub mod plasma_shell {
             const VERSION: u32 = 8u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5453,14 +5453,14 @@ pub mod plasma_shell {
                             "org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
                             sender_id,
                         );
-                        self.auto_hidden_panel_hidden(client, sender_id).await
+                        self.auto_hidden_panel_hidden(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
                             sender_id,
                         );
-                        self.auto_hidden_panel_shown(client, sender_id).await
+                        self.auto_hidden_panel_shown(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5896,7 +5896,7 @@ pub mod plasma_window_management {
                             sender_id,
                             state
                         );
-                        self.show_desktop_changed(client, sender_id, state).await
+                        self.show_desktop_changed(socket, sender_id, state).await
                     }
                     1u16 => {
                         let id = message.uint()?;
@@ -5905,7 +5905,7 @@ pub mod plasma_window_management {
                             sender_id,
                             id
                         );
-                        self.window(client, sender_id, id).await
+                        self.window(socket, sender_id, id).await
                     }
                     2u16 => {
                         let ids = message.array()?;
@@ -5914,7 +5914,7 @@ pub mod plasma_window_management {
                             sender_id,
                             ids.len()
                         );
-                        self.stacking_order_changed(client, sender_id, ids).await
+                        self.stacking_order_changed(socket, sender_id, ids).await
                     }
                     3u16 => {
                         let uuids = message
@@ -5925,7 +5925,7 @@ pub mod plasma_window_management {
                             sender_id,
                             uuids
                         );
-                        self.stacking_order_uuid_changed(client, sender_id, uuids)
+                        self.stacking_order_uuid_changed(socket, sender_id, uuids)
                             .await
                     }
                     4u16 => {
@@ -5939,14 +5939,14 @@ pub mod plasma_window_management {
                             id,
                             uuid
                         );
-                        self.window_with_uuid(client, sender_id, id, uuid).await
+                        self.window_with_uuid(socket, sender_id, id, uuid).await
                     }
                     5u16 => {
                         tracing::debug!(
                             "org_kde_plasma_window_management#{}.stacking_order_changed_2()",
                             sender_id,
                         );
-                        self.stacking_order_changed_2(client, sender_id).await
+                        self.stacking_order_changed_2(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6107,7 +6107,7 @@ pub mod plasma_window_management {
                             sender_id,
                             title
                         );
-                        self.title_changed(client, sender_id, title).await
+                        self.title_changed(socket, sender_id, title).await
                     }
                     1u16 => {
                         let app_id = message
@@ -6118,7 +6118,7 @@ pub mod plasma_window_management {
                             sender_id,
                             app_id
                         );
-                        self.app_id_changed(client, sender_id, app_id).await
+                        self.app_id_changed(socket, sender_id, app_id).await
                     }
                     2u16 => {
                         let flags = message.uint()?;
@@ -6127,7 +6127,7 @@ pub mod plasma_window_management {
                             sender_id,
                             flags
                         );
-                        self.state_changed(client, sender_id, flags).await
+                        self.state_changed(socket, sender_id, flags).await
                     }
                     3u16 => {
                         let number = message.int()?;
@@ -6136,7 +6136,7 @@ pub mod plasma_window_management {
                             sender_id,
                             number
                         );
-                        self.virtual_desktop_changed(client, sender_id, number)
+                        self.virtual_desktop_changed(socket, sender_id, number)
                             .await
                     }
                     4u16 => {
@@ -6148,15 +6148,15 @@ pub mod plasma_window_management {
                             sender_id,
                             name
                         );
-                        self.themed_icon_name_changed(client, sender_id, name).await
+                        self.themed_icon_name_changed(socket, sender_id, name).await
                     }
                     5u16 => {
                         tracing::debug!("org_kde_plasma_window#{}.unmapped()", sender_id,);
-                        self.unmapped(client, sender_id).await
+                        self.unmapped(socket, sender_id).await
                     }
                     6u16 => {
                         tracing::debug!("org_kde_plasma_window#{}.initial_state()", sender_id,);
-                        self.initial_state(client, sender_id).await
+                        self.initial_state(socket, sender_id).await
                     }
                     7u16 => {
                         let parent = message.object()?;
@@ -6167,7 +6167,7 @@ pub mod plasma_window_management {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.parent_window(client, sender_id, parent).await
+                        self.parent_window(socket, sender_id, parent).await
                     }
                     8u16 => {
                         let x = message.int()?;
@@ -6182,16 +6182,16 @@ pub mod plasma_window_management {
                             width,
                             height
                         );
-                        self.geometry(client, sender_id, x, y, width, height).await
+                        self.geometry(socket, sender_id, x, y, width, height).await
                     }
                     9u16 => {
                         tracing::debug!("org_kde_plasma_window#{}.icon_changed()", sender_id,);
-                        self.icon_changed(client, sender_id).await
+                        self.icon_changed(socket, sender_id).await
                     }
                     10u16 => {
                         let pid = message.uint()?;
                         tracing::debug!("org_kde_plasma_window#{}.pid_changed({})", sender_id, pid);
-                        self.pid_changed(client, sender_id, pid).await
+                        self.pid_changed(socket, sender_id, pid).await
                     }
                     11u16 => {
                         let id = message
@@ -6202,7 +6202,7 @@ pub mod plasma_window_management {
                             sender_id,
                             id
                         );
-                        self.virtual_desktop_entered(client, sender_id, id).await
+                        self.virtual_desktop_entered(socket, sender_id, id).await
                     }
                     12u16 => {
                         let is = message
@@ -6213,7 +6213,7 @@ pub mod plasma_window_management {
                             sender_id,
                             is
                         );
-                        self.virtual_desktop_left(client, sender_id, is).await
+                        self.virtual_desktop_left(socket, sender_id, is).await
                     }
                     13u16 => {
                         let service_name = message
@@ -6228,7 +6228,7 @@ pub mod plasma_window_management {
                             service_name,
                             object_path
                         );
-                        self.application_menu(client, sender_id, service_name, object_path)
+                        self.application_menu(socket, sender_id, service_name, object_path)
                             .await
                     }
                     14u16 => {
@@ -6240,7 +6240,7 @@ pub mod plasma_window_management {
                             sender_id,
                             id
                         );
-                        self.activity_entered(client, sender_id, id).await
+                        self.activity_entered(socket, sender_id, id).await
                     }
                     15u16 => {
                         let id = message
@@ -6251,7 +6251,7 @@ pub mod plasma_window_management {
                             sender_id,
                             id
                         );
-                        self.activity_left(client, sender_id, id).await
+                        self.activity_left(socket, sender_id, id).await
                     }
                     16u16 => {
                         let resource_name = message
@@ -6262,7 +6262,7 @@ pub mod plasma_window_management {
                             sender_id,
                             resource_name
                         );
-                        self.resource_name_changed(client, sender_id, resource_name)
+                        self.resource_name_changed(socket, sender_id, resource_name)
                             .await
                     }
                     17u16 => {
@@ -6278,7 +6278,7 @@ pub mod plasma_window_management {
                             width,
                             height
                         );
-                        self.client_geometry(client, sender_id, x, y, width, height)
+                        self.client_geometry(socket, sender_id, x, y, width, height)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -6736,7 +6736,7 @@ pub mod plasma_window_management {
                             sender_id,
                             id
                         );
-                        self.activation(client, sender_id, id).await
+                        self.activation(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6795,11 +6795,11 @@ pub mod plasma_window_management {
                             sender_id,
                             app_id
                         );
-                        self.app_id(client, sender_id, app_id).await
+                        self.app_id(socket, sender_id, app_id).await
                     }
                     1u16 => {
                         tracing::debug!("org_kde_plasma_activation#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6859,13 +6859,11 @@ pub mod plasma_window_management {
                             sender_id,
                             uuid
                         );
-                        self.window(client, sender_id, uuid).await
+                        self.window(socket, sender_id, uuid).await
                     }
                     1u16 => {
                         tracing::debug!("org_kde_plasma_stacking_order#{}.done()", sender_id,);
-                        let result = self.done(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6914,7 +6912,7 @@ pub mod remote_access {
                             id,
                             output
                         );
-                        self.buffer_ready(client, sender_id, id, output).await
+                        self.buffer_ready(socket, sender_id, id, output).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6995,7 +6993,7 @@ pub mod remote_access {
                             stride,
                             format
                         );
-                        self.gbm_handle(client, sender_id, fd, width, height, stride, format)
+                        self.gbm_handle(socket, sender_id, fd, width, height, stride, format)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -7040,8 +7038,8 @@ pub mod server_decoration_palette {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7083,8 +7081,8 @@ pub mod server_decoration_palette {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7191,7 +7189,7 @@ pub mod server_decoration {
                             sender_id,
                             mode
                         );
-                        self.default_mode(client, sender_id, mode).await
+                        self.default_mode(socket, sender_id, mode).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7291,7 +7289,7 @@ pub mod server_decoration {
                             sender_id,
                             mode
                         );
-                        self.mode(client, sender_id, mode).await
+                        self.mode(socket, sender_id, mode).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7359,8 +7357,8 @@ pub mod shadow {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7426,8 +7424,8 @@ pub mod shadow {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7651,8 +7649,8 @@ pub mod slide {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7736,8 +7734,8 @@ pub mod slide {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7813,8 +7811,8 @@ pub mod surface_extension {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7920,7 +7918,7 @@ pub mod surface_extension {
                             sender_id,
                             visible
                         );
-                        self.onscreen_visibility(client, sender_id, visible).await
+                        self.onscreen_visibility(socket, sender_id, visible).await
                     }
                     1u16 => {
                         let name = message
@@ -7933,12 +7931,12 @@ pub mod surface_extension {
                             name,
                             value.len()
                         );
-                        self.set_generic_property(client, sender_id, name, value)
+                        self.set_generic_property(socket, sender_id, name, value)
                             .await
                     }
                     2u16 => {
                         tracing::debug!("qt_extended_surface#{}.close()", sender_id,);
-                        self.close(client, sender_id).await
+                        self.close(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -8289,7 +8287,7 @@ pub mod text_input_unstable_v2 {
                             serial,
                             surface
                         );
-                        self.enter(client, sender_id, serial, surface).await
+                        self.enter(socket, sender_id, serial, surface).await
                     }
                     1u16 => {
                         let serial = message.uint()?;
@@ -8302,7 +8300,7 @@ pub mod text_input_unstable_v2 {
                             serial,
                             surface
                         );
-                        self.leave(client, sender_id, serial, surface).await
+                        self.leave(socket, sender_id, serial, surface).await
                     }
                     2u16 => {
                         let state = message.uint()?;
@@ -8320,7 +8318,7 @@ pub mod text_input_unstable_v2 {
                             height
                         );
                         self.input_panel_state(
-                            client,
+                            socket,
                             sender_id,
                             state.try_into()?,
                             x,
@@ -8343,7 +8341,7 @@ pub mod text_input_unstable_v2 {
                             text,
                             commit
                         );
-                        self.preedit_string(client, sender_id, text, commit).await
+                        self.preedit_string(socket, sender_id, text, commit).await
                     }
                     4u16 => {
                         let index = message.uint()?;
@@ -8356,7 +8354,7 @@ pub mod text_input_unstable_v2 {
                             length,
                             style
                         );
-                        self.preedit_styling(client, sender_id, index, length, style.try_into()?)
+                        self.preedit_styling(socket, sender_id, index, length, style.try_into()?)
                             .await
                     }
                     5u16 => {
@@ -8366,7 +8364,7 @@ pub mod text_input_unstable_v2 {
                             sender_id,
                             index
                         );
-                        self.preedit_cursor(client, sender_id, index).await
+                        self.preedit_cursor(socket, sender_id, index).await
                     }
                     6u16 => {
                         let text = message
@@ -8377,7 +8375,7 @@ pub mod text_input_unstable_v2 {
                             sender_id,
                             text
                         );
-                        self.commit_string(client, sender_id, text).await
+                        self.commit_string(socket, sender_id, text).await
                     }
                     7u16 => {
                         let index = message.int()?;
@@ -8388,7 +8386,7 @@ pub mod text_input_unstable_v2 {
                             index,
                             anchor
                         );
-                        self.cursor_position(client, sender_id, index, anchor).await
+                        self.cursor_position(socket, sender_id, index, anchor).await
                     }
                     8u16 => {
                         let before_length = message.uint()?;
@@ -8399,7 +8397,7 @@ pub mod text_input_unstable_v2 {
                             before_length,
                             after_length
                         );
-                        self.delete_surrounding_text(client, sender_id, before_length, after_length)
+                        self.delete_surrounding_text(socket, sender_id, before_length, after_length)
                             .await
                     }
                     9u16 => {
@@ -8409,7 +8407,7 @@ pub mod text_input_unstable_v2 {
                             sender_id,
                             map.len()
                         );
-                        self.modifiers_map(client, sender_id, map).await
+                        self.modifiers_map(socket, sender_id, map).await
                     }
                     10u16 => {
                         let time = message.uint()?;
@@ -8424,7 +8422,7 @@ pub mod text_input_unstable_v2 {
                             state,
                             modifiers
                         );
-                        self.keysym(client, sender_id, time, sym, state, modifiers)
+                        self.keysym(socket, sender_id, time, sym, state, modifiers)
                             .await
                     }
                     11u16 => {
@@ -8436,7 +8434,7 @@ pub mod text_input_unstable_v2 {
                             sender_id,
                             language
                         );
-                        self.language(client, sender_id, language).await
+                        self.language(socket, sender_id, language).await
                     }
                     12u16 => {
                         let direction = message.uint()?;
@@ -8445,7 +8443,7 @@ pub mod text_input_unstable_v2 {
                             sender_id,
                             direction
                         );
-                        self.text_direction(client, sender_id, direction.try_into()?)
+                        self.text_direction(socket, sender_id, direction.try_into()?)
                             .await
                     }
                     13u16 => {
@@ -8458,7 +8456,7 @@ pub mod text_input_unstable_v2 {
                             after_cursor
                         );
                         self.configure_surrounding_text(
-                            client,
+                            socket,
                             sender_id,
                             before_cursor,
                             after_cursor,
@@ -8474,7 +8472,7 @@ pub mod text_input_unstable_v2 {
                             serial,
                             flags
                         );
-                        self.input_method_changed(client, sender_id, serial, flags)
+                        self.input_method_changed(socket, sender_id, serial, flags)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -8915,8 +8913,8 @@ pub mod text_input_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9188,11 +9186,11 @@ pub mod text {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wl_text_input#{}.enter({})", sender_id, surface);
-                        self.enter(client, sender_id, surface).await
+                        self.enter(socket, sender_id, surface).await
                     }
                     1u16 => {
                         tracing::debug!("wl_text_input#{}.leave()", sender_id,);
-                        self.leave(client, sender_id).await
+                        self.leave(socket, sender_id).await
                     }
                     2u16 => {
                         let map = message.array()?;
@@ -9201,12 +9199,12 @@ pub mod text {
                             sender_id,
                             map.len()
                         );
-                        self.modifiers_map(client, sender_id, map).await
+                        self.modifiers_map(socket, sender_id, map).await
                     }
                     3u16 => {
                         let state = message.uint()?;
                         tracing::debug!("wl_text_input#{}.input_panel_state({})", sender_id, state);
-                        self.input_panel_state(client, sender_id, state).await
+                        self.input_panel_state(socket, sender_id, state).await
                     }
                     4u16 => {
                         let serial = message.uint()?;
@@ -9223,7 +9221,7 @@ pub mod text {
                             text,
                             commit
                         );
-                        self.preedit_string(client, sender_id, serial, text, commit)
+                        self.preedit_string(socket, sender_id, serial, text, commit)
                             .await
                     }
                     5u16 => {
@@ -9237,13 +9235,13 @@ pub mod text {
                             length,
                             style
                         );
-                        self.preedit_styling(client, sender_id, index, length, style)
+                        self.preedit_styling(socket, sender_id, index, length, style)
                             .await
                     }
                     6u16 => {
                         let index = message.int()?;
                         tracing::debug!("wl_text_input#{}.preedit_cursor({})", sender_id, index);
-                        self.preedit_cursor(client, sender_id, index).await
+                        self.preedit_cursor(socket, sender_id, index).await
                     }
                     7u16 => {
                         let serial = message.uint()?;
@@ -9256,7 +9254,7 @@ pub mod text {
                             serial,
                             text
                         );
-                        self.commit_string(client, sender_id, serial, text).await
+                        self.commit_string(socket, sender_id, serial, text).await
                     }
                     8u16 => {
                         let index = message.int()?;
@@ -9267,7 +9265,7 @@ pub mod text {
                             index,
                             anchor
                         );
-                        self.cursor_position(client, sender_id, index, anchor).await
+                        self.cursor_position(socket, sender_id, index, anchor).await
                     }
                     9u16 => {
                         let index = message.int()?;
@@ -9278,7 +9276,7 @@ pub mod text {
                             index,
                             length
                         );
-                        self.delete_surrounding_text(client, sender_id, index, length)
+                        self.delete_surrounding_text(socket, sender_id, index, length)
                             .await
                     }
                     10u16 => {
@@ -9296,7 +9294,7 @@ pub mod text {
                             state,
                             modifiers
                         );
-                        self.keysym(client, sender_id, serial, time, sym, state, modifiers)
+                        self.keysym(socket, sender_id, serial, time, sym, state, modifiers)
                             .await
                     }
                     11u16 => {
@@ -9310,7 +9308,7 @@ pub mod text {
                             serial,
                             language
                         );
-                        self.language(client, sender_id, serial, language).await
+                        self.language(socket, sender_id, serial, language).await
                     }
                     12u16 => {
                         let serial = message.uint()?;
@@ -9321,7 +9319,7 @@ pub mod text {
                             serial,
                             direction
                         );
-                        self.text_direction(client, sender_id, serial, direction)
+                        self.text_direction(socket, sender_id, serial, direction)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -9696,8 +9694,8 @@ pub mod text {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9801,8 +9799,8 @@ pub mod wl_eglstream_controller {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9903,8 +9901,8 @@ pub mod zkde_screencast_unstable_v1 {
             const VERSION: u32 = 5u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -10083,7 +10081,7 @@ pub mod zkde_screencast_unstable_v1 {
                             "zkde_screencast_stream_unstable_v1#{}.closed()",
                             sender_id,
                         );
-                        self.closed(client, sender_id).await
+                        self.closed(socket, sender_id).await
                     }
                     1u16 => {
                         let node = message.uint()?;
@@ -10092,7 +10090,7 @@ pub mod zkde_screencast_unstable_v1 {
                             sender_id,
                             node
                         );
-                        self.created(client, sender_id, node).await
+                        self.created(socket, sender_id, node).await
                     }
                     2u16 => {
                         let error = message
@@ -10103,7 +10101,7 @@ pub mod zkde_screencast_unstable_v1 {
                             sender_id,
                             error
                         );
-                        self.failed(client, sender_id, error).await
+                        self.failed(socket, sender_id, error).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

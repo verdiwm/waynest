@@ -109,7 +109,7 @@ pub mod cosmic_a11y_v1 {
                             sender_id,
                             active
                         );
-                        self.magnifier(client, sender_id, active.try_into()?).await
+                        self.magnifier(socket, sender_id, active.try_into()?).await
                     }
                     1u16 => {
                         let inverted = message.uint()?;
@@ -121,7 +121,7 @@ pub mod cosmic_a11y_v1 {
                             filter
                         );
                         self.screen_filter(
-                            client,
+                            socket,
                             sender_id,
                             inverted.try_into()?,
                             filter.try_into()?,
@@ -140,7 +140,7 @@ pub mod cosmic_a11y_v1 {
                             filter_state
                         );
                         self.screen_filter2(
-                            client,
+                            socket,
                             sender_id,
                             inverted.try_into()?,
                             filter.try_into()?,
@@ -312,7 +312,7 @@ pub mod cosmic_atspi_v1 {
                             sender_id,
                             fd.as_raw_fd()
                         );
-                        self.key_events_eis(client, sender_id, fd).await
+                        self.key_events_eis(socket, sender_id, fd).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -422,8 +422,8 @@ pub mod cosmic_image_source_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -518,8 +518,8 @@ pub mod cosmic_output_management_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -722,7 +722,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             sender_id,
                             scale_1000
                         );
-                        self.scale_1000(client, sender_id, scale_1000).await
+                        self.scale_1000(socket, sender_id, scale_1000).await
                     }
                     1u16 => {
                         let name = message.string()?;
@@ -731,7 +731,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             sender_id,
                             name.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.mirroring(client, sender_id, name).await
+                        self.mirroring(socket, sender_id, name).await
                     }
                     2u16 => {
                         let available = message.uint()?;
@@ -740,7 +740,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             sender_id,
                             available
                         );
-                        self.adaptive_sync_available(client, sender_id, available.try_into()?)
+                        self.adaptive_sync_available(socket, sender_id, available.try_into()?)
                             .await
                     }
                     3u16 => {
@@ -750,7 +750,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             sender_id,
                             state
                         );
-                        self.adaptive_sync_ext(client, sender_id, state.try_into()?)
+                        self.adaptive_sync_ext(socket, sender_id, state.try_into()?)
                             .await
                     }
                     4u16 => {
@@ -760,7 +760,7 @@ pub mod cosmic_output_management_unstable_v1 {
                             sender_id,
                             state
                         );
-                        self.xwayland_primary(client, sender_id, state).await
+                        self.xwayland_primary(socket, sender_id, state).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -878,7 +878,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zcosmic_output_configuration_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -965,8 +965,8 @@ pub mod cosmic_output_management_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1065,8 +1065,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1136,7 +1136,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             width,
                             height
                         );
-                        self.toplevel_enter(client, sender_id, toplevel, x, y, width, height)
+                        self.toplevel_enter(socket, sender_id, toplevel, x, y, width, height)
                             .await
                     }
                     1u16 => {
@@ -1148,7 +1148,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             sender_id,
                             toplevel
                         );
-                        self.toplevel_leave(client, sender_id, toplevel).await
+                        self.toplevel_leave(socket, sender_id, toplevel).await
                     }
                     2u16 => {
                         let identifier = message
@@ -1176,7 +1176,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             height
                         );
                         self.layer_enter(
-                            client,
+                            socket,
                             sender_id,
                             identifier,
                             namespace,
@@ -1198,7 +1198,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                             sender_id,
                             identifier
                         );
-                        self.layer_leave(client, sender_id, identifier).await
+                        self.layer_leave(socket, sender_id, identifier).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1331,8 +1331,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1454,7 +1454,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             width,
                             height
                         );
-                        self.buffer_size(client, sender_id, width, height).await
+                        self.buffer_size(socket, sender_id, width, height).await
                     }
                     1u16 => {
                         let format = message.uint()?;
@@ -1463,7 +1463,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             sender_id,
                             format
                         );
-                        self.shm_format(client, sender_id, format).await
+                        self.shm_format(socket, sender_id, format).await
                     }
                     2u16 => {
                         let device = message.array()?;
@@ -1472,7 +1472,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             sender_id,
                             device.len()
                         );
-                        self.dmabuf_device(client, sender_id, device).await
+                        self.dmabuf_device(socket, sender_id, device).await
                     }
                     3u16 => {
                         let format = message.uint()?;
@@ -1483,16 +1483,16 @@ pub mod cosmic_screencopy_unstable_v2 {
                             format,
                             modifiers.len()
                         );
-                        self.dmabuf_format(client, sender_id, format, modifiers)
+                        self.dmabuf_format(socket, sender_id, format, modifiers)
                             .await
                     }
                     4u16 => {
                         tracing::debug!("zcosmic_screencopy_session_v2#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     5u16 => {
                         tracing::debug!("zcosmic_screencopy_session_v2#{}.stopped()", sender_id,);
-                        self.stopped(client, sender_id).await
+                        self.stopped(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1689,7 +1689,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             sender_id,
                             transform
                         );
-                        self.transform(client, sender_id, transform.try_into()?)
+                        self.transform(socket, sender_id, transform.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -1705,7 +1705,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             width,
                             height
                         );
-                        self.damage(client, sender_id, x, y, width, height).await
+                        self.damage(socket, sender_id, x, y, width, height).await
                     }
                     2u16 => {
                         let tv_sec_hi = message.uint()?;
@@ -1718,12 +1718,12 @@ pub mod cosmic_screencopy_unstable_v2 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.presentation_time(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.presentation_time(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     3u16 => {
                         tracing::debug!("zcosmic_screencopy_frame_v2#{}.ready()", sender_id,);
-                        self.ready(client, sender_id).await
+                        self.ready(socket, sender_id).await
                     }
                     4u16 => {
                         let reason = message.uint()?;
@@ -1732,7 +1732,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             sender_id,
                             reason
                         );
-                        self.failed(client, sender_id, reason.try_into()?).await
+                        self.failed(socket, sender_id, reason.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1950,14 +1950,14 @@ pub mod cosmic_screencopy_unstable_v2 {
                             "zcosmic_screencopy_cursor_session_v2#{}.enter()",
                             sender_id,
                         );
-                        self.enter(client, sender_id).await
+                        self.enter(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zcosmic_screencopy_cursor_session_v2#{}.leave()",
                             sender_id,
                         );
-                        self.leave(client, sender_id).await
+                        self.leave(socket, sender_id).await
                     }
                     2u16 => {
                         let x = message.int()?;
@@ -1968,7 +1968,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             x,
                             y
                         );
-                        self.position(client, sender_id, x, y).await
+                        self.position(socket, sender_id, x, y).await
                     }
                     3u16 => {
                         let x = message.int()?;
@@ -1979,7 +1979,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                             x,
                             y
                         );
-                        self.hotspot(client, sender_id, x, y).await
+                        self.hotspot(socket, sender_id, x, y).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2118,15 +2118,15 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             toplevel
                         );
-                        self.toplevel(client, sender_id, toplevel).await
+                        self.toplevel(socket, sender_id, toplevel).await
                     }
                     1u16 => {
                         tracing::debug!("zcosmic_toplevel_info_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     2u16 => {
                         tracing::debug!("zcosmic_toplevel_info_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2277,11 +2277,11 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zcosmic_toplevel_handle_v1#{}.closed()", sender_id,);
-                        self.closed(client, sender_id).await
+                        self.closed(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("zcosmic_toplevel_handle_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     2u16 => {
                         let title = message
@@ -2292,7 +2292,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             title
                         );
-                        self.title(client, sender_id, title).await
+                        self.title(socket, sender_id, title).await
                     }
                     3u16 => {
                         let app_id = message
@@ -2303,7 +2303,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             app_id
                         );
-                        self.app_id(client, sender_id, app_id).await
+                        self.app_id(socket, sender_id, app_id).await
                     }
                     4u16 => {
                         let output = message
@@ -2314,7 +2314,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             output
                         );
-                        self.output_enter(client, sender_id, output).await
+                        self.output_enter(socket, sender_id, output).await
                     }
                     5u16 => {
                         let output = message
@@ -2325,7 +2325,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             output
                         );
-                        self.output_leave(client, sender_id, output).await
+                        self.output_leave(socket, sender_id, output).await
                     }
                     6u16 => {
                         let workspace = message
@@ -2336,7 +2336,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             workspace
                         );
-                        self.workspace_enter(client, sender_id, workspace).await
+                        self.workspace_enter(socket, sender_id, workspace).await
                     }
                     7u16 => {
                         let workspace = message
@@ -2347,7 +2347,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             workspace
                         );
-                        self.workspace_leave(client, sender_id, workspace).await
+                        self.workspace_leave(socket, sender_id, workspace).await
                     }
                     8u16 => {
                         let state = message.array()?;
@@ -2356,7 +2356,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             state.len()
                         );
-                        self.state(client, sender_id, state).await
+                        self.state(socket, sender_id, state).await
                     }
                     9u16 => {
                         let output = message
@@ -2375,7 +2375,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             width,
                             height
                         );
-                        self.geometry(client, sender_id, output, x, y, width, height)
+                        self.geometry(socket, sender_id, output, x, y, width, height)
                             .await
                     }
                     10u16 => {
@@ -2387,7 +2387,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             workspace
                         );
-                        self.ext_workspace_enter(client, sender_id, workspace).await
+                        self.ext_workspace_enter(socket, sender_id, workspace).await
                     }
                     11u16 => {
                         let workspace = message
@@ -2398,7 +2398,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                             sender_id,
                             workspace
                         );
-                        self.ext_workspace_leave(client, sender_id, workspace).await
+                        self.ext_workspace_leave(socket, sender_id, workspace).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2640,7 +2640,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                             sender_id,
                             capabilities.len()
                         );
-                        self.capabilities(client, sender_id, capabilities).await
+                        self.capabilities(socket, sender_id, capabilities).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3009,8 +3009,8 @@ pub mod cosmic_workspace_unstable_v2 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3144,7 +3144,7 @@ pub mod cosmic_workspace_unstable_v2 {
                             sender_id,
                             capabilities
                         );
-                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                        self.capabilities(socket, sender_id, capabilities.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -3154,7 +3154,7 @@ pub mod cosmic_workspace_unstable_v2 {
                             sender_id,
                             state
                         );
-                        self.tiling_state(client, sender_id, state.try_into()?)
+                        self.tiling_state(socket, sender_id, state.try_into()?)
                             .await
                     }
                     2u16 => {
@@ -3164,7 +3164,7 @@ pub mod cosmic_workspace_unstable_v2 {
                             sender_id,
                             state
                         );
-                        self.state(client, sender_id, state.try_into()?).await
+                        self.state(socket, sender_id, state.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

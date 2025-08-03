@@ -26,8 +26,8 @@ pub mod wlr_data_control_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -141,7 +141,7 @@ pub mod wlr_data_control_unstable_v1 {
                             sender_id,
                             id
                         );
-                        self.data_offer(client, sender_id, id).await
+                        self.data_offer(socket, sender_id, id).await
                     }
                     1u16 => {
                         let id = message.object()?;
@@ -150,11 +150,11 @@ pub mod wlr_data_control_unstable_v1 {
                             sender_id,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.selection(client, sender_id, id).await
+                        self.selection(socket, sender_id, id).await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_data_control_device_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     3u16 => {
                         let id = message.object()?;
@@ -163,7 +163,7 @@ pub mod wlr_data_control_unstable_v1 {
                             sender_id,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.primary_selection(client, sender_id, id).await
+                        self.primary_selection(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -349,11 +349,11 @@ pub mod wlr_data_control_unstable_v1 {
                             mime_type,
                             fd.as_raw_fd()
                         );
-                        self.send(client, sender_id, mime_type, fd).await
+                        self.send(socket, sender_id, mime_type, fd).await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_data_control_source_v1#{}.cancelled()", sender_id,);
-                        self.cancelled(client, sender_id).await
+                        self.cancelled(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -441,7 +441,7 @@ pub mod wlr_data_control_unstable_v1 {
                             sender_id,
                             mime_type
                         );
-                        self.offer(client, sender_id, mime_type).await
+                        self.offer(socket, sender_id, mime_type).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -521,8 +521,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -676,7 +676,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                             num_objects
                         );
                         self.frame(
-                            client,
+                            socket,
                             sender_id,
                             width,
                             height,
@@ -709,7 +709,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                             plane_index
                         );
                         self.object(
-                            client,
+                            socket,
                             sender_id,
                             index,
                             fd,
@@ -731,7 +731,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.ready(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.ready(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     3u16 => {
@@ -741,7 +741,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                             sender_id,
                             reason
                         );
-                        self.cancel(client, sender_id, reason.try_into()?).await
+                        self.cancel(socket, sender_id, reason.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -872,16 +872,14 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             sender_id,
                             toplevel
                         );
-                        self.toplevel(client, sender_id, toplevel).await
+                        self.toplevel(socket, sender_id, toplevel).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwlr_foreign_toplevel_manager_v1#{}.finished()",
                             sender_id,
                         );
-                        let result = self.finished(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1011,7 +1009,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             sender_id,
                             title
                         );
-                        self.title(client, sender_id, title).await
+                        self.title(socket, sender_id, title).await
                     }
                     1u16 => {
                         let app_id = message
@@ -1022,7 +1020,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             sender_id,
                             app_id
                         );
-                        self.app_id(client, sender_id, app_id).await
+                        self.app_id(socket, sender_id, app_id).await
                     }
                     2u16 => {
                         let output = message
@@ -1033,7 +1031,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             sender_id,
                             output
                         );
-                        self.output_enter(client, sender_id, output).await
+                        self.output_enter(socket, sender_id, output).await
                     }
                     3u16 => {
                         let output = message
@@ -1044,7 +1042,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             sender_id,
                             output
                         );
-                        self.output_leave(client, sender_id, output).await
+                        self.output_leave(socket, sender_id, output).await
                     }
                     4u16 => {
                         let state = message.array()?;
@@ -1053,15 +1051,15 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                             sender_id,
                             state.len()
                         );
-                        self.state(client, sender_id, state).await
+                        self.state(socket, sender_id, state).await
                     }
                     5u16 => {
                         tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     6u16 => {
                         tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
-                        self.closed(client, sender_id).await
+                        self.closed(socket, sender_id).await
                     }
                     7u16 => {
                         let parent = message.object()?;
@@ -1072,7 +1070,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.parent(client, sender_id, parent).await
+                        self.parent(socket, sender_id, parent).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1377,8 +1375,8 @@ pub mod wlr_gamma_control_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1475,11 +1473,11 @@ pub mod wlr_gamma_control_unstable_v1 {
                     0u16 => {
                         let size = message.uint()?;
                         tracing::debug!("zwlr_gamma_control_v1#{}.gamma_size({})", sender_id, size);
-                        self.gamma_size(client, sender_id, size).await
+                        self.gamma_size(socket, sender_id, size).await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_gamma_control_v1#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1584,8 +1582,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1635,8 +1633,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1739,8 +1737,8 @@ pub mod wlr_layer_shell_unstable_v1 {
             const VERSION: u32 = 5u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1926,12 +1924,12 @@ pub mod wlr_layer_shell_unstable_v1 {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, serial, width, height)
+                        self.configure(socket, sender_id, serial, width, height)
                             .await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_layer_surface_v1#{}.closed()", sender_id,);
-                        self.closed(client, sender_id).await
+                        self.closed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2301,18 +2299,16 @@ pub mod wlr_output_management_unstable_v1 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwlr_output_manager_v1#{}.head({})", sender_id, head);
-                        self.head(client, sender_id, head).await
+                        self.head(socket, sender_id, head).await
                     }
                     1u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("zwlr_output_manager_v1#{}.done({})", sender_id, serial);
-                        self.done(client, sender_id, serial).await
+                        self.done(socket, sender_id, serial).await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_output_manager_v1#{}.finished()", sender_id,);
-                        let result = self.finished(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2452,7 +2448,7 @@ pub mod wlr_output_management_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwlr_output_head_v1#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     1u16 => {
                         let description = message
@@ -2463,7 +2459,7 @@ pub mod wlr_output_management_unstable_v1 {
                             sender_id,
                             description
                         );
-                        self.description(client, sender_id, description).await
+                        self.description(socket, sender_id, description).await
                     }
                     2u16 => {
                         let width = message.int()?;
@@ -2474,32 +2470,32 @@ pub mod wlr_output_management_unstable_v1 {
                             width,
                             height
                         );
-                        self.physical_size(client, sender_id, width, height).await
+                        self.physical_size(socket, sender_id, width, height).await
                     }
                     3u16 => {
                         let mode = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwlr_output_head_v1#{}.mode({})", sender_id, mode);
-                        self.mode(client, sender_id, mode).await
+                        self.mode(socket, sender_id, mode).await
                     }
                     4u16 => {
                         let enabled = message.int()?;
                         tracing::debug!("zwlr_output_head_v1#{}.enabled({})", sender_id, enabled);
-                        self.enabled(client, sender_id, enabled).await
+                        self.enabled(socket, sender_id, enabled).await
                     }
                     5u16 => {
                         let mode = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwlr_output_head_v1#{}.current_mode({})", sender_id, mode);
-                        self.current_mode(client, sender_id, mode).await
+                        self.current_mode(socket, sender_id, mode).await
                     }
                     6u16 => {
                         let x = message.int()?;
                         let y = message.int()?;
                         tracing::debug!("zwlr_output_head_v1#{}.position({}, {})", sender_id, x, y);
-                        self.position(client, sender_id, x, y).await
+                        self.position(socket, sender_id, x, y).await
                     }
                     7u16 => {
                         let transform = message.uint()?;
@@ -2508,31 +2504,31 @@ pub mod wlr_output_management_unstable_v1 {
                             sender_id,
                             transform
                         );
-                        self.transform(client, sender_id, transform.try_into()?)
+                        self.transform(socket, sender_id, transform.try_into()?)
                             .await
                     }
                     8u16 => {
                         let scale = message.fixed()?;
                         tracing::debug!("zwlr_output_head_v1#{}.scale({})", sender_id, scale);
-                        self.scale(client, sender_id, scale).await
+                        self.scale(socket, sender_id, scale).await
                     }
                     9u16 => {
                         tracing::debug!("zwlr_output_head_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     10u16 => {
                         let make = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwlr_output_head_v1#{}.make(\"{}\")", sender_id, make);
-                        self.make(client, sender_id, make).await
+                        self.make(socket, sender_id, make).await
                     }
                     11u16 => {
                         let model = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwlr_output_head_v1#{}.model(\"{}\")", sender_id, model);
-                        self.model(client, sender_id, model).await
+                        self.model(socket, sender_id, model).await
                     }
                     12u16 => {
                         let serial_number = message
@@ -2543,7 +2539,7 @@ pub mod wlr_output_management_unstable_v1 {
                             sender_id,
                             serial_number
                         );
-                        self.serial_number(client, sender_id, serial_number).await
+                        self.serial_number(socket, sender_id, serial_number).await
                     }
                     13u16 => {
                         let state = message.uint()?;
@@ -2552,7 +2548,7 @@ pub mod wlr_output_management_unstable_v1 {
                             sender_id,
                             state
                         );
-                        self.adaptive_sync(client, sender_id, state.try_into()?)
+                        self.adaptive_sync(socket, sender_id, state.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -2817,20 +2813,20 @@ pub mod wlr_output_management_unstable_v1 {
                             width,
                             height
                         );
-                        self.size(client, sender_id, width, height).await
+                        self.size(socket, sender_id, width, height).await
                     }
                     1u16 => {
                         let refresh = message.int()?;
                         tracing::debug!("zwlr_output_mode_v1#{}.refresh({})", sender_id, refresh);
-                        self.refresh(client, sender_id, refresh).await
+                        self.refresh(socket, sender_id, refresh).await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_output_mode_v1#{}.preferred()", sender_id,);
-                        self.preferred(client, sender_id).await
+                        self.preferred(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("zwlr_output_mode_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2940,15 +2936,15 @@ pub mod wlr_output_management_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.succeeded()", sender_id,);
-                        self.succeeded(client, sender_id).await
+                        self.succeeded(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     2u16 => {
                         tracing::debug!("zwlr_output_configuration_v1#{}.cancelled()", sender_id,);
-                        self.cancelled(client, sender_id).await
+                        self.cancelled(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3142,8 +3138,8 @@ pub mod wlr_output_management_unstable_v1 {
             const VERSION: u32 = 4u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3308,8 +3304,8 @@ pub mod wlr_output_power_management_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3422,11 +3418,11 @@ pub mod wlr_output_power_management_unstable_v1 {
                     0u16 => {
                         let mode = message.uint()?;
                         tracing::debug!("zwlr_output_power_v1#{}.mode({})", sender_id, mode);
-                        self.mode(client, sender_id, mode.try_into()?).await
+                        self.mode(socket, sender_id, mode.try_into()?).await
                     }
                     1u16 => {
                         tracing::debug!("zwlr_output_power_v1#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3518,8 +3514,8 @@ pub mod wlr_screencopy_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3683,13 +3679,13 @@ pub mod wlr_screencopy_unstable_v1 {
                             height,
                             stride
                         );
-                        self.buffer(client, sender_id, format.try_into()?, width, height, stride)
+                        self.buffer(socket, sender_id, format.try_into()?, width, height, stride)
                             .await
                     }
                     1u16 => {
                         let flags = message.uint()?;
                         tracing::debug!("zwlr_screencopy_frame_v1#{}.flags({})", sender_id, flags);
-                        self.flags(client, sender_id, flags.try_into()?).await
+                        self.flags(socket, sender_id, flags.try_into()?).await
                     }
                     2u16 => {
                         let tv_sec_hi = message.uint()?;
@@ -3702,12 +3698,12 @@ pub mod wlr_screencopy_unstable_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.ready(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.ready(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     3u16 => {
                         tracing::debug!("zwlr_screencopy_frame_v1#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     4u16 => {
                         let x = message.uint()?;
@@ -3722,7 +3718,7 @@ pub mod wlr_screencopy_unstable_v1 {
                             width,
                             height
                         );
-                        self.damage(client, sender_id, x, y, width, height).await
+                        self.damage(socket, sender_id, x, y, width, height).await
                     }
                     5u16 => {
                         let format = message.uint()?;
@@ -3735,12 +3731,12 @@ pub mod wlr_screencopy_unstable_v1 {
                             width,
                             height
                         );
-                        self.linux_dmabuf(client, sender_id, format, width, height)
+                        self.linux_dmabuf(socket, sender_id, format, width, height)
                             .await
                     }
                     6u16 => {
                         tracing::debug!("zwlr_screencopy_frame_v1#{}.buffer_done()", sender_id,);
-                        self.buffer_done(client, sender_id).await
+                        self.buffer_done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3927,8 +3923,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4123,8 +4119,8 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]

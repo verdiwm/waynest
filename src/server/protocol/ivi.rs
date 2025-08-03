@@ -3,6 +3,8 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface: crate::server::Dispatcher {
@@ -10,7 +12,7 @@ pub mod ivi_application {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -19,9 +21,7 @@ pub mod ivi_application {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -31,7 +31,7 @@ pub mod ivi_application {
             #[doc = "The ID, ivi_id, is free and can be used for surface_create again."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "The configure event asks the client to resize its surface."]
@@ -47,7 +47,7 @@ pub mod ivi_application {
             #[doc = "in surface local coordinates."]
             fn configure(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -63,8 +63,8 @@ pub mod ivi_application {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -76,6 +76,8 @@ pub mod ivi_application {
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -108,7 +110,7 @@ pub mod ivi_application {
             const VERSION: u32 = 1u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -130,7 +132,7 @@ pub mod ivi_application {
                                 surface,
                                 id
                             );
-                            self.surface_create(client, sender_id, ivi_id, surface, id)
+                            self.surface_create(socket, sender_id, ivi_id, surface, id)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -160,7 +162,7 @@ pub mod ivi_application {
             #[doc = "ivi_id which is assigned to the ivi_surface is free for reuse."]
             fn surface_create(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 ivi_id: u32,
                 surface: crate::wire::ObjectId,
@@ -176,6 +178,8 @@ pub mod ivi_input {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_input {
         #[allow(unused)]
+        use futures_util::SinkExt;
+        #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
         pub trait IviInput: crate::server::Dispatcher {
@@ -183,7 +187,7 @@ pub mod ivi_input {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -201,7 +205,7 @@ pub mod ivi_input {
                                 device,
                                 enabled
                             );
-                            self.set_input_focus(client, sender_id, surface, device, enabled)
+                            self.set_input_focus(socket, sender_id, surface, device, enabled)
                                 .await
                         }
                         1u16 => {
@@ -217,7 +221,7 @@ pub mod ivi_input {
                                 seat,
                                 accepted
                             );
-                            self.set_input_acceptance(client, sender_id, surface, seat, accepted)
+                            self.set_input_acceptance(socket, sender_id, surface, seat, accepted)
                                 .await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
@@ -232,7 +236,7 @@ pub mod ivi_input {
             #[doc = "If argument enabled is not ILM_TRUE, the input focus from this surface is removed."]
             fn set_input_focus(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: u32,
                 device: u32,
@@ -246,7 +250,7 @@ pub mod ivi_input {
             #[doc = "will be removed from the list of accepted seats."]
             fn set_input_acceptance(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: u32,
                 seat: String,
@@ -254,7 +258,7 @@ pub mod ivi_input {
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn seat_created(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 capabilities: u32,
@@ -273,15 +277,15 @@ pub mod ivi_input {
                         .put_uint(capabilities)
                         .put_int(is_default)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn seat_capabilities(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 capabilities: u32,
@@ -297,15 +301,15 @@ pub mod ivi_input {
                         .put_string(Some(name))
                         .put_uint(capabilities)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn seat_destroyed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -314,8 +318,8 @@ pub mod ivi_input {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -325,7 +329,7 @@ pub mod ivi_input {
             #[doc = "If enabled is not ILM_TRUE, this surface no longer has input focus."]
             fn input_focus(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: u32,
                 device: u32,
@@ -344,8 +348,8 @@ pub mod ivi_input {
                         .put_uint(device)
                         .put_int(enabled)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -357,7 +361,7 @@ pub mod ivi_input {
             #[doc = "accepts the seat."]
             fn input_acceptance(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface: u32,
                 seat: String,
@@ -376,8 +380,8 @@ pub mod ivi_input {
                         .put_string(Some(seat))
                         .put_int(accepted)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -389,6 +393,8 @@ pub mod ivi_input {
 pub mod ivi_wm {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm_screen {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -424,7 +430,7 @@ pub mod ivi_wm {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -433,18 +439,16 @@ pub mod ivi_wm {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_wm_screen#{}.destroy()", sender_id,);
-                            let result = self.destroy(client, sender_id).await;
-                            client.remove(sender_id);
-                            result
+                            self.destroy(socket, sender_id).await
                         }
                         1u16 => {
                             tracing::debug!("ivi_wm_screen#{}.clear()", sender_id,);
-                            self.clear(client, sender_id).await
+                            self.clear(socket, sender_id).await
                         }
                         2u16 => {
                             let layer_id = message.uint()?;
                             tracing::debug!("ivi_wm_screen#{}.add_layer({})", sender_id, layer_id);
-                            self.add_layer(client, sender_id, layer_id).await
+                            self.add_layer(socket, sender_id, layer_id).await
                         }
                         3u16 => {
                             let layer_id = message.uint()?;
@@ -453,7 +457,7 @@ pub mod ivi_wm {
                                 sender_id,
                                 layer_id
                             );
-                            self.remove_layer(client, sender_id, layer_id).await
+                            self.remove_layer(socket, sender_id, layer_id).await
                         }
                         4u16 => {
                             let buffer = message
@@ -468,12 +472,12 @@ pub mod ivi_wm {
                                 buffer,
                                 screenshot
                             );
-                            self.screenshot(client, sender_id, buffer, screenshot).await
+                            self.screenshot(socket, sender_id, buffer, screenshot).await
                         }
                         5u16 => {
                             let param = message.int()?;
                             tracing::debug!("ivi_wm_screen#{}.get({})", sender_id, param);
-                            self.get(client, sender_id, param).await
+                            self.get(socket, sender_id, param).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -482,7 +486,7 @@ pub mod ivi_wm {
             #[doc = "Request to destroy the ivi_wm_screen."]
             fn destroy(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -491,7 +495,7 @@ pub mod ivi_wm {
             #[doc = "the screen."]
             fn clear(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -499,7 +503,7 @@ pub mod ivi_wm {
             #[doc = "The added layer will cover all other layers of the screen."]
             fn add_layer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -507,7 +511,7 @@ pub mod ivi_wm {
             #[doc = "This request removes a layer."]
             fn remove_layer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -515,7 +519,7 @@ pub mod ivi_wm {
             #[doc = "data of the specified output."]
             fn screenshot(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 screenshot: crate::wire::ObjectId,
@@ -523,22 +527,22 @@ pub mod ivi_wm {
             #[doc = "After this request, compositor sends the requested parameter."]
             fn get(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
             fn screen_id(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", sender_id, id);
                     let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -546,7 +550,7 @@ pub mod ivi_wm {
             #[doc = "A layer is added to the render order lisf of the screen"]
             fn layer_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -555,8 +559,8 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -564,7 +568,7 @@ pub mod ivi_wm {
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
             fn connector_name(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 process_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -577,8 +581,8 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_string(Some(process_name))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -586,7 +590,7 @@ pub mod ivi_wm {
             #[doc = "The error event is sent out when an error has occurred."]
             fn error(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 error: u32,
                 message: String,
@@ -602,8 +606,8 @@ pub mod ivi_wm {
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -615,6 +619,8 @@ pub mod ivi_wm {
     #[doc = "so the client shall then destroy its proxy too."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_screenshot {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -662,7 +668,7 @@ pub mod ivi_wm {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                _client: &mut crate::server::Client,
+                _socket: &mut crate::wire::Socket,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -677,7 +683,7 @@ pub mod ivi_wm {
             #[doc = "can handle the buffer. This also provide the time of dumping data."]
             fn done(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 timestamp: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -686,8 +692,8 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(timestamp)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -695,7 +701,7 @@ pub mod ivi_wm {
             #[doc = "The error event is sent when the screenshot could not be created."]
             fn error(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 error: Error,
                 message: String,
@@ -711,8 +717,8 @@ pub mod ivi_wm {
                         .put_uint(error as u32)
                         .put_string(Some(message))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -721,6 +727,8 @@ pub mod ivi_wm {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm {
+        #[allow(unused)]
+        use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
         #[repr(u32)]
@@ -854,7 +862,7 @@ pub mod ivi_wm {
             const VERSION: u32 = 2u32;
             fn handle_request(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -863,7 +871,7 @@ pub mod ivi_wm {
                     match message.opcode() {
                         0u16 => {
                             tracing::debug!("ivi_wm#{}.commit_changes()", sender_id,);
-                            self.commit_changes(client, sender_id).await
+                            self.commit_changes(socket, sender_id).await
                         }
                         1u16 => {
                             let output = message
@@ -878,7 +886,7 @@ pub mod ivi_wm {
                                 output,
                                 id
                             );
-                            self.create_screen(client, sender_id, output, id).await
+                            self.create_screen(socket, sender_id, output, id).await
                         }
                         2u16 => {
                             let surface_id = message.uint()?;
@@ -889,7 +897,7 @@ pub mod ivi_wm {
                                 surface_id,
                                 visibility
                             );
-                            self.set_surface_visibility(client, sender_id, surface_id, visibility)
+                            self.set_surface_visibility(socket, sender_id, surface_id, visibility)
                                 .await
                         }
                         3u16 => {
@@ -901,7 +909,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 visibility
                             );
-                            self.set_layer_visibility(client, sender_id, layer_id, visibility)
+                            self.set_layer_visibility(socket, sender_id, layer_id, visibility)
                                 .await
                         }
                         4u16 => {
@@ -913,7 +921,7 @@ pub mod ivi_wm {
                                 surface_id,
                                 opacity
                             );
-                            self.set_surface_opacity(client, sender_id, surface_id, opacity)
+                            self.set_surface_opacity(socket, sender_id, surface_id, opacity)
                                 .await
                         }
                         5u16 => {
@@ -925,7 +933,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 opacity
                             );
-                            self.set_layer_opacity(client, sender_id, layer_id, opacity)
+                            self.set_layer_opacity(socket, sender_id, layer_id, opacity)
                                 .await
                         }
                         6u16 => {
@@ -944,7 +952,7 @@ pub mod ivi_wm {
                                 height
                             );
                             self.set_surface_source_rectangle(
-                                client, sender_id, surface_id, x, y, width, height,
+                                socket, sender_id, surface_id, x, y, width, height,
                             )
                             .await
                         }
@@ -964,7 +972,7 @@ pub mod ivi_wm {
                                 height
                             );
                             self.set_layer_source_rectangle(
-                                client, sender_id, layer_id, x, y, width, height,
+                                socket, sender_id, layer_id, x, y, width, height,
                             )
                             .await
                         }
@@ -984,7 +992,7 @@ pub mod ivi_wm {
                                 height
                             );
                             self.set_surface_destination_rectangle(
-                                client, sender_id, surface_id, x, y, width, height,
+                                socket, sender_id, surface_id, x, y, width, height,
                             )
                             .await
                         }
@@ -1004,7 +1012,7 @@ pub mod ivi_wm {
                                 height
                             );
                             self.set_layer_destination_rectangle(
-                                client, sender_id, layer_id, x, y, width, height,
+                                socket, sender_id, layer_id, x, y, width, height,
                             )
                             .await
                         }
@@ -1017,7 +1025,7 @@ pub mod ivi_wm {
                                 surface_id,
                                 sync_state
                             );
-                            self.surface_sync(client, sender_id, surface_id, sync_state)
+                            self.surface_sync(socket, sender_id, surface_id, sync_state)
                                 .await
                         }
                         11u16 => {
@@ -1029,7 +1037,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 sync_state
                             );
-                            self.layer_sync(client, sender_id, layer_id, sync_state)
+                            self.layer_sync(socket, sender_id, layer_id, sync_state)
                                 .await
                         }
                         12u16 => {
@@ -1041,7 +1049,7 @@ pub mod ivi_wm {
                                 surface_id,
                                 param
                             );
-                            self.surface_get(client, sender_id, surface_id, param).await
+                            self.surface_get(socket, sender_id, surface_id, param).await
                         }
                         13u16 => {
                             let layer_id = message.uint()?;
@@ -1052,7 +1060,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 param
                             );
-                            self.layer_get(client, sender_id, layer_id, param).await
+                            self.layer_get(socket, sender_id, layer_id, param).await
                         }
                         14u16 => {
                             let buffer = message
@@ -1070,7 +1078,7 @@ pub mod ivi_wm {
                                 surface_id
                             );
                             self.surface_screenshot(
-                                client, sender_id, buffer, screenshot, surface_id,
+                                socket, sender_id, buffer, screenshot, surface_id,
                             )
                             .await
                         }
@@ -1083,13 +1091,13 @@ pub mod ivi_wm {
                                 surface_id,
                                 r#type
                             );
-                            self.set_surface_type(client, sender_id, surface_id, r#type)
+                            self.set_surface_type(socket, sender_id, surface_id, r#type)
                                 .await
                         }
                         16u16 => {
                             let layer_id = message.uint()?;
                             tracing::debug!("ivi_wm#{}.layer_clear({})", sender_id, layer_id);
-                            self.layer_clear(client, sender_id, layer_id).await
+                            self.layer_clear(socket, sender_id, layer_id).await
                         }
                         17u16 => {
                             let layer_id = message.uint()?;
@@ -1100,7 +1108,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 surface_id
                             );
-                            self.layer_add_surface(client, sender_id, layer_id, surface_id)
+                            self.layer_add_surface(socket, sender_id, layer_id, surface_id)
                                 .await
                         }
                         18u16 => {
@@ -1112,7 +1120,7 @@ pub mod ivi_wm {
                                 layer_id,
                                 surface_id
                             );
-                            self.layer_remove_surface(client, sender_id, layer_id, surface_id)
+                            self.layer_remove_surface(socket, sender_id, layer_id, surface_id)
                                 .await
                         }
                         19u16 => {
@@ -1126,7 +1134,7 @@ pub mod ivi_wm {
                                 width,
                                 height
                             );
-                            self.create_layout_layer(client, sender_id, layer_id, width, height)
+                            self.create_layout_layer(socket, sender_id, layer_id, width, height)
                                 .await
                         }
                         20u16 => {
@@ -1136,7 +1144,7 @@ pub mod ivi_wm {
                                 sender_id,
                                 layer_id
                             );
-                            self.destroy_layout_layer(client, sender_id, layer_id).await
+                            self.destroy_layout_layer(socket, sender_id, layer_id).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }
@@ -1148,13 +1156,13 @@ pub mod ivi_wm {
             #[doc = "scene objects is executed immediately."]
             fn commit_changes(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = "Ask the ivi-wm to create a ivi-screen for given wl_output."]
             fn create_screen(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
@@ -1163,7 +1171,7 @@ pub mod ivi_wm {
             #[doc = "If visibility argument is not 0, the surface in the ivi compositor is set to visible."]
             fn set_surface_visibility(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 visibility: u32,
@@ -1172,7 +1180,7 @@ pub mod ivi_wm {
             #[doc = "If visibility argument is not 0, the layer in the ivi compositor is set to visible."]
             fn set_layer_visibility(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 visibility: u32,
@@ -1180,7 +1188,7 @@ pub mod ivi_wm {
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn set_surface_opacity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
@@ -1188,7 +1196,7 @@ pub mod ivi_wm {
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn set_layer_opacity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
@@ -1203,7 +1211,7 @@ pub mod ivi_wm {
             #[doc = "height: height of scanout area within the surface"]
             fn set_surface_source_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 x: i32,
@@ -1221,7 +1229,7 @@ pub mod ivi_wm {
             #[doc = "height: height of scanout area within the layer"]
             fn set_layer_source_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 x: i32,
@@ -1238,7 +1246,7 @@ pub mod ivi_wm {
             #[doc = "height: height of surface within the layer"]
             fn set_surface_destination_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 x: i32,
@@ -1255,7 +1263,7 @@ pub mod ivi_wm {
             #[doc = "height: height of surface within the screen"]
             fn set_layer_destination_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 x: i32,
@@ -1269,7 +1277,7 @@ pub mod ivi_wm {
             #[doc = "continously."]
             fn surface_sync(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 sync_state: i32,
@@ -1280,7 +1288,7 @@ pub mod ivi_wm {
             #[doc = "continously."]
             fn layer_sync(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 sync_state: i32,
@@ -1288,7 +1296,7 @@ pub mod ivi_wm {
             #[doc = "After this request, compositor sends the requested parameter."]
             fn surface_get(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 param: i32,
@@ -1296,7 +1304,7 @@ pub mod ivi_wm {
             #[doc = "After this request, compositor sends the requested parameter."]
             fn layer_get(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 param: i32,
@@ -1307,7 +1315,7 @@ pub mod ivi_wm {
             #[doc = "ivi_screenshot.error event."]
             fn surface_screenshot(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 screenshot: crate::wire::ObjectId,
@@ -1316,7 +1324,7 @@ pub mod ivi_wm {
             #[doc = "After this request, compositor changes the type of the surface."]
             fn set_surface_type(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 r#type: i32,
@@ -1325,7 +1333,7 @@ pub mod ivi_wm {
             #[doc = "This request removes all surfaces from the layer render order."]
             fn layer_clear(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1334,7 +1342,7 @@ pub mod ivi_wm {
             #[doc = "The added surface will cover all other surfaces of the layer."]
             fn layer_add_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
@@ -1345,7 +1353,7 @@ pub mod ivi_wm {
             #[doc = "the layer."]
             fn layer_remove_surface(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
@@ -1353,7 +1361,7 @@ pub mod ivi_wm {
             #[doc = "After this request, compositor creates an ivi_layout_layer"]
             fn create_layout_layer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 width: i32,
@@ -1362,7 +1370,7 @@ pub mod ivi_wm {
             #[doc = "After this request, compositor destroyes an existing ivi_layout_layer."]
             fn destroy_layout_layer(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1371,7 +1379,7 @@ pub mod ivi_wm {
             #[doc = "If visibility is not 0, the surface has become visible."]
             fn surface_visibility(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 visibility: i32,
@@ -1387,8 +1395,8 @@ pub mod ivi_wm {
                         .put_uint(surface_id)
                         .put_int(visibility)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1398,7 +1406,7 @@ pub mod ivi_wm {
             #[doc = "If visibility is not 0, the layer has become visible."]
             fn layer_visibility(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 visibility: i32,
@@ -1414,8 +1422,8 @@ pub mod ivi_wm {
                         .put_uint(layer_id)
                         .put_int(visibility)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1424,7 +1432,7 @@ pub mod ivi_wm {
             #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn surface_opacity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 opacity: crate::wire::Fixed,
@@ -1440,8 +1448,8 @@ pub mod ivi_wm {
                         .put_uint(surface_id)
                         .put_fixed(opacity)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1450,7 +1458,7 @@ pub mod ivi_wm {
             #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn layer_opacity(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 opacity: crate::wire::Fixed,
@@ -1466,8 +1474,8 @@ pub mod ivi_wm {
                         .put_uint(layer_id)
                         .put_fixed(opacity)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1480,7 +1488,7 @@ pub mod ivi_wm {
             #[doc = "height: new height of scanout area within the surface"]
             fn surface_source_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 x: i32,
@@ -1505,8 +1513,8 @@ pub mod ivi_wm {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1519,7 +1527,7 @@ pub mod ivi_wm {
             #[doc = "height: new height of scanout area within the layer"]
             fn layer_source_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 x: i32,
@@ -1544,8 +1552,8 @@ pub mod ivi_wm {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1557,7 +1565,7 @@ pub mod ivi_wm {
             #[doc = "height: new height of surface within the layer"]
             fn surface_destination_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 x: i32,
@@ -1582,8 +1590,8 @@ pub mod ivi_wm {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1595,7 +1603,7 @@ pub mod ivi_wm {
             #[doc = "height: new height of layer within the screen"]
             fn layer_destination_rectangle(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 x: i32,
@@ -1620,15 +1628,15 @@ pub mod ivi_wm {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn surface_created(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1637,15 +1645,15 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn layer_created(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1654,15 +1662,15 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn surface_destroyed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1671,15 +1679,15 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn layer_destroyed(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1688,8 +1696,8 @@ pub mod ivi_wm {
                     let (payload, fds) = crate::wire::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1697,7 +1705,7 @@ pub mod ivi_wm {
             #[doc = "The error event is sent out when an error has occurred."]
             fn surface_error(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 object_id: u32,
                 error: u32,
@@ -1716,8 +1724,8 @@ pub mod ivi_wm {
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1725,7 +1733,7 @@ pub mod ivi_wm {
             #[doc = "The error event is sent out when an error has occurred."]
             fn layer_error(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 object_id: u32,
                 error: u32,
@@ -1744,8 +1752,8 @@ pub mod ivi_wm {
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1754,7 +1762,7 @@ pub mod ivi_wm {
             #[doc = "The modified surface size is provided by arguments width and height."]
             fn surface_size(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 width: i32,
@@ -1773,8 +1781,8 @@ pub mod ivi_wm {
                         .put_int(width)
                         .put_int(height)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 14u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1783,7 +1791,7 @@ pub mod ivi_wm {
             #[doc = "logging and tracing support in IVI systems."]
             fn surface_stats(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 surface_id: u32,
                 frame_count: u32,
@@ -1802,8 +1810,8 @@ pub mod ivi_wm {
                         .put_uint(frame_count)
                         .put_uint(pid)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 15u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }
@@ -1811,7 +1819,7 @@ pub mod ivi_wm {
             #[doc = "A surface is added to the render order of the layer"]
             fn layer_surface_added(
                 &self,
-                client: &mut crate::server::Client,
+                socket: &mut crate::wire::Socket,
                 sender_id: crate::wire::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
@@ -1827,8 +1835,8 @@ pub mod ivi_wm {
                         .put_uint(layer_id)
                         .put_uint(surface_id)
                         .build();
-                    client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
+                    socket
+                        .send(crate::wire::Message::new(sender_id, 16u16, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

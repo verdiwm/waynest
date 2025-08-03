@@ -164,7 +164,7 @@ pub mod fullscreen_shell_unstable_v1 {
                             sender_id,
                             capability
                         );
-                        self.capability(client, sender_id, capability.try_into()?)
+                        self.capability(socket, sender_id, capability.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -329,27 +329,21 @@ pub mod fullscreen_shell_unstable_v1 {
                             "zwp_fullscreen_shell_mode_feedback_v1#{}.mode_successful()",
                             sender_id,
                         );
-                        let result = self.mode_successful(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.mode_successful(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_fullscreen_shell_mode_feedback_v1#{}.mode_failed()",
                             sender_id,
                         );
-                        let result = self.mode_failed(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.mode_failed(socket, sender_id).await
                     }
                     2u16 => {
                         tracing::debug!(
                             "zwp_fullscreen_shell_mode_feedback_v1#{}.present_cancelled()",
                             sender_id,
                         );
-                        let result = self.present_cancelled(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.present_cancelled(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -415,8 +409,8 @@ pub mod idle_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -483,8 +477,8 @@ pub mod idle_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -563,12 +557,12 @@ pub mod input_method_unstable_v1 {
                             cursor,
                             anchor
                         );
-                        self.surrounding_text(client, sender_id, text, cursor, anchor)
+                        self.surrounding_text(socket, sender_id, text, cursor, anchor)
                             .await
                     }
                     1u16 => {
                         tracing::debug!("zwp_input_method_context_v1#{}.reset()", sender_id,);
-                        self.reset(client, sender_id).await
+                        self.reset(socket, sender_id).await
                     }
                     2u16 => {
                         let hint = message.uint()?;
@@ -579,7 +573,7 @@ pub mod input_method_unstable_v1 {
                             hint,
                             purpose
                         );
-                        self.content_type(client, sender_id, hint, purpose).await
+                        self.content_type(socket, sender_id, hint, purpose).await
                     }
                     3u16 => {
                         let button = message.uint()?;
@@ -590,7 +584,7 @@ pub mod input_method_unstable_v1 {
                             button,
                             index
                         );
-                        self.invoke_action(client, sender_id, button, index).await
+                        self.invoke_action(socket, sender_id, button, index).await
                     }
                     4u16 => {
                         let serial = message.uint()?;
@@ -599,7 +593,7 @@ pub mod input_method_unstable_v1 {
                             sender_id,
                             serial
                         );
-                        self.commit_state(client, sender_id, serial).await
+                        self.commit_state(socket, sender_id, serial).await
                     }
                     5u16 => {
                         let language = message
@@ -610,7 +604,7 @@ pub mod input_method_unstable_v1 {
                             sender_id,
                             language
                         );
-                        self.preferred_language(client, sender_id, language).await
+                        self.preferred_language(socket, sender_id, language).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1016,7 +1010,7 @@ pub mod input_method_unstable_v1 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_input_method_v1#{}.activate({})", sender_id, id);
-                        self.activate(client, sender_id, id).await
+                        self.activate(socket, sender_id, id).await
                     }
                     1u16 => {
                         let context = message
@@ -1027,7 +1021,7 @@ pub mod input_method_unstable_v1 {
                             sender_id,
                             context
                         );
-                        self.deactivate(client, sender_id, context).await
+                        self.deactivate(socket, sender_id, context).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1063,8 +1057,8 @@ pub mod input_method_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1125,8 +1119,8 @@ pub mod input_method_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1202,8 +1196,8 @@ pub mod input_timestamps_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1343,7 +1337,7 @@ pub mod input_timestamps_unstable_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.timestamp(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.timestamp(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -1438,8 +1432,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1547,14 +1541,14 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                             "zwp_keyboard_shortcuts_inhibitor_v1#{}.active()",
                             sender_id,
                         );
-                        self.active(client, sender_id).await
+                        self.active(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_keyboard_shortcuts_inhibitor_v1#{}.inactive()",
                             sender_id,
                         );
-                        self.inactive(client, sender_id).await
+                        self.inactive(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1691,7 +1685,7 @@ pub mod linux_dmabuf_unstable_v1 {
                     0u16 => {
                         let format = message.uint()?;
                         tracing::debug!("zwp_linux_dmabuf_v1#{}.format({})", sender_id, format);
-                        self.format(client, sender_id, format).await
+                        self.format(socket, sender_id, format).await
                     }
                     1u16 => {
                         let format = message.uint()?;
@@ -1704,7 +1698,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             modifier_hi,
                             modifier_lo
                         );
-                        self.modifier(client, sender_id, format, modifier_hi, modifier_lo)
+                        self.modifier(socket, sender_id, format, modifier_hi, modifier_lo)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -1936,11 +1930,11 @@ pub mod linux_dmabuf_unstable_v1 {
                             sender_id,
                             buffer
                         );
-                        self.created(client, sender_id, buffer).await
+                        self.created(socket, sender_id, buffer).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_linux_buffer_params_v1#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2209,7 +2203,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     1u16 => {
                         let fd = message.fd()?;
@@ -2220,7 +2214,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             fd.as_raw_fd(),
                             size
                         );
-                        self.format_table(client, sender_id, fd, size).await
+                        self.format_table(socket, sender_id, fd, size).await
                     }
                     2u16 => {
                         let device = message.array()?;
@@ -2229,14 +2223,14 @@ pub mod linux_dmabuf_unstable_v1 {
                             sender_id,
                             device.len()
                         );
-                        self.main_device(client, sender_id, device).await
+                        self.main_device(socket, sender_id, device).await
                     }
                     3u16 => {
                         tracing::debug!(
                             "zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
                             sender_id,
                         );
-                        self.tranche_done(client, sender_id).await
+                        self.tranche_done(socket, sender_id).await
                     }
                     4u16 => {
                         let device = message.array()?;
@@ -2245,7 +2239,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             sender_id,
                             device.len()
                         );
-                        self.tranche_target_device(client, sender_id, device).await
+                        self.tranche_target_device(socket, sender_id, device).await
                     }
                     5u16 => {
                         let indices = message.array()?;
@@ -2254,7 +2248,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             sender_id,
                             indices.len()
                         );
-                        self.tranche_formats(client, sender_id, indices).await
+                        self.tranche_formats(socket, sender_id, indices).await
                     }
                     6u16 => {
                         let flags = message.uint()?;
@@ -2263,7 +2257,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             sender_id,
                             flags
                         );
-                        self.tranche_flags(client, sender_id, flags.try_into()?)
+                        self.tranche_flags(socket, sender_id, flags.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -2483,8 +2477,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2620,8 +2614,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2768,18 +2762,14 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             sender_id,
                             fence.as_raw_fd()
                         );
-                        let result = self.fenced_release(client, sender_id, fence).await;
-                        client.remove(sender_id);
-                        result
+                        self.fenced_release(socket, sender_id, fence).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_linux_buffer_release_v1#{}.immediate_release()",
                             sender_id,
                         );
-                        let result = self.immediate_release(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.immediate_release(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2912,8 +2902,8 @@ pub mod pointer_constraints_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3079,11 +3069,11 @@ pub mod pointer_constraints_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zwp_locked_pointer_v1#{}.locked()", sender_id,);
-                        self.locked(client, sender_id).await
+                        self.locked(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_locked_pointer_v1#{}.unlocked()", sender_id,);
-                        self.unlocked(client, sender_id).await
+                        self.unlocked(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3206,11 +3196,11 @@ pub mod pointer_constraints_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zwp_confined_pointer_v1#{}.confined()", sender_id,);
-                        self.confined(client, sender_id).await
+                        self.confined(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_confined_pointer_v1#{}.unconfined()", sender_id,);
-                        self.unconfined(client, sender_id).await
+                        self.unconfined(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3308,8 +3298,8 @@ pub mod pointer_gestures_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3446,7 +3436,7 @@ pub mod pointer_gestures_unstable_v1 {
                             surface,
                             fingers
                         );
-                        self.begin(client, sender_id, serial, time, surface, fingers)
+                        self.begin(socket, sender_id, serial, time, surface, fingers)
                             .await
                     }
                     1u16 => {
@@ -3460,7 +3450,7 @@ pub mod pointer_gestures_unstable_v1 {
                             dx,
                             dy
                         );
-                        self.update(client, sender_id, time, dx, dy).await
+                        self.update(socket, sender_id, time, dx, dy).await
                     }
                     2u16 => {
                         let serial = message.uint()?;
@@ -3473,7 +3463,7 @@ pub mod pointer_gestures_unstable_v1 {
                             time,
                             cancelled
                         );
-                        self.end(client, sender_id, serial, time, cancelled).await
+                        self.end(socket, sender_id, serial, time, cancelled).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3578,7 +3568,7 @@ pub mod pointer_gestures_unstable_v1 {
                             surface,
                             fingers
                         );
-                        self.begin(client, sender_id, serial, time, surface, fingers)
+                        self.begin(socket, sender_id, serial, time, surface, fingers)
                             .await
                     }
                     1u16 => {
@@ -3596,7 +3586,7 @@ pub mod pointer_gestures_unstable_v1 {
                             scale,
                             rotation
                         );
-                        self.update(client, sender_id, time, dx, dy, scale, rotation)
+                        self.update(socket, sender_id, time, dx, dy, scale, rotation)
                             .await
                     }
                     2u16 => {
@@ -3610,7 +3600,7 @@ pub mod pointer_gestures_unstable_v1 {
                             time,
                             cancelled
                         );
-                        self.end(client, sender_id, serial, time, cancelled).await
+                        self.end(socket, sender_id, serial, time, cancelled).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3726,7 +3716,7 @@ pub mod pointer_gestures_unstable_v1 {
                             surface,
                             fingers
                         );
-                        self.begin(client, sender_id, serial, time, surface, fingers)
+                        self.begin(socket, sender_id, serial, time, surface, fingers)
                             .await
                     }
                     1u16 => {
@@ -3740,7 +3730,7 @@ pub mod pointer_gestures_unstable_v1 {
                             time,
                             cancelled
                         );
-                        self.end(client, sender_id, serial, time, cancelled).await
+                        self.end(socket, sender_id, serial, time, cancelled).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3845,8 +3835,8 @@ pub mod wp_primary_selection_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3938,7 +3928,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             sender_id,
                             offer
                         );
-                        self.data_offer(client, sender_id, offer).await
+                        self.data_offer(socket, sender_id, offer).await
                     }
                     1u16 => {
                         let id = message.object()?;
@@ -3947,7 +3937,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             sender_id,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.selection(client, sender_id, id).await
+                        self.selection(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4048,7 +4038,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             sender_id,
                             mime_type
                         );
-                        self.offer(client, sender_id, mime_type).await
+                        self.offer(socket, sender_id, mime_type).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4135,14 +4125,14 @@ pub mod wp_primary_selection_unstable_v1 {
                             mime_type,
                             fd.as_raw_fd()
                         );
-                        self.send(client, sender_id, mime_type, fd).await
+                        self.send(socket, sender_id, mime_type, fd).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "zwp_primary_selection_source_v1#{}.cancelled()",
                             sender_id,
                         );
-                        self.cancelled(client, sender_id).await
+                        self.cancelled(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4234,8 +4224,8 @@ pub mod relative_pointer_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4320,7 +4310,7 @@ pub mod relative_pointer_unstable_v1 {
                             dy_unaccel
                         );
                         self.relative_motion(
-                            client, sender_id, utime_hi, utime_lo, dx, dy, dx_unaccel, dy_unaccel,
+                            socket, sender_id, utime_hi, utime_lo, dx, dy, dx_unaccel, dy_unaccel,
                         )
                         .await
                     }
@@ -4484,8 +4474,8 @@ pub mod tablet_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4553,14 +4543,14 @@ pub mod tablet_unstable_v1 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_seat_v1#{}.tablet_added({})", sender_id, id);
-                        self.tablet_added(client, sender_id, id).await
+                        self.tablet_added(socket, sender_id, id).await
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_seat_v1#{}.tool_added({})", sender_id, id);
-                        self.tool_added(client, sender_id, id).await
+                        self.tool_added(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4778,7 +4768,7 @@ pub mod tablet_unstable_v1 {
                     0u16 => {
                         let tool_type = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.type({})", sender_id, tool_type);
-                        self.r#type(client, sender_id, tool_type.try_into()?).await
+                        self.r#type(socket, sender_id, tool_type.try_into()?).await
                     }
                     1u16 => {
                         let hardware_serial_hi = message.uint()?;
@@ -4790,7 +4780,7 @@ pub mod tablet_unstable_v1 {
                             hardware_serial_lo
                         );
                         self.hardware_serial(
-                            client,
+                            socket,
                             sender_id,
                             hardware_serial_hi,
                             hardware_serial_lo,
@@ -4806,7 +4796,7 @@ pub mod tablet_unstable_v1 {
                             hardware_id_hi,
                             hardware_id_lo
                         );
-                        self.hardware_id_wacom(client, sender_id, hardware_id_hi, hardware_id_lo)
+                        self.hardware_id_wacom(socket, sender_id, hardware_id_hi, hardware_id_lo)
                             .await
                     }
                     3u16 => {
@@ -4816,16 +4806,16 @@ pub mod tablet_unstable_v1 {
                             sender_id,
                             capability
                         );
-                        self.capability(client, sender_id, capability.try_into()?)
+                        self.capability(socket, sender_id, capability.try_into()?)
                             .await
                     }
                     4u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     5u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     6u16 => {
                         let serial = message.uint()?;
@@ -4842,37 +4832,37 @@ pub mod tablet_unstable_v1 {
                             tablet,
                             surface
                         );
-                        self.proximity_in(client, sender_id, serial, tablet, surface)
+                        self.proximity_in(socket, sender_id, serial, tablet, surface)
                             .await
                     }
                     7u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.proximity_out()", sender_id,);
-                        self.proximity_out(client, sender_id).await
+                        self.proximity_out(socket, sender_id).await
                     }
                     8u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.down({})", sender_id, serial);
-                        self.down(client, sender_id, serial).await
+                        self.down(socket, sender_id, serial).await
                     }
                     9u16 => {
                         tracing::debug!("zwp_tablet_tool_v1#{}.up()", sender_id,);
-                        self.up(client, sender_id).await
+                        self.up(socket, sender_id).await
                     }
                     10u16 => {
                         let x = message.fixed()?;
                         let y = message.fixed()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.motion({}, {})", sender_id, x, y);
-                        self.motion(client, sender_id, x, y).await
+                        self.motion(socket, sender_id, x, y).await
                     }
                     11u16 => {
                         let pressure = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.pressure({})", sender_id, pressure);
-                        self.pressure(client, sender_id, pressure).await
+                        self.pressure(socket, sender_id, pressure).await
                     }
                     12u16 => {
                         let distance = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.distance({})", sender_id, distance);
-                        self.distance(client, sender_id, distance).await
+                        self.distance(socket, sender_id, distance).await
                     }
                     13u16 => {
                         let tilt_x = message.int()?;
@@ -4883,17 +4873,17 @@ pub mod tablet_unstable_v1 {
                             tilt_x,
                             tilt_y
                         );
-                        self.tilt(client, sender_id, tilt_x, tilt_y).await
+                        self.tilt(socket, sender_id, tilt_x, tilt_y).await
                     }
                     14u16 => {
                         let degrees = message.int()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.rotation({})", sender_id, degrees);
-                        self.rotation(client, sender_id, degrees).await
+                        self.rotation(socket, sender_id, degrees).await
                     }
                     15u16 => {
                         let position = message.int()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.slider({})", sender_id, position);
-                        self.slider(client, sender_id, position).await
+                        self.slider(socket, sender_id, position).await
                     }
                     16u16 => {
                         let degrees = message.int()?;
@@ -4904,7 +4894,7 @@ pub mod tablet_unstable_v1 {
                             degrees,
                             clicks
                         );
-                        self.wheel(client, sender_id, degrees, clicks).await
+                        self.wheel(socket, sender_id, degrees, clicks).await
                     }
                     17u16 => {
                         let serial = message.uint()?;
@@ -4917,13 +4907,13 @@ pub mod tablet_unstable_v1 {
                             button,
                             state
                         );
-                        self.button(client, sender_id, serial, button, state.try_into()?)
+                        self.button(socket, sender_id, serial, button, state.try_into()?)
                             .await
                     }
                     18u16 => {
                         let time = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v1#{}.frame({})", sender_id, time);
-                        self.frame(client, sender_id, time).await
+                        self.frame(socket, sender_id, time).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5293,28 +5283,28 @@ pub mod tablet_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_v1#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     1u16 => {
                         let vid = message.uint()?;
                         let pid = message.uint()?;
                         tracing::debug!("zwp_tablet_v1#{}.id({}, {})", sender_id, vid, pid);
-                        self.id(client, sender_id, vid, pid).await
+                        self.id(socket, sender_id, vid, pid).await
                     }
                     2u16 => {
                         let path = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_v1#{}.path(\"{}\")", sender_id, path);
-                        self.path(client, sender_id, path).await
+                        self.path(socket, sender_id, path).await
                     }
                     3u16 => {
                         tracing::debug!("zwp_tablet_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     4u16 => {
                         tracing::debug!("zwp_tablet_v1#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5487,8 +5477,8 @@ pub mod tablet_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5556,21 +5546,21 @@ pub mod tablet_unstable_v2 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_seat_v2#{}.tablet_added({})", sender_id, id);
-                        self.tablet_added(client, sender_id, id).await
+                        self.tablet_added(socket, sender_id, id).await
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_seat_v2#{}.tool_added({})", sender_id, id);
-                        self.tool_added(client, sender_id, id).await
+                        self.tool_added(socket, sender_id, id).await
                     }
                     2u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_seat_v2#{}.pad_added({})", sender_id, id);
-                        self.pad_added(client, sender_id, id).await
+                        self.pad_added(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5804,7 +5794,7 @@ pub mod tablet_unstable_v2 {
                     0u16 => {
                         let tool_type = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.type({})", sender_id, tool_type);
-                        self.r#type(client, sender_id, tool_type.try_into()?).await
+                        self.r#type(socket, sender_id, tool_type.try_into()?).await
                     }
                     1u16 => {
                         let hardware_serial_hi = message.uint()?;
@@ -5816,7 +5806,7 @@ pub mod tablet_unstable_v2 {
                             hardware_serial_lo
                         );
                         self.hardware_serial(
-                            client,
+                            socket,
                             sender_id,
                             hardware_serial_hi,
                             hardware_serial_lo,
@@ -5832,7 +5822,7 @@ pub mod tablet_unstable_v2 {
                             hardware_id_hi,
                             hardware_id_lo
                         );
-                        self.hardware_id_wacom(client, sender_id, hardware_id_hi, hardware_id_lo)
+                        self.hardware_id_wacom(socket, sender_id, hardware_id_hi, hardware_id_lo)
                             .await
                     }
                     3u16 => {
@@ -5842,16 +5832,16 @@ pub mod tablet_unstable_v2 {
                             sender_id,
                             capability
                         );
-                        self.capability(client, sender_id, capability.try_into()?)
+                        self.capability(socket, sender_id, capability.try_into()?)
                             .await
                     }
                     4u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     5u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     6u16 => {
                         let serial = message.uint()?;
@@ -5868,37 +5858,37 @@ pub mod tablet_unstable_v2 {
                             tablet,
                             surface
                         );
-                        self.proximity_in(client, sender_id, serial, tablet, surface)
+                        self.proximity_in(socket, sender_id, serial, tablet, surface)
                             .await
                     }
                     7u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.proximity_out()", sender_id,);
-                        self.proximity_out(client, sender_id).await
+                        self.proximity_out(socket, sender_id).await
                     }
                     8u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.down({})", sender_id, serial);
-                        self.down(client, sender_id, serial).await
+                        self.down(socket, sender_id, serial).await
                     }
                     9u16 => {
                         tracing::debug!("zwp_tablet_tool_v2#{}.up()", sender_id,);
-                        self.up(client, sender_id).await
+                        self.up(socket, sender_id).await
                     }
                     10u16 => {
                         let x = message.fixed()?;
                         let y = message.fixed()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.motion({}, {})", sender_id, x, y);
-                        self.motion(client, sender_id, x, y).await
+                        self.motion(socket, sender_id, x, y).await
                     }
                     11u16 => {
                         let pressure = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.pressure({})", sender_id, pressure);
-                        self.pressure(client, sender_id, pressure).await
+                        self.pressure(socket, sender_id, pressure).await
                     }
                     12u16 => {
                         let distance = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.distance({})", sender_id, distance);
-                        self.distance(client, sender_id, distance).await
+                        self.distance(socket, sender_id, distance).await
                     }
                     13u16 => {
                         let tilt_x = message.fixed()?;
@@ -5909,17 +5899,17 @@ pub mod tablet_unstable_v2 {
                             tilt_x,
                             tilt_y
                         );
-                        self.tilt(client, sender_id, tilt_x, tilt_y).await
+                        self.tilt(socket, sender_id, tilt_x, tilt_y).await
                     }
                     14u16 => {
                         let degrees = message.fixed()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.rotation({})", sender_id, degrees);
-                        self.rotation(client, sender_id, degrees).await
+                        self.rotation(socket, sender_id, degrees).await
                     }
                     15u16 => {
                         let position = message.int()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.slider({})", sender_id, position);
-                        self.slider(client, sender_id, position).await
+                        self.slider(socket, sender_id, position).await
                     }
                     16u16 => {
                         let degrees = message.fixed()?;
@@ -5930,7 +5920,7 @@ pub mod tablet_unstable_v2 {
                             degrees,
                             clicks
                         );
-                        self.wheel(client, sender_id, degrees, clicks).await
+                        self.wheel(socket, sender_id, degrees, clicks).await
                     }
                     17u16 => {
                         let serial = message.uint()?;
@@ -5943,13 +5933,13 @@ pub mod tablet_unstable_v2 {
                             button,
                             state
                         );
-                        self.button(client, sender_id, serial, button, state.try_into()?)
+                        self.button(socket, sender_id, serial, button, state.try_into()?)
                             .await
                     }
                     18u16 => {
                         let time = message.uint()?;
                         tracing::debug!("zwp_tablet_tool_v2#{}.frame({})", sender_id, time);
-                        self.frame(client, sender_id, time).await
+                        self.frame(socket, sender_id, time).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6317,28 +6307,28 @@ pub mod tablet_unstable_v2 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_v2#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     1u16 => {
                         let vid = message.uint()?;
                         let pid = message.uint()?;
                         tracing::debug!("zwp_tablet_v2#{}.id({}, {})", sender_id, vid, pid);
-                        self.id(client, sender_id, vid, pid).await
+                        self.id(socket, sender_id, vid, pid).await
                     }
                     2u16 => {
                         let path = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_v2#{}.path(\"{}\")", sender_id, path);
-                        self.path(client, sender_id, path).await
+                        self.path(socket, sender_id, path).await
                     }
                     3u16 => {
                         tracing::debug!("zwp_tablet_v2#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     4u16 => {
                         tracing::debug!("zwp_tablet_v2#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6473,21 +6463,21 @@ pub mod tablet_unstable_v2 {
                     0u16 => {
                         let source = message.uint()?;
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.source({})", sender_id, source);
-                        self.source(client, sender_id, source.try_into()?).await
+                        self.source(socket, sender_id, source.try_into()?).await
                     }
                     1u16 => {
                         let degrees = message.fixed()?;
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.angle({})", sender_id, degrees);
-                        self.angle(client, sender_id, degrees).await
+                        self.angle(socket, sender_id, degrees).await
                     }
                     2u16 => {
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.stop()", sender_id,);
-                        self.stop(client, sender_id).await
+                        self.stop(socket, sender_id).await
                     }
                     3u16 => {
                         let time = message.uint()?;
                         tracing::debug!("zwp_tablet_pad_ring_v2#{}.frame({})", sender_id, time);
-                        self.frame(client, sender_id, time).await
+                        self.frame(socket, sender_id, time).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6655,7 +6645,7 @@ pub mod tablet_unstable_v2 {
                     0u16 => {
                         let source = message.uint()?;
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.source({})", sender_id, source);
-                        self.source(client, sender_id, source.try_into()?).await
+                        self.source(socket, sender_id, source.try_into()?).await
                     }
                     1u16 => {
                         let position = message.uint()?;
@@ -6664,16 +6654,16 @@ pub mod tablet_unstable_v2 {
                             sender_id,
                             position
                         );
-                        self.position(client, sender_id, position).await
+                        self.position(socket, sender_id, position).await
                     }
                     2u16 => {
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.stop()", sender_id,);
-                        self.stop(client, sender_id).await
+                        self.stop(socket, sender_id).await
                     }
                     3u16 => {
                         let time = message.uint()?;
                         tracing::debug!("zwp_tablet_pad_strip_v2#{}.frame({})", sender_id, time);
-                        self.frame(client, sender_id, time).await
+                        self.frame(socket, sender_id, time).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6838,30 +6828,30 @@ pub mod tablet_unstable_v2 {
                             sender_id,
                             buttons.len()
                         );
-                        self.buttons(client, sender_id, buttons).await
+                        self.buttons(socket, sender_id, buttons).await
                     }
                     1u16 => {
                         let ring = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.ring({})", sender_id, ring);
-                        self.ring(client, sender_id, ring).await
+                        self.ring(socket, sender_id, ring).await
                     }
                     2u16 => {
                         let strip = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.strip({})", sender_id, strip);
-                        self.strip(client, sender_id, strip).await
+                        self.strip(socket, sender_id, strip).await
                     }
                     3u16 => {
                         let modes = message.uint()?;
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.modes({})", sender_id, modes);
-                        self.modes(client, sender_id, modes).await
+                        self.modes(socket, sender_id, modes).await
                     }
                     4u16 => {
                         tracing::debug!("zwp_tablet_pad_group_v2#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     5u16 => {
                         let time = message.uint()?;
@@ -6874,7 +6864,7 @@ pub mod tablet_unstable_v2 {
                             serial,
                             mode
                         );
-                        self.mode_switch(client, sender_id, time, serial, mode)
+                        self.mode_switch(socket, sender_id, time, serial, mode)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -7068,23 +7058,23 @@ pub mod tablet_unstable_v2 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_pad_v2#{}.group({})", sender_id, pad_group);
-                        self.group(client, sender_id, pad_group).await
+                        self.group(socket, sender_id, pad_group).await
                     }
                     1u16 => {
                         let path = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_tablet_pad_v2#{}.path(\"{}\")", sender_id, path);
-                        self.path(client, sender_id, path).await
+                        self.path(socket, sender_id, path).await
                     }
                     2u16 => {
                         let buttons = message.uint()?;
                         tracing::debug!("zwp_tablet_pad_v2#{}.buttons({})", sender_id, buttons);
-                        self.buttons(client, sender_id, buttons).await
+                        self.buttons(socket, sender_id, buttons).await
                     }
                     3u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     4u16 => {
                         let time = message.uint()?;
@@ -7097,7 +7087,7 @@ pub mod tablet_unstable_v2 {
                             button,
                             state
                         );
-                        self.button(client, sender_id, time, button, state.try_into()?)
+                        self.button(socket, sender_id, time, button, state.try_into()?)
                             .await
                     }
                     5u16 => {
@@ -7115,7 +7105,7 @@ pub mod tablet_unstable_v2 {
                             tablet,
                             surface
                         );
-                        self.enter(client, sender_id, serial, tablet, surface).await
+                        self.enter(socket, sender_id, serial, tablet, surface).await
                     }
                     6u16 => {
                         let serial = message.uint()?;
@@ -7128,11 +7118,11 @@ pub mod tablet_unstable_v2 {
                             serial,
                             surface
                         );
-                        self.leave(client, sender_id, serial, surface).await
+                        self.leave(socket, sender_id, serial, surface).await
                     }
                     7u16 => {
                         tracing::debug!("zwp_tablet_pad_v2#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7472,11 +7462,11 @@ pub mod text_input_unstable_v1 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_text_input_v1#{}.enter({})", sender_id, surface);
-                        self.enter(client, sender_id, surface).await
+                        self.enter(socket, sender_id, surface).await
                     }
                     1u16 => {
                         tracing::debug!("zwp_text_input_v1#{}.leave()", sender_id,);
-                        self.leave(client, sender_id).await
+                        self.leave(socket, sender_id).await
                     }
                     2u16 => {
                         let map = message.array()?;
@@ -7485,7 +7475,7 @@ pub mod text_input_unstable_v1 {
                             sender_id,
                             map.len()
                         );
-                        self.modifiers_map(client, sender_id, map).await
+                        self.modifiers_map(socket, sender_id, map).await
                     }
                     3u16 => {
                         let state = message.uint()?;
@@ -7494,7 +7484,7 @@ pub mod text_input_unstable_v1 {
                             sender_id,
                             state
                         );
-                        self.input_panel_state(client, sender_id, state).await
+                        self.input_panel_state(socket, sender_id, state).await
                     }
                     4u16 => {
                         let serial = message.uint()?;
@@ -7511,7 +7501,7 @@ pub mod text_input_unstable_v1 {
                             text,
                             commit
                         );
-                        self.preedit_string(client, sender_id, serial, text, commit)
+                        self.preedit_string(socket, sender_id, serial, text, commit)
                             .await
                     }
                     5u16 => {
@@ -7525,7 +7515,7 @@ pub mod text_input_unstable_v1 {
                             length,
                             style
                         );
-                        self.preedit_styling(client, sender_id, index, length, style.try_into()?)
+                        self.preedit_styling(socket, sender_id, index, length, style.try_into()?)
                             .await
                     }
                     6u16 => {
@@ -7535,7 +7525,7 @@ pub mod text_input_unstable_v1 {
                             sender_id,
                             index
                         );
-                        self.preedit_cursor(client, sender_id, index).await
+                        self.preedit_cursor(socket, sender_id, index).await
                     }
                     7u16 => {
                         let serial = message.uint()?;
@@ -7548,7 +7538,7 @@ pub mod text_input_unstable_v1 {
                             serial,
                             text
                         );
-                        self.commit_string(client, sender_id, serial, text).await
+                        self.commit_string(socket, sender_id, serial, text).await
                     }
                     8u16 => {
                         let index = message.int()?;
@@ -7559,7 +7549,7 @@ pub mod text_input_unstable_v1 {
                             index,
                             anchor
                         );
-                        self.cursor_position(client, sender_id, index, anchor).await
+                        self.cursor_position(socket, sender_id, index, anchor).await
                     }
                     9u16 => {
                         let index = message.int()?;
@@ -7570,7 +7560,7 @@ pub mod text_input_unstable_v1 {
                             index,
                             length
                         );
-                        self.delete_surrounding_text(client, sender_id, index, length)
+                        self.delete_surrounding_text(socket, sender_id, index, length)
                             .await
                     }
                     10u16 => {
@@ -7588,7 +7578,7 @@ pub mod text_input_unstable_v1 {
                             state,
                             modifiers
                         );
-                        self.keysym(client, sender_id, serial, time, sym, state, modifiers)
+                        self.keysym(socket, sender_id, serial, time, sym, state, modifiers)
                             .await
                     }
                     11u16 => {
@@ -7602,7 +7592,7 @@ pub mod text_input_unstable_v1 {
                             serial,
                             language
                         );
-                        self.language(client, sender_id, serial, language).await
+                        self.language(socket, sender_id, serial, language).await
                     }
                     12u16 => {
                         let serial = message.uint()?;
@@ -7613,7 +7603,7 @@ pub mod text_input_unstable_v1 {
                             serial,
                             direction
                         );
-                        self.text_direction(client, sender_id, serial, direction.try_into()?)
+                        self.text_direction(socket, sender_id, serial, direction.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -7992,8 +7982,8 @@ pub mod text_input_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8190,14 +8180,14 @@ pub mod text_input_unstable_v3 {
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_text_input_v3#{}.enter({})", sender_id, surface);
-                        self.enter(client, sender_id, surface).await
+                        self.enter(socket, sender_id, surface).await
                     }
                     1u16 => {
                         let surface = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zwp_text_input_v3#{}.leave({})", sender_id, surface);
-                        self.leave(client, sender_id, surface).await
+                        self.leave(socket, sender_id, surface).await
                     }
                     2u16 => {
                         let text = message.string()?;
@@ -8210,7 +8200,7 @@ pub mod text_input_unstable_v3 {
                             cursor_begin,
                             cursor_end
                         );
-                        self.preedit_string(client, sender_id, text, cursor_begin, cursor_end)
+                        self.preedit_string(socket, sender_id, text, cursor_begin, cursor_end)
                             .await
                     }
                     3u16 => {
@@ -8220,7 +8210,7 @@ pub mod text_input_unstable_v3 {
                             sender_id,
                             text.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.commit_string(client, sender_id, text).await
+                        self.commit_string(socket, sender_id, text).await
                     }
                     4u16 => {
                         let before_length = message.uint()?;
@@ -8231,13 +8221,13 @@ pub mod text_input_unstable_v3 {
                             before_length,
                             after_length
                         );
-                        self.delete_surrounding_text(client, sender_id, before_length, after_length)
+                        self.delete_surrounding_text(socket, sender_id, before_length, after_length)
                             .await
                     }
                     5u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("zwp_text_input_v3#{}.done({})", sender_id, serial);
-                        self.done(client, sender_id, serial).await
+                        self.done(socket, sender_id, serial).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -8632,8 +8622,8 @@ pub mod text_input_unstable_v3 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8713,8 +8703,8 @@ pub mod xdg_decoration_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8850,7 +8840,7 @@ pub mod xdg_decoration_unstable_v1 {
                             sender_id,
                             mode
                         );
-                        self.configure(client, sender_id, mode.try_into()?).await
+                        self.configure(socket, sender_id, mode.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -8981,8 +8971,8 @@ pub mod xdg_foreign_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9045,8 +9035,8 @@ pub mod xdg_foreign_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9118,7 +9108,7 @@ pub mod xdg_foreign_unstable_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zxdg_exported_v1#{}.handle(\"{}\")", sender_id, handle);
-                        self.handle(client, sender_id, handle).await
+                        self.handle(socket, sender_id, handle).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -9172,7 +9162,7 @@ pub mod xdg_foreign_unstable_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zxdg_imported_v1#{}.destroyed()", sender_id,);
-                        self.destroyed(client, sender_id).await
+                        self.destroyed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -9290,8 +9280,8 @@ pub mod xdg_foreign_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9355,8 +9345,8 @@ pub mod xdg_foreign_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9428,7 +9418,7 @@ pub mod xdg_foreign_unstable_v2 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zxdg_exported_v2#{}.handle(\"{}\")", sender_id, handle);
-                        self.handle(client, sender_id, handle).await
+                        self.handle(socket, sender_id, handle).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -9505,7 +9495,7 @@ pub mod xdg_foreign_unstable_v2 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("zxdg_imported_v2#{}.destroyed()", sender_id,);
-                        self.destroyed(client, sender_id).await
+                        self.destroyed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -9598,8 +9588,8 @@ pub mod xdg_output_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9678,7 +9668,7 @@ pub mod xdg_output_unstable_v1 {
                             x,
                             y
                         );
-                        self.logical_position(client, sender_id, x, y).await
+                        self.logical_position(socket, sender_id, x, y).await
                     }
                     1u16 => {
                         let width = message.int()?;
@@ -9689,18 +9679,18 @@ pub mod xdg_output_unstable_v1 {
                             width,
                             height
                         );
-                        self.logical_size(client, sender_id, width, height).await
+                        self.logical_size(socket, sender_id, width, height).await
                     }
                     2u16 => {
                         tracing::debug!("zxdg_output_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     3u16 => {
                         let name = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("zxdg_output_v1#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     4u16 => {
                         let description = message
@@ -9711,7 +9701,7 @@ pub mod xdg_output_unstable_v1 {
                             sender_id,
                             description
                         );
-                        self.description(client, sender_id, description).await
+                        self.description(socket, sender_id, description).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -9929,7 +9919,7 @@ pub mod xdg_shell_unstable_v5 {
                     0u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("xdg_shell#{}.ping({})", sender_id, serial);
-                        self.ping(client, sender_id, serial).await
+                        self.ping(socket, sender_id, serial).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -10201,12 +10191,12 @@ pub mod xdg_shell_unstable_v5 {
                             states.len(),
                             serial
                         );
-                        self.configure(client, sender_id, width, height, states, serial)
+                        self.configure(socket, sender_id, width, height, states, serial)
                             .await
                     }
                     1u16 => {
                         tracing::debug!("xdg_surface#{}.close()", sender_id,);
-                        self.close(client, sender_id).await
+                        self.close(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -10737,7 +10727,7 @@ pub mod xdg_shell_unstable_v5 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("xdg_popup#{}.popup_done()", sender_id,);
-                        self.popup_done(client, sender_id).await
+                        self.popup_done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -10832,7 +10822,7 @@ pub mod xdg_shell_unstable_v6 {
                     0u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("zxdg_shell_v6#{}.ping({})", sender_id, serial);
-                        self.ping(client, sender_id, serial).await
+                        self.ping(socket, sender_id, serial).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -11021,8 +11011,8 @@ pub mod xdg_shell_unstable_v6 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -11280,7 +11270,7 @@ pub mod xdg_shell_unstable_v6 {
                     0u16 => {
                         let serial = message.uint()?;
                         tracing::debug!("zxdg_surface_v6#{}.configure({})", sender_id, serial);
-                        self.configure(client, sender_id, serial).await
+                        self.configure(socket, sender_id, serial).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -11557,12 +11547,12 @@ pub mod xdg_shell_unstable_v6 {
                             height,
                             states.len()
                         );
-                        self.configure(client, sender_id, width, height, states)
+                        self.configure(socket, sender_id, width, height, states)
                             .await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_toplevel_v6#{}.close()", sender_id,);
-                        self.close(client, sender_id).await
+                        self.close(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -12124,11 +12114,11 @@ pub mod xdg_shell_unstable_v6 {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, x, y, width, height).await
+                        self.configure(socket, sender_id, x, y, width, height).await
                     }
                     1u16 => {
                         tracing::debug!("zxdg_popup_v6#{}.popup_done()", sender_id,);
-                        self.popup_done(client, sender_id).await
+                        self.popup_done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -12286,8 +12276,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -12366,8 +12356,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]

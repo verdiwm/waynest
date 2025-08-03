@@ -48,7 +48,7 @@ pub mod hyprland_ctm_control_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("hyprland_ctm_control_manager_v1#{}.blocked()", sender_id,);
-                        self.blocked(client, sender_id).await
+                        self.blocked(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -162,8 +162,8 @@ pub mod hyprland_focus_grab_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -240,7 +240,7 @@ pub mod hyprland_focus_grab_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("hyprland_focus_grab_v1#{}.cleared()", sender_id,);
-                        self.cleared(client, sender_id).await
+                        self.cleared(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -364,8 +364,8 @@ pub mod hyprland_global_shortcuts_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -454,7 +454,7 @@ pub mod hyprland_global_shortcuts_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.pressed(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.pressed(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     1u16 => {
@@ -468,7 +468,7 @@ pub mod hyprland_global_shortcuts_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.released(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.released(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -527,8 +527,8 @@ pub mod hyprland_lock_notify_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -606,11 +606,11 @@ pub mod hyprland_lock_notify_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("hyprland_lock_notification_v1#{}.locked()", sender_id,);
-                        self.locked(client, sender_id).await
+                        self.locked(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("hyprland_lock_notification_v1#{}.unlocked()", sender_id,);
-                        self.unlocked(client, sender_id).await
+                        self.unlocked(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -686,8 +686,8 @@ pub mod hyprland_surface_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -774,8 +774,8 @@ pub mod hyprland_surface_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -875,8 +875,8 @@ pub mod hyprland_toplevel_export_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1039,7 +1039,7 @@ pub mod hyprland_toplevel_export_v1 {
                             height,
                             stride
                         );
-                        self.buffer(client, sender_id, format.try_into()?, width, height, stride)
+                        self.buffer(socket, sender_id, format.try_into()?, width, height, stride)
                             .await
                     }
                     1u16 => {
@@ -1055,7 +1055,7 @@ pub mod hyprland_toplevel_export_v1 {
                             width,
                             height
                         );
-                        self.damage(client, sender_id, x, y, width, height).await
+                        self.damage(socket, sender_id, x, y, width, height).await
                     }
                     2u16 => {
                         let flags = message.uint()?;
@@ -1064,7 +1064,7 @@ pub mod hyprland_toplevel_export_v1 {
                             sender_id,
                             flags
                         );
-                        self.flags(client, sender_id, flags.try_into()?).await
+                        self.flags(socket, sender_id, flags.try_into()?).await
                     }
                     3u16 => {
                         let tv_sec_hi = message.uint()?;
@@ -1077,12 +1077,12 @@ pub mod hyprland_toplevel_export_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.ready(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.ready(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     4u16 => {
                         tracing::debug!("hyprland_toplevel_export_frame_v1#{}.failed()", sender_id,);
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     5u16 => {
                         let format = message.uint()?;
@@ -1095,7 +1095,7 @@ pub mod hyprland_toplevel_export_v1 {
                             width,
                             height
                         );
-                        self.linux_dmabuf(client, sender_id, format, width, height)
+                        self.linux_dmabuf(socket, sender_id, format, width, height)
                             .await
                     }
                     6u16 => {
@@ -1103,7 +1103,7 @@ pub mod hyprland_toplevel_export_v1 {
                             "hyprland_toplevel_export_frame_v1#{}.buffer_done()",
                             sender_id,
                         );
-                        self.buffer_done(client, sender_id).await
+                        self.buffer_done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1257,8 +1257,8 @@ pub mod hyprland_toplevel_mapping_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1358,7 +1358,7 @@ pub mod hyprland_toplevel_mapping_v1 {
                             address_hi,
                             address
                         );
-                        self.window_address(client, sender_id, address_hi, address)
+                        self.window_address(socket, sender_id, address_hi, address)
                             .await
                     }
                     1u16 => {
@@ -1366,7 +1366,7 @@ pub mod hyprland_toplevel_mapping_v1 {
                             "hyprland_toplevel_window_mapping_handle_v1#{}.failed()",
                             sender_id,
                         );
-                        self.failed(client, sender_id).await
+                        self.failed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }

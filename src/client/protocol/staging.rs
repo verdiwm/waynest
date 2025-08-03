@@ -41,8 +41,8 @@ pub mod alpha_modifier_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -125,8 +125,8 @@ pub mod alpha_modifier_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -456,7 +456,7 @@ pub mod color_management_v1 {
                             sender_id,
                             render_intent
                         );
-                        self.supported_intent(client, sender_id, render_intent.try_into()?)
+                        self.supported_intent(socket, sender_id, render_intent.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -466,7 +466,7 @@ pub mod color_management_v1 {
                             sender_id,
                             feature
                         );
-                        self.supported_feature(client, sender_id, feature.try_into()?)
+                        self.supported_feature(socket, sender_id, feature.try_into()?)
                             .await
                     }
                     2u16 => {
@@ -476,7 +476,7 @@ pub mod color_management_v1 {
                             sender_id,
                             tf
                         );
-                        self.supported_tf_named(client, sender_id, tf.try_into()?)
+                        self.supported_tf_named(socket, sender_id, tf.try_into()?)
                             .await
                     }
                     3u16 => {
@@ -486,12 +486,12 @@ pub mod color_management_v1 {
                             sender_id,
                             primaries
                         );
-                        self.supported_primaries_named(client, sender_id, primaries.try_into()?)
+                        self.supported_primaries_named(socket, sender_id, primaries.try_into()?)
                             .await
                     }
                     4u16 => {
                         tracing::debug!("wp_color_manager_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -763,7 +763,7 @@ pub mod color_management_v1 {
                             "wp_color_management_output_v1#{}.image_description_changed()",
                             sender_id,
                         );
-                        self.image_description_changed(client, sender_id).await
+                        self.image_description_changed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -888,8 +888,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1046,7 +1046,7 @@ pub mod color_management_v1 {
                             sender_id,
                             identity
                         );
-                        self.preferred_changed(client, sender_id, identity).await
+                        self.preferred_changed(socket, sender_id, identity).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -1224,8 +1224,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1407,8 +1407,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1948,7 +1948,7 @@ pub mod color_management_v1 {
                             cause,
                             msg
                         );
-                        self.failed(client, sender_id, cause.try_into()?, msg).await
+                        self.failed(socket, sender_id, cause.try_into()?, msg).await
                     }
                     1u16 => {
                         let identity = message.uint()?;
@@ -1957,7 +1957,7 @@ pub mod color_management_v1 {
                             sender_id,
                             identity
                         );
-                        self.ready(client, sender_id, identity).await
+                        self.ready(socket, sender_id, identity).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2093,9 +2093,7 @@ pub mod color_management_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("wp_image_description_info_v1#{}.done()", sender_id,);
-                        let result = self.done(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.done(socket, sender_id).await
                     }
                     1u16 => {
                         let icc = message.fd()?;
@@ -2106,7 +2104,7 @@ pub mod color_management_v1 {
                             icc.as_raw_fd(),
                             icc_size
                         );
-                        self.icc_file(client, sender_id, icc, icc_size).await
+                        self.icc_file(socket, sender_id, icc, icc_size).await
                     }
                     2u16 => {
                         let r_x = message.int()?;
@@ -2129,7 +2127,7 @@ pub mod color_management_v1 {
                             w_x,
                             w_y
                         );
-                        self.primaries(client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
+                        self.primaries(socket, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
                             .await
                     }
                     3u16 => {
@@ -2139,7 +2137,7 @@ pub mod color_management_v1 {
                             sender_id,
                             primaries
                         );
-                        self.primaries_named(client, sender_id, primaries.try_into()?)
+                        self.primaries_named(socket, sender_id, primaries.try_into()?)
                             .await
                     }
                     4u16 => {
@@ -2149,7 +2147,7 @@ pub mod color_management_v1 {
                             sender_id,
                             eexp
                         );
-                        self.tf_power(client, sender_id, eexp).await
+                        self.tf_power(socket, sender_id, eexp).await
                     }
                     5u16 => {
                         let tf = message.uint()?;
@@ -2158,7 +2156,7 @@ pub mod color_management_v1 {
                             sender_id,
                             tf
                         );
-                        self.tf_named(client, sender_id, tf.try_into()?).await
+                        self.tf_named(socket, sender_id, tf.try_into()?).await
                     }
                     6u16 => {
                         let min_lum = message.uint()?;
@@ -2171,7 +2169,7 @@ pub mod color_management_v1 {
                             max_lum,
                             reference_lum
                         );
-                        self.luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                        self.luminances(socket, sender_id, min_lum, max_lum, reference_lum)
                             .await
                     }
                     7u16 => {
@@ -2196,7 +2194,7 @@ pub mod color_management_v1 {
                             w_y
                         );
                         self.target_primaries(
-                            client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            socket, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
                         )
                         .await
                     }
@@ -2209,7 +2207,7 @@ pub mod color_management_v1 {
                             min_lum,
                             max_lum
                         );
-                        self.target_luminance(client, sender_id, min_lum, max_lum)
+                        self.target_luminance(socket, sender_id, min_lum, max_lum)
                             .await
                     }
                     9u16 => {
@@ -2219,7 +2217,7 @@ pub mod color_management_v1 {
                             sender_id,
                             max_cll
                         );
-                        self.target_max_cll(client, sender_id, max_cll).await
+                        self.target_max_cll(socket, sender_id, max_cll).await
                     }
                     10u16 => {
                         let max_fall = message.uint()?;
@@ -2228,7 +2226,7 @@ pub mod color_management_v1 {
                             sender_id,
                             max_fall
                         );
-                        self.target_max_fall(client, sender_id, max_fall).await
+                        self.target_max_fall(socket, sender_id, max_fall).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2452,7 +2450,7 @@ pub mod color_representation_v1 {
                             sender_id,
                             alpha_mode
                         );
-                        self.supported_alpha_mode(client, sender_id, alpha_mode.try_into()?)
+                        self.supported_alpha_mode(socket, sender_id, alpha_mode.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -2465,7 +2463,7 @@ pub mod color_representation_v1 {
                             range
                         );
                         self.supported_coefficients_and_ranges(
-                            client,
+                            socket,
                             sender_id,
                             coefficients.try_into()?,
                             range.try_into()?,
@@ -2474,7 +2472,7 @@ pub mod color_representation_v1 {
                     }
                     2u16 => {
                         tracing::debug!("wp_color_representation_manager_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -2737,8 +2735,8 @@ pub mod color_representation_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2933,8 +2931,8 @@ pub mod commit_timing_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3019,8 +3017,8 @@ pub mod commit_timing_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3121,8 +3119,8 @@ pub mod content_type_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3215,8 +3213,8 @@ pub mod content_type_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3286,8 +3284,8 @@ pub mod cursor_shape_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3526,8 +3524,8 @@ pub mod cursor_shape_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3644,24 +3642,22 @@ pub mod drm_lease_v1 {
                             sender_id,
                             fd.as_raw_fd()
                         );
-                        self.drm_fd(client, sender_id, fd).await
+                        self.drm_fd(socket, sender_id, fd).await
                     }
                     1u16 => {
                         let id = message
                             .object()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
-                        self.connector(client, sender_id, id).await
+                        self.connector(socket, sender_id, id).await
                     }
                     2u16 => {
                         tracing::debug!("wp_drm_lease_device_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("wp_drm_lease_device_v1#{}.released()", sender_id,);
-                        let result = self.released(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.released(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3791,7 +3787,7 @@ pub mod drm_lease_v1 {
                             sender_id,
                             name
                         );
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     1u16 => {
                         let description = message
@@ -3802,7 +3798,7 @@ pub mod drm_lease_v1 {
                             sender_id,
                             description
                         );
-                        self.description(client, sender_id, description).await
+                        self.description(socket, sender_id, description).await
                     }
                     2u16 => {
                         let connector_id = message.uint()?;
@@ -3811,15 +3807,15 @@ pub mod drm_lease_v1 {
                             sender_id,
                             connector_id
                         );
-                        self.connector_id(client, sender_id, connector_id).await
+                        self.connector_id(socket, sender_id, connector_id).await
                     }
                     3u16 => {
                         tracing::debug!("wp_drm_lease_connector_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     4u16 => {
                         tracing::debug!("wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
-                        self.withdrawn(client, sender_id).await
+                        self.withdrawn(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -3943,8 +3939,8 @@ pub mod drm_lease_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4036,11 +4032,11 @@ pub mod drm_lease_v1 {
                             sender_id,
                             leased_fd.as_raw_fd()
                         );
-                        self.lease_fd(client, sender_id, leased_fd).await
+                        self.lease_fd(socket, sender_id, leased_fd).await
                     }
                     1u16 => {
                         tracing::debug!("wp_drm_lease_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4168,7 +4164,7 @@ pub mod ext_background_effect_v1 {
                             sender_id,
                             flags
                         );
-                        self.capabilities(client, sender_id, flags.try_into()?)
+                        self.capabilities(socket, sender_id, flags.try_into()?)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -4263,8 +4259,8 @@ pub mod ext_background_effect_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4350,8 +4346,8 @@ pub mod ext_data_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4465,7 +4461,7 @@ pub mod ext_data_control_v1 {
                             sender_id,
                             id
                         );
-                        self.data_offer(client, sender_id, id).await
+                        self.data_offer(socket, sender_id, id).await
                     }
                     1u16 => {
                         let id = message.object()?;
@@ -4474,11 +4470,11 @@ pub mod ext_data_control_v1 {
                             sender_id,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.selection(client, sender_id, id).await
+                        self.selection(socket, sender_id, id).await
                     }
                     2u16 => {
                         tracing::debug!("ext_data_control_device_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     3u16 => {
                         let id = message.object()?;
@@ -4487,7 +4483,7 @@ pub mod ext_data_control_v1 {
                             sender_id,
                             id.as_ref().map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.primary_selection(client, sender_id, id).await
+                        self.primary_selection(socket, sender_id, id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4676,11 +4672,11 @@ pub mod ext_data_control_v1 {
                             mime_type,
                             fd.as_raw_fd()
                         );
-                        self.send(client, sender_id, mime_type, fd).await
+                        self.send(socket, sender_id, mime_type, fd).await
                     }
                     1u16 => {
                         tracing::debug!("ext_data_control_source_v1#{}.cancelled()", sender_id,);
-                        self.cancelled(client, sender_id).await
+                        self.cancelled(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4768,7 +4764,7 @@ pub mod ext_data_control_v1 {
                             sender_id,
                             mime_type
                         );
-                        self.offer(client, sender_id, mime_type).await
+                        self.offer(socket, sender_id, mime_type).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4888,11 +4884,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                             sender_id,
                             toplevel
                         );
-                        self.toplevel(client, sender_id, toplevel).await
+                        self.toplevel(socket, sender_id, toplevel).await
                     }
                     1u16 => {
                         tracing::debug!("ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -4982,11 +4978,11 @@ pub mod ext_foreign_toplevel_list_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
-                        self.closed(client, sender_id).await
+                        self.closed(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     2u16 => {
                         let title = message
@@ -4997,7 +4993,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                             sender_id,
                             title
                         );
-                        self.title(client, sender_id, title).await
+                        self.title(socket, sender_id, title).await
                     }
                     3u16 => {
                         let app_id = message
@@ -5008,7 +5004,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                             sender_id,
                             app_id
                         );
-                        self.app_id(client, sender_id, app_id).await
+                        self.app_id(socket, sender_id, app_id).await
                     }
                     4u16 => {
                         let identifier = message
@@ -5019,7 +5015,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                             sender_id,
                             identifier
                         );
-                        self.identifier(client, sender_id, identifier).await
+                        self.identifier(socket, sender_id, identifier).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5141,8 +5137,8 @@ pub mod ext_idle_notify_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5269,11 +5265,11 @@ pub mod ext_idle_notify_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("ext_idle_notification_v1#{}.idled()", sender_id,);
-                        self.idled(client, sender_id).await
+                        self.idled(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("ext_idle_notification_v1#{}.resumed()", sender_id,);
-                        self.resumed(client, sender_id).await
+                        self.resumed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5345,8 +5341,8 @@ pub mod ext_image_capture_source_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5382,8 +5378,8 @@ pub mod ext_image_capture_source_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5448,8 +5444,8 @@ pub mod ext_image_capture_source_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5555,8 +5551,8 @@ pub mod ext_image_copy_capture_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5701,7 +5697,7 @@ pub mod ext_image_copy_capture_v1 {
                             width,
                             height
                         );
-                        self.buffer_size(client, sender_id, width, height).await
+                        self.buffer_size(socket, sender_id, width, height).await
                     }
                     1u16 => {
                         let format = message.uint()?;
@@ -5710,7 +5706,7 @@ pub mod ext_image_copy_capture_v1 {
                             sender_id,
                             format
                         );
-                        self.shm_format(client, sender_id, format.try_into()?).await
+                        self.shm_format(socket, sender_id, format.try_into()?).await
                     }
                     2u16 => {
                         let device = message.array()?;
@@ -5719,7 +5715,7 @@ pub mod ext_image_copy_capture_v1 {
                             sender_id,
                             device.len()
                         );
-                        self.dmabuf_device(client, sender_id, device).await
+                        self.dmabuf_device(socket, sender_id, device).await
                     }
                     3u16 => {
                         let format = message.uint()?;
@@ -5730,19 +5726,19 @@ pub mod ext_image_copy_capture_v1 {
                             format,
                             modifiers.len()
                         );
-                        self.dmabuf_format(client, sender_id, format, modifiers)
+                        self.dmabuf_format(socket, sender_id, format, modifiers)
                             .await
                     }
                     4u16 => {
                         tracing::debug!("ext_image_copy_capture_session_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     5u16 => {
                         tracing::debug!(
                             "ext_image_copy_capture_session_v1#{}.stopped()",
                             sender_id,
                         );
-                        self.stopped(client, sender_id).await
+                        self.stopped(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -5946,7 +5942,7 @@ pub mod ext_image_copy_capture_v1 {
                             sender_id,
                             transform
                         );
-                        self.transform(client, sender_id, transform.try_into()?)
+                        self.transform(socket, sender_id, transform.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -5962,7 +5958,7 @@ pub mod ext_image_copy_capture_v1 {
                             width,
                             height
                         );
-                        self.damage(client, sender_id, x, y, width, height).await
+                        self.damage(socket, sender_id, x, y, width, height).await
                     }
                     2u16 => {
                         let tv_sec_hi = message.uint()?;
@@ -5975,12 +5971,12 @@ pub mod ext_image_copy_capture_v1 {
                             tv_sec_lo,
                             tv_nsec
                         );
-                        self.presentation_time(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                        self.presentation_time(socket, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
                             .await
                     }
                     3u16 => {
                         tracing::debug!("ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
-                        self.ready(client, sender_id).await
+                        self.ready(socket, sender_id).await
                     }
                     4u16 => {
                         let reason = message.uint()?;
@@ -5989,7 +5985,7 @@ pub mod ext_image_copy_capture_v1 {
                             sender_id,
                             reason
                         );
-                        self.failed(client, sender_id, reason.try_into()?).await
+                        self.failed(socket, sender_id, reason.try_into()?).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6209,14 +6205,14 @@ pub mod ext_image_copy_capture_v1 {
                             "ext_image_copy_capture_cursor_session_v1#{}.enter()",
                             sender_id,
                         );
-                        self.enter(client, sender_id).await
+                        self.enter(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "ext_image_copy_capture_cursor_session_v1#{}.leave()",
                             sender_id,
                         );
-                        self.leave(client, sender_id).await
+                        self.leave(socket, sender_id).await
                     }
                     2u16 => {
                         let x = message.int()?;
@@ -6227,7 +6223,7 @@ pub mod ext_image_copy_capture_v1 {
                             x,
                             y
                         );
-                        self.position(client, sender_id, x, y).await
+                        self.position(socket, sender_id, x, y).await
                     }
                     3u16 => {
                         let x = message.int()?;
@@ -6238,7 +6234,7 @@ pub mod ext_image_copy_capture_v1 {
                             x,
                             y
                         );
-                        self.hotspot(client, sender_id, x, y).await
+                        self.hotspot(socket, sender_id, x, y).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6376,8 +6372,8 @@ pub mod ext_session_lock_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6521,11 +6517,11 @@ pub mod ext_session_lock_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("ext_session_lock_v1#{}.locked()", sender_id,);
-                        self.locked(client, sender_id).await
+                        self.locked(socket, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("ext_session_lock_v1#{}.finished()", sender_id,);
-                        self.finished(client, sender_id).await
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -6732,7 +6728,7 @@ pub mod ext_session_lock_v1 {
                             width,
                             height
                         );
-                        self.configure(client, sender_id, serial, width, height)
+                        self.configure(socket, sender_id, serial, width, height)
                             .await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
@@ -6848,8 +6844,8 @@ pub mod ext_transient_seat_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6921,11 +6917,11 @@ pub mod ext_transient_seat_v1 {
                             sender_id,
                             global_name
                         );
-                        self.ready(client, sender_id, global_name).await
+                        self.ready(socket, sender_id, global_name).await
                     }
                     1u16 => {
                         tracing::debug!("ext_transient_seat_v1#{}.denied()", sender_id,);
-                        self.denied(client, sender_id).await
+                        self.denied(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7018,7 +7014,7 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             workspace_group
                         );
-                        self.workspace_group(client, sender_id, workspace_group)
+                        self.workspace_group(socket, sender_id, workspace_group)
                             .await
                     }
                     1u16 => {
@@ -7030,17 +7026,15 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             workspace
                         );
-                        self.workspace(client, sender_id, workspace).await
+                        self.workspace(socket, sender_id, workspace).await
                     }
                     2u16 => {
                         tracing::debug!("ext_workspace_manager_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("ext_workspace_manager_v1#{}.finished()", sender_id,);
-                        let result = self.finished(client, sender_id).await;
-                        client.remove(sender_id);
-                        result
+                        self.finished(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7181,7 +7175,7 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             capabilities
                         );
-                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                        self.capabilities(socket, sender_id, capabilities.try_into()?)
                             .await
                     }
                     1u16 => {
@@ -7193,7 +7187,7 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             output
                         );
-                        self.output_enter(client, sender_id, output).await
+                        self.output_enter(socket, sender_id, output).await
                     }
                     2u16 => {
                         let output = message
@@ -7204,7 +7198,7 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             output
                         );
-                        self.output_leave(client, sender_id, output).await
+                        self.output_leave(socket, sender_id, output).await
                     }
                     3u16 => {
                         let workspace = message
@@ -7215,7 +7209,7 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             workspace
                         );
-                        self.workspace_enter(client, sender_id, workspace).await
+                        self.workspace_enter(socket, sender_id, workspace).await
                     }
                     4u16 => {
                         let workspace = message
@@ -7226,11 +7220,11 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             workspace
                         );
-                        self.workspace_leave(client, sender_id, workspace).await
+                        self.workspace_leave(socket, sender_id, workspace).await
                     }
                     5u16 => {
                         tracing::debug!("ext_workspace_group_handle_v1#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7404,14 +7398,14 @@ pub mod ext_workspace_v1 {
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
-                        self.id(client, sender_id, id).await
+                        self.id(socket, sender_id, id).await
                     }
                     1u16 => {
                         let name = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!("ext_workspace_handle_v1#{}.name(\"{}\")", sender_id, name);
-                        self.name(client, sender_id, name).await
+                        self.name(socket, sender_id, name).await
                     }
                     2u16 => {
                         let coordinates = message.array()?;
@@ -7420,12 +7414,12 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             coordinates.len()
                         );
-                        self.coordinates(client, sender_id, coordinates).await
+                        self.coordinates(socket, sender_id, coordinates).await
                     }
                     3u16 => {
                         let state = message.uint()?;
                         tracing::debug!("ext_workspace_handle_v1#{}.state({})", sender_id, state);
-                        self.state(client, sender_id, state.try_into()?).await
+                        self.state(socket, sender_id, state.try_into()?).await
                     }
                     4u16 => {
                         let capabilities = message.uint()?;
@@ -7434,12 +7428,12 @@ pub mod ext_workspace_v1 {
                             sender_id,
                             capabilities
                         );
-                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                        self.capabilities(socket, sender_id, capabilities.try_into()?)
                             .await
                     }
                     5u16 => {
                         tracing::debug!("ext_workspace_handle_v1#{}.removed()", sender_id,);
-                        self.removed(client, sender_id).await
+                        self.removed(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -7676,8 +7670,8 @@ pub mod fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7763,8 +7757,8 @@ pub mod fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7903,8 +7897,8 @@ pub mod fractional_scale_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7979,7 +7973,7 @@ pub mod fractional_scale_v1 {
                             sender_id,
                             scale
                         );
-                        self.preferred_scale(client, sender_id, scale).await
+                        self.preferred_scale(socket, sender_id, scale).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -8078,8 +8072,8 @@ pub mod linux_drm_syncobj_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8170,8 +8164,8 @@ pub mod linux_drm_syncobj_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8271,8 +8265,8 @@ pub mod linux_drm_syncobj_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8435,8 +8429,8 @@ pub mod pointer_warp_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8548,8 +8542,8 @@ pub mod security_context_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8658,8 +8652,8 @@ pub mod security_context_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8810,8 +8804,8 @@ pub mod single_pixel_buffer_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8928,8 +8922,8 @@ pub mod tearing_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9022,8 +9016,8 @@ pub mod tearing_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9126,8 +9120,8 @@ pub mod xdg_activation_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9254,7 +9248,7 @@ pub mod xdg_activation_v1 {
                             sender_id,
                             token
                         );
-                        self.done(client, sender_id, token).await
+                        self.done(socket, sender_id, token).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -9413,8 +9407,8 @@ pub mod xdg_dialog_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9480,8 +9474,8 @@ pub mod xdg_dialog_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9563,8 +9557,8 @@ pub mod xdg_system_bell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9679,8 +9673,8 @@ pub mod xdg_toplevel_drag_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9770,8 +9764,8 @@ pub mod xdg_toplevel_drag_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9875,11 +9869,11 @@ pub mod xdg_toplevel_icon_v1 {
                             sender_id,
                             size
                         );
-                        self.icon_size(client, sender_id, size).await
+                        self.icon_size(socket, sender_id, size).await
                     }
                     1u16 => {
                         tracing::debug!("xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
-                        self.done(client, sender_id).await
+                        self.done(socket, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
@@ -10027,8 +10021,8 @@ pub mod xdg_toplevel_icon_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -10149,8 +10143,8 @@ pub mod xdg_toplevel_tag_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -10315,8 +10309,8 @@ pub mod xwayland_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -10410,8 +10404,8 @@ pub mod xwayland_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
-                sender_id: crate::wire::ObjectId,
+                _socket: &mut crate::wire::Socket,
+                _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
