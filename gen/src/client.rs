@@ -55,6 +55,8 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
                         async fn handle_event(
                             &self,
+                            socket: &mut crate::wire::Socket,
+                            sender_id: crate::wire::ObjectId,
                             message: &mut crate::wire::Message,
                         ) -> crate::client::Result<()> {
                             #[allow(clippy::match_single_binding)]
@@ -106,7 +108,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         let mut args = vec![
             quote! { &self },
             quote! { socket: &mut crate::wire::Socket },
-            quote! { object_id: crate::wire::ObjectId },
+            quote! { sender_id: crate::wire::ObjectId },
         ];
 
         for arg in &request.args {
@@ -168,14 +170,14 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         requests.push(quote! {
             #(#docs)*
             async fn #name(#(#args),*) -> crate::client::Result<()> {
-                tracing::debug!(#tracing_inner, object_id);
+                tracing::debug!(#tracing_inner, sender_id);
 
                 let (payload,fds) = crate::wire::PayloadBuilder::new()
                     #(#build_args)*
                     .build();
 
                 socket
-                    .send(crate::wire::Message::new(object_id, #opcode, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, #opcode, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -193,8 +195,8 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         let name = make_ident(request.name.to_snek_case());
         let mut args = vec![
             quote! {&self },
-            // quote! {object: &crate::server::Object},
-            // quote! {client: &mut crate::server::Client},
+            quote! { socket: &mut crate::wire::Socket },
+            quote! { sender_id: crate::wire::ObjectId },
         ];
 
         for arg in &request.args {

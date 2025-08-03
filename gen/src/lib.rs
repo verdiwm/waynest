@@ -1,4 +1,5 @@
 pub mod client;
+pub mod common;
 pub mod parser;
 pub mod server;
 pub mod utils;

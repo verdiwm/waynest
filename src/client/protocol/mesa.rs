@@ -196,6 +196,8 @@ pub mod drm {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -206,20 +208,20 @@ pub mod drm {
             async fn authenticate(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wl_drm#{}.authenticate()", object_id);
+                tracing::debug!("-> wl_drm#{}.authenticate()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn create_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 name: u32,
                 width: i32,
@@ -227,7 +229,7 @@ pub mod drm {
                 stride: u32,
                 format: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wl_drm#{}.create_buffer()", object_id);
+                tracing::debug!("-> wl_drm#{}.create_buffer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_uint(name)
@@ -237,14 +239,14 @@ pub mod drm {
                     .put_uint(format)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn create_planar_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 name: u32,
                 width: i32,
@@ -257,7 +259,7 @@ pub mod drm {
                 offset2: i32,
                 stride2: i32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wl_drm#{}.create_planar_buffer()", object_id);
+                tracing::debug!("-> wl_drm#{}.create_planar_buffer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_uint(name)
@@ -272,14 +274,14 @@ pub mod drm {
                     .put_int(stride2)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn create_prime_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 name: rustix::fd::OwnedFd,
                 width: i32,
@@ -292,7 +294,7 @@ pub mod drm {
                 offset2: i32,
                 stride2: i32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wl_drm#{}.create_prime_buffer()", object_id);
+                tracing::debug!("-> wl_drm#{}.create_prime_buffer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_fd(name)
@@ -307,14 +309,33 @@ pub mod drm {
                     .put_int(stride2)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            async fn device(&self, name: String) -> crate::client::Result<()>;
-            async fn format(&self, format: u32) -> crate::client::Result<()>;
-            async fn authenticated(&self) -> crate::client::Result<()>;
-            async fn capabilities(&self, value: u32) -> crate::client::Result<()>;
+            async fn device(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                name: String,
+            ) -> crate::client::Result<()>;
+            async fn format(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                format: u32,
+            ) -> crate::client::Result<()>;
+            async fn authenticated(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
+            async fn capabilities(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                value: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }

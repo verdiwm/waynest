@@ -39,6 +39,8 @@ pub mod alpha_modifier_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -51,12 +53,12 @@ pub mod alpha_modifier_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_alpha_modifier_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_alpha_modifier_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -66,17 +68,17 @@ pub mod alpha_modifier_v1 {
             async fn get_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_alpha_modifier_v1#{}.get_surface()", object_id);
+                tracing::debug!("-> wp_alpha_modifier_v1#{}.get_surface()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -119,6 +121,8 @@ pub mod alpha_modifier_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -132,12 +136,12 @@ pub mod alpha_modifier_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_alpha_modifier_surface_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_alpha_modifier_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -157,16 +161,16 @@ pub mod alpha_modifier_v1 {
             async fn set_multiplier(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 factor: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_alpha_modifier_surface_v1#{}.set_multiplier()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(factor).build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -433,6 +437,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -445,12 +451,12 @@ pub mod color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_color_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_color_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -461,17 +467,17 @@ pub mod color_management_v1 {
             async fn get_output(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_color_manager_v1#{}.get_output()", object_id);
+                tracing::debug!("-> wp_color_manager_v1#{}.get_output()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(output))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -485,17 +491,17 @@ pub mod color_management_v1 {
             async fn get_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_color_manager_v1#{}.get_surface()", object_id);
+                tracing::debug!("-> wp_color_manager_v1#{}.get_surface()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -507,20 +513,20 @@ pub mod color_management_v1 {
             async fn get_surface_feedback(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_manager_v1#{}.get_surface_feedback()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -535,15 +541,15 @@ pub mod color_management_v1 {
             async fn create_icc_creator(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_color_manager_v1#{}.create_icc_creator()", object_id);
+                tracing::debug!("-> wp_color_manager_v1#{}.create_icc_creator()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(obj))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -558,18 +564,18 @@ pub mod color_management_v1 {
             async fn create_parametric_creator(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 obj: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_manager_v1#{}.create_parametric_creator()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(obj))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -620,18 +626,18 @@ pub mod color_management_v1 {
             async fn create_windows_scrgb(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_manager_v1#{}.create_windows_scrgb()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -639,25 +645,43 @@ pub mod color_management_v1 {
             #[doc = "for each rendering intent the compositor supports."]
             async fn supported_intent(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
             ) -> crate::client::Result<()>;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each compositor supported feature listed in the enumeration."]
-            async fn supported_feature(&self, feature: Feature) -> crate::client::Result<()>;
+            async fn supported_feature(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                feature: Feature,
+            ) -> crate::client::Result<()>;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named transfer function the compositor supports with the"]
             #[doc = "parametric image description creator."]
-            async fn supported_tf_named(&self, tf: TransferFunction) -> crate::client::Result<()>;
+            async fn supported_tf_named(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                tf: TransferFunction,
+            ) -> crate::client::Result<()>;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named set of primaries the compositor supports with the"]
             #[doc = "parametric image description creator."]
             async fn supported_primaries_named(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
             ) -> crate::client::Result<()>;
             #[doc = "This event is sent when all supported rendering intents, features,"]
             #[doc = "transfer functions and named primaries have been sent."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A wp_color_management_output_v1 describes the color properties of an"]
@@ -676,6 +700,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -688,12 +714,12 @@ pub mod color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_color_management_output_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_color_management_output_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -731,18 +757,18 @@ pub mod color_management_v1 {
             async fn get_image_description(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_management_output_v1#{}.get_image_description()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -753,7 +779,11 @@ pub mod color_management_v1 {
             #[doc = "If the client wants to use the updated image description, it needs to do"]
             #[doc = "get_image_description again, because image description objects are"]
             #[doc = "immutable."]
-            async fn image_description_changed(&self) -> crate::client::Result<()>;
+            async fn image_description_changed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A wp_color_management_surface_v1 allows the client to set the color"]
@@ -797,6 +827,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -809,12 +841,12 @@ pub mod color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_color_management_surface_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_color_management_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -860,20 +892,20 @@ pub mod color_management_v1 {
             async fn set_image_description(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
                 render_intent : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: RenderIntent,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_management_surface_v1#{}.set_image_description()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .put_uint(render_intent as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -886,15 +918,15 @@ pub mod color_management_v1 {
             async fn unset_image_description(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_management_surface_v1#{}.unset_image_description()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -938,6 +970,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -949,15 +983,15 @@ pub mod color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_management_surface_feedback_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -997,18 +1031,18 @@ pub mod color_management_v1 {
             async fn get_preferred(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_management_surface_feedback_v1#{}.get_preferred()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1021,18 +1055,18 @@ pub mod color_management_v1 {
             async fn get_preferred_parametric(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_management_surface_feedback_v1#{}.get_preferred_parametric()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1052,7 +1086,12 @@ pub mod color_management_v1 {
             #[doc = "improvements by providing the wl_surface contents in the preferred"]
             #[doc = "image description. Therefore clients that can, should render according"]
             #[doc = "to the preferred image description"]
-            async fn preferred_changed(&self, identity: u32) -> crate::client::Result<()>;
+            async fn preferred_changed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                identity: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This type of object is used for collecting all the information required"]
@@ -1111,6 +1150,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1140,18 +1181,18 @@ pub mod color_management_v1 {
             async fn create(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_icc_v1#{}.create()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1197,14 +1238,14 @@ pub mod color_management_v1 {
             async fn set_icc_file(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 icc_profile: rustix::fd::OwnedFd,
                 offset: u32,
                 length: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_icc_v1#{}.set_icc_file()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_fd(icc_profile)
@@ -1212,7 +1253,7 @@ pub mod color_management_v1 {
                     .put_uint(length)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1290,6 +1331,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1328,18 +1371,18 @@ pub mod color_management_v1 {
             async fn create(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 image_description: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.create()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(image_description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1358,18 +1401,18 @@ pub mod color_management_v1 {
             async fn set_tf_named(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_tf_named()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tf as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1397,16 +1440,16 @@ pub mod color_management_v1 {
             async fn set_tf_power(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 eexp: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_tf_power()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1423,18 +1466,18 @@ pub mod color_management_v1 {
             async fn set_primaries_named(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_primaries_named()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(primaries as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1454,7 +1497,7 @@ pub mod color_management_v1 {
             async fn set_primaries(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1466,7 +1509,7 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_primaries()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
@@ -1479,7 +1522,7 @@ pub mod color_management_v1 {
                     .put_int(w_y)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1535,14 +1578,14 @@ pub mod color_management_v1 {
             async fn set_luminances(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_luminances()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(min_lum)
@@ -1550,7 +1593,7 @@ pub mod color_management_v1 {
                     .put_uint(reference_lum)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1603,7 +1646,7 @@ pub mod color_management_v1 {
             async fn set_mastering_display_primaries(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1615,7 +1658,7 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_mastering_display_primaries()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(r_x)
@@ -1628,7 +1671,7 @@ pub mod color_management_v1 {
                     .put_int(w_y)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1668,20 +1711,20 @@ pub mod color_management_v1 {
             async fn set_mastering_luminance(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_mastering_luminance()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(min_lum)
                     .put_uint(max_lum)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1691,16 +1734,16 @@ pub mod color_management_v1 {
             async fn set_max_cll(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 max_cll: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_max_cll()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1711,18 +1754,18 @@ pub mod color_management_v1 {
             async fn set_max_fall(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 max_fall: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_image_description_creator_params_v1#{}.set_max_fall()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(max_fall)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1810,6 +1853,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1825,12 +1870,12 @@ pub mod color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_image_description_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_image_description_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1844,15 +1889,15 @@ pub mod color_management_v1 {
             async fn get_information(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 information: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_image_description_v1#{}.get_information()", object_id);
+                tracing::debug!("-> wp_image_description_v1#{}.get_information()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(information))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1866,7 +1911,13 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "Once this event has been sent, the wp_image_description_v1 object will"]
             #[doc = "never become ready and it can only be destroyed."]
-            async fn failed(&self, cause: Cause, msg: String) -> crate::client::Result<()>;
+            async fn failed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                cause: Cause,
+                msg: String,
+            ) -> crate::client::Result<()>;
             #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
             #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
             #[doc = "used through other interfaces."]
@@ -1894,7 +1945,12 @@ pub mod color_management_v1 {
             #[doc = "This identity allows clients to de-duplicate image description records"]
             #[doc = "and avoid get_information request if they already have the image"]
             #[doc = "description information."]
-            async fn ready(&self, identity: u32) -> crate::client::Result<()>;
+            async fn ready(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                identity: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "Sends all matching events describing an image description object exactly"]
@@ -1927,6 +1983,8 @@ pub mod color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1935,7 +1993,11 @@ pub mod color_management_v1 {
                 }
             }
             #[doc = "Signals the end of information events and destroys the object."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "The icc argument provides a file descriptor to the client which may be"]
             #[doc = "memory-mapped to provide the ICC profile matching the image description."]
             #[doc = "The fd is read-only, and if mapped then it must be mapped with"]
@@ -1946,6 +2008,8 @@ pub mod color_management_v1 {
             #[doc = "kind of a profile."]
             async fn icc_file(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 icc: rustix::fd::OwnedFd,
                 icc_size: u32,
             ) -> crate::client::Result<()>;
@@ -1956,6 +2020,8 @@ pub mod color_management_v1 {
             #[doc = "value to carry precision of 6 decimals."]
             async fn primaries(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1969,6 +2035,8 @@ pub mod color_management_v1 {
             #[doc = "explicitly enumerated named set."]
             async fn primaries_named(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
             ) -> crate::client::Result<()>;
             #[doc = "The color component transfer characteristic of this image description is"]
@@ -1978,11 +2046,18 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "The curve exponent has been multiplied by 10000 to get the argument eexp"]
             #[doc = "value to carry the precision of 4 decimals."]
-            async fn tf_power(&self, eexp: u32) -> crate::client::Result<()>;
+            async fn tf_power(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                eexp: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
             #[doc = "named function."]
             async fn tf_named(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
             ) -> crate::client::Result<()>;
             #[doc = "Delivers the primary color volume luminance range and the reference"]
@@ -1995,6 +2070,8 @@ pub mod color_management_v1 {
             #[doc = "luminance and reference white luminance values are unscaled."]
             async fn luminances(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
@@ -2012,6 +2089,8 @@ pub mod color_management_v1 {
             #[doc = "value to carry precision of 6 decimals."]
             async fn target_primaries(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -2035,6 +2114,8 @@ pub mod color_management_v1 {
             #[doc = "carry precision of 4 decimals. Max L value is unscaled for max_lum."]
             async fn target_luminance(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
             ) -> crate::client::Result<()>;
@@ -2043,13 +2124,23 @@ pub mod color_management_v1 {
             #[doc = ""]
             #[doc = "This luminance is only theoretical and may not correspond to the"]
             #[doc = "luminance of light emitted on an actual display."]
-            async fn target_max_cll(&self, max_cll: u32) -> crate::client::Result<()>;
+            async fn target_max_cll(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                max_cll: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
             #[doc = "defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "This luminance is only theoretical and may not correspond to the"]
             #[doc = "luminance of light emitted on an actual display."]
-            async fn target_max_fall(&self, max_fall: u32) -> crate::client::Result<()>;
+            async fn target_max_fall(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                max_fall: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -2105,6 +2196,8 @@ pub mod color_representation_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2117,15 +2210,15 @@ pub mod color_representation_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_representation_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2139,20 +2232,20 @@ pub mod color_representation_v1 {
             async fn get_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_representation_manager_v1#{}.get_surface()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2163,6 +2256,8 @@ pub mod color_representation_v1 {
             #[doc = "wp_color_representation_surface_v1::alpha_mode enum."]
             async fn supported_alpha_mode(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 alpha_mode : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: AlphaMode,
             ) -> crate::client::Result<()>;
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -2174,11 +2269,17 @@ pub mod color_representation_v1 {
             #[doc = "wp_color_representation_surface_v1::range enums."]
             async fn supported_coefficients_and_ranges(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 coefficients : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: Coefficients,
                 range : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: Range,
             ) -> crate::client::Result<()>;
             #[doc = "This event is sent when all supported features have been sent."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A wp_color_representation_surface_v1 allows the client to set the color"]
@@ -2360,6 +2461,8 @@ pub mod color_representation_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2377,15 +2480,15 @@ pub mod color_representation_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_representation_surface_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2403,18 +2506,18 @@ pub mod color_representation_v1 {
             async fn set_alpha_mode(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 alpha_mode: AlphaMode,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_representation_surface_v1#{}.set_alpha_mode()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(alpha_mode as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2447,20 +2550,20 @@ pub mod color_representation_v1 {
             async fn set_coefficients_and_range(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 coefficients: Coefficients,
                 range: Range,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_representation_surface_v1#{}.set_coefficients_and_range()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(coefficients as u32)
                     .put_uint(range as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2481,18 +2584,18 @@ pub mod color_representation_v1 {
             async fn set_chroma_location(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 chroma_location: ChromaLocation,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_color_representation_surface_v1#{}.set_chroma_location()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(chroma_location as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2552,6 +2655,8 @@ pub mod commit_timing_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2565,12 +2670,12 @@ pub mod commit_timing_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timing_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_commit_timing_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2581,17 +2686,17 @@ pub mod commit_timing_v1 {
             async fn get_timer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timing_manager_v1#{}.get_timer()", object_id);
+                tracing::debug!("-> wp_commit_timing_manager_v1#{}.get_timer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2634,6 +2739,8 @@ pub mod commit_timing_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2658,19 +2765,19 @@ pub mod commit_timing_v1 {
             async fn set_timestamp(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timer_v1#{}.set_timestamp()", object_id);
+                tracing::debug!("-> wp_commit_timer_v1#{}.set_timestamp()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(tv_sec_hi)
                     .put_uint(tv_sec_lo)
                     .put_uint(tv_nsec)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2681,12 +2788,12 @@ pub mod commit_timing_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_commit_timer_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_commit_timer_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2732,6 +2839,8 @@ pub mod content_type_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2744,12 +2853,12 @@ pub mod content_type_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_content_type_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_content_type_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2760,20 +2869,20 @@ pub mod content_type_v1 {
             async fn get_surface_content_type(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_content_type_manager_v1#{}.get_surface_content_type()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2822,6 +2931,8 @@ pub mod content_type_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2835,12 +2946,12 @@ pub mod content_type_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_content_type_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_content_type_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2855,15 +2966,15 @@ pub mod content_type_v1 {
             async fn set_content_type(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 content_type: Type,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_content_type_v1#{}.set_content_type()", object_id);
+                tracing::debug!("-> wp_content_type_v1#{}.set_content_type()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(content_type as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2889,6 +3000,8 @@ pub mod cursor_shape_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2900,12 +3013,12 @@ pub mod cursor_shape_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_cursor_shape_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_cursor_shape_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2916,17 +3029,17 @@ pub mod cursor_shape_v1 {
             async fn get_pointer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 cursor_shape_device: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_cursor_shape_manager_v1#{}.get_pointer()", object_id);
+                tracing::debug!("-> wp_cursor_shape_manager_v1#{}.get_pointer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(cursor_shape_device))
                     .put_object(Some(pointer))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2937,20 +3050,20 @@ pub mod cursor_shape_v1 {
             async fn get_tablet_tool_v2(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 cursor_shape_device: crate::wire::ObjectId,
                 tablet_tool: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(cursor_shape_device))
                     .put_object(Some(tablet_tool))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3125,6 +3238,8 @@ pub mod cursor_shape_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3138,12 +3253,12 @@ pub mod cursor_shape_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_cursor_shape_device_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_cursor_shape_device_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3168,17 +3283,17 @@ pub mod cursor_shape_v1 {
             async fn set_shape(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 shape: Shape,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_cursor_shape_device_v1#{}.set_shape()", object_id);
+                tracing::debug!("-> wp_cursor_shape_device_v1#{}.set_shape()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_uint(shape as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3226,6 +3341,8 @@ pub mod drm_lease_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3239,18 +3356,18 @@ pub mod drm_lease_v1 {
             async fn create_lease_request(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_drm_lease_device_v1#{}.create_lease_request()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3263,12 +3380,12 @@ pub mod drm_lease_v1 {
             async fn release(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_drm_lease_device_v1#{}.release()", object_id);
+                tracing::debug!("-> wp_drm_lease_device_v1#{}.release()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3280,7 +3397,12 @@ pub mod drm_lease_v1 {
             #[doc = "The purpose of this event is to give the client the ability to"]
             #[doc = "query DRM and discover information which may help them pick the"]
             #[doc = "appropriate DRM device or select the appropriate connectors therein."]
-            async fn drm_fd(&self, fd: rustix::fd::OwnedFd) -> crate::client::Result<()>;
+            async fn drm_fd(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()>;
             #[doc = "The compositor will use this event to advertise connectors available for"]
             #[doc = "lease by clients. This object may be passed into a lease request to"]
             #[doc = "indicate the client would like to lease that connector, see"]
@@ -3291,20 +3413,33 @@ pub mod drm_lease_v1 {
             #[doc = "The compositor must send the drm_fd event before sending connectors."]
             #[doc = "After the drm_fd event it will send all available connectors but may"]
             #[doc = "send additional connectors at any time."]
-            async fn connector(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            async fn connector(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "The compositor will send this event to indicate that it has sent all"]
             #[doc = "currently available connectors after the client binds to the global or"]
             #[doc = "when it updates the connector list, for example on hotplug, drm master"]
             #[doc = "change or when a leased connector becomes available again. It will"]
             #[doc = "similarly send this event to group wp_drm_lease_connector_v1.withdrawn"]
             #[doc = "events of connectors of this device."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent in response to the release request and indicates"]
             #[doc = "that the compositor is done sending connector events."]
             #[doc = "The compositor will destroy this object immediately after sending the"]
             #[doc = "event and it will become invalid. The client should release any"]
             #[doc = "resources associated with this device after receiving this event."]
-            async fn released(&self) -> crate::client::Result<()>;
+            async fn released(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "Represents a DRM connector which is available for lease. These objects are"]
@@ -3323,6 +3458,8 @@ pub mod drm_lease_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3338,12 +3475,12 @@ pub mod drm_lease_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_drm_lease_connector_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_drm_lease_connector_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3355,21 +3492,40 @@ pub mod drm_lease_v1 {
             #[doc = "If the compositor supports wl_output version 4 and this connector"]
             #[doc = "corresponds to a wl_output, the compositor should use the same name as"]
             #[doc = "for the wl_output."]
-            async fn name(&self, name: String) -> crate::client::Result<()>;
+            async fn name(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                name: String,
+            ) -> crate::client::Result<()>;
             #[doc = "The compositor sends this event once the connector is created to provide"]
             #[doc = "a human-readable description for this connector, which may be presented"]
             #[doc = "to the user. The compositor may send this event multiple times over the"]
             #[doc = "lifetime of this object to reflect changes in the description."]
-            async fn description(&self, description: String) -> crate::client::Result<()>;
+            async fn description(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                description: String,
+            ) -> crate::client::Result<()>;
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the DRM object ID which represents the underlying connector"]
             #[doc = "that is being offered. Note that the final lease may include additional"]
             #[doc = "object IDs, such as CRTCs and planes."]
-            async fn connector_id(&self, connector_id: u32) -> crate::client::Result<()>;
+            async fn connector_id(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                connector_id: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent after all properties of a connector have been sent."]
             #[doc = "This allows changes to the properties to be seen as atomic even if they"]
             #[doc = "happen via multiple events."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "Sent to indicate that the compositor will no longer honor requests for"]
             #[doc = "DRM leases which include this connector. The client may still issue a"]
             #[doc = "lease request including this connector, but the compositor will send"]
@@ -3381,7 +3537,11 @@ pub mod drm_lease_v1 {
             #[doc = "If a client holds a lease for the connector, the status of the lease"]
             #[doc = "remains the same. The client should destroy the object after receiving"]
             #[doc = "this event."]
-            async fn withdrawn(&self) -> crate::client::Result<()>;
+            async fn withdrawn(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A client that wishes to lease DRM resources will attach the list of"]
@@ -3424,6 +3584,8 @@ pub mod drm_lease_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3444,18 +3606,18 @@ pub mod drm_lease_v1 {
             async fn request_connector(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 connector: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_drm_lease_request_v1#{}.request_connector()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(connector))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3469,15 +3631,15 @@ pub mod drm_lease_v1 {
             async fn submit(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_drm_lease_request_v1#{}.submit()", object_id);
+                tracing::debug!("-> wp_drm_lease_request_v1#{}.submit()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3500,6 +3662,8 @@ pub mod drm_lease_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3517,12 +3681,12 @@ pub mod drm_lease_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_drm_lease_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_drm_lease_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3536,7 +3700,12 @@ pub mod drm_lease_v1 {
             #[doc = ""]
             #[doc = "The compositor will send this event at most once during this objects"]
             #[doc = "lifetime."]
-            async fn lease_fd(&self, leased_fd: rustix::fd::OwnedFd) -> crate::client::Result<()>;
+            async fn lease_fd(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                leased_fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()>;
             #[doc = "The compositor uses this event to either reject a lease request, or if"]
             #[doc = "it previously sent a lease_fd, to notify the client that the lease has"]
             #[doc = "been revoked. If the client requires a new lease, they should destroy"]
@@ -3547,7 +3716,11 @@ pub mod drm_lease_v1 {
             #[doc = "compositor loses DRM master. Compositors may advertise the connector"]
             #[doc = "for leasing again, if the resource is available, by sending the"]
             #[doc = "connector event through the wp_drm_lease_device_v1 interface."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -3606,6 +3779,8 @@ pub mod ext_background_effect_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3619,15 +3794,15 @@ pub mod ext_background_effect_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_background_effect_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3640,24 +3815,29 @@ pub mod ext_background_effect_v1 {
             async fn get_background_effect(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_background_effect_manager_v1#{}.get_background_effect()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
-            async fn capabilities(&self, flags: Capability) -> crate::client::Result<()>;
+            async fn capabilities(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                flags: Capability,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The background effect object provides a way to specify a region behind"]
@@ -3695,6 +3875,8 @@ pub mod ext_background_effect_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3707,15 +3889,15 @@ pub mod ext_background_effect_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_background_effect_surface_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3739,18 +3921,18 @@ pub mod ext_background_effect_v1 {
             async fn set_blur_region(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 region: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_background_effect_surface_v1#{}.set_blur_region()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(region)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3778,6 +3960,8 @@ pub mod ext_data_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3789,18 +3973,18 @@ pub mod ext_data_control_v1 {
             async fn create_data_source(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_data_control_manager_v1#{}.create_data_source()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3808,20 +3992,20 @@ pub mod ext_data_control_v1 {
             async fn get_data_device(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_data_control_manager_v1#{}.get_data_device()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(seat))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3830,12 +4014,12 @@ pub mod ext_data_control_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_data_control_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_data_control_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3874,6 +4058,8 @@ pub mod ext_data_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -3892,18 +4078,18 @@ pub mod ext_data_control_v1 {
             async fn set_selection(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_data_control_device_v1#{}.set_selection()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(source)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3911,12 +4097,12 @@ pub mod ext_data_control_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_data_control_device_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_data_control_device_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3934,18 +4120,18 @@ pub mod ext_data_control_v1 {
             async fn set_primary_selection(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 source: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_data_control_device_v1#{}.set_primary_selection()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(source)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -3957,7 +4143,12 @@ pub mod ext_data_control_v1 {
             #[doc = "ext_data_control_device.data_offer event, the new data_offer object"]
             #[doc = "will send out ext_data_control_offer.offer events to describe the MIME"]
             #[doc = "types it offers."]
-            async fn data_offer(&self, id: crate::wire::ObjectId) -> crate::client::Result<()>;
+            async fn data_offer(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the selection for this device. The"]
             #[doc = "ext_data_control_device.data_offer and the ext_data_control_offer.offer"]
@@ -3973,11 +4164,17 @@ pub mod ext_data_control_v1 {
             #[doc = "ext_data_control_device object."]
             async fn selection(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()>;
             #[doc = "This data control object is no longer valid and should be destroyed by"]
             #[doc = "the client."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "The primary_selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the primary selection for this device. The"]
             #[doc = "ext_data_control_device.data_offer and the ext_data_control_offer.offer"]
@@ -3995,6 +4192,8 @@ pub mod ext_data_control_v1 {
             #[doc = "ext_data_control_device object."]
             async fn primary_selection(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 id: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()>;
         }
@@ -4033,6 +4232,8 @@ pub mod ext_data_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4048,15 +4249,15 @@ pub mod ext_data_control_v1 {
             async fn offer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_data_control_source_v1#{}.offer()", object_id);
+                tracing::debug!("-> ext_data_control_source_v1#{}.offer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4064,12 +4265,12 @@ pub mod ext_data_control_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_data_control_source_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_data_control_source_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4077,6 +4278,8 @@ pub mod ext_data_control_v1 {
             #[doc = "type over the passed file descriptor, then close it."]
             async fn send(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::client::Result<()>;
@@ -4084,7 +4287,11 @@ pub mod ext_data_control_v1 {
             #[doc = "by another data source."]
             #[doc = ""]
             #[doc = "The client should clean up and destroy this data source."]
-            async fn cancelled(&self) -> crate::client::Result<()>;
+            async fn cancelled(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A ext_data_control_offer represents a piece of data offered for transfer"]
@@ -4100,6 +4307,8 @@ pub mod ext_data_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4120,17 +4329,17 @@ pub mod ext_data_control_v1 {
             async fn receive(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 mime_type: String,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_data_control_offer_v1#{}.receive()", object_id);
+                tracing::debug!("-> ext_data_control_offer_v1#{}.receive()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(mime_type))
                     .put_fd(fd)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4138,18 +4347,23 @@ pub mod ext_data_control_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_data_control_offer_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_data_control_offer_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Sent immediately after creating the ext_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
-            async fn offer(&self, mime_type: String) -> crate::client::Result<()>;
+            async fn offer(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                mime_type: String,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -4200,6 +4414,8 @@ pub mod ext_foreign_toplevel_list_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4217,12 +4433,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             async fn stop(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.stop()", object_id);
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.stop()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4236,12 +4452,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4253,13 +4469,22 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "ext_foreign_toplevel_handle_v1. The compositor will use the"]
             #[doc = "ext_foreign_toplevel_handle_v1.done event to indicate when all data has"]
             #[doc = "been sent."]
-            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
+            async fn toplevel(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the compositor is done sending events"]
             #[doc = "to this object. The client should destroy the object."]
             #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
             #[doc = ""]
             #[doc = "The compositor must not send any more toplevel events after this event."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
@@ -4273,6 +4498,8 @@ pub mod ext_foreign_toplevel_list_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4296,12 +4523,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4311,7 +4538,11 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = ""]
             #[doc = "Other protocols which extend the ext_foreign_toplevel_handle_v1"]
             #[doc = "interface must also ignore requests other than destructors."]
-            async fn closed(&self) -> crate::client::Result<()>;
+            async fn closed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent after all changes in the toplevel state have"]
             #[doc = "been sent."]
             #[doc = ""]
@@ -4322,17 +4553,31 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = ""]
             #[doc = "This event must not be sent after the ext_foreign_toplevel_handle_v1.closed"]
             #[doc = "event."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "The title of the toplevel has changed."]
             #[doc = ""]
             #[doc = "The configured state must not be applied immediately. See"]
             #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
-            async fn title(&self, title: String) -> crate::client::Result<()>;
+            async fn title(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                title: String,
+            ) -> crate::client::Result<()>;
             #[doc = "The app id of the toplevel has changed."]
             #[doc = ""]
             #[doc = "The configured state must not be applied immediately. See"]
             #[doc = "ext_foreign_toplevel_handle_v1.done for details."]
-            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            async fn app_id(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                app_id: String,
+            ) -> crate::client::Result<()>;
             #[doc = "This identifier is used to check if two or more toplevel handles belong"]
             #[doc = "to the same toplevel."]
             #[doc = ""]
@@ -4353,7 +4598,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = "compositor includes an opaque generation value in identifiers. How the"]
             #[doc = "generation value is used when generating the identifier is implementation"]
             #[doc = "dependent."]
-            async fn identifier(&self, identifier: String) -> crate::client::Result<()>;
+            async fn identifier(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                identifier: String,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -4372,6 +4622,8 @@ pub mod ext_idle_notify_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4384,12 +4636,12 @@ pub mod ext_idle_notify_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_idle_notifier_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_idle_notifier_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4404,14 +4656,14 @@ pub mod ext_idle_notify_v1 {
             async fn get_idle_notification(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 timeout: u32,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_idle_notifier_v1#{}.get_idle_notification()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -4419,7 +4671,7 @@ pub mod ext_idle_notify_v1 {
                     .put_object(Some(seat))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4436,14 +4688,14 @@ pub mod ext_idle_notify_v1 {
             async fn get_input_idle_notification(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 timeout: u32,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_idle_notifier_v1#{}.get_input_idle_notification()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -4451,7 +4703,7 @@ pub mod ext_idle_notify_v1 {
                     .put_object(Some(seat))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4488,6 +4740,8 @@ pub mod ext_idle_notify_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4499,12 +4753,12 @@ pub mod ext_idle_notify_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_idle_notification_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_idle_notification_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4512,13 +4766,21 @@ pub mod ext_idle_notify_v1 {
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without a"]
             #[doc = "resumed event in-between."]
-            async fn idled(&self) -> crate::client::Result<()>;
+            async fn idled(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent when the notification object stops being idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without an"]
             #[doc = "idled event in-between. It's a compositor protocol error to send this"]
             #[doc = "event prior to any idled event."]
-            async fn resumed(&self) -> crate::client::Result<()>;
+            async fn resumed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -4552,6 +4814,8 @@ pub mod ext_image_capture_source_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4564,12 +4828,12 @@ pub mod ext_image_capture_source_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_image_capture_source_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_image_capture_source_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4585,6 +4849,8 @@ pub mod ext_image_capture_source_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4599,20 +4865,20 @@ pub mod ext_image_capture_source_v1 {
             async fn create_source(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_output_image_capture_source_manager_v1#{}.create_source()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(source))
                     .put_object(Some(output))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4622,15 +4888,15 @@ pub mod ext_image_capture_source_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_output_image_capture_source_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4647,6 +4913,8 @@ pub mod ext_image_capture_source_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4659,20 +4927,20 @@ pub mod ext_image_capture_source_v1 {
             async fn create_source(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 toplevel_handle: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(source))
                     .put_object(Some(toplevel_handle))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4682,15 +4950,15 @@ pub mod ext_image_capture_source_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4750,6 +5018,8 @@ pub mod ext_image_copy_capture_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4768,14 +5038,14 @@ pub mod ext_image_copy_capture_v1 {
             async fn create_session(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 options: Options,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_manager_v1#{}.create_session()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(session))
@@ -4783,7 +5053,7 @@ pub mod ext_image_copy_capture_v1 {
                     .put_uint(options.bits())
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4792,14 +5062,14 @@ pub mod ext_image_copy_capture_v1 {
             async fn create_pointer_cursor_session(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(session))
@@ -4807,7 +5077,7 @@ pub mod ext_image_copy_capture_v1 {
                     .put_object(Some(pointer))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4817,15 +5087,15 @@ pub mod ext_image_copy_capture_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4877,6 +5147,8 @@ pub mod ext_image_copy_capture_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -4892,18 +5164,18 @@ pub mod ext_image_copy_capture_v1 {
             async fn create_frame(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_session_v1#{}.create_frame()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(frame))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -4915,28 +5187,36 @@ pub mod ext_image_copy_capture_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_session_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
-            async fn buffer_size(&self, width: u32, height: u32) -> crate::client::Result<()>;
+            async fn buffer_size(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "Provides the format that must be used for shared-memory buffers."]
             #[doc = ""]
             #[doc = "This event may be emitted multiple times, in which case the client may"]
             #[doc = "choose any given format."]
             async fn shm_format(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 format: super::super::super::core::wayland::wl_shm::Format,
             ) -> crate::client::Result<()>;
             #[doc = "This event advertises the device buffers must be allocated on for"]
@@ -4946,7 +5226,12 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
             #[doc = "a particular node type. Clients cannot check two devices for equality"]
             #[doc = "by comparing the dev_t value."]
-            async fn dmabuf_device(&self, device: Vec<u8>) -> crate::client::Result<()>;
+            async fn dmabuf_device(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                device: Vec<u8>,
+            ) -> crate::client::Result<()>;
             #[doc = "Provides the format that must be used for dma-buf buffers."]
             #[doc = ""]
             #[doc = "The client may choose any of the modifiers advertised in the array of"]
@@ -4956,6 +5241,8 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "choose any given format."]
             async fn dmabuf_format(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
             ) -> crate::client::Result<()>;
@@ -4965,14 +5252,22 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The compositor must always end a batch of buffer constraint events with"]
             #[doc = "this event, regardless of whether it sends the initial constraints or"]
             #[doc = "an update."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the capture session has stopped and is no"]
             #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
             #[doc = "underlying source is destroyed, if the user decides to end the image"]
             #[doc = "capture, or if an unrecoverable runtime error has occurred."]
             #[doc = ""]
             #[doc = "The client should destroy the session after receiving this event."]
-            async fn stopped(&self) -> crate::client::Result<()>;
+            async fn stopped(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents an image capture frame."]
@@ -5045,6 +5340,8 @@ pub mod ext_image_copy_capture_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5057,12 +5354,12 @@ pub mod ext_image_copy_capture_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5077,18 +5374,18 @@ pub mod ext_image_copy_capture_v1 {
             async fn attach_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_frame_v1#{}.attach_buffer()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5116,7 +5413,7 @@ pub mod ext_image_copy_capture_v1 {
             async fn damage_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -5124,7 +5421,7 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_frame_v1#{}.damage_buffer()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -5133,7 +5430,7 @@ pub mod ext_image_copy_capture_v1 {
                     .put_int(height)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5149,12 +5446,12 @@ pub mod ext_image_copy_capture_v1 {
             async fn capture(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.capture()", object_id);
+                tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.capture()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5162,6 +5459,8 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "the compositor has applied to the buffer contents."]
             async fn transform(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::client::Result<()>;
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
@@ -5174,6 +5473,8 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "These coordinates originate in the upper left corner of the buffer."]
             async fn damage(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -5190,6 +5491,8 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
             async fn presentation_time(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -5200,11 +5503,20 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The buffer may be re-used by the client after this event."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            async fn ready(&self) -> crate::client::Result<()>;
+            async fn ready(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            async fn failed(&self, reason: FailureReason) -> crate::client::Result<()>;
+            async fn failed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                reason: FailureReason,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -5239,6 +5551,8 @@ pub mod ext_image_copy_capture_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5254,15 +5568,15 @@ pub mod ext_image_copy_capture_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_cursor_session_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5276,18 +5590,18 @@ pub mod ext_image_copy_capture_v1 {
             async fn get_capture_session(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_image_copy_capture_cursor_session_v1#{}.get_capture_session()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(session))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5298,11 +5612,19 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "The cursor enters the captured area when the cursor image intersects"]
             #[doc = "with the captured area. Note, this is different from e.g."]
             #[doc = "wl_pointer.enter."]
-            async fn enter(&self) -> crate::client::Result<()>;
+            async fn enter(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
             #[doc = "event is generated for the cursor until the cursor enters the captured"]
             #[doc = "area again."]
-            async fn leave(&self) -> crate::client::Result<()>;
+            async fn leave(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "Cursors outside the image capture source do not get captured and no"]
             #[doc = "event will be generated for them."]
             #[doc = ""]
@@ -5310,7 +5632,13 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "relative to the main buffer's top left corner in transformed buffer"]
             #[doc = "pixel coordinates. The coordinates may be negative or greater than the"]
             #[doc = "main buffer size."]
-            async fn position(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            async fn position(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> crate::client::Result<()>;
             #[doc = "The hotspot describes the offset between the cursor image and the"]
             #[doc = "position of the input device."]
             #[doc = ""]
@@ -5321,7 +5649,13 @@ pub mod ext_image_copy_capture_v1 {
             #[doc = "effective when the next ext_image_copy_capture_frame_v1.ready event is received."]
             #[doc = ""]
             #[doc = "Compositors may delay this event until the client captures a new frame."]
-            async fn hotspot(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            async fn hotspot(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -5357,6 +5691,8 @@ pub mod ext_session_lock_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5370,12 +5706,12 @@ pub mod ext_session_lock_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_session_lock_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5386,15 +5722,15 @@ pub mod ext_session_lock_v1 {
             async fn lock(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_manager_v1#{}.lock()", object_id);
+                tracing::debug!("-> ext_session_lock_manager_v1#{}.lock()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5490,6 +5826,8 @@ pub mod ext_session_lock_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5509,12 +5847,12 @@ pub mod ext_session_lock_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_session_lock_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5532,19 +5870,19 @@ pub mod ext_session_lock_v1 {
             async fn get_lock_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.get_lock_surface()", object_id);
+                tracing::debug!("-> ext_session_lock_v1#{}.get_lock_surface()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .put_object(Some(output))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5574,12 +5912,12 @@ pub mod ext_session_lock_v1 {
             async fn unlock_and_destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_v1#{}.unlock_and_destroy()", object_id);
+                tracing::debug!("-> ext_session_lock_v1#{}.unlock_and_destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5592,7 +5930,11 @@ pub mod ext_session_lock_v1 {
             #[doc = ""]
             #[doc = "If this event is sent, making the destroy request is a protocol error,"]
             #[doc = "the lock object must be destroyed using the unlock_and_destroy request."]
-            async fn locked(&self) -> crate::client::Result<()>;
+            async fn locked(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "The compositor has decided that the session lock should be destroyed"]
             #[doc = "as it will no longer be used by the compositor. Exactly when this"]
             #[doc = "event is sent is compositor policy, but it must never be sent more"]
@@ -5615,7 +5957,11 @@ pub mod ext_session_lock_v1 {
             #[doc = "Upon receiving this event, the client should make either the destroy"]
             #[doc = "request or the unlock_and_destroy request, depending on whether or"]
             #[doc = "not the locked event was received on this object."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "The client may use lock surfaces to display a screensaver, render a"]
@@ -5672,6 +6018,8 @@ pub mod ext_session_lock_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5691,12 +6039,12 @@ pub mod ext_session_lock_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_session_lock_surface_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_session_lock_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5727,16 +6075,16 @@ pub mod ext_session_lock_v1 {
             async fn ack_configure(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_session_lock_surface_v1#{}.ack_configure()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(serial).build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5748,6 +6096,8 @@ pub mod ext_session_lock_v1 {
             #[doc = "commit after acking a configure is a protocol error."]
             async fn configure(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 width: u32,
                 height: u32,
@@ -5785,6 +6135,8 @@ pub mod ext_transient_seat_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5800,15 +6152,15 @@ pub mod ext_transient_seat_v1 {
             async fn create(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_transient_seat_manager_v1#{}.create()", object_id);
+                tracing::debug!("-> ext_transient_seat_manager_v1#{}.create()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(seat))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5819,12 +6171,12 @@ pub mod ext_transient_seat_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_transient_seat_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_transient_seat_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5841,6 +6193,8 @@ pub mod ext_transient_seat_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5853,12 +6207,12 @@ pub mod ext_transient_seat_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_transient_seat_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_transient_seat_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5868,7 +6222,12 @@ pub mod ext_transient_seat_v1 {
             #[doc = "It is sent exactly once, immediately after the transient seat is created"]
             #[doc = "and the new \"wl_seat\" global is advertised, if and only if the creation"]
             #[doc = "of the transient seat was allowed."]
-            async fn ready(&self, global_name: u32) -> crate::client::Result<()>;
+            async fn ready(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                global_name: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "The event informs the client that the compositor denied its request to"]
             #[doc = "create a transient seat."]
             #[doc = ""]
@@ -5876,7 +6235,11 @@ pub mod ext_transient_seat_v1 {
             #[doc = "created, if and only if the creation of the transient seat was denied."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy the object."]
-            async fn denied(&self) -> crate::client::Result<()>;
+            async fn denied(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -5910,6 +6273,8 @@ pub mod ext_workspace_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -5928,12 +6293,12 @@ pub mod ext_workspace_v1 {
             async fn commit(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_manager_v1#{}.commit()", object_id);
+                tracing::debug!("-> ext_workspace_manager_v1#{}.commit()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5947,12 +6312,12 @@ pub mod ext_workspace_v1 {
             async fn stop(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_manager_v1#{}.stop()", object_id);
+                tracing::debug!("-> ext_workspace_manager_v1#{}.stop()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -5963,6 +6328,8 @@ pub mod ext_workspace_v1 {
             #[doc = "ext_workspace_group_handle_v1 and ext_workspace_handle_v1."]
             async fn workspace_group(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace_group: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever a new workspace has been created."]
@@ -5974,6 +6341,8 @@ pub mod ext_workspace_v1 {
             #[doc = "Workspaces start off unassigned to any workspace group."]
             async fn workspace(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
@@ -5987,11 +6356,19 @@ pub mod ext_workspace_v1 {
             #[doc = "ext_workspace_group_handle_v1 objects in question. The compositor sends"]
             #[doc = "the done event only after updating the output information in both"]
             #[doc = "workspace groups."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A ext_workspace_group_handle_v1 object represents a workspace group"]
@@ -6026,6 +6403,8 @@ pub mod ext_workspace_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6041,18 +6420,18 @@ pub mod ext_workspace_v1 {
             async fn create_workspace(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 workspace: String,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> ext_workspace_group_handle_v1#{}.create_workspace()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(workspace))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6064,12 +6443,12 @@ pub mod ext_workspace_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_group_handle_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_workspace_group_handle_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6088,6 +6467,8 @@ pub mod ext_workspace_v1 {
             #[doc = "must send this event again."]
             async fn capabilities(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 capabilities: GroupCapabilities,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever an output is assigned to the workspace"]
@@ -6095,12 +6476,16 @@ pub mod ext_workspace_v1 {
             #[doc = "assigned to this workspace_group."]
             async fn output_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever an output is removed from the workspace"]
             #[doc = "group."]
             async fn output_leave(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever a workspace is assigned to this group."]
@@ -6108,11 +6493,15 @@ pub mod ext_workspace_v1 {
             #[doc = "in time, but can be re-assigned during it's lifetime."]
             async fn workspace_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever a workspace is removed from this group."]
             async fn workspace_leave(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
@@ -6123,7 +6512,11 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The compositor must remove all workspaces belonging to a workspace group"]
             #[doc = "via a workspace_leave event before removing the workspace group."]
-            async fn removed(&self) -> crate::client::Result<()>;
+            async fn removed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A ext_workspace_handle_v1 object represents a workspace that handles a"]
@@ -6175,6 +6568,8 @@ pub mod ext_workspace_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6190,12 +6585,12 @@ pub mod ext_workspace_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.destroy()", object_id);
+                tracing::debug!("-> ext_workspace_handle_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6208,12 +6603,12 @@ pub mod ext_workspace_v1 {
             async fn activate(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.activate()", object_id);
+                tracing::debug!("-> ext_workspace_handle_v1#{}.activate()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6223,12 +6618,12 @@ pub mod ext_workspace_v1 {
             async fn deactivate(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.deactivate()", object_id);
+                tracing::debug!("-> ext_workspace_handle_v1#{}.deactivate()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6238,15 +6633,15 @@ pub mod ext_workspace_v1 {
             async fn assign(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 workspace_group: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.assign()", object_id);
+                tracing::debug!("-> ext_workspace_handle_v1#{}.assign()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(workspace_group))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6256,12 +6651,12 @@ pub mod ext_workspace_v1 {
             async fn remove(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> ext_workspace_handle_v1#{}.remove()", object_id);
+                tracing::debug!("-> ext_workspace_handle_v1#{}.remove()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6278,13 +6673,23 @@ pub mod ext_workspace_v1 {
             #[doc = "sessions and can be used by clients to store preferences for workspaces. Workspaces without"]
             #[doc = "ids should be considered temporary and any data associated with them should be deleted once"]
             #[doc = "the respective object is lost."]
-            async fn id(&self, id: String) -> crate::client::Result<()>;
+            async fn id(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                id: String,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and whenever the name of the workspace changes."]
             #[doc = ""]
             #[doc = "A name is meant to be human-readable and can be displayed to a user."]
             #[doc = "Unlike the id it is neither stable nor unique."]
-            async fn name(&self, name: String) -> crate::client::Result<()>;
+            async fn name(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                name: String,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
             #[doc = "within a workspace group, and if supported, is emitted immediately after"]
             #[doc = "the ext_workspace_handle_v1 is created and whenever the coordinates of"]
@@ -6303,14 +6708,24 @@ pub mod ext_workspace_v1 {
             #[doc = "bounded; there may be a workspace at coordinate 1 and another at"]
             #[doc = "coordinate 1000 and none in between. Within a workspace group, however,"]
             #[doc = "workspaces must have unique coordinates of equal dimensionality."]
-            async fn coordinates(&self, coordinates: Vec<u8>) -> crate::client::Result<()>;
+            async fn coordinates(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                coordinates: Vec<u8>,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
             #[doc = ""]
             #[doc = "Missing states convey the opposite meaning, e.g. an unset active bit"]
             #[doc = "means the workspace is currently inactive."]
-            async fn state(&self, state: State) -> crate::client::Result<()>;
+            async fn state(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                state: State,
+            ) -> crate::client::Result<()>;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -6326,6 +6741,8 @@ pub mod ext_workspace_v1 {
             #[doc = "must send this event again."]
             async fn capabilities(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 capabilities: WorkspaceCapabilities,
             ) -> crate::client::Result<()>;
             #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
@@ -6337,7 +6754,11 @@ pub mod ext_workspace_v1 {
             #[doc = ""]
             #[doc = "The compositor must only remove a workspaces not currently belonging to any"]
             #[doc = "workspace_group."]
-            async fn removed(&self) -> crate::client::Result<()>;
+            async fn removed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -6386,6 +6807,8 @@ pub mod fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6399,12 +6822,12 @@ pub mod fifo_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_fifo_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6419,17 +6842,17 @@ pub mod fifo_v1 {
             async fn get_fifo(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_manager_v1#{}.get_fifo()", object_id);
+                tracing::debug!("-> wp_fifo_manager_v1#{}.get_fifo()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6469,6 +6892,8 @@ pub mod fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6493,12 +6918,12 @@ pub mod fifo_v1 {
             async fn set_barrier(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_v1#{}.set_barrier()", object_id);
+                tracing::debug!("-> wp_fifo_v1#{}.set_barrier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6525,12 +6950,12 @@ pub mod fifo_v1 {
             async fn wait_barrier(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_v1#{}.wait_barrier()", object_id);
+                tracing::debug!("-> wp_fifo_v1#{}.wait_barrier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6542,12 +6967,12 @@ pub mod fifo_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fifo_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_fifo_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6605,6 +7030,8 @@ pub mod fractional_scale_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6618,12 +7045,12 @@ pub mod fractional_scale_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fractional_scale_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_fractional_scale_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6634,20 +7061,20 @@ pub mod fractional_scale_v1 {
             async fn get_fractional_scale(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_fractional_scale_manager_v1#{}.get_fractional_scale()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6664,6 +7091,8 @@ pub mod fractional_scale_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6676,12 +7105,12 @@ pub mod fractional_scale_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_fractional_scale_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_fractional_scale_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6689,7 +7118,12 @@ pub mod fractional_scale_v1 {
             #[doc = "compositor suggests that the client should use."]
             #[doc = ""]
             #[doc = "The sent scale is the numerator of a fraction with a denominator of 120."]
-            async fn preferred_scale(&self, scale: u32) -> crate::client::Result<()>;
+            async fn preferred_scale(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                scale: u32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -6758,6 +7192,8 @@ pub mod linux_drm_syncobj_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6770,12 +7206,12 @@ pub mod linux_drm_syncobj_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_linux_drm_syncobj_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_linux_drm_syncobj_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6793,20 +7229,20 @@ pub mod linux_drm_syncobj_v1 {
             async fn get_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_linux_drm_syncobj_manager_v1#{}.get_surface()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6816,20 +7252,20 @@ pub mod linux_drm_syncobj_v1 {
             async fn import_timeline(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 fd: rustix::fd::OwnedFd,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_linux_drm_syncobj_manager_v1#{}.import_timeline()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_fd(fd)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6846,6 +7282,8 @@ pub mod linux_drm_syncobj_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6859,15 +7297,15 @@ pub mod linux_drm_syncobj_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6943,6 +7381,8 @@ pub mod linux_drm_syncobj_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -6959,12 +7399,12 @@ pub mod linux_drm_syncobj_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_linux_drm_syncobj_surface_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_linux_drm_syncobj_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -6993,14 +7433,14 @@ pub mod linux_drm_syncobj_v1 {
             async fn set_acquire_point(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 timeline: crate::wire::ObjectId,
                 point_hi: u32,
                 point_lo: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(timeline))
@@ -7008,7 +7448,7 @@ pub mod linux_drm_syncobj_v1 {
                     .put_uint(point_lo)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7058,14 +7498,14 @@ pub mod linux_drm_syncobj_v1 {
             async fn set_release_point(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 timeline: crate::wire::ObjectId,
                 point_hi: u32,
                 point_lo: u32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_linux_drm_syncobj_surface_v1#{}.set_release_point()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(timeline))
@@ -7073,7 +7513,7 @@ pub mod linux_drm_syncobj_v1 {
                     .put_uint(point_lo)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7103,6 +7543,8 @@ pub mod pointer_warp_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7114,12 +7556,12 @@ pub mod pointer_warp_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_pointer_warp_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_pointer_warp_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7136,14 +7578,14 @@ pub mod pointer_warp_v1 {
             async fn warp_pointer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
                 x: crate::wire::Fixed,
                 y: crate::wire::Fixed,
                 serial: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_pointer_warp_v1#{}.warp_pointer()", object_id);
+                tracing::debug!("-> wp_pointer_warp_v1#{}.warp_pointer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .put_object(Some(pointer))
@@ -7152,7 +7594,7 @@ pub mod pointer_warp_v1 {
                     .put_uint(serial)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7212,6 +7654,8 @@ pub mod security_context_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7224,12 +7668,12 @@ pub mod security_context_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_security_context_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7251,14 +7695,14 @@ pub mod security_context_v1 {
             async fn create_listener(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 listen_fd: rustix::fd::OwnedFd,
                 close_fd: rustix::fd::OwnedFd,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_security_context_manager_v1#{}.create_listener()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -7266,7 +7710,7 @@ pub mod security_context_v1 {
                     .put_fd(close_fd)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7318,6 +7762,8 @@ pub mod security_context_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7329,12 +7775,12 @@ pub mod security_context_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_security_context_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7349,18 +7795,18 @@ pub mod security_context_v1 {
             async fn set_sandbox_engine(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_security_context_v1#{}.set_sandbox_engine()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7380,15 +7826,15 @@ pub mod security_context_v1 {
             async fn set_app_id(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.set_app_id()", object_id);
+                tracing::debug!("-> wp_security_context_v1#{}.set_app_id()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7406,15 +7852,15 @@ pub mod security_context_v1 {
             async fn set_instance_id(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 instance_id: String,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.set_instance_id()", object_id);
+                tracing::debug!("-> wp_security_context_v1#{}.set_instance_id()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(instance_id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7431,12 +7877,12 @@ pub mod security_context_v1 {
             async fn commit(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_security_context_v1#{}.commit()", object_id);
+                tracing::debug!("-> wp_security_context_v1#{}.commit()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7466,6 +7912,8 @@ pub mod single_pixel_buffer_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7479,15 +7927,15 @@ pub mod single_pixel_buffer_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_single_pixel_buffer_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7507,7 +7955,7 @@ pub mod single_pixel_buffer_v1 {
             async fn create_u32_rgba_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 r: u32,
                 g: u32,
@@ -7516,7 +7964,7 @@ pub mod single_pixel_buffer_v1 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -7526,7 +7974,7 @@ pub mod single_pixel_buffer_v1 {
                     .put_uint(a)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7580,6 +8028,8 @@ pub mod tearing_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7593,12 +8043,12 @@ pub mod tearing_control_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_tearing_control_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_tearing_control_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7610,20 +8060,20 @@ pub mod tearing_control_v1 {
             async fn get_tearing_control(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_tearing_control_manager_v1#{}.get_tearing_control()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7670,6 +8120,8 @@ pub mod tearing_control_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7686,18 +8138,18 @@ pub mod tearing_control_v1 {
             async fn set_presentation_hint(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 hint: PresentationHint,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> wp_tearing_control_v1#{}.set_presentation_hint()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(hint as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7706,12 +8158,12 @@ pub mod tearing_control_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> wp_tearing_control_v1#{}.destroy()", object_id);
+                tracing::debug!("-> wp_tearing_control_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7770,6 +8222,8 @@ pub mod xdg_activation_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7785,12 +8239,12 @@ pub mod xdg_activation_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_activation_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7800,15 +8254,15 @@ pub mod xdg_activation_v1 {
             async fn get_activation_token(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_v1#{}.get_activation_token()", object_id);
+                tracing::debug!("-> xdg_activation_v1#{}.get_activation_token()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7825,17 +8279,17 @@ pub mod xdg_activation_v1 {
             async fn activate(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 token: String,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_v1#{}.activate()", object_id);
+                tracing::debug!("-> xdg_activation_v1#{}.activate()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(token))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7879,6 +8333,8 @@ pub mod xdg_activation_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -7901,17 +8357,17 @@ pub mod xdg_activation_v1 {
             async fn set_serial(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 serial: u32,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.set_serial()", object_id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.set_serial()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial)
                     .put_object(Some(seat))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7922,15 +8378,15 @@ pub mod xdg_activation_v1 {
             async fn set_app_id(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.set_app_id()", object_id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.set_app_id()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(app_id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7944,15 +8400,15 @@ pub mod xdg_activation_v1 {
             async fn set_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.set_surface()", object_id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.set_surface()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7961,12 +8417,12 @@ pub mod xdg_activation_v1 {
             async fn commit(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.commit()", object_id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.commit()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -7975,18 +8431,23 @@ pub mod xdg_activation_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_activation_token_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_activation_token_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "The 'done' event contains the unique token of this activation request"]
             #[doc = "and notifies that the provider is done."]
-            async fn done(&self, token: String) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                token: String,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -8033,6 +8494,8 @@ pub mod xdg_dialog_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8045,12 +8508,12 @@ pub mod xdg_dialog_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_wm_dialog_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_wm_dialog_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8062,17 +8525,17 @@ pub mod xdg_dialog_v1 {
             async fn get_xdg_dialog(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_wm_dialog_v1#{}.get_xdg_dialog()", object_id);
+                tracing::debug!("-> xdg_wm_dialog_v1#{}.get_xdg_dialog()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8096,6 +8559,8 @@ pub mod xdg_dialog_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8109,12 +8574,12 @@ pub mod xdg_dialog_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_dialog_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_dialog_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8132,12 +8597,12 @@ pub mod xdg_dialog_v1 {
             async fn set_modal(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_dialog_v1#{}.set_modal()", object_id);
+                tracing::debug!("-> xdg_dialog_v1#{}.set_modal()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8146,12 +8611,12 @@ pub mod xdg_dialog_v1 {
             async fn unset_modal(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_dialog_v1#{}.unset_modal()", object_id);
+                tracing::debug!("-> xdg_dialog_v1#{}.unset_modal()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8175,6 +8640,8 @@ pub mod xdg_system_bell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8186,12 +8653,12 @@ pub mod xdg_system_bell_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_system_bell_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_system_bell_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8207,15 +8674,15 @@ pub mod xdg_system_bell_v1 {
             async fn ring(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 surface: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_system_bell_v1#{}.ring()", object_id);
+                tracing::debug!("-> xdg_system_bell_v1#{}.ring()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(surface)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8287,6 +8754,8 @@ pub mod xdg_toplevel_drag_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8300,12 +8769,12 @@ pub mod xdg_toplevel_drag_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_drag_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_toplevel_drag_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8322,20 +8791,20 @@ pub mod xdg_toplevel_drag_v1 {
             async fn get_xdg_toplevel_drag(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 data_source: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(data_source))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8374,6 +8843,8 @@ pub mod xdg_toplevel_drag_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8388,12 +8859,12 @@ pub mod xdg_toplevel_drag_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_drag_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_toplevel_drag_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8415,19 +8886,19 @@ pub mod xdg_toplevel_drag_v1 {
             async fn attach(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 x_offset: i32,
                 y_offset: i32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_drag_v1#{}.attach()", object_id);
+                tracing::debug!("-> xdg_toplevel_drag_v1#{}.attach()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .put_int(x_offset)
                     .put_int(y_offset)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8462,6 +8933,8 @@ pub mod xdg_toplevel_icon_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8474,12 +8947,12 @@ pub mod xdg_toplevel_icon_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8488,18 +8961,18 @@ pub mod xdg_toplevel_icon_v1 {
             async fn create_icon(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xdg_toplevel_icon_manager_v1#{}.create_icon()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8526,17 +8999,17 @@ pub mod xdg_toplevel_icon_v1 {
             async fn set_icon(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 icon: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.set_icon()", object_id);
+                tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.set_icon()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .put_object(icon)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8552,9 +9025,18 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "A sequence of 'icon_size' events must be finished with a 'done' event."]
             #[doc = "If the compositor has no size preferences, it must still send the"]
             #[doc = "'done' event, without any preceding 'icon_size' events."]
-            async fn icon_size(&self, size: i32) -> crate::client::Result<()>;
+            async fn icon_size(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                size: i32,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent after all 'icon_size' events have been sent."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This interface defines a toplevel icon."]
@@ -8601,6 +9083,8 @@ pub mod xdg_toplevel_icon_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8614,12 +9098,12 @@ pub mod xdg_toplevel_icon_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_toplevel_icon_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8641,15 +9125,15 @@ pub mod xdg_toplevel_icon_v1 {
             async fn set_name(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 icon_name: String,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_v1#{}.set_name()", object_id);
+                tracing::debug!("-> xdg_toplevel_icon_v1#{}.set_name()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(icon_name))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8680,17 +9164,17 @@ pub mod xdg_toplevel_icon_v1 {
             async fn add_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
                 scale: i32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_icon_v1#{}.add_buffer()", object_id);
+                tracing::debug!("-> xdg_toplevel_icon_v1#{}.add_buffer()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .put_int(scale)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8719,6 +9203,8 @@ pub mod xdg_toplevel_tag_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8731,12 +9217,12 @@ pub mod xdg_toplevel_tag_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xdg_toplevel_tag_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xdg_toplevel_tag_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8757,20 +9243,20 @@ pub mod xdg_toplevel_tag_v1 {
             async fn set_toplevel_tag(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 tag: String,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xdg_toplevel_tag_manager_v1#{}.set_toplevel_tag()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .put_string(Some(tag))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8785,20 +9271,20 @@ pub mod xdg_toplevel_tag_v1 {
             async fn set_toplevel_description(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 description: String,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> xdg_toplevel_tag_manager_v1#{}.set_toplevel_description()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .put_string(Some(description))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8881,6 +9367,8 @@ pub mod xwayland_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -8894,12 +9382,12 @@ pub mod xwayland_shell_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xwayland_shell_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xwayland_shell_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8915,17 +9403,17 @@ pub mod xwayland_shell_v1 {
             async fn get_xwayland_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xwayland_shell_v1#{}.get_xwayland_surface()", object_id);
+                tracing::debug!("-> xwayland_shell_v1#{}.get_xwayland_surface()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -8972,6 +9460,8 @@ pub mod xwayland_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -9003,17 +9493,17 @@ pub mod xwayland_shell_v1 {
             async fn set_serial(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 serial_lo: u32,
                 serial_hi: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xwayland_surface_v1#{}.set_serial()", object_id);
+                tracing::debug!("-> xwayland_surface_v1#{}.set_serial()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(serial_lo)
                     .put_uint(serial_hi)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -9023,12 +9513,12 @@ pub mod xwayland_shell_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> xwayland_surface_v1#{}.destroy()", object_id);
+                tracing::debug!("-> xwayland_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }

@@ -16,6 +16,8 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -26,35 +28,35 @@ pub mod frog_color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> frog_color_management_factory_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn get_color_managed_surface(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> frog_color_management_factory_v1#{}.get_color_managed_surface()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(surface))
                     .put_object(Some(callback))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -163,6 +165,8 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -176,48 +180,48 @@ pub mod frog_color_management_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> frog_color_managed_surface#{}.destroy()", object_id);
+                tracing::debug!("-> frog_color_managed_surface#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn set_known_transfer_function(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> frog_color_managed_surface#{}.set_known_transfer_function()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transfer_function as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn set_known_container_color_volume(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> frog_color_managed_surface#{}.set_known_container_color_volume()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(primaries as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -230,18 +234,18 @@ pub mod frog_color_management_v1 {
             async fn set_render_intent(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> frog_color_managed_surface#{}.set_render_intent()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(render_intent as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -254,7 +258,7 @@ pub mod frog_color_management_v1 {
             async fn set_hdr_metadata(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 mastering_display_primary_red_x: u32,
                 mastering_display_primary_red_y: u32,
                 mastering_display_primary_green_x: u32,
@@ -270,7 +274,7 @@ pub mod frog_color_management_v1 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> frog_color_managed_surface#{}.set_hdr_metadata()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(mastering_display_primary_red_x)
@@ -287,7 +291,7 @@ pub mod frog_color_management_v1 {
                     .put_uint(max_fall)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -299,6 +303,8 @@ pub mod frog_color_management_v1 {
             #[doc = "rather what the compositor thinks would be best for a given surface."]
             async fn preferred_metadata(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
                 output_display_primary_red_x: u32,
                 output_display_primary_red_y: u32,
@@ -360,6 +366,8 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -373,12 +381,12 @@ pub mod frog_fifo_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> frog_fifo_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> frog_fifo_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -393,17 +401,17 @@ pub mod frog_fifo_v1 {
             async fn get_fifo(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> frog_fifo_manager_v1#{}.get_fifo()", object_id);
+                tracing::debug!("-> frog_fifo_manager_v1#{}.get_fifo()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -443,6 +451,8 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -467,12 +477,12 @@ pub mod frog_fifo_v1 {
             async fn set_barrier(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> frog_fifo_surface_v1#{}.set_barrier()", object_id);
+                tracing::debug!("-> frog_fifo_surface_v1#{}.set_barrier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -492,12 +502,12 @@ pub mod frog_fifo_v1 {
             async fn wait_barrier(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> frog_fifo_surface_v1#{}.wait_barrier()", object_id);
+                tracing::debug!("-> frog_fifo_surface_v1#{}.wait_barrier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -509,12 +519,12 @@ pub mod frog_fifo_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> frog_fifo_surface_v1#{}.destroy()", object_id);
+                tracing::debug!("-> frog_fifo_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }

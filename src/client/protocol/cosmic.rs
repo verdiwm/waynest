@@ -94,6 +94,8 @@ pub mod cosmic_a11y_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -108,15 +110,15 @@ pub mod cosmic_a11y_v1 {
             async fn set_magnifier(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 active: ActiveState,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> cosmic_a11y_manager_v1#{}.set_magnifier()", object_id);
+                tracing::debug!("-> cosmic_a11y_manager_v1#{}.set_magnifier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(active as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -134,20 +136,20 @@ pub mod cosmic_a11y_v1 {
             async fn set_screen_filter(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 inverted: ActiveState,
                 filter: Filter,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> cosmic_a11y_manager_v1#{}.set_screen_filter()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(inverted as u32)
                     .put_uint(filter as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -164,14 +166,14 @@ pub mod cosmic_a11y_v1 {
             async fn set_screen_filter2(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 inverted: ActiveState,
                 filter: Filter,
                 filter_state: ActiveState,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> cosmic_a11y_manager_v1#{}.set_screen_filter2()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(inverted as u32)
@@ -179,7 +181,7 @@ pub mod cosmic_a11y_v1 {
                     .put_uint(filter_state as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -187,7 +189,12 @@ pub mod cosmic_a11y_v1 {
             #[doc = ""]
             #[doc = "This event will be emitted by the compositor when binding the protocol"]
             #[doc = "and whenever the state changes."]
-            async fn magnifier(&self, active: ActiveState) -> crate::client::Result<()>;
+            async fn magnifier(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                active: ActiveState,
+            ) -> crate::client::Result<()>;
             #[doc = "Parameters used for screen filtering."]
             #[doc = ""]
             #[doc = "This event will be emitted by the compositor when binding the protocol"]
@@ -199,6 +206,8 @@ pub mod cosmic_a11y_v1 {
             #[doc = "Since version 3 this event will not be emitted anymore, instead use `screen_filter2`."]
             async fn screen_filter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 inverted: ActiveState,
                 filter: Filter,
             ) -> crate::client::Result<()>;
@@ -213,6 +222,8 @@ pub mod cosmic_a11y_v1 {
             #[doc = "The compositor must never send \"disabled\" as the \"filter\" argument."]
             async fn screen_filter2(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 inverted: ActiveState,
                 filter: Filter,
                 filter_state: ActiveState,
@@ -238,6 +249,8 @@ pub mod cosmic_atspi_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -249,12 +262,12 @@ pub mod cosmic_atspi_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> cosmic_atspi_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -262,19 +275,19 @@ pub mod cosmic_atspi_v1 {
             async fn add_key_grab(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> cosmic_atspi_manager_v1#{}.add_key_grab()", object_id);
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.add_key_grab()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(mods)
                     .put_array(virtual_mods)
                     .put_uint(key)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -282,19 +295,19 @@ pub mod cosmic_atspi_v1 {
             async fn remove_key_grab(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> cosmic_atspi_manager_v1#{}.remove_key_grab()", object_id);
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.remove_key_grab()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(mods)
                     .put_array(virtual_mods)
                     .put_uint(key)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -302,12 +315,12 @@ pub mod cosmic_atspi_v1 {
             async fn grab_keyboard(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> cosmic_atspi_manager_v1#{}.grab_keyboard()", object_id);
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.grab_keyboard()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -315,17 +328,22 @@ pub mod cosmic_atspi_v1 {
             async fn ungrab_keyboard(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> cosmic_atspi_manager_v1#{}.ungrab_keyboard()", object_id);
+                tracing::debug!("-> cosmic_atspi_manager_v1#{}.ungrab_keyboard()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
-            async fn key_events_eis(&self, fd: rustix::fd::OwnedFd) -> crate::client::Result<()>;
+            async fn key_events_eis(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                fd: rustix::fd::OwnedFd,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -343,6 +361,8 @@ pub mod cosmic_image_source_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -357,20 +377,20 @@ pub mod cosmic_image_source_unstable_v1 {
             async fn create_source(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_workspace_image_capture_source_manager_v1#{}.create_source()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(source))
                     .put_object(Some(output))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -380,15 +400,15 @@ pub mod cosmic_image_source_unstable_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_workspace_image_capture_source_manager_v1#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -435,6 +455,8 @@ pub mod cosmic_output_management_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -456,17 +478,17 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn get_head(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_output_manager_v1#{}.get_head()", object_id);
+                tracing::debug!("-> zcosmic_output_manager_v1#{}.get_head()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(extended))
                     .put_object(Some(head))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -477,20 +499,20 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn get_configuration(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 config: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_manager_v1#{}.get_configuration()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(extended))
                     .put_object(Some(config))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -501,20 +523,20 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn get_configuration_head(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 extended: crate::wire::ObjectId,
                 config_head: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_manager_v1#{}.get_configuration_head()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(extended))
                     .put_object(Some(config_head))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -522,12 +544,12 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn release(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_output_manager_v1#{}.release()", object_id);
+                tracing::debug!("-> zcosmic_output_manager_v1#{}.release()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -538,16 +560,16 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn set_xwayland_primary(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 head: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_manager_v1#{}.set_xwayland_primary()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_object(head).build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -622,6 +644,8 @@ pub mod cosmic_output_management_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -634,12 +658,12 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn release(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_output_head_v1#{}.release()", object_id);
+                tracing::debug!("-> zcosmic_output_head_v1#{}.release()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -647,7 +671,12 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "space multiplied by 1000 for additional precision."]
             #[doc = ""]
             #[doc = "It is only sent if the output is enabled."]
-            async fn scale_1000(&self, scale_1000: i32) -> crate::client::Result<()>;
+            async fn scale_1000(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                scale_1000: i32,
+            ) -> crate::client::Result<()>;
             #[doc = "This events describes that the head is mirroring another."]
             #[doc = "In these cases `name` contains the unique name of the matching `zwlr_output_head_v1`."]
             #[doc = "If the name is null, no head is being mirrored onto this one."]
@@ -655,12 +684,19 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "For mirrored heads the `position`-event is meaningless."]
             #[doc = ""]
             #[doc = "It is only sent if the output is enabled."]
-            async fn mirroring(&self, name: Option<String>) -> crate::client::Result<()>;
+            async fn mirroring(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                name: Option<String>,
+            ) -> crate::client::Result<()>;
             #[doc = "This events describes if adaptive_sync is available for this head."]
             #[doc = ""]
             #[doc = "It is only sent if the output is enabled."]
             async fn adaptive_sync_available(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 available: AdaptiveSyncAvailability,
             ) -> crate::client::Result<()>;
             #[doc = "This events describes the adaptive_sync state of this head."]
@@ -668,13 +704,20 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "It is only sent if the output is enabled."]
             async fn adaptive_sync_ext(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 state: AdaptiveSyncStateExt,
             ) -> crate::client::Result<()>;
             #[doc = "This event describes if this head is advertised as the primary output via randr to Xwayland."]
             #[doc = ""]
             #[doc = "At most one output is marked primary, but it is not guaranteed that any output is marked."]
             #[doc = "It is only sent if the output is enabled."]
-            async fn xwayland_primary(&self, state: u32) -> crate::client::Result<()>;
+            async fn xwayland_primary(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                state: u32,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "Extension to zwlr_output_configuration_v1."]
@@ -713,6 +756,8 @@ pub mod cosmic_output_management_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -736,14 +781,14 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn mirror_head(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 head: crate::wire::ObjectId,
                 mirroring: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_configuration_v1#{}.mirror_head()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
@@ -751,7 +796,7 @@ pub mod cosmic_output_management_unstable_v1 {
                     .put_object(Some(mirroring))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -762,12 +807,12 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn release(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_output_configuration_v1#{}.release()", object_id);
+                tracing::debug!("-> zcosmic_output_configuration_v1#{}.release()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -778,7 +823,11 @@ pub mod cosmic_output_management_unstable_v1 {
             #[doc = "Upon receiving this event, the client should destroy this object."]
             #[doc = ""]
             #[doc = "The configration object becomes inert and any requests other than `destroy` will be ignored."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "Extension to zwlr_output_configuration_head_v1."]
@@ -796,6 +845,8 @@ pub mod cosmic_output_management_unstable_v1 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -813,18 +864,18 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn set_scale_1000(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 scale_1000: i32,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_configuration_head_v1#{}.set_scale_1000()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(scale_1000)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -835,15 +886,15 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn release(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_configuration_head_v1#{}.release()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -857,18 +908,18 @@ pub mod cosmic_output_management_unstable_v1 {
             async fn set_adaptive_sync_ext(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_output_configuration_head_v1#{}.set_adaptive_sync_ext()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -892,6 +943,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -908,20 +961,20 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             async fn notify_on_overlap(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 overlap_notification: crate::wire::ObjectId,
                 layer_surface: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_overlap_notify_v1#{}.notify_on_overlap()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(overlap_notification))
                     .put_object(Some(layer_surface))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -936,6 +989,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -948,12 +1003,12 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_overlap_notification_v1#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_overlap_notification_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -967,6 +1022,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "in between."]
             async fn toplevel_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -979,6 +1036,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "representing this toplevel."]
             async fn toplevel_leave(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "A zwlr_layer_surface_v1 has entered the surface area."]
@@ -991,6 +1050,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             #[doc = "used to create this notification object."]
             async fn layer_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 identifier: String,
                 namespace: String,
                 exclusive: u32,
@@ -1001,7 +1062,12 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 height: i32,
             ) -> crate::client::Result<()>;
             #[doc = "A zwlr_layer_surface_v1 has left the surface area."]
-            async fn layer_leave(&self, identifier: String) -> crate::client::Result<()>;
+            async fn layer_leave(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                identifier: String,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -1058,6 +1124,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1073,14 +1141,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn create_session(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 options: Options,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_manager_v2#{}.create_session()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(session))
@@ -1088,7 +1156,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_uint(options.bits())
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1099,7 +1167,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn create_pointer_cursor_session(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
                 source: crate::wire::ObjectId,
                 pointer: crate::wire::ObjectId,
@@ -1107,7 +1175,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(session))
@@ -1116,7 +1184,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_uint(options)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1126,12 +1194,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_manager_v2#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_screencopy_manager_v2#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1162,6 +1230,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1173,18 +1243,18 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn create_frame(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 frame: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_session_v2#{}.create_frame()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(frame))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1196,24 +1266,35 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_session_v2#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_screencopy_session_v2#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
             #[doc = ""]
             #[doc = "The client must attach buffers that match this size."]
-            async fn buffer_size(&self, width: u32, height: u32) -> crate::client::Result<()>;
+            async fn buffer_size(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                width: u32,
+                height: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "Provides the format that must be used for shared-memory buffers."]
             #[doc = ""]
             #[doc = "This event may be emitted multiple times, in which case the client may"]
             #[doc = "choose any given format."]
-            async fn shm_format(&self, format: u32) -> crate::client::Result<()>;
+            async fn shm_format(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                format: u32,
+            ) -> crate::client::Result<()>;
             #[doc = "This event advertises the device buffers must be allocated on for"]
             #[doc = "dma-buf buffers."]
             #[doc = ""]
@@ -1221,7 +1302,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "render) is unspecified. Clients must not rely on the compositor sending"]
             #[doc = "a particular node type. Clients cannot check two devices for equality"]
             #[doc = "by comparing the dev_t value."]
-            async fn dmabuf_device(&self, device: Vec<u8>) -> crate::client::Result<()>;
+            async fn dmabuf_device(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                device: Vec<u8>,
+            ) -> crate::client::Result<()>;
             #[doc = "Provides the format that must be used for dma-buf buffers."]
             #[doc = ""]
             #[doc = "The client may choose any of the modifiers advertised in the array of"]
@@ -1231,6 +1317,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "choose any given format."]
             async fn dmabuf_format(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
             ) -> crate::client::Result<()>;
@@ -1240,14 +1328,22 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "The compositor must always end a batch of buffer constraint events with"]
             #[doc = "this event, regardless of whether it sends the initial constraints or"]
             #[doc = "an update."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the capture session has stopped and is no"]
             #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
             #[doc = "underlying source is destroyed, if the user decides to end the screen"]
             #[doc = "capture, or if an unrecoverable runtime error has occurred."]
             #[doc = ""]
             #[doc = "The client should destroy the session after receiving this event."]
-            async fn stopped(&self) -> crate::client::Result<()>;
+            async fn stopped(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents a screen capture frame."]
@@ -1320,6 +1416,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1332,12 +1430,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1350,18 +1448,18 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn attach_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 buffer: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_frame_v2#{}.attach_buffer()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(buffer))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1389,7 +1487,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn damage_buffer(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -1397,7 +1495,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_frame_v2#{}.damage_buffer()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_int(x)
@@ -1406,7 +1504,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .put_int(height)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1422,12 +1520,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn capture(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.capture()", object_id);
+                tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.capture()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1435,6 +1533,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "the source buffer."]
             async fn transform(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> crate::client::Result<()>;
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
@@ -1447,6 +1547,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "These coordinates originate in the upper left corner of the buffer."]
             async fn damage(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
@@ -1463,6 +1565,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "for valid timestamps tv_nsec must be in [0, 999999999]."]
             async fn presentation_time(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -1473,11 +1577,20 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "The buffer may be re-used by the client after this event."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            async fn ready(&self) -> crate::client::Result<()>;
+            async fn ready(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
-            async fn failed(&self, reason: FailureReason) -> crate::client::Result<()>;
+            async fn failed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                reason: FailureReason,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -1512,6 +1625,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1527,15 +1642,15 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_cursor_session_v2#{}.destroy()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1549,18 +1664,18 @@ pub mod cosmic_screencopy_unstable_v2 {
             async fn get_screencopy_session(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 session: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_screencopy_cursor_session_v2#{}.get_screencopy_session()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(session))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1571,11 +1686,19 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "The cursor enters the captured area when the cursor image intersects"]
             #[doc = "with the captured area. Note, this is different from e.g."]
             #[doc = "wl_pointer.enter."]
-            async fn enter(&self) -> crate::client::Result<()>;
+            async fn enter(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
             #[doc = "event is generated for the cursor until the cursor enters the captured"]
             #[doc = "area again."]
-            async fn leave(&self) -> crate::client::Result<()>;
+            async fn leave(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "Cursors outside the image source do not get captured and no event will"]
             #[doc = "be generated for them."]
             #[doc = ""]
@@ -1586,7 +1709,13 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = "The position coordinates are relative to the main buffer's upper left"]
             #[doc = "corner. The coordinates may be negative or greater than the main buffer"]
             #[doc = "size."]
-            async fn position(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            async fn position(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> crate::client::Result<()>;
             #[doc = "The hotspot describes the offset between the cursor image and the"]
             #[doc = "position of the input device."]
             #[doc = ""]
@@ -1595,7 +1724,13 @@ pub mod cosmic_screencopy_unstable_v2 {
             #[doc = ""]
             #[doc = "Clients should not apply the hotspot immediately: the hotspot becomes"]
             #[doc = "effective when the next zcosmic_screencopy_frame_v2.ready event is received."]
-            async fn hotspot(&self, x: i32, y: i32) -> crate::client::Result<()>;
+            async fn hotspot(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -1616,6 +1751,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1634,12 +1771,12 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             async fn stop(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.stop()", object_id);
+                tracing::debug!("-> zcosmic_toplevel_info_v1#{}.stop()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1652,20 +1789,20 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             async fn get_cosmic_toplevel(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 cosmic_toplevel: crate::wire::ObjectId,
                 foreign_toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_info_v1#{}.get_cosmic_toplevel()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(cosmic_toplevel))
                     .put_object(Some(foreign_toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1679,7 +1816,12 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "All initial properties of the toplevel (title, app_id, states, etc.)"]
             #[doc = "will be sent immediately after this event via the corresponding"]
             #[doc = "events in zcosmic_toplevel_handle_v1."]
-            async fn toplevel(&self, toplevel: crate::wire::ObjectId) -> crate::client::Result<()>;
+            async fn toplevel(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                toplevel: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event indicates that the compositor is done sending events"]
             #[doc = "to the zcosmic_toplevel_info_v1. The server will destroy the"]
             #[doc = "object immediately after sending this request, so it will become"]
@@ -1687,14 +1829,22 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = ""]
             #[doc = "Note: This event is emitted immediately after calling `stop` for"]
             #[doc = "clients binding version 2 of this protocol for backwards compatibility."]
-            async fn finished(&self) -> crate::client::Result<()>;
+            async fn finished(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent after all changes for currently active"]
             #[doc = "zcosmic_toplevel_handle_v1 have been sent."]
             #[doc = ""]
             #[doc = "This allows changes to multiple zcosmic_toplevel_handle_v1 handles"]
             #[doc = "and their properties to be seen as atomic, even if they happen via"]
             #[doc = "multiple events."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
         }
     }
     #[doc = "A zcosmic_toplevel_handle_v1 object represents an open toplevel"]
@@ -1746,6 +1896,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             const VERSION: u32 = 3u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1758,12 +1910,12 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1776,7 +1928,11 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "Note: This event will not be emitted for clients binding version 2"]
             #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.closed` is"]
             #[doc = "equivalent."]
-            async fn closed(&self) -> crate::client::Result<()>;
+            async fn closed(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is sent after all changes in the toplevel state have"]
             #[doc = "been sent."]
             #[doc = ""]
@@ -1788,23 +1944,39 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "Note: This event will not be emitted for clients binding version 2"]
             #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.done` is"]
             #[doc = "equivalent."]
-            async fn done(&self) -> crate::client::Result<()>;
+            async fn done(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             #[doc = ""]
             #[doc = "Note: This event will not be emitted for clients binding version 2"]
             #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.title` is"]
             #[doc = "equivalent."]
-            async fn title(&self, title: String) -> crate::client::Result<()>;
+            async fn title(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                title: String,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the app_id of the toplevel changes."]
             #[doc = ""]
             #[doc = "Note: This event will not be emitted for clients binding version 2"]
             #[doc = "of this protocol, as `ext_foreign_toplevel_handle_v1.app_id` is"]
             #[doc = "equivalent."]
-            async fn app_id(&self, app_id: String) -> crate::client::Result<()>;
+            async fn app_id(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                app_id: String,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
             #[doc = "given output. A toplevel may be visible on multiple outputs."]
             async fn output_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the toplevel is no longer visible"]
@@ -1812,12 +1984,16 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "the same output has been emitted before this event."]
             async fn output_leave(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
             #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
             async fn workspace_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the toplevel is no longer visible"]
@@ -1825,12 +2001,19 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "the same workspace has been emitted before this event."]
             async fn workspace_leave(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted once on creation of the"]
             #[doc = "zcosmic_toplevel_handle_v1 and again whenever the state of the"]
             #[doc = "toplevel changes."]
-            async fn state(&self, state: Vec<u8>) -> crate::client::Result<()>;
+            async fn state(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                state: Vec<u8>,
+            ) -> crate::client::Result<()>;
             #[doc = "Emitted when the geometry of a toplevel (it's position and/or size)"]
             #[doc = "relative to the provided output has changed."]
             #[doc = ""]
@@ -1839,6 +2022,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "whenever the geometry of the toplevel changes relative to any output."]
             async fn geometry(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -1849,6 +2034,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
             async fn ext_workspace_enter(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted whenever the toplevel is no longer visible"]
@@ -1856,6 +2043,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             #[doc = "the same workspace has been emitted before this event."]
             async fn ext_workspace_leave(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
         }
@@ -1938,6 +2127,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             const VERSION: u32 = 4u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -1951,12 +2142,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1965,15 +2156,15 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn close(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.close()", object_id);
+                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.close()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -1982,17 +2173,17 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn activate(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.activate()", object_id);
+                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.activate()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .put_object(Some(seat))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2001,18 +2192,18 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn set_maximized(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.set_maximized()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2021,18 +2212,18 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn unset_maximized(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.unset_maximized()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2041,18 +2232,18 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn set_minimized(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.set_minimized()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2061,18 +2252,18 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn unset_minimized(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.unset_minimized()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2087,20 +2278,20 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn set_fullscreen(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.set_fullscreen()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .put_object(output)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 7u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2109,18 +2300,18 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn unset_fullscreen(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.unset_fullscreen()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 8u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2138,7 +2329,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn set_rectangle(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 x: i32,
@@ -2148,7 +2339,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.set_rectangle()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
@@ -2159,7 +2350,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     .put_int(height)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 9u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2167,14 +2358,14 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn move_to_workspace(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.move_to_workspace()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
@@ -2182,7 +2373,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     .put_object(Some(output))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 10u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 10u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2191,15 +2382,15 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn set_sticky(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.set_sticky()", object_id);
+                tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.set_sticky()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 11u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 11u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2208,18 +2399,18 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn unset_sticky(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.unset_sticky()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 12u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 12u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2227,14 +2418,14 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             async fn move_to_ext_workspace(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_toplevel_manager_v1#{}.move_to_ext_workspace()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(toplevel))
@@ -2242,7 +2433,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                     .put_object(Some(output))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 13u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 13u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2262,7 +2453,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             #[doc = ""]
             #[doc = "The capabilities are sent as an array of 32-bit unsigned integers in"]
             #[doc = "native endianness."]
-            async fn capabilities(&self, capabilities: Vec<u8>) -> crate::client::Result<()>;
+            async fn capabilities(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                capabilities: Vec<u8>,
+            ) -> crate::client::Result<()>;
         }
     }
 }
@@ -2302,6 +2498,8 @@ pub mod cosmic_workspace_unstable_v2 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2317,20 +2515,20 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn get_cosmic_workspace(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 cosmic_workspace: crate::wire::ObjectId,
                 workspace: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_workspace_manager_v2#{}.get_cosmic_workspace()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(cosmic_workspace))
                     .put_object(Some(workspace))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2339,12 +2537,12 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_manager_v2#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_workspace_manager_v2#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2420,6 +2618,8 @@ pub mod cosmic_workspace_unstable_v2 {
             const VERSION: u32 = 2u32;
             async fn handle_event(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
@@ -2432,12 +2632,12 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn destroy(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.destroy()", object_id);
+                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 0u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2447,15 +2647,15 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn rename(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 name: String,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.rename()", object_id);
+                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.rename()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(name))
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 1u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2465,18 +2665,18 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn set_tiling_state(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 state: TilingState,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
                     "-> zcosmic_workspace_handle_v2#{}.set_tiling_state()",
-                    object_id
+                    sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(state as u32)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 2u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2498,17 +2698,17 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn move_before(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 other_workspace: crate::wire::ObjectId,
                 axis: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.move_before()", object_id);
+                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.move_before()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(other_workspace))
                     .put_uint(axis)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 3u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2518,17 +2718,17 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn move_after(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
                 other_workspace: crate::wire::ObjectId,
                 axis: u32,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.move_after()", object_id);
+                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.move_after()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(other_workspace))
                     .put_uint(axis)
                     .build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 4u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2538,12 +2738,12 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn pin(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.pin()", object_id);
+                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.pin()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 5u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2553,12 +2753,12 @@ pub mod cosmic_workspace_unstable_v2 {
             async fn unpin(
                 &self,
                 socket: &mut crate::wire::Socket,
-                object_id: crate::wire::ObjectId,
+                sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
-                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.unpin()", object_id);
+                tracing::debug!("-> zcosmic_workspace_handle_v2#{}.unpin()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
                 socket
-                    .send(crate::wire::Message::new(object_id, 6u16, payload, fds))
+                    .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -2577,16 +2777,28 @@ pub mod cosmic_workspace_unstable_v2 {
             #[doc = "must send this event again."]
             async fn capabilities(
                 &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
                 capabilities: WorkspaceCapabilities,
             ) -> crate::client::Result<()>;
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v2 is created"]
             #[doc = "and each time the workspace tiling state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
-            async fn tiling_state(&self, state: TilingState) -> crate::client::Result<()>;
+            async fn tiling_state(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                state: TilingState,
+            ) -> crate::client::Result<()>;
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v2 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
-            async fn state(&self, state: State) -> crate::client::Result<()>;
+            async fn state(
+                &self,
+                socket: &mut crate::wire::Socket,
+                sender_id: crate::wire::ObjectId,
+                state: State,
+            ) -> crate::client::Result<()>;
         }
     }
 }
