@@ -4,6 +4,8 @@ pub mod drm {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_drm {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -202,6 +204,27 @@ pub mod drm {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_drm#{}.device(\"{}\")", sender_id, name);
+                        self.device(client, sender_id, name).await
+                    }
+                    1u16 => {
+                        let format = message.uint()?;
+                        tracing::debug!("wl_drm#{}.format({})", sender_id, format);
+                        self.format(client, sender_id, format).await
+                    }
+                    2u16 => {
+                        tracing::debug!("wl_drm#{}.authenticated()", sender_id,);
+                        self.authenticated(client, sender_id).await
+                    }
+                    3u16 => {
+                        let value = message.uint()?;
+                        tracing::debug!("wl_drm#{}.capabilities({})", sender_id, value);
+                        self.capabilities(client, sender_id, value).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

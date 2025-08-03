@@ -3,14 +3,17 @@ use proc_macro2::TokenStream;
 use quote::quote;
 
 use crate::{
-    parser::{ArgType, Interface, MessageType},
+    parser::{ArgType, Interface, Message, MessageType},
     utils::make_ident,
 };
 
-pub fn write_dispatchers(interface: &Interface) -> Vec<TokenStream> {
+pub fn write_dispatchers<I: Iterator<Item = Message>>(
+    interface: &Interface,
+    messages: I,
+) -> Vec<TokenStream> {
     let mut dispatchers = Vec::new();
 
-    for (opcode, request) in interface.requests.iter().enumerate() {
+    for (opcode, request) in messages.enumerate() {
         let opcode = opcode as u16;
         let name = make_ident(&request.name.to_snek_case());
 

@@ -10,6 +10,8 @@ pub mod frog_color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_management_factory_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
         pub trait FrogColorManagementFactoryV1 {
             const INTERFACE: &'static str = "frog_color_management_factory_v1";
@@ -70,6 +72,8 @@ pub mod frog_color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_managed_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Extended information on the transfer functions described"]
         #[doc = "here can be found in the Khronos Data Format specification:"]
         #[doc = ""]
@@ -171,6 +175,53 @@ pub mod frog_color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let transfer_function = message.uint()?;
+                        let output_display_primary_red_x = message.uint()?;
+                        let output_display_primary_red_y = message.uint()?;
+                        let output_display_primary_green_x = message.uint()?;
+                        let output_display_primary_green_y = message.uint()?;
+                        let output_display_primary_blue_x = message.uint()?;
+                        let output_display_primary_blue_y = message.uint()?;
+                        let output_white_point_x = message.uint()?;
+                        let output_white_point_y = message.uint()?;
+                        let max_luminance = message.uint()?;
+                        let min_luminance = message.uint()?;
+                        let max_full_frame_luminance = message.uint()?;
+                        tracing::debug!(
+                            "frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            transfer_function,
+                            output_display_primary_red_x,
+                            output_display_primary_red_y,
+                            output_display_primary_green_x,
+                            output_display_primary_green_y,
+                            output_display_primary_blue_x,
+                            output_display_primary_blue_y,
+                            output_white_point_x,
+                            output_white_point_y,
+                            max_luminance,
+                            min_luminance,
+                            max_full_frame_luminance
+                        );
+                        self.preferred_metadata(
+                            client,
+                            sender_id,
+                            transfer_function.try_into()?,
+                            output_display_primary_red_x,
+                            output_display_primary_red_y,
+                            output_display_primary_green_x,
+                            output_display_primary_green_y,
+                            output_display_primary_blue_x,
+                            output_display_primary_blue_y,
+                            output_white_point_x,
+                            output_white_point_y,
+                            max_luminance,
+                            min_luminance,
+                            max_full_frame_luminance,
+                        )
+                        .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -337,6 +388,8 @@ pub mod frog_fifo_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -422,6 +475,8 @@ pub mod frog_fifo_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]

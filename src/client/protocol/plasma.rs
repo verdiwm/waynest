@@ -6,6 +6,8 @@ pub mod appmenu {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenuManager {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
@@ -58,6 +60,8 @@ pub mod appmenu {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinAppmenu {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu";
@@ -112,6 +116,8 @@ pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlurManager {
             const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
@@ -164,6 +170,8 @@ pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinBlur {
             const INTERFACE: &'static str = "org_kde_kwin_blur";
@@ -226,6 +234,8 @@ pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrastManager {
             const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
@@ -278,6 +288,8 @@ pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinContrast {
             const INTERFACE: &'static str = "org_kde_kwin_contrast";
@@ -436,6 +448,8 @@ pub mod dpms {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinDpmsManager {
             const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
@@ -481,6 +495,8 @@ pub mod dpms {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -519,6 +535,20 @@ pub mod dpms {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let supported = message.uint()?;
+                        tracing::debug!("org_kde_kwin_dpms#{}.supported({})", sender_id, supported);
+                        self.supported(client, sender_id, supported).await
+                    }
+                    1u16 => {
+                        let mode = message.uint()?;
+                        tracing::debug!("org_kde_kwin_dpms#{}.mode({})", sender_id, mode);
+                        self.mode(client, sender_id, mode).await
+                    }
+                    2u16 => {
+                        tracing::debug!("org_kde_kwin_dpms#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -602,6 +632,8 @@ pub mod fake_input {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_fake_input {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinFakeInput {
             const INTERFACE: &'static str = "org_kde_kwin_fake_input";
@@ -853,6 +885,8 @@ pub mod fullscreen_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
         #[doc = "bound.  See the wl_fullscreen_shell.capability event for more details."]
@@ -968,6 +1002,15 @@ pub mod fullscreen_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let capability = message.uint()?;
+                        tracing::debug!(
+                            "_wl_fullscreen_shell#{}.capability({})",
+                            sender_id,
+                            capability
+                        );
+                        self.capability(client, sender_id, capability).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1103,6 +1146,8 @@ pub mod fullscreen_shell {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell_mode_feedback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
         pub trait WlFullscreenShellModeFeedback {
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
@@ -1115,6 +1160,27 @@ pub mod fullscreen_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "_wl_fullscreen_shell_mode_feedback#{}.mode_successful()",
+                            sender_id,
+                        );
+                        self.mode_successful(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "_wl_fullscreen_shell_mode_feedback#{}.mode_failed()",
+                            sender_id,
+                        );
+                        self.mode_failed(client, sender_id).await
+                    }
+                    2u16 => {
+                        tracing::debug!(
+                            "_wl_fullscreen_shell_mode_feedback#{}.present_cancelled()",
+                            sender_id,
+                        );
+                        self.present_cancelled(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1166,6 +1232,8 @@ pub mod idle {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdle {
             const INTERFACE: &'static str = "org_kde_kwin_idle";
@@ -1205,6 +1273,8 @@ pub mod idle {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle_timeout {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinIdleTimeout {
             const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
@@ -1217,6 +1287,14 @@ pub mod idle {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("org_kde_kwin_idle_timeout#{}.idle()", sender_id,);
+                        self.idle(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("org_kde_kwin_idle_timeout#{}.resumed()", sender_id,);
+                        self.resumed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1269,6 +1347,8 @@ pub mod kde_external_brightness_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_external_brightness_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessV1 {
             const INTERFACE: &'static str = "kde_external_brightness_v1";
@@ -1323,6 +1403,8 @@ pub mod kde_external_brightness_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_external_brightness_device_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
         pub trait KdeExternalBrightnessDeviceV1 {
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
@@ -1335,6 +1417,15 @@ pub mod kde_external_brightness_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let value = message.uint()?;
+                        tracing::debug!(
+                            "kde_external_brightness_device_v1#{}.requested_brightness({})",
+                            sender_id,
+                            value
+                        );
+                        self.requested_brightness(client, sender_id, value).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1485,6 +1576,8 @@ pub mod kde_lockscreen_overlay_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_lockscreen_overlay_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1578,6 +1671,8 @@ pub mod kde_output_device_v2 {
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
         #[repr(u32)]
@@ -1826,6 +1921,356 @@ pub mod kde_output_device_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let physical_width = message.int()?;
+                        let physical_height = message.int()?;
+                        let subpixel = message.int()?;
+                        let make = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let model = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let transform = message.int()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                            sender_id,
+                            x,
+                            y,
+                            physical_width,
+                            physical_height,
+                            subpixel,
+                            make,
+                            model,
+                            transform
+                        );
+                        self.geometry(
+                            client,
+                            sender_id,
+                            x,
+                            y,
+                            physical_width,
+                            physical_height,
+                            subpixel,
+                            make,
+                            model,
+                            transform,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        let mode = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.current_mode({})",
+                            sender_id,
+                            mode
+                        );
+                        self.current_mode(client, sender_id, mode).await
+                    }
+                    2u16 => {
+                        let mode = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("kde_output_device_v2#{}.mode({})", sender_id, mode);
+                        self.mode(client, sender_id, mode).await
+                    }
+                    3u16 => {
+                        tracing::debug!("kde_output_device_v2#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    4u16 => {
+                        let factor = message.fixed()?;
+                        tracing::debug!("kde_output_device_v2#{}.scale({})", sender_id, factor);
+                        self.scale(client, sender_id, factor).await
+                    }
+                    5u16 => {
+                        let raw = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
+                        self.edid(client, sender_id, raw).await
+                    }
+                    6u16 => {
+                        let enabled = message.int()?;
+                        tracing::debug!("kde_output_device_v2#{}.enabled({})", sender_id, enabled);
+                        self.enabled(client, sender_id, enabled).await
+                    }
+                    7u16 => {
+                        let uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("kde_output_device_v2#{}.uuid(\"{}\")", sender_id, uuid);
+                        self.uuid(client, sender_id, uuid).await
+                    }
+                    8u16 => {
+                        let serialNumber = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.serial_number(\"{}\")",
+                            sender_id,
+                            serialNumber
+                        );
+                        self.serial_number(client, sender_id, serialNumber).await
+                    }
+                    9u16 => {
+                        let eisaId = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.eisa_id(\"{}\")",
+                            sender_id,
+                            eisaId
+                        );
+                        self.eisa_id(client, sender_id, eisaId).await
+                    }
+                    10u16 => {
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.capabilities({})",
+                            sender_id,
+                            flags
+                        );
+                        self.capabilities(client, sender_id, flags.try_into()?)
+                            .await
+                    }
+                    11u16 => {
+                        let overscan = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.overscan({})",
+                            sender_id,
+                            overscan
+                        );
+                        self.overscan(client, sender_id, overscan).await
+                    }
+                    12u16 => {
+                        let vrr_policy = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.vrr_policy({})",
+                            sender_id,
+                            vrr_policy
+                        );
+                        self.vrr_policy(client, sender_id, vrr_policy.try_into()?)
+                            .await
+                    }
+                    13u16 => {
+                        let rgb_range = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.rgb_range({})",
+                            sender_id,
+                            rgb_range
+                        );
+                        self.rgb_range(client, sender_id, rgb_range.try_into()?)
+                            .await
+                    }
+                    14u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("kde_output_device_v2#{}.name(\"{}\")", sender_id, name);
+                        self.name(client, sender_id, name).await
+                    }
+                    15u16 => {
+                        let hdr_enabled = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.high_dynamic_range({})",
+                            sender_id,
+                            hdr_enabled
+                        );
+                        self.high_dynamic_range(client, sender_id, hdr_enabled)
+                            .await
+                    }
+                    16u16 => {
+                        let sdr_brightness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.sdr_brightness({})",
+                            sender_id,
+                            sdr_brightness
+                        );
+                        self.sdr_brightness(client, sender_id, sdr_brightness).await
+                    }
+                    17u16 => {
+                        let wcg_enabled = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.wide_color_gamut({})",
+                            sender_id,
+                            wcg_enabled
+                        );
+                        self.wide_color_gamut(client, sender_id, wcg_enabled).await
+                    }
+                    18u16 => {
+                        let policy = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.auto_rotate_policy({})",
+                            sender_id,
+                            policy
+                        );
+                        self.auto_rotate_policy(client, sender_id, policy.try_into()?)
+                            .await
+                    }
+                    19u16 => {
+                        let profile_path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.icc_profile_path(\"{}\")",
+                            sender_id,
+                            profile_path
+                        );
+                        self.icc_profile_path(client, sender_id, profile_path).await
+                    }
+                    20u16 => {
+                        let max_peak_brightness = message.uint()?;
+                        let max_frame_average_brightness = message.uint()?;
+                        let min_brightness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
+                            sender_id,
+                            max_peak_brightness,
+                            max_frame_average_brightness,
+                            min_brightness
+                        );
+                        self.brightness_metadata(
+                            client,
+                            sender_id,
+                            max_peak_brightness,
+                            max_frame_average_brightness,
+                            min_brightness,
+                        )
+                        .await
+                    }
+                    21u16 => {
+                        let max_peak_brightness = message.int()?;
+                        let max_average_brightness = message.int()?;
+                        let min_brightness = message.int()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
+                            sender_id,
+                            max_peak_brightness,
+                            max_average_brightness,
+                            min_brightness
+                        );
+                        self.brightness_overrides(
+                            client,
+                            sender_id,
+                            max_peak_brightness,
+                            max_average_brightness,
+                            min_brightness,
+                        )
+                        .await
+                    }
+                    22u16 => {
+                        let gamut_wideness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.sdr_gamut_wideness({})",
+                            sender_id,
+                            gamut_wideness
+                        );
+                        self.sdr_gamut_wideness(client, sender_id, gamut_wideness)
+                            .await
+                    }
+                    23u16 => {
+                        let source = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.color_profile_source({})",
+                            sender_id,
+                            source
+                        );
+                        self.color_profile_source(client, sender_id, source.try_into()?)
+                            .await
+                    }
+                    24u16 => {
+                        let brightness = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.brightness({})",
+                            sender_id,
+                            brightness
+                        );
+                        self.brightness(client, sender_id, brightness).await
+                    }
+                    25u16 => {
+                        let preference = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.color_power_tradeoff({})",
+                            sender_id,
+                            preference
+                        );
+                        self.color_power_tradeoff(client, sender_id, preference.try_into()?)
+                            .await
+                    }
+                    26u16 => {
+                        let multiplier = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.dimming({})",
+                            sender_id,
+                            multiplier
+                        );
+                        self.dimming(client, sender_id, multiplier).await
+                    }
+                    27u16 => {
+                        let source = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.replication_source(\"{}\")",
+                            sender_id,
+                            source
+                        );
+                        self.replication_source(client, sender_id, source).await
+                    }
+                    28u16 => {
+                        let allowed = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.ddc_ci_allowed({})",
+                            sender_id,
+                            allowed
+                        );
+                        self.ddc_ci_allowed(client, sender_id, allowed).await
+                    }
+                    29u16 => {
+                        let max_bpc = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.max_bits_per_color({})",
+                            sender_id,
+                            max_bpc
+                        );
+                        self.max_bits_per_color(client, sender_id, max_bpc).await
+                    }
+                    30u16 => {
+                        let min_value = message.uint()?;
+                        let max_value = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.max_bits_per_color_range({}, {})",
+                            sender_id,
+                            min_value,
+                            max_value
+                        );
+                        self.max_bits_per_color_range(client, sender_id, min_value, max_value)
+                            .await
+                    }
+                    31u16 => {
+                        let max_bpc_limit = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.automatic_max_bits_per_color_limit({})",
+                            sender_id,
+                            max_bpc_limit
+                        );
+                        self.automatic_max_bits_per_color_limit(client, sender_id, max_bpc_limit)
+                            .await
+                    }
+                    32u16 => {
+                        let policy = message.uint()?;
+                        tracing::debug!(
+                            "kde_output_device_v2#{}.edr_policy({})",
+                            sender_id,
+                            policy
+                        );
+                        self.edr_policy(client, sender_id, policy.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2147,6 +2592,8 @@ pub mod kde_output_device_v2 {
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_mode_v2 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputDeviceModeV2 {
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
@@ -2159,6 +2606,34 @@ pub mod kde_output_device_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "kde_output_device_mode_v2#{}.size({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.size(client, sender_id, width, height).await
+                    }
+                    1u16 => {
+                        let refresh = message.int()?;
+                        tracing::debug!(
+                            "kde_output_device_mode_v2#{}.refresh({})",
+                            sender_id,
+                            refresh
+                        );
+                        self.refresh(client, sender_id, refresh).await
+                    }
+                    2u16 => {
+                        tracing::debug!("kde_output_device_mode_v2#{}.preferred()", sender_id,);
+                        self.preferred(client, sender_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!("kde_output_device_mode_v2#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2245,6 +2720,8 @@ pub mod kde_output_management_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_management_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
         pub trait KdeOutputManagementV2 {
             const INTERFACE: &'static str = "kde_output_management_v2";
@@ -2297,6 +2774,8 @@ pub mod kde_output_management_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_configuration_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -2479,6 +2958,25 @@ pub mod kde_output_management_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("kde_output_configuration_v2#{}.applied()", sender_id,);
+                        self.applied(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("kde_output_configuration_v2#{}.failed()", sender_id,);
+                        self.failed(client, sender_id).await
+                    }
+                    2u16 => {
+                        let reason = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_configuration_v2#{}.failure_reason(\"{}\")",
+                            sender_id,
+                            reason
+                        );
+                        self.failure_reason(client, sender_id, reason).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3079,6 +3577,8 @@ pub mod kde_output_order_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_order_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
         pub trait KdeOutputOrderV1 {
             const INTERFACE: &'static str = "kde_output_order_v1";
@@ -3091,6 +3591,21 @@ pub mod kde_output_order_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let output_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_output_order_v1#{}.output(\"{}\")",
+                            sender_id,
+                            output_name
+                        );
+                        self.output(client, sender_id, output_name).await
+                    }
+                    1u16 => {
+                        tracing::debug!("kde_output_order_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3134,6 +3649,8 @@ pub mod kde_primary_output_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_primary_output_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
         pub trait KdePrimaryOutputV1 {
             const INTERFACE: &'static str = "kde_primary_output_v1";
@@ -3146,6 +3663,17 @@ pub mod kde_primary_output_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let output_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "kde_primary_output_v1#{}.primary_output(\"{}\")",
+                            sender_id,
+                            output_name
+                        );
+                        self.primary_output(client, sender_id, output_name).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3188,6 +3716,8 @@ pub mod kde_screen_edge_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_screen_edge_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3328,6 +3858,8 @@ pub mod kde_screen_edge_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_auto_hide_screen_edge_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
         pub trait KdeAutoHideScreenEdgeV1 {
             const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
@@ -3393,6 +3925,8 @@ pub mod keystate {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_keystate {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3465,6 +3999,17 @@ pub mod keystate {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let key = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_keystate#{}.state_changed({}, {})",
+                            sender_id,
+                            key,
+                            state
+                        );
+                        self.state_changed(client, sender_id, key, state).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3507,6 +4052,8 @@ pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop_management {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktopManagement {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
@@ -3519,6 +4066,47 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let position = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
+                            sender_id,
+                            desktop_id,
+                            position
+                        );
+                        self.desktop_created(client, sender_id, desktop_id, position)
+                            .await
+                    }
+                    1u16 => {
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
+                            sender_id,
+                            desktop_id
+                        );
+                        self.desktop_removed(client, sender_id, desktop_id).await
+                    }
+                    2u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop_management#{}.done()",
+                            sender_id,
+                        );
+                        self.done(client, sender_id).await
+                    }
+                    3u16 => {
+                        let rows = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop_management#{}.rows({})",
+                            sender_id,
+                            rows
+                        );
+                        self.rows(client, sender_id, rows).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3622,6 +4210,8 @@ pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaVirtualDesktop {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
@@ -3634,6 +4224,47 @@ pub mod org_kde_plasma_virtual_desktop {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let desktop_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
+                            sender_id,
+                            desktop_id
+                        );
+                        self.desktop_id(client, sender_id, desktop_id).await
+                    }
+                    1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
+                            sender_id,
+                            name
+                        );
+                        self.name(client, sender_id, name).await
+                    }
+                    2u16 => {
+                        tracing::debug!("org_kde_plasma_virtual_desktop#{}.activated()", sender_id,);
+                        self.activated(client, sender_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_virtual_desktop#{}.deactivated()",
+                            sender_id,
+                        );
+                        self.deactivated(client, sender_id).await
+                    }
+                    4u16 => {
+                        tracing::debug!("org_kde_plasma_virtual_desktop#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    5u16 => {
+                        tracing::debug!("org_kde_plasma_virtual_desktop#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3719,6 +4350,8 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "being hotplugged via a physical connector."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputdevice {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
         #[repr(u32)]
@@ -3895,6 +4528,180 @@ pub mod org_kde_kwin_outputdevice {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let physical_width = message.int()?;
+                        let physical_height = message.int()?;
+                        let subpixel = message.int()?;
+                        let make = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let model = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let transform = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                            sender_id,
+                            x,
+                            y,
+                            physical_width,
+                            physical_height,
+                            subpixel,
+                            make,
+                            model,
+                            transform
+                        );
+                        self.geometry(
+                            client,
+                            sender_id,
+                            x,
+                            y,
+                            physical_width,
+                            physical_height,
+                            subpixel,
+                            make,
+                            model,
+                            transform,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        let flags = message.uint()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let refresh = message.int()?;
+                        let mode_id = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.mode({}, {}, {}, {}, {})",
+                            sender_id,
+                            flags,
+                            width,
+                            height,
+                            refresh,
+                            mode_id
+                        );
+                        self.mode(client, sender_id, flags, width, height, refresh, mode_id)
+                            .await
+                    }
+                    2u16 => {
+                        tracing::debug!("org_kde_kwin_outputdevice#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    3u16 => {
+                        let factor = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.scale({})",
+                            sender_id,
+                            factor
+                        );
+                        self.scale(client, sender_id, factor).await
+                    }
+                    4u16 => {
+                        let raw = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.edid(\"{}\")",
+                            sender_id,
+                            raw
+                        );
+                        self.edid(client, sender_id, raw).await
+                    }
+                    5u16 => {
+                        let enabled = message.int()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.enabled({})",
+                            sender_id,
+                            enabled
+                        );
+                        self.enabled(client, sender_id, enabled).await
+                    }
+                    6u16 => {
+                        let uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.uuid(\"{}\")",
+                            sender_id,
+                            uuid
+                        );
+                        self.uuid(client, sender_id, uuid).await
+                    }
+                    7u16 => {
+                        let factor = message.fixed()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.scalef({})",
+                            sender_id,
+                            factor
+                        );
+                        self.scalef(client, sender_id, factor).await
+                    }
+                    8u16 => {
+                        let red = message.array()?;
+                        let green = message.array()?;
+                        let blue = message.array()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])",
+                            sender_id,
+                            red.len(),
+                            green.len(),
+                            blue.len()
+                        );
+                        self.colorcurves(client, sender_id, red, green, blue).await
+                    }
+                    9u16 => {
+                        let serialNumber = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.serial_number(\"{}\")",
+                            sender_id,
+                            serialNumber
+                        );
+                        self.serial_number(client, sender_id, serialNumber).await
+                    }
+                    10u16 => {
+                        let eisaId = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.eisa_id(\"{}\")",
+                            sender_id,
+                            eisaId
+                        );
+                        self.eisa_id(client, sender_id, eisaId).await
+                    }
+                    11u16 => {
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.capabilities({})",
+                            sender_id,
+                            flags
+                        );
+                        self.capabilities(client, sender_id, flags.try_into()?)
+                            .await
+                    }
+                    12u16 => {
+                        let overscan = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.overscan({})",
+                            sender_id,
+                            overscan
+                        );
+                        self.overscan(client, sender_id, overscan).await
+                    }
+                    13u16 => {
+                        let vrr_policy = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_outputdevice#{}.vrr_policy({})",
+                            sender_id,
+                            vrr_policy
+                        );
+                        self.vrr_policy(client, sender_id, vrr_policy.try_into()?)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4137,6 +4944,8 @@ pub mod outputmanagement {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputmanagement {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinOutputmanagement {
             const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
@@ -4189,6 +4998,8 @@ pub mod outputmanagement {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputconfiguration {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
         #[non_exhaustive]
@@ -4226,6 +5037,14 @@ pub mod outputmanagement {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.applied()", sender_id,);
+                        self.applied(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
+                        self.failed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4481,6 +5300,8 @@ pub mod plasma_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_shell {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaShell {
             const INTERFACE: &'static str = "org_kde_plasma_shell";
@@ -4532,6 +5353,8 @@ pub mod plasma_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4625,6 +5448,20 @@ pub mod plasma_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
+                            sender_id,
+                        );
+                        self.auto_hidden_panel_hidden(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
+                            sender_id,
+                        );
+                        self.auto_hidden_panel_shown(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4956,6 +5793,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window_management {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5050,6 +5889,65 @@ pub mod plasma_window_management {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.show_desktop_changed({})",
+                            sender_id,
+                            state
+                        );
+                        self.show_desktop_changed(client, sender_id, state).await
+                    }
+                    1u16 => {
+                        let id = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.window({})",
+                            sender_id,
+                            id
+                        );
+                        self.window(client, sender_id, id).await
+                    }
+                    2u16 => {
+                        let ids = message.array()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
+                            sender_id,
+                            ids.len()
+                        );
+                        self.stacking_order_changed(client, sender_id, ids).await
+                    }
+                    3u16 => {
+                        let uuids = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
+                            sender_id,
+                            uuids
+                        );
+                        self.stacking_order_uuid_changed(client, sender_id, uuids)
+                            .await
+                    }
+                    4u16 => {
+                        let id = message.uint()?;
+                        let uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
+                            sender_id,
+                            id,
+                            uuid
+                        );
+                        self.window_with_uuid(client, sender_id, id, uuid).await
+                    }
+                    5u16 => {
+                        tracing::debug!(
+                            "org_kde_plasma_window_management#{}.stacking_order_changed_2()",
+                            sender_id,
+                        );
+                        self.stacking_order_changed_2(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5186,6 +6084,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaWindow {
             const INTERFACE: &'static str = "org_kde_plasma_window";
@@ -5198,6 +6098,189 @@ pub mod plasma_window_management {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let title = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.title_changed(\"{}\")",
+                            sender_id,
+                            title
+                        );
+                        self.title_changed(client, sender_id, title).await
+                    }
+                    1u16 => {
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.app_id_changed(\"{}\")",
+                            sender_id,
+                            app_id
+                        );
+                        self.app_id_changed(client, sender_id, app_id).await
+                    }
+                    2u16 => {
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.state_changed({})",
+                            sender_id,
+                            flags
+                        );
+                        self.state_changed(client, sender_id, flags).await
+                    }
+                    3u16 => {
+                        let number = message.int()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.virtual_desktop_changed({})",
+                            sender_id,
+                            number
+                        );
+                        self.virtual_desktop_changed(client, sender_id, number)
+                            .await
+                    }
+                    4u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
+                            sender_id,
+                            name
+                        );
+                        self.themed_icon_name_changed(client, sender_id, name).await
+                    }
+                    5u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.unmapped()", sender_id,);
+                        self.unmapped(client, sender_id).await
+                    }
+                    6u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.initial_state()", sender_id,);
+                        self.initial_state(client, sender_id).await
+                    }
+                    7u16 => {
+                        let parent = message.object()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.parent_window({})",
+                            sender_id,
+                            parent
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.parent_window(client, sender_id, parent).await
+                    }
+                    8u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
+                            sender_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.geometry(client, sender_id, x, y, width, height).await
+                    }
+                    9u16 => {
+                        tracing::debug!("org_kde_plasma_window#{}.icon_changed()", sender_id,);
+                        self.icon_changed(client, sender_id).await
+                    }
+                    10u16 => {
+                        let pid = message.uint()?;
+                        tracing::debug!("org_kde_plasma_window#{}.pid_changed({})", sender_id, pid);
+                        self.pid_changed(client, sender_id, pid).await
+                    }
+                    11u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
+                            sender_id,
+                            id
+                        );
+                        self.virtual_desktop_entered(client, sender_id, id).await
+                    }
+                    12u16 => {
+                        let is = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
+                            sender_id,
+                            is
+                        );
+                        self.virtual_desktop_left(client, sender_id, is).await
+                    }
+                    13u16 => {
+                        let service_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let object_path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
+                            sender_id,
+                            service_name,
+                            object_path
+                        );
+                        self.application_menu(client, sender_id, service_name, object_path)
+                            .await
+                    }
+                    14u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.activity_entered(\"{}\")",
+                            sender_id,
+                            id
+                        );
+                        self.activity_entered(client, sender_id, id).await
+                    }
+                    15u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.activity_left(\"{}\")",
+                            sender_id,
+                            id
+                        );
+                        self.activity_left(client, sender_id, id).await
+                    }
+                    16u16 => {
+                        let resource_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
+                            sender_id,
+                            resource_name
+                        );
+                        self.resource_name_changed(client, sender_id, resource_name)
+                            .await
+                    }
+                    17u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
+                            sender_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.client_geometry(client, sender_id, x, y, width, height)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5630,6 +6713,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation_feedback {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivationFeedback {
             const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
@@ -5642,6 +6727,17 @@ pub mod plasma_window_management {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_activation_feedback#{}.activation({})",
+                            sender_id,
+                            id
+                        );
+                        self.activation(client, sender_id, id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5676,6 +6772,8 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaActivation {
             const INTERFACE: &'static str = "org_kde_plasma_activation";
@@ -5688,6 +6786,21 @@ pub mod plasma_window_management {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_activation#{}.app_id(\"{}\")",
+                            sender_id,
+                            app_id
+                        );
+                        self.app_id(client, sender_id, app_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("org_kde_plasma_activation#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5723,6 +6836,8 @@ pub mod plasma_window_management {
     #[doc = "and destroys this object."]
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_stacking_order {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
         pub trait OrgKdePlasmaStackingOrder {
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
@@ -5735,6 +6850,23 @@ pub mod plasma_window_management {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let uuid = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_plasma_stacking_order#{}.window(\"{}\")",
+                            sender_id,
+                            uuid
+                        );
+                        self.window(client, sender_id, uuid).await
+                    }
+                    1u16 => {
+                        tracing::debug!("org_kde_plasma_stacking_order#{}.done()", sender_id,);
+                        let result = self.done(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5757,6 +6889,8 @@ pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_access_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteAccessManager {
             const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
@@ -5769,6 +6903,19 @@ pub mod remote_access {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message.int()?;
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "org_kde_kwin_remote_access_manager#{}.buffer_ready({}, {})",
+                            sender_id,
+                            id,
+                            output
+                        );
+                        self.buffer_ready(client, sender_id, id, output).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5819,6 +6966,8 @@ pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_buffer {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinRemoteBuffer {
             const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
@@ -5831,6 +6980,24 @@ pub mod remote_access {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let fd = message.fd()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        let stride = message.uint()?;
+                        let format = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_remote_buffer#{}.gbm_handle({}, {}, {}, {}, {})",
+                            sender_id,
+                            fd.as_raw_fd(),
+                            width,
+                            height,
+                            stride,
+                            format
+                        );
+                        self.gbm_handle(client, sender_id, fd, width, height, stride, format)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5865,6 +7032,8 @@ pub mod server_decoration_palette {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPaletteManager {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
@@ -5906,6 +7075,8 @@ pub mod server_decoration_palette {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinServerDecorationPalette {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
@@ -5972,6 +7143,8 @@ pub mod server_decoration {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6011,6 +7184,15 @@ pub mod server_decoration {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let mode = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_server_decoration_manager#{}.default_mode({})",
+                            sender_id,
+                            mode
+                        );
+                        self.default_mode(client, sender_id, mode).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6061,6 +7243,8 @@ pub mod server_decoration {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6100,6 +7284,15 @@ pub mod server_decoration {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let mode = message.uint()?;
+                        tracing::debug!(
+                            "org_kde_kwin_server_decoration#{}.mode({})",
+                            sender_id,
+                            mode
+                        );
+                        self.mode(client, sender_id, mode).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6158,6 +7351,8 @@ pub mod shadow {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadowManager {
             const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
@@ -6223,6 +7418,8 @@ pub mod shadow {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinShadow {
             const INTERFACE: &'static str = "org_kde_kwin_shadow";
@@ -6446,6 +7643,8 @@ pub mod slide {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
         pub trait OrgKdeKwinSlideManager {
             const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
@@ -6503,6 +7702,8 @@ pub mod slide {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6604,6 +7805,8 @@ pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
     pub mod qt_surface_extension {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
         pub trait QtSurfaceExtension {
             const INTERFACE: &'static str = "qt_surface_extension";
@@ -6644,6 +7847,8 @@ pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
     pub mod qt_extended_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6708,6 +7913,33 @@ pub mod surface_extension {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let visible = message.int()?;
+                        tracing::debug!(
+                            "qt_extended_surface#{}.onscreen_visibility({})",
+                            sender_id,
+                            visible
+                        );
+                        self.onscreen_visibility(client, sender_id, visible).await
+                    }
+                    1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let value = message.array()?;
+                        tracing::debug!(
+                            "qt_extended_surface#{}.set_generic_property(\"{}\", array[{}])",
+                            sender_id,
+                            name,
+                            value.len()
+                        );
+                        self.set_generic_property(client, sender_id, name, value)
+                            .await
+                    }
+                    2u16 => {
+                        tracing::debug!("qt_extended_surface#{}.close()", sender_id,);
+                        self.close(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6834,6 +8066,8 @@ pub mod text_input_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
             type Error = crate::wire::DecodeError;
@@ -7044,6 +8278,205 @@ pub mod text_input_unstable_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.enter({}, {})",
+                            sender_id,
+                            serial,
+                            surface
+                        );
+                        self.enter(client, sender_id, serial, surface).await
+                    }
+                    1u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.leave({}, {})",
+                            sender_id,
+                            serial,
+                            surface
+                        );
+                        self.leave(client, sender_id, serial, surface).await
+                    }
+                    2u16 => {
+                        let state = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.input_panel_state({}, {}, {}, {}, {})",
+                            sender_id,
+                            state,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.input_panel_state(
+                            client,
+                            sender_id,
+                            state.try_into()?,
+                            x,
+                            y,
+                            width,
+                            height,
+                        )
+                        .await
+                    }
+                    3u16 => {
+                        let text = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let commit = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.preedit_string(\"{}\", \"{}\")",
+                            sender_id,
+                            text,
+                            commit
+                        );
+                        self.preedit_string(client, sender_id, text, commit).await
+                    }
+                    4u16 => {
+                        let index = message.uint()?;
+                        let length = message.uint()?;
+                        let style = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.preedit_styling({}, {}, {})",
+                            sender_id,
+                            index,
+                            length,
+                            style
+                        );
+                        self.preedit_styling(client, sender_id, index, length, style.try_into()?)
+                            .await
+                    }
+                    5u16 => {
+                        let index = message.int()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.preedit_cursor({})",
+                            sender_id,
+                            index
+                        );
+                        self.preedit_cursor(client, sender_id, index).await
+                    }
+                    6u16 => {
+                        let text = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.commit_string(\"{}\")",
+                            sender_id,
+                            text
+                        );
+                        self.commit_string(client, sender_id, text).await
+                    }
+                    7u16 => {
+                        let index = message.int()?;
+                        let anchor = message.int()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.cursor_position({}, {})",
+                            sender_id,
+                            index,
+                            anchor
+                        );
+                        self.cursor_position(client, sender_id, index, anchor).await
+                    }
+                    8u16 => {
+                        let before_length = message.uint()?;
+                        let after_length = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.delete_surrounding_text({}, {})",
+                            sender_id,
+                            before_length,
+                            after_length
+                        );
+                        self.delete_surrounding_text(client, sender_id, before_length, after_length)
+                            .await
+                    }
+                    9u16 => {
+                        let map = message.array()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.modifiers_map(array[{}])",
+                            sender_id,
+                            map.len()
+                        );
+                        self.modifiers_map(client, sender_id, map).await
+                    }
+                    10u16 => {
+                        let time = message.uint()?;
+                        let sym = message.uint()?;
+                        let state = message.uint()?;
+                        let modifiers = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.keysym({}, {}, {}, {})",
+                            sender_id,
+                            time,
+                            sym,
+                            state,
+                            modifiers
+                        );
+                        self.keysym(client, sender_id, time, sym, state, modifiers)
+                            .await
+                    }
+                    11u16 => {
+                        let language = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.language(\"{}\")",
+                            sender_id,
+                            language
+                        );
+                        self.language(client, sender_id, language).await
+                    }
+                    12u16 => {
+                        let direction = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.text_direction({})",
+                            sender_id,
+                            direction
+                        );
+                        self.text_direction(client, sender_id, direction.try_into()?)
+                            .await
+                    }
+                    13u16 => {
+                        let before_cursor = message.int()?;
+                        let after_cursor = message.int()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.configure_surrounding_text({}, {})",
+                            sender_id,
+                            before_cursor,
+                            after_cursor
+                        );
+                        self.configure_surrounding_text(
+                            client,
+                            sender_id,
+                            before_cursor,
+                            after_cursor,
+                        )
+                        .await
+                    }
+                    14u16 => {
+                        let serial = message.uint()?;
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "zwp_text_input_v2#{}.input_method_changed({}, {})",
+                            sender_id,
+                            serial,
+                            flags
+                        );
+                        self.input_method_changed(client, sender_id, serial, flags)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -7474,6 +8907,8 @@ pub mod text_input_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTextInputManagerV2 {
             const INTERFACE: &'static str = "zwp_text_input_manager_v2";
@@ -7550,6 +8985,8 @@ pub mod text {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
         #[repr(u32)]
@@ -7746,6 +9183,147 @@ pub mod text {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_text_input#{}.enter({})", sender_id, surface);
+                        self.enter(client, sender_id, surface).await
+                    }
+                    1u16 => {
+                        tracing::debug!("wl_text_input#{}.leave()", sender_id,);
+                        self.leave(client, sender_id).await
+                    }
+                    2u16 => {
+                        let map = message.array()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.modifiers_map(array[{}])",
+                            sender_id,
+                            map.len()
+                        );
+                        self.modifiers_map(client, sender_id, map).await
+                    }
+                    3u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!("wl_text_input#{}.input_panel_state({})", sender_id, state);
+                        self.input_panel_state(client, sender_id, state).await
+                    }
+                    4u16 => {
+                        let serial = message.uint()?;
+                        let text = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let commit = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_text_input#{}.preedit_string({}, \"{}\", \"{}\")",
+                            sender_id,
+                            serial,
+                            text,
+                            commit
+                        );
+                        self.preedit_string(client, sender_id, serial, text, commit)
+                            .await
+                    }
+                    5u16 => {
+                        let index = message.uint()?;
+                        let length = message.uint()?;
+                        let style = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.preedit_styling({}, {}, {})",
+                            sender_id,
+                            index,
+                            length,
+                            style
+                        );
+                        self.preedit_styling(client, sender_id, index, length, style)
+                            .await
+                    }
+                    6u16 => {
+                        let index = message.int()?;
+                        tracing::debug!("wl_text_input#{}.preedit_cursor({})", sender_id, index);
+                        self.preedit_cursor(client, sender_id, index).await
+                    }
+                    7u16 => {
+                        let serial = message.uint()?;
+                        let text = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_text_input#{}.commit_string({}, \"{}\")",
+                            sender_id,
+                            serial,
+                            text
+                        );
+                        self.commit_string(client, sender_id, serial, text).await
+                    }
+                    8u16 => {
+                        let index = message.int()?;
+                        let anchor = message.int()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.cursor_position({}, {})",
+                            sender_id,
+                            index,
+                            anchor
+                        );
+                        self.cursor_position(client, sender_id, index, anchor).await
+                    }
+                    9u16 => {
+                        let index = message.int()?;
+                        let length = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.delete_surrounding_text({}, {})",
+                            sender_id,
+                            index,
+                            length
+                        );
+                        self.delete_surrounding_text(client, sender_id, index, length)
+                            .await
+                    }
+                    10u16 => {
+                        let serial = message.uint()?;
+                        let time = message.uint()?;
+                        let sym = message.uint()?;
+                        let state = message.uint()?;
+                        let modifiers = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.keysym({}, {}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            time,
+                            sym,
+                            state,
+                            modifiers
+                        );
+                        self.keysym(client, sender_id, serial, time, sym, state, modifiers)
+                            .await
+                    }
+                    11u16 => {
+                        let serial = message.uint()?;
+                        let language = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_text_input#{}.language({}, \"{}\")",
+                            sender_id,
+                            serial,
+                            language
+                        );
+                        self.language(client, sender_id, serial, language).await
+                    }
+                    12u16 => {
+                        let serial = message.uint()?;
+                        let direction = message.uint()?;
+                        tracing::debug!(
+                            "wl_text_input#{}.text_direction({}, {})",
+                            sender_id,
+                            serial,
+                            direction
+                        );
+                        self.text_direction(client, sender_id, serial, direction)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -8110,6 +9688,8 @@ pub mod text {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
         pub trait WlTextInputManager {
             const INTERFACE: &'static str = "wl_text_input_manager";
@@ -8149,6 +9729,8 @@ pub mod wl_eglstream_controller {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_eglstream_controller {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
         #[doc = ""]
@@ -8286,6 +9868,8 @@ pub mod zkde_screencast_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_unstable_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8480,6 +10064,8 @@ pub mod zkde_screencast_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_stream_unstable_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
         pub trait ZkdeScreencastStreamUnstableV1 {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
@@ -8492,6 +10078,33 @@ pub mod zkde_screencast_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "zkde_screencast_stream_unstable_v1#{}.closed()",
+                            sender_id,
+                        );
+                        self.closed(client, sender_id).await
+                    }
+                    1u16 => {
+                        let node = message.uint()?;
+                        tracing::debug!(
+                            "zkde_screencast_stream_unstable_v1#{}.created({})",
+                            sender_id,
+                            node
+                        );
+                        self.created(client, sender_id, node).await
+                    }
+                    2u16 => {
+                        let error = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zkde_screencast_stream_unstable_v1#{}.failed(\"{}\")",
+                            sender_id,
+                            error
+                        );
+                        self.failed(client, sender_id, error).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

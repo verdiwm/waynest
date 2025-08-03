@@ -4,6 +4,7 @@ use quote::{format_ident, quote};
 use tracing::debug;
 
 use crate::{
+    common::write_dispatchers,
     parser::{Interface, Pair},
     utils::{description_to_docs, find_enum, make_ident, write_enums},
 };
@@ -29,8 +30,8 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let name = &interface.name;
             let version = &interface.version;
 
+            let dispatchers = write_dispatchers(&interface, interface.events.clone().into_iter());
             let enums = write_enums(&interface);
-
             let requests = write_requests(pairs, pair, interface);
             let events = write_events(pairs, pair, interface);
 
@@ -44,6 +45,8 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                 #(#docs)*
                 #[allow(clippy::too_many_arguments)]
                 pub mod #module_name {
+                    #[allow(unused)]
+                    use std::os::fd::AsRawFd;
                     #imports
 
                     #(#enums)*
@@ -61,7 +64,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                         ) -> crate::client::Result<()> {
                             #[allow(clippy::match_single_binding)]
                             match message.opcode() {
-                                // #(#dispatchers),*
+                                #(#dispatchers),*
                                 _ => Err(crate::client::Error::UnknownOpcode),
                             }
                         }

@@ -11,6 +11,8 @@ pub mod hyprland_ctm_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_ctm_control_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -44,6 +46,10 @@ pub mod hyprland_ctm_control_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("hyprland_ctm_control_manager_v1#{}.blocked()", sender_id,);
+                        self.blocked(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -148,6 +154,8 @@ pub mod hyprland_focus_grab_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabManagerV1 {
             const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
@@ -216,6 +224,8 @@ pub mod hyprland_focus_grab_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandFocusGrabV1 {
             const INTERFACE: &'static str = "hyprland_focus_grab_v1";
@@ -228,6 +238,10 @@ pub mod hyprland_focus_grab_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("hyprland_focus_grab_v1#{}.cleared()", sender_id,);
+                        self.cleared(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -321,6 +335,8 @@ pub mod hyprland_global_shortcuts_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcuts_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -413,6 +429,8 @@ pub mod hyprland_global_shortcuts_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandGlobalShortcutV1 {
             const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
@@ -425,6 +443,34 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_global_shortcut_v1#{}.pressed({}, {}, {})",
+                            sender_id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec
+                        );
+                        self.pressed(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                            .await
+                    }
+                    1u16 => {
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_global_shortcut_v1#{}.released({}, {}, {})",
+                            sender_id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec
+                        );
+                        self.released(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -473,6 +519,8 @@ pub mod hyprland_lock_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_lock_notifier_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_lock_notifier_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandLockNotifierV1 {
             const INTERFACE: &'static str = "hyprland_lock_notifier_v1";
@@ -542,6 +590,8 @@ pub mod hyprland_lock_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_lock_notification_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_lock_notification_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandLockNotificationV1 {
             const INTERFACE: &'static str = "hyprland_lock_notification_v1";
@@ -554,6 +604,14 @@ pub mod hyprland_lock_notify_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("hyprland_lock_notification_v1#{}.locked()", sender_id,);
+                        self.locked(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("hyprland_lock_notification_v1#{}.unlocked()", sender_id,);
+                        self.unlocked(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -599,6 +657,8 @@ pub mod hyprland_surface_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_surface_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -682,6 +742,8 @@ pub mod hyprland_surface_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -805,6 +867,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelExportManagerV1 {
             const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
@@ -912,6 +976,8 @@ pub mod hyprland_toplevel_export_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_frame_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -960,6 +1026,85 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let format = message.uint()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        let stride = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.buffer({}, {}, {}, {})",
+                            sender_id,
+                            format,
+                            width,
+                            height,
+                            stride
+                        );
+                        self.buffer(client, sender_id, format.try_into()?, width, height, stride)
+                            .await
+                    }
+                    1u16 => {
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.damage({}, {}, {}, {})",
+                            sender_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.damage(client, sender_id, x, y, width, height).await
+                    }
+                    2u16 => {
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.flags({})",
+                            sender_id,
+                            flags
+                        );
+                        self.flags(client, sender_id, flags.try_into()?).await
+                    }
+                    3u16 => {
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.ready({}, {}, {})",
+                            sender_id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec
+                        );
+                        self.ready(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                            .await
+                    }
+                    4u16 => {
+                        tracing::debug!("hyprland_toplevel_export_frame_v1#{}.failed()", sender_id,);
+                        self.failed(client, sender_id).await
+                    }
+                    5u16 => {
+                        let format = message.uint()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.linux_dmabuf({}, {}, {})",
+                            sender_id,
+                            format,
+                            width,
+                            height
+                        );
+                        self.linux_dmabuf(client, sender_id, format, width, height)
+                            .await
+                    }
+                    6u16 => {
+                        tracing::debug!(
+                            "hyprland_toplevel_export_frame_v1#{}.buffer_done()",
+                            sender_id,
+                        );
+                        self.buffer_done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1104,6 +1249,8 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_mapping_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_mapping_manager_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelMappingManagerV1 {
             const INTERFACE: &'static str = "hyprland_toplevel_mapping_manager_v1";
@@ -1188,6 +1335,8 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_window_mapping_handle_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the hyprland_toplevel_window_mapping_handle_v1 interface. See the module level documentation for more info"]
         pub trait HyprlandToplevelWindowMappingHandleV1 {
             const INTERFACE: &'static str = "hyprland_toplevel_window_mapping_handle_v1";
@@ -1200,6 +1349,25 @@ pub mod hyprland_toplevel_mapping_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let address_hi = message.uint()?;
+                        let address = message.uint()?;
+                        tracing::debug!(
+                            "hyprland_toplevel_window_mapping_handle_v1#{}.window_address({}, {})",
+                            sender_id,
+                            address_hi,
+                            address
+                        );
+                        self.window_address(client, sender_id, address_hi, address)
+                            .await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "hyprland_toplevel_window_mapping_handle_v1#{}.failed()",
+                            sender_id,
+                        );
+                        self.failed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

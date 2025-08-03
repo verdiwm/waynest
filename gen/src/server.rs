@@ -31,7 +31,7 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let name = &interface.name;
             let version = &interface.version;
 
-            let dispatchers = write_dispatchers(&interface);
+            let dispatchers = write_dispatchers(&interface, interface.requests.clone().into_iter());
             let requests = write_requests(pairs, pair, &interface);
             let events = write_events(pairs, pair, &interface);
             let enums = write_enums(&interface);

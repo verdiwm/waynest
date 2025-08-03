@@ -12,6 +12,8 @@ pub mod alpha_modifier_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_alpha_modifier_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -94,6 +96,8 @@ pub mod alpha_modifier_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_alpha_modifier_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -229,6 +233,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -443,6 +449,50 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let render_intent = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_manager_v1#{}.supported_intent({})",
+                            sender_id,
+                            render_intent
+                        );
+                        self.supported_intent(client, sender_id, render_intent.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let feature = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_manager_v1#{}.supported_feature({})",
+                            sender_id,
+                            feature
+                        );
+                        self.supported_feature(client, sender_id, feature.try_into()?)
+                            .await
+                    }
+                    2u16 => {
+                        let tf = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_manager_v1#{}.supported_tf_named({})",
+                            sender_id,
+                            tf
+                        );
+                        self.supported_tf_named(client, sender_id, tf.try_into()?)
+                            .await
+                    }
+                    3u16 => {
+                        let primaries = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_manager_v1#{}.supported_primaries_named({})",
+                            sender_id,
+                            primaries
+                        );
+                        self.supported_primaries_named(client, sender_id, primaries.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        tracing::debug!("wp_color_manager_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -694,6 +744,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_management_output_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_color_management_output_v1 interface. See the module level documentation for more info"]
         pub trait WpColorManagementOutputV1 {
             const INTERFACE: &'static str = "wp_color_management_output_v1";
@@ -706,6 +758,13 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "wp_color_management_output_v1#{}.image_description_changed()",
+                            sender_id,
+                        );
+                        self.image_description_changed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -794,6 +853,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_management_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -940,6 +1001,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_management_surface_feedback_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -976,6 +1039,15 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let identity = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_management_surface_feedback_v1#{}.preferred_changed({})",
+                            sender_id,
+                            identity
+                        );
+                        self.preferred_changed(client, sender_id, identity).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1111,6 +1183,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_creator_icc_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1289,6 +1363,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_creator_params_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1793,6 +1869,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1859,6 +1937,28 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let cause = message.uint()?;
+                        let msg = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_image_description_v1#{}.failed({}, \"{}\")",
+                            sender_id,
+                            cause,
+                            msg
+                        );
+                        self.failed(client, sender_id, cause.try_into()?, msg).await
+                    }
+                    1u16 => {
+                        let identity = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_v1#{}.ready({})",
+                            sender_id,
+                            identity
+                        );
+                        self.ready(client, sender_id, identity).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1977,6 +2077,8 @@ pub mod color_management_v1 {
     #[doc = "wp_image_description_v1 shall always return the exact same data."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_info_v1 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_image_description_info_v1 interface. See the module level documentation for more info"]
         pub trait WpImageDescriptionInfoV1 {
             const INTERFACE: &'static str = "wp_image_description_info_v1";
@@ -1989,6 +2091,145 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("wp_image_description_info_v1#{}.done()", sender_id,);
+                        let result = self.done(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
+                    }
+                    1u16 => {
+                        let icc = message.fd()?;
+                        let icc_size = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.icc_file({}, {})",
+                            sender_id,
+                            icc.as_raw_fd(),
+                            icc_size
+                        );
+                        self.icc_file(client, sender_id, icc, icc_size).await
+                    }
+                    2u16 => {
+                        let r_x = message.int()?;
+                        let r_y = message.int()?;
+                        let g_x = message.int()?;
+                        let g_y = message.int()?;
+                        let b_x = message.int()?;
+                        let b_y = message.int()?;
+                        let w_x = message.int()?;
+                        let w_y = message.int()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            r_x,
+                            r_y,
+                            g_x,
+                            g_y,
+                            b_x,
+                            b_y,
+                            w_x,
+                            w_y
+                        );
+                        self.primaries(client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
+                            .await
+                    }
+                    3u16 => {
+                        let primaries = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.primaries_named({})",
+                            sender_id,
+                            primaries
+                        );
+                        self.primaries_named(client, sender_id, primaries.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        let eexp = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.tf_power({})",
+                            sender_id,
+                            eexp
+                        );
+                        self.tf_power(client, sender_id, eexp).await
+                    }
+                    5u16 => {
+                        let tf = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.tf_named({})",
+                            sender_id,
+                            tf
+                        );
+                        self.tf_named(client, sender_id, tf.try_into()?).await
+                    }
+                    6u16 => {
+                        let min_lum = message.uint()?;
+                        let max_lum = message.uint()?;
+                        let reference_lum = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.luminances({}, {}, {})",
+                            sender_id,
+                            min_lum,
+                            max_lum,
+                            reference_lum
+                        );
+                        self.luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                            .await
+                    }
+                    7u16 => {
+                        let r_x = message.int()?;
+                        let r_y = message.int()?;
+                        let g_x = message.int()?;
+                        let g_y = message.int()?;
+                        let b_x = message.int()?;
+                        let b_y = message.int()?;
+                        let w_x = message.int()?;
+                        let w_y = message.int()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            r_x,
+                            r_y,
+                            g_x,
+                            g_y,
+                            b_x,
+                            b_y,
+                            w_x,
+                            w_y
+                        );
+                        self.target_primaries(
+                            client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                        )
+                        .await
+                    }
+                    8u16 => {
+                        let min_lum = message.uint()?;
+                        let max_lum = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.target_luminance({}, {})",
+                            sender_id,
+                            min_lum,
+                            max_lum
+                        );
+                        self.target_luminance(client, sender_id, min_lum, max_lum)
+                            .await
+                    }
+                    9u16 => {
+                        let max_cll = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.target_max_cll({})",
+                            sender_id,
+                            max_cll
+                        );
+                        self.target_max_cll(client, sender_id, max_cll).await
+                    }
+                    10u16 => {
+                        let max_fall = message.uint()?;
+                        tracing::debug!(
+                            "wp_image_description_info_v1#{}.target_max_fall({})",
+                            sender_id,
+                            max_fall
+                        );
+                        self.target_max_fall(client, sender_id, max_fall).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2169,6 +2410,8 @@ pub mod color_representation_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_representation_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2202,6 +2445,37 @@ pub mod color_representation_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let alpha_mode = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_representation_manager_v1#{}.supported_alpha_mode({})",
+                            sender_id,
+                            alpha_mode
+                        );
+                        self.supported_alpha_mode(client, sender_id, alpha_mode.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let coefficients = message.uint()?;
+                        let range = message.uint()?;
+                        tracing::debug!(
+                            "wp_color_representation_manager_v1#{}.supported_coefficients_and_ranges({}, {})",
+                            sender_id,
+                            coefficients,
+                            range
+                        );
+                        self.supported_coefficients_and_ranges(
+                            client,
+                            sender_id,
+                            coefficients.try_into()?,
+                            range.try_into()?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        tracing::debug!("wp_color_representation_manager_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2295,6 +2569,8 @@ pub mod color_representation_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_representation_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2628,6 +2904,8 @@ pub mod commit_timing_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_commit_timing_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2706,6 +2984,8 @@ pub mod commit_timing_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_commit_timer_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2812,6 +3092,8 @@ pub mod content_type_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_content_type_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2898,6 +3180,8 @@ pub mod content_type_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_content_type_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -2994,6 +3278,8 @@ pub mod cursor_shape_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpCursorShapeManagerV1 {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
@@ -3073,6 +3359,8 @@ pub mod cursor_shape_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_device_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
         #[doc = "The names are taken from the CSS W3C specification:"]
@@ -3335,6 +3623,8 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_device_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseDeviceV1 {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
@@ -3347,6 +3637,32 @@ pub mod drm_lease_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "wp_drm_lease_device_v1#{}.drm_fd({})",
+                            sender_id,
+                            fd.as_raw_fd()
+                        );
+                        self.drm_fd(client, sender_id, fd).await
+                    }
+                    1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
+                        self.connector(client, sender_id, id).await
+                    }
+                    2u16 => {
+                        tracing::debug!("wp_drm_lease_device_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!("wp_drm_lease_device_v1#{}.released()", sender_id,);
+                        let result = self.released(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3452,6 +3768,8 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_connector_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseConnectorV1 {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
@@ -3464,6 +3782,45 @@ pub mod drm_lease_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_drm_lease_connector_v1#{}.name(\"{}\")",
+                            sender_id,
+                            name
+                        );
+                        self.name(client, sender_id, name).await
+                    }
+                    1u16 => {
+                        let description = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_drm_lease_connector_v1#{}.description(\"{}\")",
+                            sender_id,
+                            description
+                        );
+                        self.description(client, sender_id, description).await
+                    }
+                    2u16 => {
+                        let connector_id = message.uint()?;
+                        tracing::debug!(
+                            "wp_drm_lease_connector_v1#{}.connector_id({})",
+                            sender_id,
+                            connector_id
+                        );
+                        self.connector_id(client, sender_id, connector_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!("wp_drm_lease_connector_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    4u16 => {
+                        tracing::debug!("wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
+                        self.withdrawn(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3551,6 +3908,8 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_request_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3656,6 +4015,8 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
         pub trait WpDrmLeaseV1 {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
@@ -3668,6 +4029,19 @@ pub mod drm_lease_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let leased_fd = message.fd()?;
+                        tracing::debug!(
+                            "wp_drm_lease_v1#{}.lease_fd({})",
+                            sender_id,
+                            leased_fd.as_raw_fd()
+                        );
+                        self.lease_fd(client, sender_id, leased_fd).await
+                    }
+                    1u16 => {
+                        tracing::debug!("wp_drm_lease_v1#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3740,6 +4114,8 @@ pub mod ext_background_effect_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_background_effect_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3785,6 +4161,16 @@ pub mod ext_background_effect_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "ext_background_effect_manager_v1#{}.capabilities({})",
+                            sender_id,
+                            flags
+                        );
+                        self.capabilities(client, sender_id, flags.try_into()?)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3848,6 +4234,8 @@ pub mod ext_background_effect_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_background_effect_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3954,6 +4342,8 @@ pub mod ext_data_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_data_control_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_data_control_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtDataControlManagerV1 {
             const INTERFACE: &'static str = "ext_data_control_manager_v1";
@@ -4031,6 +4421,8 @@ pub mod ext_data_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_data_control_device_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4064,6 +4456,39 @@ pub mod ext_data_control_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_data_control_device_v1#{}.data_offer({})",
+                            sender_id,
+                            id
+                        );
+                        self.data_offer(client, sender_id, id).await
+                    }
+                    1u16 => {
+                        let id = message.object()?;
+                        tracing::debug!(
+                            "ext_data_control_device_v1#{}.selection({})",
+                            sender_id,
+                            id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.selection(client, sender_id, id).await
+                    }
+                    2u16 => {
+                        tracing::debug!("ext_data_control_device_v1#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
+                    3u16 => {
+                        let id = message.object()?;
+                        tracing::debug!(
+                            "ext_data_control_device_v1#{}.primary_selection({})",
+                            sender_id,
+                            id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.primary_selection(client, sender_id, id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4205,6 +4630,8 @@ pub mod ext_data_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_data_control_source_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4238,6 +4665,23 @@ pub mod ext_data_control_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "ext_data_control_source_v1#{}.send(\"{}\", {})",
+                            sender_id,
+                            mime_type,
+                            fd.as_raw_fd()
+                        );
+                        self.send(client, sender_id, mime_type, fd).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_data_control_source_v1#{}.cancelled()", sender_id,);
+                        self.cancelled(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4301,6 +4745,8 @@ pub mod ext_data_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_data_control_offer_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_data_control_offer_v1 interface. See the module level documentation for more info"]
         pub trait ExtDataControlOfferV1 {
             const INTERFACE: &'static str = "ext_data_control_offer_v1";
@@ -4313,6 +4759,17 @@ pub mod ext_data_control_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_data_control_offer_v1#{}.offer(\"{}\")",
+                            sender_id,
+                            mime_type
+                        );
+                        self.offer(client, sender_id, mime_type).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4408,6 +4865,8 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_list_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelListV1 {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
@@ -4420,6 +4879,21 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_foreign_toplevel_list_v1#{}.toplevel({})",
+                            sender_id,
+                            toplevel
+                        );
+                        self.toplevel(client, sender_id, toplevel).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4492,6 +4966,8 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_handle_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelHandleV1 {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
@@ -4504,6 +4980,47 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
+                        self.closed(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    2u16 => {
+                        let title = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
+                            sender_id,
+                            title
+                        );
+                        self.title(client, sender_id, title).await
+                    }
+                    3u16 => {
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
+                            sender_id,
+                            app_id
+                        );
+                        self.app_id(client, sender_id, app_id).await
+                    }
+                    4u16 => {
+                        let identifier = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
+                            sender_id,
+                            identifier
+                        );
+                        self.identifier(client, sender_id, identifier).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4616,6 +5133,8 @@ pub mod ext_idle_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notifier_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotifierV1 {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
@@ -4734,6 +5253,8 @@ pub mod ext_idle_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notification_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
         pub trait ExtIdleNotificationV1 {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
@@ -4746,6 +5267,14 @@ pub mod ext_idle_notify_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("ext_idle_notification_v1#{}.idled()", sender_id,);
+                        self.idled(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_idle_notification_v1#{}.resumed()", sender_id,);
+                        self.resumed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4808,6 +5337,8 @@ pub mod ext_image_capture_source_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_capture_source_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
         pub trait ExtImageCaptureSourceV1 {
             const INTERFACE: &'static str = "ext_image_capture_source_v1";
@@ -4843,6 +5374,8 @@ pub mod ext_image_capture_source_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_output_image_capture_source_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtOutputImageCaptureSourceManagerV1 {
             const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
@@ -4907,6 +5440,8 @@ pub mod ext_image_capture_source_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtForeignToplevelImageCaptureSourceManagerV1 {
             const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
@@ -4979,6 +5514,8 @@ pub mod ext_image_copy_capture_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5120,6 +5657,8 @@ pub mod ext_image_copy_capture_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_session_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5153,6 +5692,58 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.buffer_size(client, sender_id, width, height).await
+                    }
+                    1u16 => {
+                        let format = message.uint()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.shm_format({})",
+                            sender_id,
+                            format
+                        );
+                        self.shm_format(client, sender_id, format.try_into()?).await
+                    }
+                    2u16 => {
+                        let device = message.array()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
+                            sender_id,
+                            device.len()
+                        );
+                        self.dmabuf_device(client, sender_id, device).await
+                    }
+                    3u16 => {
+                        let format = message.uint()?;
+                        let modifiers = message.array()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
+                            sender_id,
+                            format,
+                            modifiers.len()
+                        );
+                        self.dmabuf_format(client, sender_id, format, modifiers)
+                            .await
+                    }
+                    4u16 => {
+                        tracing::debug!("ext_image_copy_capture_session_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    5u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_session_v1#{}.stopped()",
+                            sender_id,
+                        );
+                        self.stopped(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5283,6 +5874,8 @@ pub mod ext_image_copy_capture_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_frame_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5346,6 +5939,58 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let transform = message.uint()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_frame_v1#{}.transform({})",
+                            sender_id,
+                            transform
+                        );
+                        self.transform(client, sender_id, transform.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
+                            sender_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.damage(client, sender_id, x, y, width, height).await
+                    }
+                    2u16 => {
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
+                            sender_id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec
+                        );
+                        self.presentation_time(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                            .await
+                    }
+                    3u16 => {
+                        tracing::debug!("ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
+                        self.ready(client, sender_id).await
+                    }
+                    4u16 => {
+                        let reason = message.uint()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_frame_v1#{}.failed({})",
+                            sender_id,
+                            reason
+                        );
+                        self.failed(client, sender_id, reason.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5524,6 +6169,8 @@ pub mod ext_image_copy_capture_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_copy_capture_cursor_session_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5557,6 +6204,42 @@ pub mod ext_image_copy_capture_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_cursor_session_v1#{}.enter()",
+                            sender_id,
+                        );
+                        self.enter(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "ext_image_copy_capture_cursor_session_v1#{}.leave()",
+                            sender_id,
+                        );
+                        self.leave(client, sender_id).await
+                    }
+                    2u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
+                            sender_id,
+                            x,
+                            y
+                        );
+                        self.position(client, sender_id, x, y).await
+                    }
+                    3u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
+                            sender_id,
+                            x,
+                            y
+                        );
+                        self.hotspot(client, sender_id, x, y).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5685,6 +6368,8 @@ pub mod ext_session_lock_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtSessionLockManagerV1 {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
@@ -5787,6 +6472,8 @@ pub mod ext_session_lock_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -5832,6 +6519,14 @@ pub mod ext_session_lock_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("ext_session_lock_v1#{}.locked()", sender_id,);
+                        self.locked(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_session_lock_v1#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -5982,6 +6677,8 @@ pub mod ext_session_lock_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -6024,6 +6721,20 @@ pub mod ext_session_lock_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "ext_session_lock_surface_v1#{}.configure({}, {}, {})",
+                            sender_id,
+                            serial,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, serial, width, height)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6129,6 +6840,8 @@ pub mod ext_transient_seat_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatManagerV1 {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
@@ -6187,6 +6900,8 @@ pub mod ext_transient_seat_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
         pub trait ExtTransientSeatV1 {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
@@ -6199,6 +6914,19 @@ pub mod ext_transient_seat_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let global_name = message.uint()?;
+                        tracing::debug!(
+                            "ext_transient_seat_v1#{}.ready({})",
+                            sender_id,
+                            global_name
+                        );
+                        self.ready(client, sender_id, global_name).await
+                    }
+                    1u16 => {
+                        tracing::debug!("ext_transient_seat_v1#{}.denied()", sender_id,);
+                        self.denied(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6267,6 +6995,8 @@ pub mod ext_workspace_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_workspace_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
         pub trait ExtWorkspaceManagerV1 {
             const INTERFACE: &'static str = "ext_workspace_manager_v1";
@@ -6279,6 +7009,39 @@ pub mod ext_workspace_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let workspace_group = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_manager_v1#{}.workspace_group({})",
+                            sender_id,
+                            workspace_group
+                        );
+                        self.workspace_group(client, sender_id, workspace_group)
+                            .await
+                    }
+                    1u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_manager_v1#{}.workspace({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.workspace(client, sender_id, workspace).await
+                    }
+                    2u16 => {
+                        tracing::debug!("ext_workspace_manager_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!("ext_workspace_manager_v1#{}.finished()", sender_id,);
+                        let result = self.finished(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6385,6 +7148,8 @@ pub mod ext_workspace_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_workspace_group_handle_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct GroupCapabilities : u32 { # [doc = "create_workspace request is available"] const CreateWorkspace = 1u32 ; } }
         impl TryFrom<u32> for GroupCapabilities {
             type Error = crate::wire::DecodeError;
@@ -6409,6 +7174,64 @@ pub mod ext_workspace_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let capabilities = message.uint()?;
+                        tracing::debug!(
+                            "ext_workspace_group_handle_v1#{}.capabilities({})",
+                            sender_id,
+                            capabilities
+                        );
+                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_group_handle_v1#{}.output_enter({})",
+                            sender_id,
+                            output
+                        );
+                        self.output_enter(client, sender_id, output).await
+                    }
+                    2u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_group_handle_v1#{}.output_leave({})",
+                            sender_id,
+                            output
+                        );
+                        self.output_leave(client, sender_id, output).await
+                    }
+                    3u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_group_handle_v1#{}.workspace_enter({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.workspace_enter(client, sender_id, workspace).await
+                    }
+                    4u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ext_workspace_group_handle_v1#{}.workspace_leave({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.workspace_leave(client, sender_id, workspace).await
+                    }
+                    5u16 => {
+                        tracing::debug!("ext_workspace_group_handle_v1#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6538,6 +7361,8 @@ pub mod ext_workspace_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_workspace_handle_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "The different states that a workspace can have."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct State : u32 { # [doc = "the workspace is active"] const Active = 1u32 ; # [doc = "the workspace requests attention"] const Urgent = 2u32 ; const Hidden = 4u32 ; } }
         impl TryFrom<u32> for State {
             type Error = crate::wire::DecodeError;
@@ -6574,6 +7399,48 @@ pub mod ext_workspace_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
+                        self.id(client, sender_id, id).await
+                    }
+                    1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("ext_workspace_handle_v1#{}.name(\"{}\")", sender_id, name);
+                        self.name(client, sender_id, name).await
+                    }
+                    2u16 => {
+                        let coordinates = message.array()?;
+                        tracing::debug!(
+                            "ext_workspace_handle_v1#{}.coordinates(array[{}])",
+                            sender_id,
+                            coordinates.len()
+                        );
+                        self.coordinates(client, sender_id, coordinates).await
+                    }
+                    3u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!("ext_workspace_handle_v1#{}.state({})", sender_id, state);
+                        self.state(client, sender_id, state.try_into()?).await
+                    }
+                    4u16 => {
+                        let capabilities = message.uint()?;
+                        tracing::debug!(
+                            "ext_workspace_handle_v1#{}.capabilities({})",
+                            sender_id,
+                            capabilities
+                        );
+                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                            .await
+                    }
+                    5u16 => {
+                        tracing::debug!("ext_workspace_handle_v1#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -6778,6 +7645,8 @@ pub mod fifo_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fifo_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -6863,6 +7732,8 @@ pub mod fifo_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fifo_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
         #[repr(u32)]
@@ -7003,6 +7874,8 @@ pub mod fractional_scale_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7085,6 +7958,8 @@ pub mod fractional_scale_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
         pub trait WpFractionalScaleV1 {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
@@ -7097,6 +7972,15 @@ pub mod fractional_scale_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let scale = message.uint()?;
+                        tracing::debug!(
+                            "wp_fractional_scale_v1#{}.preferred_scale({})",
+                            sender_id,
+                            scale
+                        );
+                        self.preferred_scale(client, sender_id, scale).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -7162,6 +8046,8 @@ pub mod linux_drm_syncobj_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7276,6 +8162,8 @@ pub mod linux_drm_syncobj_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
         pub trait WpLinuxDrmSyncobjTimelineV1 {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
@@ -7339,6 +8227,8 @@ pub mod linux_drm_syncobj_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7537,6 +8427,8 @@ pub mod pointer_warp_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_pointer_warp_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_pointer_warp_v1 interface. See the module level documentation for more info"]
         pub trait WpPointerWarpV1 {
             const INTERFACE: &'static str = "wp_pointer_warp_v1";
@@ -7624,6 +8516,8 @@ pub mod security_context_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_security_context_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7729,6 +8623,8 @@ pub mod security_context_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_security_context_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -7906,6 +8802,8 @@ pub mod single_pixel_buffer_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_single_pixel_buffer_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
         pub trait WpSinglePixelBufferManagerV1 {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
@@ -8001,6 +8899,8 @@ pub mod tearing_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_tearing_control_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8090,6 +8990,8 @@ pub mod tearing_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_tearing_control_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
         #[repr(u32)]
@@ -8216,6 +9118,8 @@ pub mod xdg_activation_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
         pub trait XdgActivationV1 {
             const INTERFACE: &'static str = "xdg_activation_v1";
@@ -8306,6 +9210,8 @@ pub mod xdg_activation_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_token_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8339,6 +9245,17 @@ pub mod xdg_activation_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let token = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xdg_activation_token_v1#{}.done(\"{}\")",
+                            sender_id,
+                            token
+                        );
+                        self.done(client, sender_id, token).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -8467,6 +9384,8 @@ pub mod xdg_dialog_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_wm_dialog_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8553,6 +9472,8 @@ pub mod xdg_dialog_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_dialog_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
         pub trait XdgDialogV1 {
             const INTERFACE: &'static str = "xdg_dialog_v1";
@@ -8634,6 +9555,8 @@ pub mod xdg_system_bell_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_system_bell_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
         pub trait XdgSystemBellV1 {
             const INTERFACE: &'static str = "xdg_system_bell_v1";
@@ -8727,6 +9650,8 @@ pub mod xdg_toplevel_drag_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8813,6 +9738,8 @@ pub mod xdg_toplevel_drag_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_drag_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -8927,6 +9854,8 @@ pub mod xdg_toplevel_icon_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelIconManagerV1 {
             const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
@@ -8939,6 +9868,19 @@ pub mod xdg_toplevel_icon_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let size = message.int()?;
+                        tracing::debug!(
+                            "xdg_toplevel_icon_manager_v1#{}.icon_size({})",
+                            sender_id,
+                            size
+                        );
+                        self.icon_size(client, sender_id, size).await
+                    }
+                    1u16 => {
+                        tracing::debug!("xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -9050,6 +9992,8 @@ pub mod xdg_toplevel_icon_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -9197,6 +10141,8 @@ pub mod xdg_toplevel_tag_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_tag_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xdg_toplevel_tag_manager_v1 interface. See the module level documentation for more info"]
         pub trait XdgToplevelTagManagerV1 {
             const INTERFACE: &'static str = "xdg_toplevel_tag_manager_v1";
@@ -9340,6 +10286,8 @@ pub mod xwayland_shell_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xwayland_shell_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -9430,6 +10378,8 @@ pub mod xwayland_shell_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xwayland_surface_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]

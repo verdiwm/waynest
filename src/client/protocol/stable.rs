@@ -66,6 +66,8 @@ pub mod linux_dmabuf_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
         pub trait ZwpLinuxDmabufV1 {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
@@ -78,6 +80,25 @@ pub mod linux_dmabuf_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let format = message.uint()?;
+                        tracing::debug!("zwp_linux_dmabuf_v1#{}.format({})", sender_id, format);
+                        self.format(client, sender_id, format).await
+                    }
+                    1u16 => {
+                        let format = message.uint()?;
+                        let modifier_hi = message.uint()?;
+                        let modifier_lo = message.uint()?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_v1#{}.modifier({}, {}, {})",
+                            sender_id,
+                            format,
+                            modifier_hi,
+                            modifier_lo
+                        );
+                        self.modifier(client, sender_id, format, modifier_hi, modifier_lo)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -231,6 +252,8 @@ pub mod linux_dmabuf_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_params_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -298,6 +321,21 @@ pub mod linux_dmabuf_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let buffer = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_linux_buffer_params_v1#{}.created({})",
+                            sender_id,
+                            buffer
+                        );
+                        self.created(client, sender_id, buffer).await
+                    }
+                    1u16 => {
+                        tracing::debug!("zwp_linux_buffer_params_v1#{}.failed()", sender_id,);
+                        self.failed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -537,6 +575,8 @@ pub mod linux_dmabuf_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
             type Error = crate::wire::DecodeError;
@@ -561,6 +601,65 @@ pub mod linux_dmabuf_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    1u16 => {
+                        let fd = message.fd()?;
+                        let size = message.uint()?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_feedback_v1#{}.format_table({}, {})",
+                            sender_id,
+                            fd.as_raw_fd(),
+                            size
+                        );
+                        self.format_table(client, sender_id, fd, size).await
+                    }
+                    2u16 => {
+                        let device = message.array()?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_feedback_v1#{}.main_device(array[{}])",
+                            sender_id,
+                            device.len()
+                        );
+                        self.main_device(client, sender_id, device).await
+                    }
+                    3u16 => {
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
+                            sender_id,
+                        );
+                        self.tranche_done(client, sender_id).await
+                    }
+                    4u16 => {
+                        let device = message.array()?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device(array[{}])",
+                            sender_id,
+                            device.len()
+                        );
+                        self.tranche_target_device(client, sender_id, device).await
+                    }
+                    5u16 => {
+                        let indices = message.array()?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_feedback_v1#{}.tranche_formats(array[{}])",
+                            sender_id,
+                            indices.len()
+                        );
+                        self.tranche_formats(client, sender_id, indices).await
+                    }
+                    6u16 => {
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "zwp_linux_dmabuf_feedback_v1#{}.tranche_flags({})",
+                            sender_id,
+                            flags
+                        );
+                        self.tranche_flags(client, sender_id, flags.try_into()?)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -750,6 +849,8 @@ pub mod presentation_time {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_presentation {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal presentation requests."]
         #[repr(u32)]
@@ -788,6 +889,11 @@ pub mod presentation_time {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let clk_id = message.uint()?;
+                        tracing::debug!("wp_presentation#{}.clock_id({})", sender_id, clk_id);
+                        self.clock_id(client, sender_id, clk_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -880,6 +986,8 @@ pub mod presentation_time {
     #[doc = "or 'discarded' event it is automatically destroyed."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_presentation_feedback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
             type Error = crate::wire::DecodeError;
@@ -904,6 +1012,58 @@ pub mod presentation_time {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wp_presentation_feedback#{}.sync_output({})",
+                            sender_id,
+                            output
+                        );
+                        self.sync_output(client, sender_id, output).await
+                    }
+                    1u16 => {
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        let refresh = message.uint()?;
+                        let seq_hi = message.uint()?;
+                        let seq_lo = message.uint()?;
+                        let flags = message.uint()?;
+                        tracing::debug!(
+                            "wp_presentation_feedback#{}.presented({}, {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec,
+                            refresh,
+                            seq_hi,
+                            seq_lo,
+                            flags
+                        );
+                        let result = self
+                            .presented(
+                                client,
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec,
+                                refresh,
+                                seq_hi,
+                                seq_lo,
+                                flags.try_into()?,
+                            )
+                            .await;
+                        client.remove(sender_id);
+                        result
+                    }
+                    2u16 => {
+                        tracing::debug!("wp_presentation_feedback#{}.discarded()", sender_id,);
+                        let result = self.discarded(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1070,6 +1230,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletManagerV2 {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
@@ -1126,6 +1288,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletSeatV2 {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
@@ -1138,6 +1302,27 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_seat_v2#{}.tablet_added({})", sender_id, id);
+                        self.tablet_added(client, sender_id, id).await
+                    }
+                    1u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_seat_v2#{}.tool_added({})", sender_id, id);
+                        self.tool_added(client, sender_id, id).await
+                    }
+                    2u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_seat_v2#{}.pad_added({})", sender_id, id);
+                        self.pad_added(client, sender_id, id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1216,6 +1401,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
         #[doc = ""]
@@ -1365,6 +1552,156 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let tool_type = message.uint()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.type({})", sender_id, tool_type);
+                        self.r#type(client, sender_id, tool_type.try_into()?).await
+                    }
+                    1u16 => {
+                        let hardware_serial_hi = message.uint()?;
+                        let hardware_serial_lo = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.hardware_serial({}, {})",
+                            sender_id,
+                            hardware_serial_hi,
+                            hardware_serial_lo
+                        );
+                        self.hardware_serial(
+                            client,
+                            sender_id,
+                            hardware_serial_hi,
+                            hardware_serial_lo,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        let hardware_id_hi = message.uint()?;
+                        let hardware_id_lo = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.hardware_id_wacom({}, {})",
+                            sender_id,
+                            hardware_id_hi,
+                            hardware_id_lo
+                        );
+                        self.hardware_id_wacom(client, sender_id, hardware_id_hi, hardware_id_lo)
+                            .await
+                    }
+                    3u16 => {
+                        let capability = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.capability({})",
+                            sender_id,
+                            capability
+                        );
+                        self.capability(client, sender_id, capability.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        tracing::debug!("zwp_tablet_tool_v2#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    5u16 => {
+                        tracing::debug!("zwp_tablet_tool_v2#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
+                    6u16 => {
+                        let serial = message.uint()?;
+                        let tablet = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.proximity_in({}, {}, {})",
+                            sender_id,
+                            serial,
+                            tablet,
+                            surface
+                        );
+                        self.proximity_in(client, sender_id, serial, tablet, surface)
+                            .await
+                    }
+                    7u16 => {
+                        tracing::debug!("zwp_tablet_tool_v2#{}.proximity_out()", sender_id,);
+                        self.proximity_out(client, sender_id).await
+                    }
+                    8u16 => {
+                        let serial = message.uint()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.down({})", sender_id, serial);
+                        self.down(client, sender_id, serial).await
+                    }
+                    9u16 => {
+                        tracing::debug!("zwp_tablet_tool_v2#{}.up()", sender_id,);
+                        self.up(client, sender_id).await
+                    }
+                    10u16 => {
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.motion({}, {})", sender_id, x, y);
+                        self.motion(client, sender_id, x, y).await
+                    }
+                    11u16 => {
+                        let pressure = message.uint()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.pressure({})", sender_id, pressure);
+                        self.pressure(client, sender_id, pressure).await
+                    }
+                    12u16 => {
+                        let distance = message.uint()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.distance({})", sender_id, distance);
+                        self.distance(client, sender_id, distance).await
+                    }
+                    13u16 => {
+                        let tilt_x = message.fixed()?;
+                        let tilt_y = message.fixed()?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.tilt({}, {})",
+                            sender_id,
+                            tilt_x,
+                            tilt_y
+                        );
+                        self.tilt(client, sender_id, tilt_x, tilt_y).await
+                    }
+                    14u16 => {
+                        let degrees = message.fixed()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.rotation({})", sender_id, degrees);
+                        self.rotation(client, sender_id, degrees).await
+                    }
+                    15u16 => {
+                        let position = message.int()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.slider({})", sender_id, position);
+                        self.slider(client, sender_id, position).await
+                    }
+                    16u16 => {
+                        let degrees = message.fixed()?;
+                        let clicks = message.int()?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.wheel({}, {})",
+                            sender_id,
+                            degrees,
+                            clicks
+                        );
+                        self.wheel(client, sender_id, degrees, clicks).await
+                    }
+                    17u16 => {
+                        let serial = message.uint()?;
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_tool_v2#{}.button({}, {}, {})",
+                            sender_id,
+                            serial,
+                            button,
+                            state
+                        );
+                        self.button(client, sender_id, serial, button, state.try_into()?)
+                            .await
+                    }
+                    18u16 => {
+                        let time = message.uint()?;
+                        tracing::debug!("zwp_tablet_tool_v2#{}.frame({})", sender_id, time);
+                        self.frame(client, sender_id, time).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1712,6 +2049,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes the bus types this tablet is connected to."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -1758,6 +2097,39 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_v2#{}.name(\"{}\")", sender_id, name);
+                        self.name(client, sender_id, name).await
+                    }
+                    1u16 => {
+                        let vid = message.uint()?;
+                        let pid = message.uint()?;
+                        tracing::debug!("zwp_tablet_v2#{}.id({}, {})", sender_id, vid, pid);
+                        self.id(client, sender_id, vid, pid).await
+                    }
+                    2u16 => {
+                        let path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_v2#{}.path(\"{}\")", sender_id, path);
+                        self.path(client, sender_id, path).await
+                    }
+                    3u16 => {
+                        tracing::debug!("zwp_tablet_v2#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    4u16 => {
+                        tracing::debug!("zwp_tablet_v2#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
+                    5u16 => {
+                        let bustype = message.uint()?;
+                        tracing::debug!("zwp_tablet_v2#{}.bustype({})", sender_id, bustype);
+                        self.bustype(client, sender_id, bustype.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1868,6 +2240,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_ring_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
         #[doc = "adjust the user interface accordingly. For example, events"]
@@ -1905,6 +2279,25 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let source = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_ring_v2#{}.source({})", sender_id, source);
+                        self.source(client, sender_id, source.try_into()?).await
+                    }
+                    1u16 => {
+                        let degrees = message.fixed()?;
+                        tracing::debug!("zwp_tablet_pad_ring_v2#{}.angle({})", sender_id, degrees);
+                        self.angle(client, sender_id, degrees).await
+                    }
+                    2u16 => {
+                        tracing::debug!("zwp_tablet_pad_ring_v2#{}.stop()", sender_id,);
+                        self.stop(client, sender_id).await
+                    }
+                    3u16 => {
+                        let time = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_ring_v2#{}.frame({})", sender_id, time);
+                        self.frame(client, sender_id, time).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2029,6 +2422,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_strip_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
         #[doc = "adjust the user interface accordingly. For example, events"]
@@ -2066,6 +2461,29 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let source = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_strip_v2#{}.source({})", sender_id, source);
+                        self.source(client, sender_id, source.try_into()?).await
+                    }
+                    1u16 => {
+                        let position = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_pad_strip_v2#{}.position({})",
+                            sender_id,
+                            position
+                        );
+                        self.position(client, sender_id, position).await
+                    }
+                    2u16 => {
+                        tracing::debug!("zwp_tablet_pad_strip_v2#{}.stop()", sender_id,);
+                        self.stop(client, sender_id).await
+                    }
+                    3u16 => {
+                        let time = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_strip_v2#{}.frame({})", sender_id, time);
+                        self.frame(client, sender_id, time).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2208,6 +2626,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadGroupV2 {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
@@ -2220,6 +2640,59 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let buttons = message.array()?;
+                        tracing::debug!(
+                            "zwp_tablet_pad_group_v2#{}.buttons(array[{}])",
+                            sender_id,
+                            buttons.len()
+                        );
+                        self.buttons(client, sender_id, buttons).await
+                    }
+                    1u16 => {
+                        let ring = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_pad_group_v2#{}.ring({})", sender_id, ring);
+                        self.ring(client, sender_id, ring).await
+                    }
+                    2u16 => {
+                        let strip = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_pad_group_v2#{}.strip({})", sender_id, strip);
+                        self.strip(client, sender_id, strip).await
+                    }
+                    3u16 => {
+                        let modes = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_group_v2#{}.modes({})", sender_id, modes);
+                        self.modes(client, sender_id, modes).await
+                    }
+                    4u16 => {
+                        tracing::debug!("zwp_tablet_pad_group_v2#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    5u16 => {
+                        let time = message.uint()?;
+                        let serial = message.uint()?;
+                        let mode = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_pad_group_v2#{}.mode_switch({}, {}, {})",
+                            sender_id,
+                            time,
+                            serial,
+                            mode
+                        );
+                        self.mode_switch(client, sender_id, time, serial, mode)
+                            .await
+                    }
+                    6u16 => {
+                        let dial = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_pad_group_v2#{}.dial({})", sender_id, dial);
+                        self.dial(client, sender_id, dial).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2377,6 +2850,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
         #[repr(u32)]
@@ -2415,6 +2890,77 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let pad_group = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_pad_v2#{}.group({})", sender_id, pad_group);
+                        self.group(client, sender_id, pad_group).await
+                    }
+                    1u16 => {
+                        let path = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("zwp_tablet_pad_v2#{}.path(\"{}\")", sender_id, path);
+                        self.path(client, sender_id, path).await
+                    }
+                    2u16 => {
+                        let buttons = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_v2#{}.buttons({})", sender_id, buttons);
+                        self.buttons(client, sender_id, buttons).await
+                    }
+                    3u16 => {
+                        tracing::debug!("zwp_tablet_pad_v2#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    4u16 => {
+                        let time = message.uint()?;
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zwp_tablet_pad_v2#{}.button({}, {}, {})",
+                            sender_id,
+                            time,
+                            button,
+                            state
+                        );
+                        self.button(client, sender_id, time, button, state.try_into()?)
+                            .await
+                    }
+                    5u16 => {
+                        let serial = message.uint()?;
+                        let tablet = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_tablet_pad_v2#{}.enter({}, {}, {})",
+                            sender_id,
+                            serial,
+                            tablet,
+                            surface
+                        );
+                        self.enter(client, sender_id, serial, tablet, surface).await
+                    }
+                    6u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zwp_tablet_pad_v2#{}.leave({}, {})",
+                            sender_id,
+                            serial,
+                            surface
+                        );
+                        self.leave(client, sender_id, serial, surface).await
+                    }
+                    7u16 => {
+                        tracing::debug!("zwp_tablet_pad_v2#{}.removed()", sender_id,);
+                        self.removed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2569,6 +3115,8 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_dial_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zwp_tablet_pad_dial_v2 interface. See the module level documentation for more info"]
         pub trait ZwpTabletPadDialV2 {
             const INTERFACE: &'static str = "zwp_tablet_pad_dial_v2";
@@ -2581,6 +3129,16 @@ pub mod tablet_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let value120 = message.int()?;
+                        tracing::debug!("zwp_tablet_pad_dial_v2#{}.delta({})", sender_id, value120);
+                        self.delta(client, sender_id, value120).await
+                    }
+                    1u16 => {
+                        let time = message.uint()?;
+                        tracing::debug!("zwp_tablet_pad_dial_v2#{}.frame({})", sender_id, time);
+                        self.frame(client, sender_id, time).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2680,6 +3238,8 @@ pub mod viewporter {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_viewporter {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2811,6 +3371,8 @@ pub mod viewporter {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_viewport {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2941,6 +3503,8 @@ pub mod xdg_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_wm_base {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2992,6 +3556,11 @@ pub mod xdg_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        tracing::debug!("xdg_wm_base#{}.ping({})", sender_id, serial);
+                        self.ping(client, sender_id, serial).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3119,6 +3688,8 @@ pub mod xdg_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_positioner {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3519,6 +4090,8 @@ pub mod xdg_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3567,6 +4140,11 @@ pub mod xdg_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        tracing::debug!("xdg_surface#{}.configure({})", sender_id, serial);
+                        self.configure(client, sender_id, serial).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3783,6 +4361,8 @@ pub mod xdg_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3945,6 +4525,45 @@ pub mod xdg_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let states = message.array()?;
+                        tracing::debug!(
+                            "xdg_toplevel#{}.configure({}, {}, array[{}])",
+                            sender_id,
+                            width,
+                            height,
+                            states.len()
+                        );
+                        self.configure(client, sender_id, width, height, states)
+                            .await
+                    }
+                    1u16 => {
+                        tracing::debug!("xdg_toplevel#{}.close()", sender_id,);
+                        self.close(client, sender_id).await
+                    }
+                    2u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "xdg_toplevel#{}.configure_bounds({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.configure_bounds(client, sender_id, width, height)
+                            .await
+                    }
+                    3u16 => {
+                        let capabilities = message.array()?;
+                        tracing::debug!(
+                            "xdg_toplevel#{}.wm_capabilities(array[{}])",
+                            sender_id,
+                            capabilities.len()
+                        );
+                        self.wm_capabilities(client, sender_id, capabilities).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4541,6 +5160,8 @@ pub mod xdg_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_popup {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4574,6 +5195,30 @@ pub mod xdg_shell {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "xdg_popup#{}.configure({}, {}, {}, {})",
+                            sender_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, x, y, width, height).await
+                    }
+                    1u16 => {
+                        tracing::debug!("xdg_popup#{}.popup_done()", sender_id,);
+                        self.popup_done(client, sender_id).await
+                    }
+                    2u16 => {
+                        let token = message.uint()?;
+                        tracing::debug!("xdg_popup#{}.repositioned({})", sender_id, token);
+                        self.repositioned(client, sender_id, token).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

@@ -7,6 +7,8 @@ pub mod cosmic_a11y_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod cosmic_a11y_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -100,6 +102,52 @@ pub mod cosmic_a11y_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let active = message.uint()?;
+                        tracing::debug!(
+                            "cosmic_a11y_manager_v1#{}.magnifier({})",
+                            sender_id,
+                            active
+                        );
+                        self.magnifier(client, sender_id, active.try_into()?).await
+                    }
+                    1u16 => {
+                        let inverted = message.uint()?;
+                        let filter = message.uint()?;
+                        tracing::debug!(
+                            "cosmic_a11y_manager_v1#{}.screen_filter({}, {})",
+                            sender_id,
+                            inverted,
+                            filter
+                        );
+                        self.screen_filter(
+                            client,
+                            sender_id,
+                            inverted.try_into()?,
+                            filter.try_into()?,
+                        )
+                        .await
+                    }
+                    2u16 => {
+                        let inverted = message.uint()?;
+                        let filter = message.uint()?;
+                        let filter_state = message.uint()?;
+                        tracing::debug!(
+                            "cosmic_a11y_manager_v1#{}.screen_filter2({}, {}, {})",
+                            sender_id,
+                            inverted,
+                            filter,
+                            filter_state
+                        );
+                        self.screen_filter2(
+                            client,
+                            sender_id,
+                            inverted.try_into()?,
+                            filter.try_into()?,
+                            filter_state.try_into()?,
+                        )
+                        .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -243,6 +291,8 @@ pub mod cosmic_atspi_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod cosmic_atspi_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
         pub trait CosmicAtspiManagerV1 {
             const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
@@ -255,6 +305,15 @@ pub mod cosmic_atspi_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "cosmic_atspi_manager_v1#{}.key_events_eis({})",
+                            sender_id,
+                            fd.as_raw_fd()
+                        );
+                        self.key_events_eis(client, sender_id, fd).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -355,6 +414,8 @@ pub mod cosmic_image_source_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_workspace_image_capture_source_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zcosmic_workspace_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1 {
             const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
@@ -428,6 +489,8 @@ pub mod cosmic_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -584,6 +647,8 @@ pub mod cosmic_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_head_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -650,6 +715,53 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let scale_1000 = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_output_head_v1#{}.scale_1000({})",
+                            sender_id,
+                            scale_1000
+                        );
+                        self.scale_1000(client, sender_id, scale_1000).await
+                    }
+                    1u16 => {
+                        let name = message.string()?;
+                        tracing::debug!(
+                            "zcosmic_output_head_v1#{}.mirroring(\"{}\")",
+                            sender_id,
+                            name.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.mirroring(client, sender_id, name).await
+                    }
+                    2u16 => {
+                        let available = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_output_head_v1#{}.adaptive_sync_available({})",
+                            sender_id,
+                            available
+                        );
+                        self.adaptive_sync_available(client, sender_id, available.try_into()?)
+                            .await
+                    }
+                    3u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_output_head_v1#{}.adaptive_sync_ext({})",
+                            sender_id,
+                            state
+                        );
+                        self.adaptive_sync_ext(client, sender_id, state.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_output_head_v1#{}.xwayland_primary({})",
+                            sender_id,
+                            state
+                        );
+                        self.xwayland_primary(client, sender_id, state).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -726,6 +838,8 @@ pub mod cosmic_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_configuration_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -762,6 +876,10 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("zcosmic_output_configuration_v1#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -839,6 +957,8 @@ pub mod cosmic_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_configuration_head_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOutputConfigurationHeadV1 {
             const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
@@ -937,6 +1057,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notify_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOverlapNotifyV1 {
             const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
@@ -983,6 +1105,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notification_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicOverlapNotificationV1 {
             const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
@@ -995,6 +1119,87 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_overlap_notification_v1#{}.toplevel_enter({}, {}, {}, {}, {})",
+                            sender_id,
+                            toplevel,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.toplevel_enter(client, sender_id, toplevel, x, y, width, height)
+                            .await
+                    }
+                    1u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_overlap_notification_v1#{}.toplevel_leave({})",
+                            sender_id,
+                            toplevel
+                        );
+                        self.toplevel_leave(client, sender_id, toplevel).await
+                    }
+                    2u16 => {
+                        let identifier = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let namespace = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let exclusive = message.uint()?;
+                        let layer = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            identifier,
+                            namespace,
+                            exclusive,
+                            layer,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.layer_enter(
+                            client,
+                            sender_id,
+                            identifier,
+                            namespace,
+                            exclusive,
+                            layer.try_into()?,
+                            x,
+                            y,
+                            width,
+                            height,
+                        )
+                        .await
+                    }
+                    3u16 => {
+                        let identifier = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
+                            sender_id,
+                            identifier
+                        );
+                        self.layer_leave(client, sender_id, identifier).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1085,6 +1290,8 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_manager_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1224,6 +1431,8 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_session_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zcosmic_screencopy_session_v2 interface. See the module level documentation for more info"]
         pub trait ZcosmicScreencopySessionV2 {
             const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
@@ -1236,6 +1445,55 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.uint()?;
+                        let height = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_session_v2#{}.buffer_size({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.buffer_size(client, sender_id, width, height).await
+                    }
+                    1u16 => {
+                        let format = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_session_v2#{}.shm_format({})",
+                            sender_id,
+                            format
+                        );
+                        self.shm_format(client, sender_id, format).await
+                    }
+                    2u16 => {
+                        let device = message.array()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_session_v2#{}.dmabuf_device(array[{}])",
+                            sender_id,
+                            device.len()
+                        );
+                        self.dmabuf_device(client, sender_id, device).await
+                    }
+                    3u16 => {
+                        let format = message.uint()?;
+                        let modifiers = message.array()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_session_v2#{}.dmabuf_format({}, array[{}])",
+                            sender_id,
+                            format,
+                            modifiers.len()
+                        );
+                        self.dmabuf_format(client, sender_id, format, modifiers)
+                            .await
+                    }
+                    4u16 => {
+                        tracing::debug!("zcosmic_screencopy_session_v2#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    5u16 => {
+                        tracing::debug!("zcosmic_screencopy_session_v2#{}.stopped()", sender_id,);
+                        self.stopped(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1359,6 +1617,8 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_frame_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1422,6 +1682,58 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let transform = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_frame_v2#{}.transform({})",
+                            sender_id,
+                            transform
+                        );
+                        self.transform(client, sender_id, transform.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_frame_v2#{}.damage({}, {}, {}, {})",
+                            sender_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.damage(client, sender_id, x, y, width, height).await
+                    }
+                    2u16 => {
+                        let tv_sec_hi = message.uint()?;
+                        let tv_sec_lo = message.uint()?;
+                        let tv_nsec = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_frame_v2#{}.presentation_time({}, {}, {})",
+                            sender_id,
+                            tv_sec_hi,
+                            tv_sec_lo,
+                            tv_nsec
+                        );
+                        self.presentation_time(client, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                            .await
+                    }
+                    3u16 => {
+                        tracing::debug!("zcosmic_screencopy_frame_v2#{}.ready()", sender_id,);
+                        self.ready(client, sender_id).await
+                    }
+                    4u16 => {
+                        let reason = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_frame_v2#{}.failed({})",
+                            sender_id,
+                            reason
+                        );
+                        self.failed(client, sender_id, reason.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1598,6 +1910,8 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_cursor_session_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1631,6 +1945,42 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "zcosmic_screencopy_cursor_session_v2#{}.enter()",
+                            sender_id,
+                        );
+                        self.enter(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "zcosmic_screencopy_cursor_session_v2#{}.leave()",
+                            sender_id,
+                        );
+                        self.leave(client, sender_id).await
+                    }
+                    2u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_cursor_session_v2#{}.position({}, {})",
+                            sender_id,
+                            x,
+                            y
+                        );
+                        self.position(client, sender_id, x, y).await
+                    }
+                    3u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_screencopy_cursor_session_v2#{}.hotspot({}, {})",
+                            sender_id,
+                            x,
+                            y
+                        );
+                        self.hotspot(client, sender_id, x, y).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1745,6 +2095,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_info_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
         pub trait ZcosmicToplevelInfoV1 {
             const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
@@ -1757,6 +2109,25 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let toplevel = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_info_v1#{}.toplevel({})",
+                            sender_id,
+                            toplevel
+                        );
+                        self.toplevel(client, sender_id, toplevel).await
+                    }
+                    1u16 => {
+                        tracing::debug!("zcosmic_toplevel_info_v1#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
+                    2u16 => {
+                        tracing::debug!("zcosmic_toplevel_info_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1855,6 +2226,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_handle_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "The different states that a toplevel may have. These have the same"]
         #[doc = "meaning as the states with the same names defined in xdg-toplevel"]
         #[repr(u32)]
@@ -1902,6 +2275,131 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("zcosmic_toplevel_handle_v1#{}.closed()", sender_id,);
+                        self.closed(client, sender_id).await
+                    }
+                    1u16 => {
+                        tracing::debug!("zcosmic_toplevel_handle_v1#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    2u16 => {
+                        let title = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
+                            sender_id,
+                            title
+                        );
+                        self.title(client, sender_id, title).await
+                    }
+                    3u16 => {
+                        let app_id = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
+                            sender_id,
+                            app_id
+                        );
+                        self.app_id(client, sender_id, app_id).await
+                    }
+                    4u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.output_enter({})",
+                            sender_id,
+                            output
+                        );
+                        self.output_enter(client, sender_id, output).await
+                    }
+                    5u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.output_leave({})",
+                            sender_id,
+                            output
+                        );
+                        self.output_leave(client, sender_id, output).await
+                    }
+                    6u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.workspace_enter({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.workspace_enter(client, sender_id, workspace).await
+                    }
+                    7u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.workspace_leave({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.workspace_leave(client, sender_id, workspace).await
+                    }
+                    8u16 => {
+                        let state = message.array()?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.state(array[{}])",
+                            sender_id,
+                            state.len()
+                        );
+                        self.state(client, sender_id, state).await
+                    }
+                    9u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.geometry({}, {}, {}, {}, {})",
+                            sender_id,
+                            output,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.geometry(client, sender_id, output, x, y, width, height)
+                            .await
+                    }
+                    10u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.ext_workspace_enter({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.ext_workspace_enter(client, sender_id, workspace).await
+                    }
+                    11u16 => {
+                        let workspace = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_handle_v1#{}.ext_workspace_leave({})",
+                            sender_id,
+                            workspace
+                        );
+                        self.ext_workspace_leave(client, sender_id, workspace).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2058,6 +2556,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_manager_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2133,6 +2633,15 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let capabilities = message.array()?;
+                        tracing::debug!(
+                            "zcosmic_toplevel_manager_v1#{}.capabilities(array[{}])",
+                            sender_id,
+                            capabilities.len()
+                        );
+                        self.capabilities(client, sender_id, capabilities).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2471,6 +2980,8 @@ pub mod cosmic_workspace_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_workspace_manager_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2564,6 +3075,8 @@ pub mod cosmic_workspace_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_workspace_handle_v2 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "rename request is available"] const Rename = 1u32 ; # [doc = "set_tiling_state request is available"] const SetTilingState = 2u32 ; # [doc = "pin and unpin requests are available"] const Pin = 3u32 ; # [doc = "move_before and move_after requests are available"] const Move = 4u32 ; } }
         impl TryFrom<u32> for WorkspaceCapabilities {
             type Error = crate::wire::DecodeError;
@@ -2624,6 +3137,35 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let capabilities = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_workspace_handle_v2#{}.capabilities({})",
+                            sender_id,
+                            capabilities
+                        );
+                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_workspace_handle_v2#{}.tiling_state({})",
+                            sender_id,
+                            state
+                        );
+                        self.tiling_state(client, sender_id, state.try_into()?)
+                            .await
+                    }
+                    2u16 => {
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "zcosmic_workspace_handle_v2#{}.state({})",
+                            sender_id,
+                            state
+                        );
+                        self.state(client, sender_id, state.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

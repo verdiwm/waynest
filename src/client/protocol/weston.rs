@@ -44,6 +44,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_manager_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -253,6 +255,46 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let render_intent = message.uint()?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.supported_intent({})",
+                            sender_id,
+                            render_intent
+                        );
+                        self.supported_intent(client, sender_id, render_intent.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let feature = message.uint()?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.supported_feature({})",
+                            sender_id,
+                            feature
+                        );
+                        self.supported_feature(client, sender_id, feature.try_into()?)
+                            .await
+                    }
+                    2u16 => {
+                        let tf = message.uint()?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.supported_tf_named({})",
+                            sender_id,
+                            tf
+                        );
+                        self.supported_tf_named(client, sender_id, tf.try_into()?)
+                            .await
+                    }
+                    3u16 => {
+                        let primaries = message.uint()?;
+                        tracing::debug!(
+                            "xx_color_manager_v4#{}.supported_primaries_named({})",
+                            sender_id,
+                            primaries
+                        );
+                        self.supported_primaries_named(client, sender_id, primaries.try_into()?)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -435,6 +477,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_output_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
         pub trait XxColorManagementOutputV4 {
             const INTERFACE: &'static str = "xx_color_management_output_v4";
@@ -447,6 +491,13 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "xx_color_management_output_v4#{}.image_description_changed()",
+                            sender_id,
+                        );
+                        self.image_description_changed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -535,6 +586,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_surface_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -665,6 +718,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_feedback_surface_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -698,6 +753,13 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!(
+                            "xx_color_management_feedback_surface_v4#{}.preferred_changed()",
+                            sender_id,
+                        );
+                        self.preferred_changed(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -801,6 +863,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_icc_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -976,6 +1040,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_creator_params_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1456,6 +1522,8 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_v4 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1522,6 +1590,28 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let cause = message.uint()?;
+                        let msg = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "xx_image_description_v4#{}.failed({}, \"{}\")",
+                            sender_id,
+                            cause,
+                            msg
+                        );
+                        self.failed(client, sender_id, cause.try_into()?, msg).await
+                    }
+                    1u16 => {
+                        let identity = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_v4#{}.ready({})",
+                            sender_id,
+                            identity
+                        );
+                        self.ready(client, sender_id, identity).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1625,6 +1715,8 @@ pub mod color_management_v1 {
     #[doc = "xx_image_description_v4 shall always return the exact same data."]
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_info_v4 {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
         pub trait XxImageDescriptionInfoV4 {
             const INTERFACE: &'static str = "xx_image_description_info_v4";
@@ -1637,6 +1729,145 @@ pub mod color_management_v1 {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("xx_image_description_info_v4#{}.done()", sender_id,);
+                        let result = self.done(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
+                    }
+                    1u16 => {
+                        let icc = message.fd()?;
+                        let icc_size = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.icc_file({}, {})",
+                            sender_id,
+                            icc.as_raw_fd(),
+                            icc_size
+                        );
+                        self.icc_file(client, sender_id, icc, icc_size).await
+                    }
+                    2u16 => {
+                        let r_x = message.int()?;
+                        let r_y = message.int()?;
+                        let g_x = message.int()?;
+                        let g_y = message.int()?;
+                        let b_x = message.int()?;
+                        let b_y = message.int()?;
+                        let w_x = message.int()?;
+                        let w_y = message.int()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            r_x,
+                            r_y,
+                            g_x,
+                            g_y,
+                            b_x,
+                            b_y,
+                            w_x,
+                            w_y
+                        );
+                        self.primaries(client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y)
+                            .await
+                    }
+                    3u16 => {
+                        let primaries = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.primaries_named({})",
+                            sender_id,
+                            primaries
+                        );
+                        self.primaries_named(client, sender_id, primaries.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        let eexp = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.tf_power({})",
+                            sender_id,
+                            eexp
+                        );
+                        self.tf_power(client, sender_id, eexp).await
+                    }
+                    5u16 => {
+                        let tf = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.tf_named({})",
+                            sender_id,
+                            tf
+                        );
+                        self.tf_named(client, sender_id, tf.try_into()?).await
+                    }
+                    6u16 => {
+                        let min_lum = message.uint()?;
+                        let max_lum = message.uint()?;
+                        let reference_lum = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.luminances({}, {}, {})",
+                            sender_id,
+                            min_lum,
+                            max_lum,
+                            reference_lum
+                        );
+                        self.luminances(client, sender_id, min_lum, max_lum, reference_lum)
+                            .await
+                    }
+                    7u16 => {
+                        let r_x = message.int()?;
+                        let r_y = message.int()?;
+                        let g_x = message.int()?;
+                        let g_y = message.int()?;
+                        let b_x = message.int()?;
+                        let b_y = message.int()?;
+                        let w_x = message.int()?;
+                        let w_y = message.int()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            r_x,
+                            r_y,
+                            g_x,
+                            g_y,
+                            b_x,
+                            b_y,
+                            w_x,
+                            w_y
+                        );
+                        self.target_primaries(
+                            client, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                        )
+                        .await
+                    }
+                    8u16 => {
+                        let min_lum = message.uint()?;
+                        let max_lum = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.target_luminance({}, {})",
+                            sender_id,
+                            min_lum,
+                            max_lum
+                        );
+                        self.target_luminance(client, sender_id, min_lum, max_lum)
+                            .await
+                    }
+                    9u16 => {
+                        let max_cll = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.target_max_cll({})",
+                            sender_id,
+                            max_cll
+                        );
+                        self.target_max_cll(client, sender_id, max_cll).await
+                    }
+                    10u16 => {
+                        let max_fall = message.uint()?;
+                        tracing::debug!(
+                            "xx_image_description_info_v4#{}.target_max_fall({})",
+                            sender_id,
+                            max_fall
+                        );
+                        self.target_max_fall(client, sender_id, max_fall).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1792,6 +2023,8 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface {
             const INTERFACE: &'static str = "ivi_surface";
@@ -1804,6 +2037,17 @@ pub mod ivi_application {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_surface#{}.configure({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, width, height).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1847,6 +2091,8 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1934,6 +2180,8 @@ pub mod ivi_hmi_controller {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_hmi_controller {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1994,6 +2242,16 @@ pub mod ivi_hmi_controller {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let is_controlled = message.int()?;
+                        tracing::debug!(
+                            "ivi_hmi_controller#{}.workspace_end_control({})",
+                            sender_id,
+                            is_controlled
+                        );
+                        self.workspace_end_control(client, sender_id, is_controlled)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2093,6 +2351,8 @@ pub mod text_cursor_position {
     #[allow(clippy::too_many_arguments)]
     pub mod text_cursor_position {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
         pub trait TextCursorPosition {
             const INTERFACE: &'static str = "text_cursor_position";
@@ -2183,6 +2443,8 @@ pub mod weston_content_protection {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_content_protection {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2299,6 +2561,8 @@ pub mod weston_content_protection {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_protected_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2366,6 +2630,15 @@ pub mod weston_content_protection {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let r#type = message.uint()?;
+                        tracing::debug!(
+                            "weston_protected_surface#{}.status({})",
+                            sender_id,
+                            r#type
+                        );
+                        self.status(client, sender_id, r#type.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2502,6 +2775,8 @@ pub mod weston_debug {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugV1 {
             const INTERFACE: &'static str = "weston_debug_v1";
@@ -2514,6 +2789,21 @@ pub mod weston_debug {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let description = message.string()?;
+                        tracing::debug!(
+                            "weston_debug_v1#{}.available(\"{}\", \"{}\")",
+                            sender_id,
+                            name,
+                            description
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.available(client, sender_id, name, description).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2580,6 +2870,8 @@ pub mod weston_debug {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_stream_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
         pub trait WestonDebugStreamV1 {
             const INTERFACE: &'static str = "weston_debug_stream_v1";
@@ -2592,6 +2884,21 @@ pub mod weston_debug {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("weston_debug_stream_v1#{}.complete()", sender_id,);
+                        self.complete(client, sender_id).await
+                    }
+                    1u16 => {
+                        let message = message.string()?;
+                        tracing::debug!(
+                            "weston_debug_stream_v1#{}.failure(\"{}\")",
+                            sender_id,
+                            message
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.failure(client, sender_id, message).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2648,6 +2955,8 @@ pub mod weston_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_desktop_shell {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -2749,6 +3058,40 @@ pub mod weston_desktop {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let edges = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.configure({}, {}, {}, {})",
+                            sender_id,
+                            edges,
+                            surface,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, edges, surface, width, height)
+                            .await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.prepare_lock_surface()",
+                            sender_id,
+                        );
+                        self.prepare_lock_surface(client, sender_id).await
+                    }
+                    2u16 => {
+                        let cursor = message.uint()?;
+                        tracing::debug!(
+                            "weston_desktop_shell#{}.grab_cursor({})",
+                            sender_id,
+                            cursor
+                        );
+                        self.grab_cursor(client, sender_id, cursor).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2901,6 +3244,8 @@ pub mod weston_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_screensaver {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
         pub trait WestonScreensaver {
             const INTERFACE: &'static str = "weston_screensaver";
@@ -2970,6 +3315,8 @@ pub mod weston_direct_display {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_direct_display_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
         pub trait WestonDirectDisplayV1 {
             const INTERFACE: &'static str = "weston_direct_display_v1";
@@ -3035,6 +3382,8 @@ pub mod weston_output_capture {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3170,6 +3519,8 @@ pub mod weston_output_capture {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_capture_source_v1 {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3206,6 +3557,43 @@ pub mod weston_output_capture {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let drm_format = message.uint()?;
+                        tracing::debug!(
+                            "weston_capture_source_v1#{}.format({})",
+                            sender_id,
+                            drm_format
+                        );
+                        self.format(client, sender_id, drm_format).await
+                    }
+                    1u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "weston_capture_source_v1#{}.size({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.size(client, sender_id, width, height).await
+                    }
+                    2u16 => {
+                        tracing::debug!("weston_capture_source_v1#{}.complete()", sender_id,);
+                        self.complete(client, sender_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!("weston_capture_source_v1#{}.retry()", sender_id,);
+                        self.retry(client, sender_id).await
+                    }
+                    4u16 => {
+                        let msg = message.string()?;
+                        tracing::debug!(
+                            "weston_capture_source_v1#{}.failed(\"{}\")",
+                            sender_id,
+                            msg.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.failed(client, sender_id, msg).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3345,6 +3733,8 @@ pub mod weston_test {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_test {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3399,6 +3789,12 @@ pub mod weston_test {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!("weston_test#{}.pointer_position({}, {})", sender_id, x, y);
+                        self.pointer_position(client, sender_id, x, y).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3634,6 +4030,8 @@ pub mod weston_test {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_test_runner {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3670,6 +4068,10 @@ pub mod weston_test {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("weston_test_runner#{}.finished()", sender_id,);
+                        self.finished(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3740,6 +4142,8 @@ pub mod weston_touch_calibration {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibration {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3779,6 +4183,21 @@ pub mod weston_touch_calibration {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let device = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let head = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "weston_touch_calibration#{}.touch_device(\"{}\", \"{}\")",
+                            sender_id,
+                            device,
+                            head
+                        );
+                        self.touch_device(client, sender_id, device, head).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3914,6 +4333,8 @@ pub mod weston_touch_calibration {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_calibrator {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3953,6 +4374,77 @@ pub mod weston_touch_calibration {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "weston_touch_calibrator#{}.configure({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, width, height).await
+                    }
+                    1u16 => {
+                        tracing::debug!(
+                            "weston_touch_calibrator#{}.cancel_calibration()",
+                            sender_id,
+                        );
+                        self.cancel_calibration(client, sender_id).await
+                    }
+                    2u16 => {
+                        tracing::debug!("weston_touch_calibrator#{}.invalid_touch()", sender_id,);
+                        self.invalid_touch(client, sender_id).await
+                    }
+                    3u16 => {
+                        let time = message.uint()?;
+                        let id = message.int()?;
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        tracing::debug!(
+                            "weston_touch_calibrator#{}.down({}, {}, {}, {})",
+                            sender_id,
+                            time,
+                            id,
+                            x,
+                            y
+                        );
+                        self.down(client, sender_id, time, id, x, y).await
+                    }
+                    4u16 => {
+                        let time = message.uint()?;
+                        let id = message.int()?;
+                        tracing::debug!(
+                            "weston_touch_calibrator#{}.up({}, {})",
+                            sender_id,
+                            time,
+                            id
+                        );
+                        self.up(client, sender_id, time, id).await
+                    }
+                    5u16 => {
+                        let time = message.uint()?;
+                        let id = message.int()?;
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        tracing::debug!(
+                            "weston_touch_calibrator#{}.motion({}, {}, {}, {})",
+                            sender_id,
+                            time,
+                            id,
+                            x,
+                            y
+                        );
+                        self.motion(client, sender_id, time, id, x, y).await
+                    }
+                    6u16 => {
+                        tracing::debug!("weston_touch_calibrator#{}.frame()", sender_id,);
+                        self.frame(client, sender_id).await
+                    }
+                    7u16 => {
+                        tracing::debug!("weston_touch_calibrator#{}.cancel()", sender_id,);
+                        self.cancel(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4112,6 +4604,8 @@ pub mod weston_touch_calibration {
     }
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_coordinate {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
         pub trait WestonTouchCoordinate {
             const INTERFACE: &'static str = "weston_touch_coordinate";
@@ -4124,6 +4618,17 @@ pub mod weston_touch_calibration {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let x = message.uint()?;
+                        let y = message.uint()?;
+                        tracing::debug!(
+                            "weston_touch_coordinate#{}.result({}, {})",
+                            sender_id,
+                            x,
+                            y
+                        );
+                        self.result(client, sender_id, x, y).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }

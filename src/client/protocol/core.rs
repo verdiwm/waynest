@@ -6,6 +6,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_display {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These errors are global and can be emitted in response to any"]
         #[doc = "server request."]
         #[repr(u32)]
@@ -50,6 +52,29 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let object_id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let code = message.uint()?;
+                        let message = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "wl_display#{}.error({}, {}, \"{}\")",
+                            sender_id,
+                            object_id,
+                            code,
+                            message
+                        );
+                        self.error(client, sender_id, object_id, code, message)
+                            .await
+                    }
+                    1u16 => {
+                        let id = message.uint()?;
+                        tracing::debug!("wl_display#{}.delete_id({})", sender_id, id);
+                        self.delete_id(client, sender_id, id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -154,6 +179,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_registry {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_registry interface. See the module level documentation for more info"]
         pub trait WlRegistry {
             const INTERFACE: &'static str = "wl_registry";
@@ -166,6 +193,27 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let name = message.uint()?;
+                        let interface = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let version = message.uint()?;
+                        tracing::debug!(
+                            "wl_registry#{}.global({}, \"{}\", {})",
+                            sender_id,
+                            name,
+                            interface,
+                            version
+                        );
+                        self.global(client, sender_id, name, interface, version)
+                            .await
+                    }
+                    1u16 => {
+                        let name = message.uint()?;
+                        tracing::debug!("wl_registry#{}.global_remove({})", sender_id, name);
+                        self.global_remove(client, sender_id, name).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -226,6 +274,8 @@ pub mod wayland {
     #[doc = "factory interfaces, the wl_callback interface is frozen at version 1."]
     #[allow(clippy::too_many_arguments)]
     pub mod wl_callback {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_callback interface. See the module level documentation for more info"]
         pub trait WlCallback {
             const INTERFACE: &'static str = "wl_callback";
@@ -238,6 +288,13 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let callback_data = message.uint()?;
+                        tracing::debug!("wl_callback#{}.done({})", sender_id, callback_data);
+                        let result = self.done(client, sender_id, callback_data).await;
+                        client.remove(sender_id);
+                        result
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -256,6 +313,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_compositor {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_compositor interface. See the module level documentation for more info"]
         pub trait WlCompositor {
             const INTERFACE: &'static str = "wl_compositor";
@@ -315,6 +374,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_shm_pool {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_shm_pool interface. See the module level documentation for more info"]
         pub trait WlShmPool {
             const INTERFACE: &'static str = "wl_shm_pool";
@@ -420,6 +481,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_shm {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These errors can be emitted in response to wl_shm requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -847,6 +910,11 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let format = message.uint()?;
+                        tracing::debug!("wl_shm#{}.format({})", sender_id, format);
+                        self.format(client, sender_id, format.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -919,6 +987,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_buffer {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_buffer interface. See the module level documentation for more info"]
         pub trait WlBuffer {
             const INTERFACE: &'static str = "wl_buffer";
@@ -931,6 +1001,10 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        tracing::debug!("wl_buffer#{}.release()", sender_id,);
+                        self.release(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -980,6 +1054,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_data_offer {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1022,6 +1098,28 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_data_offer#{}.offer(\"{}\")", sender_id, mime_type);
+                        self.offer(client, sender_id, mime_type).await
+                    }
+                    1u16 => {
+                        let source_actions = message.uint()?;
+                        tracing::debug!(
+                            "wl_data_offer#{}.source_actions({})",
+                            sender_id,
+                            source_actions
+                        );
+                        self.source_actions(client, sender_id, source_actions.try_into()?)
+                            .await
+                    }
+                    2u16 => {
+                        let dnd_action = message.uint()?;
+                        tracing::debug!("wl_data_offer#{}.action({})", sender_id, dnd_action);
+                        self.action(client, sender_id, dnd_action.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1243,6 +1341,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_data_source {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1279,6 +1379,47 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let mime_type = message.string()?;
+                        tracing::debug!(
+                            "wl_data_source#{}.target(\"{}\")",
+                            sender_id,
+                            mime_type
+                                .as_ref()
+                                .map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.target(client, sender_id, mime_type).await
+                    }
+                    1u16 => {
+                        let mime_type = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let fd = message.fd()?;
+                        tracing::debug!(
+                            "wl_data_source#{}.send(\"{}\", {})",
+                            sender_id,
+                            mime_type,
+                            fd.as_raw_fd()
+                        );
+                        self.send(client, sender_id, mime_type, fd).await
+                    }
+                    2u16 => {
+                        tracing::debug!("wl_data_source#{}.cancelled()", sender_id,);
+                        self.cancelled(client, sender_id).await
+                    }
+                    3u16 => {
+                        tracing::debug!("wl_data_source#{}.dnd_drop_performed()", sender_id,);
+                        self.dnd_drop_performed(client, sender_id).await
+                    }
+                    4u16 => {
+                        tracing::debug!("wl_data_source#{}.dnd_finished()", sender_id,);
+                        self.dnd_finished(client, sender_id).await
+                    }
+                    5u16 => {
+                        let dnd_action = message.uint()?;
+                        tracing::debug!("wl_data_source#{}.action({})", sender_id, dnd_action);
+                        self.action(client, sender_id, dnd_action.try_into()?).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1452,6 +1593,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_data_device {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1488,6 +1631,63 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_data_device#{}.data_offer({})", sender_id, id);
+                        self.data_offer(client, sender_id, id).await
+                    }
+                    1u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        let id = message.object()?;
+                        tracing::debug!(
+                            "wl_data_device#{}.enter({}, {}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            surface,
+                            x,
+                            y,
+                            id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.enter(client, sender_id, serial, surface, x, y, id)
+                            .await
+                    }
+                    2u16 => {
+                        tracing::debug!("wl_data_device#{}.leave()", sender_id,);
+                        self.leave(client, sender_id).await
+                    }
+                    3u16 => {
+                        let time = message.uint()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "wl_data_device#{}.motion({}, {}, {})",
+                            sender_id,
+                            time,
+                            x,
+                            y
+                        );
+                        self.motion(client, sender_id, time, x, y).await
+                    }
+                    4u16 => {
+                        tracing::debug!("wl_data_device#{}.drop()", sender_id,);
+                        self.drop(client, sender_id).await
+                    }
+                    5u16 => {
+                        let id = message.object()?;
+                        tracing::debug!(
+                            "wl_data_device#{}.selection({})",
+                            sender_id,
+                            id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                        );
+                        self.selection(client, sender_id, id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -1677,6 +1877,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_data_device_manager {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "This is a bitmask of the available/preferred actions in a"] # [doc = "drag-and-drop operation."] # [doc = ""] # [doc = "In the compositor, the selected action is a result of matching the"] # [doc = "actions offered by the source and destination sides.  \"action\" events"] # [doc = "with a \"none\" action will be sent to both source and destination if"] # [doc = "there is no match. All further checks will effectively happen on"] # [doc = "(source actions ∩ destination actions)."] # [doc = ""] # [doc = "In addition, compositors may also pick different actions in"] # [doc = "reaction to key modifiers being pressed. One common design that"] # [doc = "is used in major toolkits (and the behavior recommended for"] # [doc = "compositors) is:"] # [doc = ""] # [doc = "- If no modifiers are pressed, the first match (in bit order)"] # [doc = "will be used."] # [doc = "- Pressing Shift selects \"move\", if enabled in the mask."] # [doc = "- Pressing Control selects \"copy\", if enabled in the mask."] # [doc = ""] # [doc = "Behavior beyond that is considered implementation-dependent."] # [doc = "Compositors may for example bind other modifiers (like Alt/Meta)"] # [doc = "or drags initiated with other buttons than BTN_LEFT to specific"] # [doc = "actions (e.g. \"ask\")."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct DndAction : u32 { # [doc = "no action"] const None = 0u32 ; # [doc = "copy action"] const Copy = 1u32 ; # [doc = "move action"] const Move = 2u32 ; # [doc = "ask action"] const Ask = 4u32 ; } }
         impl TryFrom<u32> for DndAction {
             type Error = crate::wire::DecodeError;
@@ -1755,6 +1957,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_shell {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1829,6 +2033,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_shell_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "These values are used to indicate which edge of a surface"] # [doc = "is being dragged in a resize operation. The server may"] # [doc = "use this information to adapt its behavior, e.g. choose"] # [doc = "an appropriate cursor image."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Resize : u32 { # [doc = "no edge"] const None = 0u32 ; # [doc = "top edge"] const Top = 1u32 ; # [doc = "bottom edge"] const Bottom = 2u32 ; # [doc = "left edge"] const Left = 4u32 ; # [doc = "top and left edges"] const TopLeft = 5u32 ; # [doc = "bottom and left edges"] const BottomLeft = 6u32 ; # [doc = "right edge"] const Right = 8u32 ; # [doc = "top and right edges"] const TopRight = 9u32 ; # [doc = "bottom and right edges"] const BottomRight = 10u32 ; } }
         impl TryFrom<u32> for Resize {
             type Error = crate::wire::DecodeError;
@@ -1898,6 +2104,29 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        tracing::debug!("wl_shell_surface#{}.ping({})", sender_id, serial);
+                        self.ping(client, sender_id, serial).await
+                    }
+                    1u16 => {
+                        let edges = message.uint()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "wl_shell_surface#{}.configure({}, {}, {})",
+                            sender_id,
+                            edges,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, edges.try_into()?, width, height)
+                            .await
+                    }
+                    2u16 => {
+                        tracing::debug!("wl_shell_surface#{}.popup_done()", sender_id,);
+                        self.popup_done(client, sender_id).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2265,6 +2494,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "These errors can be emitted in response to wl_surface requests."]
         #[repr(u32)]
         #[non_exhaustive]
@@ -2311,6 +2542,39 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_surface#{}.enter({})", sender_id, output);
+                        self.enter(client, sender_id, output).await
+                    }
+                    1u16 => {
+                        let output = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_surface#{}.leave({})", sender_id, output);
+                        self.leave(client, sender_id, output).await
+                    }
+                    2u16 => {
+                        let factor = message.int()?;
+                        tracing::debug!(
+                            "wl_surface#{}.preferred_buffer_scale({})",
+                            sender_id,
+                            factor
+                        );
+                        self.preferred_buffer_scale(client, sender_id, factor).await
+                    }
+                    3u16 => {
+                        let transform = message.uint()?;
+                        tracing::debug!(
+                            "wl_surface#{}.preferred_buffer_transform({})",
+                            sender_id,
+                            transform
+                        );
+                        self.preferred_buffer_transform(client, sender_id, transform.try_into()?)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -2842,6 +3106,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_seat {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         bitflags::bitflags! { # [doc = "This is a bitmask of capabilities this seat has; if a member is"] # [doc = "set, then it is present on the seat."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the seat has pointer devices"] const Pointer = 1u32 ; # [doc = "the seat has one or more keyboards"] const Keyboard = 2u32 ; # [doc = "the seat has touch devices"] const Touch = 4u32 ; } }
         impl TryFrom<u32> for Capability {
             type Error = crate::wire::DecodeError;
@@ -2888,6 +3154,19 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let capabilities = message.uint()?;
+                        tracing::debug!("wl_seat#{}.capabilities({})", sender_id, capabilities);
+                        self.capabilities(client, sender_id, capabilities.try_into()?)
+                            .await
+                    }
+                    1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_seat#{}.name(\"{}\")", sender_id, name);
+                        self.name(client, sender_id, name).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3040,6 +3319,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_pointer {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -3196,6 +3477,134 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let surface_x = message.fixed()?;
+                        let surface_y = message.fixed()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.enter({}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            surface,
+                            surface_x,
+                            surface_y
+                        );
+                        self.enter(client, sender_id, serial, surface, surface_x, surface_y)
+                            .await
+                    }
+                    1u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_pointer#{}.leave({}, {})", sender_id, serial, surface);
+                        self.leave(client, sender_id, serial, surface).await
+                    }
+                    2u16 => {
+                        let time = message.uint()?;
+                        let surface_x = message.fixed()?;
+                        let surface_y = message.fixed()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.motion({}, {}, {})",
+                            sender_id,
+                            time,
+                            surface_x,
+                            surface_y
+                        );
+                        self.motion(client, sender_id, time, surface_x, surface_y)
+                            .await
+                    }
+                    3u16 => {
+                        let serial = message.uint()?;
+                        let time = message.uint()?;
+                        let button = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.button({}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            time,
+                            button,
+                            state
+                        );
+                        self.button(client, sender_id, serial, time, button, state.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        let time = message.uint()?;
+                        let axis = message.uint()?;
+                        let value = message.fixed()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.axis({}, {}, {})",
+                            sender_id,
+                            time,
+                            axis,
+                            value
+                        );
+                        self.axis(client, sender_id, time, axis.try_into()?, value)
+                            .await
+                    }
+                    5u16 => {
+                        tracing::debug!("wl_pointer#{}.frame()", sender_id,);
+                        self.frame(client, sender_id).await
+                    }
+                    6u16 => {
+                        let axis_source = message.uint()?;
+                        tracing::debug!("wl_pointer#{}.axis_source({})", sender_id, axis_source);
+                        self.axis_source(client, sender_id, axis_source.try_into()?)
+                            .await
+                    }
+                    7u16 => {
+                        let time = message.uint()?;
+                        let axis = message.uint()?;
+                        tracing::debug!("wl_pointer#{}.axis_stop({}, {})", sender_id, time, axis);
+                        self.axis_stop(client, sender_id, time, axis.try_into()?)
+                            .await
+                    }
+                    8u16 => {
+                        let axis = message.uint()?;
+                        let discrete = message.int()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.axis_discrete({}, {})",
+                            sender_id,
+                            axis,
+                            discrete
+                        );
+                        self.axis_discrete(client, sender_id, axis.try_into()?, discrete)
+                            .await
+                    }
+                    9u16 => {
+                        let axis = message.uint()?;
+                        let value120 = message.int()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.axis_value120({}, {})",
+                            sender_id,
+                            axis,
+                            value120
+                        );
+                        self.axis_value120(client, sender_id, axis.try_into()?, value120)
+                            .await
+                    }
+                    10u16 => {
+                        let axis = message.uint()?;
+                        let direction = message.uint()?;
+                        tracing::debug!(
+                            "wl_pointer#{}.axis_relative_direction({}, {})",
+                            sender_id,
+                            axis,
+                            direction
+                        );
+                        self.axis_relative_direction(
+                            client,
+                            sender_id,
+                            axis.try_into()?,
+                            direction.try_into()?,
+                        )
+                        .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3570,6 +3979,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_keyboard {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This specifies the format of the keymap provided to the"]
         #[doc = "client with the wl_keyboard.keymap event."]
         #[repr(u32)]
@@ -3644,6 +4055,96 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let format = message.uint()?;
+                        let fd = message.fd()?;
+                        let size = message.uint()?;
+                        tracing::debug!(
+                            "wl_keyboard#{}.keymap({}, {}, {})",
+                            sender_id,
+                            format,
+                            fd.as_raw_fd(),
+                            size
+                        );
+                        self.keymap(client, sender_id, format.try_into()?, fd, size)
+                            .await
+                    }
+                    1u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let keys = message.array()?;
+                        tracing::debug!(
+                            "wl_keyboard#{}.enter({}, {}, array[{}])",
+                            sender_id,
+                            serial,
+                            surface,
+                            keys.len()
+                        );
+                        self.enter(client, sender_id, serial, surface, keys).await
+                    }
+                    2u16 => {
+                        let serial = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_keyboard#{}.leave({}, {})", sender_id, serial, surface);
+                        self.leave(client, sender_id, serial, surface).await
+                    }
+                    3u16 => {
+                        let serial = message.uint()?;
+                        let time = message.uint()?;
+                        let key = message.uint()?;
+                        let state = message.uint()?;
+                        tracing::debug!(
+                            "wl_keyboard#{}.key({}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            time,
+                            key,
+                            state
+                        );
+                        self.key(client, sender_id, serial, time, key, state.try_into()?)
+                            .await
+                    }
+                    4u16 => {
+                        let serial = message.uint()?;
+                        let mods_depressed = message.uint()?;
+                        let mods_latched = message.uint()?;
+                        let mods_locked = message.uint()?;
+                        let group = message.uint()?;
+                        tracing::debug!(
+                            "wl_keyboard#{}.modifiers({}, {}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            mods_depressed,
+                            mods_latched,
+                            mods_locked,
+                            group
+                        );
+                        self.modifiers(
+                            client,
+                            sender_id,
+                            serial,
+                            mods_depressed,
+                            mods_latched,
+                            mods_locked,
+                            group,
+                        )
+                        .await
+                    }
+                    5u16 => {
+                        let rate = message.int()?;
+                        let delay = message.int()?;
+                        tracing::debug!(
+                            "wl_keyboard#{}.repeat_info({}, {})",
+                            sender_id,
+                            rate,
+                            delay
+                        );
+                        self.repeat_info(client, sender_id, rate, delay).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3798,6 +4299,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_touch {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
         pub trait WlTouch {
             const INTERFACE: &'static str = "wl_touch";
@@ -3810,6 +4313,82 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let serial = message.uint()?;
+                        let time = message.uint()?;
+                        let surface = message
+                            .object()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let id = message.int()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "wl_touch#{}.down({}, {}, {}, {}, {}, {})",
+                            sender_id,
+                            serial,
+                            time,
+                            surface,
+                            id,
+                            x,
+                            y
+                        );
+                        self.down(client, sender_id, serial, time, surface, id, x, y)
+                            .await
+                    }
+                    1u16 => {
+                        let serial = message.uint()?;
+                        let time = message.uint()?;
+                        let id = message.int()?;
+                        tracing::debug!("wl_touch#{}.up({}, {}, {})", sender_id, serial, time, id);
+                        self.up(client, sender_id, serial, time, id).await
+                    }
+                    2u16 => {
+                        let time = message.uint()?;
+                        let id = message.int()?;
+                        let x = message.fixed()?;
+                        let y = message.fixed()?;
+                        tracing::debug!(
+                            "wl_touch#{}.motion({}, {}, {}, {})",
+                            sender_id,
+                            time,
+                            id,
+                            x,
+                            y
+                        );
+                        self.motion(client, sender_id, time, id, x, y).await
+                    }
+                    3u16 => {
+                        tracing::debug!("wl_touch#{}.frame()", sender_id,);
+                        self.frame(client, sender_id).await
+                    }
+                    4u16 => {
+                        tracing::debug!("wl_touch#{}.cancel()", sender_id,);
+                        self.cancel(client, sender_id).await
+                    }
+                    5u16 => {
+                        let id = message.int()?;
+                        let major = message.fixed()?;
+                        let minor = message.fixed()?;
+                        tracing::debug!(
+                            "wl_touch#{}.shape({}, {}, {})",
+                            sender_id,
+                            id,
+                            major,
+                            minor
+                        );
+                        self.shape(client, sender_id, id, major, minor).await
+                    }
+                    6u16 => {
+                        let id = message.int()?;
+                        let orientation = message.fixed()?;
+                        tracing::debug!(
+                            "wl_touch#{}.orientation({}, {})",
+                            sender_id,
+                            id,
+                            orientation
+                        );
+                        self.orientation(client, sender_id, id, orientation).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -3961,6 +4540,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_output {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "This enumeration describes how the physical"]
         #[doc = "pixels on an output are laid out."]
         #[repr(u32)]
@@ -4075,6 +4656,84 @@ pub mod wayland {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let physical_width = message.int()?;
+                        let physical_height = message.int()?;
+                        let subpixel = message.uint()?;
+                        let make = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let model = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let transform = message.uint()?;
+                        tracing::debug!(
+                            "wl_output#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                            sender_id,
+                            x,
+                            y,
+                            physical_width,
+                            physical_height,
+                            subpixel,
+                            make,
+                            model,
+                            transform
+                        );
+                        self.geometry(
+                            client,
+                            sender_id,
+                            x,
+                            y,
+                            physical_width,
+                            physical_height,
+                            subpixel.try_into()?,
+                            make,
+                            model,
+                            transform.try_into()?,
+                        )
+                        .await
+                    }
+                    1u16 => {
+                        let flags = message.uint()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        let refresh = message.int()?;
+                        tracing::debug!(
+                            "wl_output#{}.mode({}, {}, {}, {})",
+                            sender_id,
+                            flags,
+                            width,
+                            height,
+                            refresh
+                        );
+                        self.mode(client, sender_id, flags.try_into()?, width, height, refresh)
+                            .await
+                    }
+                    2u16 => {
+                        tracing::debug!("wl_output#{}.done()", sender_id,);
+                        self.done(client, sender_id).await
+                    }
+                    3u16 => {
+                        let factor = message.int()?;
+                        tracing::debug!("wl_output#{}.scale({})", sender_id, factor);
+                        self.scale(client, sender_id, factor).await
+                    }
+                    4u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_output#{}.name(\"{}\")", sender_id, name);
+                        self.name(client, sender_id, name).await
+                    }
+                    5u16 => {
+                        let description = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("wl_output#{}.description(\"{}\")", sender_id, description);
+                        self.description(client, sender_id, description).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -4264,6 +4923,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_region {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_region interface. See the module level documentation for more info"]
         pub trait WlRegion {
             const INTERFACE: &'static str = "wl_region";
@@ -4360,6 +5021,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_subcompositor {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4509,6 +5172,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_subsurface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4700,6 +5365,8 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_fixes {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the wl_fixes interface. See the module level documentation for more info"]
         pub trait WlFixes {
             const INTERFACE: &'static str = "wl_fixes";

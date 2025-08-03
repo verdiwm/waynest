@@ -4,6 +4,8 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
         pub trait IviSurface {
             const INTERFACE: &'static str = "ivi_surface";
@@ -16,6 +18,17 @@ pub mod ivi_application {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_surface#{}.configure({}, {})",
+                            sender_id,
+                            width,
+                            height
+                        );
+                        self.configure(client, sender_id, width, height).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -59,6 +72,8 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_application {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -148,6 +163,8 @@ pub mod ivi_input {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_input {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
         pub trait IviInput {
             const INTERFACE: &'static str = "ivi_input";
@@ -160,6 +177,73 @@ pub mod ivi_input {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let capabilities = message.uint()?;
+                        let is_default = message.int()?;
+                        tracing::debug!(
+                            "ivi_input#{}.seat_created(\"{}\", {}, {})",
+                            sender_id,
+                            name,
+                            capabilities,
+                            is_default
+                        );
+                        self.seat_created(client, sender_id, name, capabilities, is_default)
+                            .await
+                    }
+                    1u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let capabilities = message.uint()?;
+                        tracing::debug!(
+                            "ivi_input#{}.seat_capabilities(\"{}\", {})",
+                            sender_id,
+                            name,
+                            capabilities
+                        );
+                        self.seat_capabilities(client, sender_id, name, capabilities)
+                            .await
+                    }
+                    2u16 => {
+                        let name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!("ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
+                        self.seat_destroyed(client, sender_id, name).await
+                    }
+                    3u16 => {
+                        let surface = message.uint()?;
+                        let device = message.uint()?;
+                        let enabled = message.int()?;
+                        tracing::debug!(
+                            "ivi_input#{}.input_focus({}, {}, {})",
+                            sender_id,
+                            surface,
+                            device,
+                            enabled
+                        );
+                        self.input_focus(client, sender_id, surface, device, enabled)
+                            .await
+                    }
+                    4u16 => {
+                        let surface = message.uint()?;
+                        let seat = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        let accepted = message.int()?;
+                        tracing::debug!(
+                            "ivi_input#{}.input_acceptance({}, \"{}\", {})",
+                            sender_id,
+                            surface,
+                            seat,
+                            accepted
+                        );
+                        self.input_acceptance(client, sender_id, surface, seat, accepted)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -266,6 +350,8 @@ pub mod ivi_wm {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm_screen {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -305,6 +391,40 @@ pub mod ivi_wm {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let id = message.uint()?;
+                        tracing::debug!("ivi_wm_screen#{}.screen_id({})", sender_id, id);
+                        self.screen_id(client, sender_id, id).await
+                    }
+                    1u16 => {
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm_screen#{}.layer_added({})", sender_id, layer_id);
+                        self.layer_added(client, sender_id, layer_id).await
+                    }
+                    2u16 => {
+                        let process_name = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_wm_screen#{}.connector_name(\"{}\")",
+                            sender_id,
+                            process_name
+                        );
+                        self.connector_name(client, sender_id, process_name).await
+                    }
+                    3u16 => {
+                        let error = message.uint()?;
+                        let message = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_wm_screen#{}.error({}, \"{}\")",
+                            sender_id,
+                            error,
+                            message
+                        );
+                        self.error(client, sender_id, error, message).await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -441,6 +561,8 @@ pub mod ivi_wm {
     #[doc = "so the client shall then destroy its proxy too."]
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_screenshot {
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -492,6 +614,25 @@ pub mod ivi_wm {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let timestamp = message.uint()?;
+                        tracing::debug!("ivi_screenshot#{}.done({})", sender_id, timestamp);
+                        self.done(client, sender_id, timestamp).await
+                    }
+                    1u16 => {
+                        let error = message.uint()?;
+                        let message = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_screenshot#{}.error({}, \"{}\")",
+                            sender_id,
+                            error,
+                            message
+                        );
+                        self.error(client, sender_id, error.try_into()?, message)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
@@ -516,6 +657,8 @@ pub mod ivi_wm {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_wm {
         use futures_util::SinkExt;
+        #[allow(unused)]
+        use std::os::fd::AsRawFd;
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -653,6 +796,226 @@ pub mod ivi_wm {
             ) -> crate::client::Result<()> {
                 #[allow(clippy::match_single_binding)]
                 match message.opcode() {
+                    0u16 => {
+                        let surface_id = message.uint()?;
+                        let visibility = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_visibility({}, {})",
+                            sender_id,
+                            surface_id,
+                            visibility
+                        );
+                        self.surface_visibility(client, sender_id, surface_id, visibility)
+                            .await
+                    }
+                    1u16 => {
+                        let layer_id = message.uint()?;
+                        let visibility = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_visibility({}, {})",
+                            sender_id,
+                            layer_id,
+                            visibility
+                        );
+                        self.layer_visibility(client, sender_id, layer_id, visibility)
+                            .await
+                    }
+                    2u16 => {
+                        let surface_id = message.uint()?;
+                        let opacity = message.fixed()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_opacity({}, {})",
+                            sender_id,
+                            surface_id,
+                            opacity
+                        );
+                        self.surface_opacity(client, sender_id, surface_id, opacity)
+                            .await
+                    }
+                    3u16 => {
+                        let layer_id = message.uint()?;
+                        let opacity = message.fixed()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_opacity({}, {})",
+                            sender_id,
+                            layer_id,
+                            opacity
+                        );
+                        self.layer_opacity(client, sender_id, layer_id, opacity)
+                            .await
+                    }
+                    4u16 => {
+                        let surface_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_source_rectangle({}, {}, {}, {}, {})",
+                            sender_id,
+                            surface_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.surface_source_rectangle(
+                            client, sender_id, surface_id, x, y, width, height,
+                        )
+                        .await
+                    }
+                    5u16 => {
+                        let layer_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_source_rectangle({}, {}, {}, {}, {})",
+                            sender_id,
+                            layer_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.layer_source_rectangle(
+                            client, sender_id, layer_id, x, y, width, height,
+                        )
+                        .await
+                    }
+                    6u16 => {
+                        let surface_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_destination_rectangle({}, {}, {}, {}, {})",
+                            sender_id,
+                            surface_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.surface_destination_rectangle(
+                            client, sender_id, surface_id, x, y, width, height,
+                        )
+                        .await
+                    }
+                    7u16 => {
+                        let layer_id = message.uint()?;
+                        let x = message.int()?;
+                        let y = message.int()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_destination_rectangle({}, {}, {}, {}, {})",
+                            sender_id,
+                            layer_id,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        self.layer_destination_rectangle(
+                            client, sender_id, layer_id, x, y, width, height,
+                        )
+                        .await
+                    }
+                    8u16 => {
+                        let surface_id = message.uint()?;
+                        tracing::debug!("ivi_wm#{}.surface_created({})", sender_id, surface_id);
+                        self.surface_created(client, sender_id, surface_id).await
+                    }
+                    9u16 => {
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm#{}.layer_created({})", sender_id, layer_id);
+                        self.layer_created(client, sender_id, layer_id).await
+                    }
+                    10u16 => {
+                        let surface_id = message.uint()?;
+                        tracing::debug!("ivi_wm#{}.surface_destroyed({})", sender_id, surface_id);
+                        self.surface_destroyed(client, sender_id, surface_id).await
+                    }
+                    11u16 => {
+                        let layer_id = message.uint()?;
+                        tracing::debug!("ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
+                        self.layer_destroyed(client, sender_id, layer_id).await
+                    }
+                    12u16 => {
+                        let object_id = message.uint()?;
+                        let error = message.uint()?;
+                        let message = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_error({}, {}, \"{}\")",
+                            sender_id,
+                            object_id,
+                            error,
+                            message
+                        );
+                        self.surface_error(client, sender_id, object_id, error, message)
+                            .await
+                    }
+                    13u16 => {
+                        let object_id = message.uint()?;
+                        let error = message.uint()?;
+                        let message = message
+                            .string()?
+                            .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_error({}, {}, \"{}\")",
+                            sender_id,
+                            object_id,
+                            error,
+                            message
+                        );
+                        self.layer_error(client, sender_id, object_id, error, message)
+                            .await
+                    }
+                    14u16 => {
+                        let surface_id = message.uint()?;
+                        let width = message.int()?;
+                        let height = message.int()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_size({}, {}, {})",
+                            sender_id,
+                            surface_id,
+                            width,
+                            height
+                        );
+                        self.surface_size(client, sender_id, surface_id, width, height)
+                            .await
+                    }
+                    15u16 => {
+                        let surface_id = message.uint()?;
+                        let frame_count = message.uint()?;
+                        let pid = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.surface_stats({}, {}, {})",
+                            sender_id,
+                            surface_id,
+                            frame_count,
+                            pid
+                        );
+                        self.surface_stats(client, sender_id, surface_id, frame_count, pid)
+                            .await
+                    }
+                    16u16 => {
+                        let layer_id = message.uint()?;
+                        let surface_id = message.uint()?;
+                        tracing::debug!(
+                            "ivi_wm#{}.layer_surface_added({}, {})",
+                            sender_id,
+                            layer_id,
+                            surface_id
+                        );
+                        self.layer_surface_added(client, sender_id, layer_id, surface_id)
+                            .await
+                    }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
