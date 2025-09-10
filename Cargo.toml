@@ -46,9 +46,9 @@ fuzz = ["dep:arbitrary"]
 [dependencies]
 bytes = "1.10.1"
 pin-project-lite = "0.2.16"
-rustix = { version = "1.0.7", features = ["fs", "net"] }
-thiserror = "2.0.12"
-tokio = { version = "1.45.1", features = ["io-util", "net"] }
+rustix = { version = "1.1.2", features = ["fs", "net"] }
+thiserror = "2.0.16"
+tokio = { version = "1.47.1", features = ["io-util", "net"] }
 tokio-stream = { version = "0.1.17", default-features = false }
 futures-util = { version = "0.3.31", default-features = false, features = [
     "sink",
@@ -56,17 +56,17 @@ futures-util = { version = "0.3.31", default-features = false, features = [
 
 waynest-macros = { version = "0.0.25", path = "macros" }
 
-async-trait = { version = "0.1.88", optional = true }
-bitflags = { version = "2.9.1", optional = true }
+async-trait = { version = "0.1.89", optional = true }
+bitflags = { version = "2.9.4", optional = true }
 
 tracing = { version = "0.1.41", optional = true }
-arbitrary = { version = "1.4.1", optional = true, features = ["derive"] }
-downcast-rs = { version = "2.0.1", optional = true }
+arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }
+downcast-rs = { version = "2.0.2", optional = true }
 
 [dev-dependencies]
-anyhow = "1.0.98"
-tokio = { version = "1.45.1", features = ["rt-multi-thread", "macros"] }
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+anyhow = "1.0.99"
+tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 
 [package.metadata.docs.rs]
 all-features = true
