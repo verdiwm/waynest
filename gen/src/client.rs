@@ -30,8 +30,8 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let name = &interface.name;
             let version = &interface.version;
 
-            let dispatchers = write_dispatchers(&interface, interface.events.clone().into_iter());
-            let enums = write_enums(&interface);
+            let dispatchers = write_dispatchers(interface, interface.events.clone().into_iter());
+            let enums = write_enums(interface);
             let requests = write_requests(pairs, pair, interface);
             let events = write_events(pairs, pair, interface);
 

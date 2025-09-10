@@ -15,7 +15,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
 
     for (opcode, request) in messages.enumerate() {
         let opcode = opcode as u16;
-        let name = make_ident(&request.name.to_snek_case());
+        let name = make_ident(request.name.to_snek_case());
 
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
@@ -41,7 +41,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
 
             let caller = make_ident(arg.to_caller());
 
-            let name = make_ident(&arg.name.to_snek_case());
+            let name = make_ident(arg.name.to_snek_case());
 
             setters.push(quote! {
                let #name = message.#caller()? #optional;

@@ -187,8 +187,7 @@ impl Arg {
                     pair.protocol
                         .interfaces
                         .iter()
-                        .find(|e| e.name == enum_interface)
-                        .is_some()
+                        .any(|e| e.name == enum_interface)
                 })
                 .cloned();
         }
