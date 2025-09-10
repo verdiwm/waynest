@@ -41,7 +41,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
 
             let caller = make_ident(arg.to_caller());
 
-            let name = make_ident(&arg.name);
+            let name = make_ident(&arg.name.to_snek_case());
 
             setters.push(quote! {
                let #name = message.#caller()? #optional;

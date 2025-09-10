@@ -2398,15 +2398,15 @@ pub mod wayland {
                             self.set_title(socket, sender_id, title).await
                         }
                         9u16 => {
-                            let class_ = message
+                            let class = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "wl_shell_surface#{}.set_class(\"{}\")",
                                 sender_id,
-                                class_
+                                class
                             );
-                            self.set_class(socket, sender_id, class_).await
+                            self.set_class(socket, sender_id, class).await
                         }
                         opcode => Err(crate::server::error::Error::UnknownOpcode(opcode)),
                     }

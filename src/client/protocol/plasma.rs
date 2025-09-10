@@ -2007,26 +2007,26 @@ pub mod kde_output_device_v2 {
                         self.uuid(socket, sender_id, uuid).await
                     }
                     8u16 => {
-                        let serialNumber = message
+                        let serial_number = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "kde_output_device_v2#{}.serial_number(\"{}\")",
                             sender_id,
-                            serialNumber
+                            serial_number
                         );
-                        self.serial_number(socket, sender_id, serialNumber).await
+                        self.serial_number(socket, sender_id, serial_number).await
                     }
                     9u16 => {
-                        let eisaId = message
+                        let eisa_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "kde_output_device_v2#{}.eisa_id(\"{}\")",
                             sender_id,
-                            eisaId
+                            eisa_id
                         );
-                        self.eisa_id(socket, sender_id, eisaId).await
+                        self.eisa_id(socket, sender_id, eisa_id).await
                     }
                     10u16 => {
                         let flags = message.uint()?;
@@ -4652,26 +4652,26 @@ pub mod org_kde_kwin_outputdevice {
                         self.colorcurves(socket, sender_id, red, green, blue).await
                     }
                     9u16 => {
-                        let serialNumber = message
+                        let serial_number = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "org_kde_kwin_outputdevice#{}.serial_number(\"{}\")",
                             sender_id,
-                            serialNumber
+                            serial_number
                         );
-                        self.serial_number(socket, sender_id, serialNumber).await
+                        self.serial_number(socket, sender_id, serial_number).await
                     }
                     10u16 => {
-                        let eisaId = message
+                        let eisa_id = message
                             .string()?
                             .ok_or(crate::wire::DecodeError::MalformedPayload)?;
                         tracing::debug!(
                             "org_kde_kwin_outputdevice#{}.eisa_id(\"{}\")",
                             sender_id,
-                            eisaId
+                            eisa_id
                         );
-                        self.eisa_id(socket, sender_id, eisaId).await
+                        self.eisa_id(socket, sender_id, eisa_id).await
                     }
                     11u16 => {
                         let flags = message.uint()?;
