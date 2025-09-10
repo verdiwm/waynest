@@ -18,7 +18,7 @@ TEMP_JSON=$(mktemp)
 # Initialize empty JSON object
 echo '{}' >"$TEMP_JSON"
 
-declare -a ordered_keys=("core" "stable" "staging" "unstable" "wlr" "plasma" "weston" "cosmic" "frog" "ivi" "hyprland" "mesa")
+declare -a ordered_keys=("core" "stable" "staging" "unstable" "wlr" "plasma" "weston" "cosmic" "frog" "ivi" "hyprland" "mesa" "treeland")
 declare -A folders=(
     ["core"]="protocols/wayland/protocol"
     ["stable"]="protocols/wayland-protocols/stable"
@@ -32,11 +32,14 @@ declare -A folders=(
     ["ivi"]="protocols/wayland-ivi-extension/protocol"
     ["hyprland"]="protocols/hyprland-protocols/protocols"
     ["mesa"]="protocols/mesa/src/egl/wayland/wayland-drm"
+    ["treeland"]="protocols/treeland-protocols/xml"
 )
 declare -a excluded_files=(
     "tests.xml"
     "cosmic-image-source-unstable-v1.xml"
     "cosmic-workspace-unstable-v1.xml"
+    "treeland-personalization-manager-v1.xml"
+    "treeland-capture-unstable-v1.xml" # FIXME: I think this might be the generator fault
 )
 
 # Process each folder in the specified order

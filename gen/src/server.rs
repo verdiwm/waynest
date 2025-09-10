@@ -205,27 +205,23 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
             if let Some((enum_interface, name)) = arg.to_enum_name() {
                 let e = if let Some(enum_interface) = enum_interface {
-                    pairs
-                        .iter()
-                        .find_map(|pair| {
-                            pair.protocol
-                                .interfaces
-                                .iter()
-                                .find(|e| e.name == enum_interface)
-                        })
-                        .unwrap()
-                        .enums
-                        .iter()
-                        .find(|e| e.name == name)
-                        .unwrap()
+                    pairs.iter().find_map(|pair| {
+                        pair.protocol
+                            .interfaces
+                            .iter()
+                            .find(|e| e.name == enum_interface)
+                            .and_then(|interface| interface.enums.iter().find(|e| e.name == name))
+                    })
                 } else {
                     find_enum(&pair.protocol, &name)
                 };
 
-                if e.bitfield {
-                    build_convert = quote! { .bits() };
-                } else {
-                    build_convert = quote! {  as u32 };
+                if let Some(e) = e {
+                    if e.bitfield {
+                        build_convert = quote! { .bits() };
+                    } else {
+                        build_convert = quote! {  as u32 };
+                    }
                 }
             }
 

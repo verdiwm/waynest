@@ -23,6 +23,9 @@ pub mod stable;
 #[cfg(feature = "staging")]
 #[cfg_attr(docsrs, doc(cfg(feature = "staging")))]
 pub mod staging;
+#[cfg(feature = "treeland")]
+#[cfg_attr(docsrs, doc(cfg(feature = "treeland")))]
+pub mod treeland;
 #[cfg(feature = "unstable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
 pub mod unstable;

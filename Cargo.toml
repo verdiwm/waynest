@@ -38,6 +38,7 @@ frog = []
 ivi = []
 hyprland = []
 mesa = []
+treeland = []
 
 # Internal features     
 fuzz = ["dep:arbitrary"]

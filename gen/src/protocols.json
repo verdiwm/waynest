@@ -153,5 +153,15 @@
   ],
   "mesa": [
     "protocols/mesa/src/egl/wayland/wayland-drm/wayland-drm.xml"
+  ],
+  "treeland": [
+    "protocols/treeland-protocols/xml/treeland-dde-shell-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-ddm-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-foreign-toplevel-manager-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-output-manager-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-shortcut-manager-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-virtual-output-manager-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-wallpaper-color-v1.xml",
+    "protocols/treeland-protocols/xml/treeland-window-management-v1.xml"
   ]
 }

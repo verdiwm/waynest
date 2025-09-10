@@ -51,12 +51,11 @@ pub fn make_ident<D: Display>(ident: D) -> Ident {
     format_ident!("{raw}{prefix}{ident}")
 }
 
-pub fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> &'a Enum {
+pub fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> Option<&'a Enum> {
     protocol
         .interfaces
         .iter()
         .find_map(|interface| interface.enums.iter().find(|e| e.name == name))
-        .unwrap()
 }
 
 pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
