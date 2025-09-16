@@ -3,7 +3,7 @@ members = ["gen", "macros"]
 exclude = ["fuzz"]
 
 [workspace.package]
-version = "0.0.25"
+version = "0.0.26"
 edition = "2024"
 license = "Apache-2.0"
 authors = ["Matilde Morrone <contact@morrone.dev>"]
@@ -54,7 +54,7 @@ futures-util = { version = "0.3.31", default-features = false, features = [
     "sink",
 ] }
 
-waynest-macros = { version = "0.0.25", path = "macros" }
+waynest-macros = { version = "0.0.26", path = "macros" }
 
 async-trait = { version = "0.1.89", optional = true }
 bitflags = { version = "2.9.4", optional = true }
