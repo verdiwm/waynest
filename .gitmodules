@@ -1,33 +1,44 @@
 [submodule "wayland-protocols"]
 	path = protocols/wayland-protocols
 	url = https://gitlab.freedesktop.org/wayland/wayland-protocols.git
+	update=none
 [submodule "wayland"]
 	path = protocols/wayland
 	url = https://gitlab.freedesktop.org/wayland/wayland.git
+	update=none
 [submodule "wlr-protocols"]
 	path = protocols/wlr-protocols
 	url = https://gitlab.freedesktop.org/wlroots/wlr-protocols.git
+	update=none
 [submodule "plasma-wayland-protocols"]
 	path = protocols/plasma-wayland-protocols
 	url = https://github.com/KDE/plasma-wayland-protocols.git
+	update=none
 [submodule "weston"]
 	path = protocols/weston
 	url = https://gitlab.freedesktop.org/wayland/weston.git
+	update=none
 [submodule "cosmic-protocols"]
 	path = protocols/cosmic-protocols
 	url = https://github.com/verdiwm/cosmic-protocols.git
+	update=none
 [submodule "frog-protocols"]
 	path = protocols/frog-protcols
 	url = https://github.com/misyltoad/frog-protocols.git
+	update=none
 [submodule "wayland-ivi-extension"]
 	path = protocols/wayland-ivi-extension
 	url = https://github.com/COVESA/wayland-ivi-extension.git
+	update=none
 [submodule "hyprland-protocols"]
 	path = protocols/hyprland-protocols
 	url = https://github.com/hyprwm/hyprland-protocols.git
+	update=none
 [submodule "protocols/mesa"]
 	path = protocols/mesa
 	url = https://gitlab.freedesktop.org/mesa/mesa.git
+	update=none
 [submodule "protocols/treeland-protocols"]
 	path = protocols/treeland-protocols
 	url = https://github.com/linuxdeepin/treeland-protocols
+	update=none
