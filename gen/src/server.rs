@@ -38,12 +38,12 @@ pub fn generate_server_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
 
             let handler_args = if dispatchers.is_empty() {
                 quote! {
-                    _socket: &mut crate::wire::Socket,
+                    _client: &mut crate::server::Client,
                     _sender_id: crate::wire::ObjectId,
                 }
             } else {
                 quote! {
-                    socket: &mut crate::wire::Socket,
+                    client: &mut crate::server::Client,
                     sender_id: crate::wire::ObjectId,
                 }
             };
@@ -110,7 +110,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         let name = make_ident(request.name.to_snek_case());
         let mut args = vec![
             quote! {&self },
-            quote! {socket: &mut crate::wire::Socket},
+            quote! {client: &mut crate::server::Client},
             quote! {sender_id: crate::wire::ObjectId},
         ];
 
@@ -146,7 +146,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
 
         let mut args = vec![
             quote! {&self },
-            quote! {socket: &mut crate::wire::Socket},
+            quote! {client: &mut crate::server::Client},
             quote! {sender_id: crate::wire::ObjectId},
         ];
 
@@ -245,8 +245,8 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
                         #(#build_args)*
                         .build();
 
-                    socket
-                        .send(crate::wire::Message::new(sender_id, #opcode, payload, fds))
+                    client
+                        .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
                         .await
                         .map_err(crate::server::error::Error::IoError)
                 }

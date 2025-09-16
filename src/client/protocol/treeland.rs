@@ -1,12 +1,14 @@
 #![allow(async_fn_in_trait)]
 #[allow(clippy::module_inception)]
 pub mod treeland_dde_shell_v1 {
+    #[doc = ""]
     #[doc = "This interface allows DDE change some treeland function."]
     #[doc = ""]
     #[doc = "Warning! The protocol described in this file is currently in the testing"]
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_dde_shell_manager_v1 {
         use futures_util::SinkExt;
@@ -18,7 +20,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -29,7 +31,7 @@ pub mod treeland_dde_shell_v1 {
             }
             async fn get_window_overlap_checker(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
@@ -40,19 +42,21 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Create a shell surface for an existing wl_surface."]
             #[doc = ""]
             #[doc = "Only one shell surface can be associated with a given surface."]
             #[doc = ""]
             #[doc = "Recommended for use with xdg_surface."]
+            #[doc = ""]
             async fn get_shell_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -65,15 +69,17 @@ pub mod treeland_dde_shell_v1 {
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Create a new dde active for a given seat."]
+            #[doc = ""]
             async fn get_treeland_dde_active(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
@@ -86,15 +92,17 @@ pub mod treeland_dde_shell_v1 {
                     .put_object(Some(id))
                     .put_object(Some(seat))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Create a new multitaskview context for toggle."]
+            #[doc = ""]
             async fn get_treeland_multitaskview(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
@@ -105,15 +113,17 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Create a new window picker to pick window."]
+            #[doc = ""]
             async fn get_treeland_window_picker(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
@@ -124,15 +134,17 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Create a new lockscreen context for toggle."]
+            #[doc = ""]
             async fn get_treeland_lockscreen(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
@@ -143,13 +155,14 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
         }
     }
+    #[doc = ""]
     #[doc = "A treeland_dde_shell_handle_v1 object represents an opened toplevel window. Each"]
     #[doc = "app may have multiple opened toplevels."]
     #[doc = ""]
@@ -157,12 +170,13 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_window_overlap_checker {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
-        bitflags::bitflags! { # [doc = "same layershell"] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
+        bitflags::bitflags! { # [doc = ""] # [doc = "same layershell"] # [doc = ""] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
             type Error = crate::wire::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -180,7 +194,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -188,23 +202,25 @@ pub mod treeland_dde_shell_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("treeland_window_overlap_checker#{}.enter()", sender_id,);
-                        self.enter(socket, sender_id).await
+                        self.enter(client, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("treeland_window_overlap_checker#{}.leave()", sender_id,);
-                        self.leave(socket, sender_id).await
+                        self.leave(client, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "This interface is used to receive the detected surface."]
             #[doc = "When the xdgshell window in the workspace overlaps with the detected window,"]
             #[doc = "an event will be sent to notify the client to process it."]
             #[doc = "The window position will only be recorded when this interface is called."]
             #[doc = "If the window moves, this interface needs to be called again."]
+            #[doc = ""]
             async fn update(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 width: i32,
                 height: i32,
@@ -218,44 +234,51 @@ pub mod treeland_dde_shell_v1 {
                     .put_uint(anchor.bits())
                     .put_object(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Destroys the treeland_window_overlap_checker object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
             #[doc = "use the toplevel anymore or after the closed event to finalize the"]
             #[doc = "destruction of the object."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_window_overlap_checker#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "This event is sent when windows overlapped."]
             #[doc = "This event is sent only once."]
+            #[doc = ""]
             async fn enter(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is sent when windows not overlapped."]
             #[doc = "This event is sent only once."]
+            #[doc = ""]
             async fn leave(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
         }
     }
+    #[doc = ""]
     #[doc = "An interface that may be implemented by a wl_surface, for"]
     #[doc = "implementations that provide the shell user interface."]
     #[doc = ""]
@@ -266,11 +289,13 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "the related wl_surface is destroyed.  On client side,"]
     #[doc = "treeland_dde_shell_surface_v1.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_dde_shell_surface_v1 {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = ""]
         #[doc = "These values indicate which roles a surface can be rendered in, They"]
         #[doc = "are ordered by z depth."]
         #[doc = ""]
@@ -278,6 +303,7 @@ pub mod treeland_dde_shell_v1 {
         #[doc = ""]
         #[doc = "Multiple surfaces can share a single role, and ordering within a single"]
         #[doc = "role is undefined."]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -304,7 +330,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -313,30 +339,34 @@ pub mod treeland_dde_shell_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
             #[doc = "wl_surface object that was turned into a shell surface with the"]
             #[doc = "treeland_shell_v1.get_treeland_dde_shell_surface request."]
             #[doc = ""]
             #[doc = "The shell surface role is lost and wl_surface is unmapped."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_dde_shell_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Move the surface to new coordinates."]
             #[doc = ""]
             #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
             #[doc = "is 1970,50 in global coordinates space."]
+            #[doc = ""]
             async fn set_surface_position(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 x: i32,
                 y: i32,
@@ -349,15 +379,17 @@ pub mod treeland_dde_shell_v1 {
                     .put_int(x)
                     .put_int(y)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Assign a role to a shell surface."]
+            #[doc = ""]
             async fn set_role(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 role : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_shell_surface_v1 :: Role,
             ) -> crate::client::Result<()> {
@@ -365,11 +397,12 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(role as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Set the vertical alignment of the surface within the cursor width."]
             #[doc = ""]
             #[doc = "Do not use it together with set_surface_position to avoid exceptions."]
@@ -377,9 +410,10 @@ pub mod treeland_dde_shell_v1 {
             #[doc = "The position of the surface will be controlled by the compositor after the"]
             #[doc = "request, including preventing it from being displayed beyond the edge of"]
             #[doc = "the output."]
+            #[doc = ""]
             async fn set_auto_placement(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 y_offset: u32,
             ) -> crate::client::Result<()> {
@@ -390,15 +424,17 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(y_offset)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
+            #[doc = ""]
             async fn set_skip_switcher(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
             ) -> crate::client::Result<()> {
@@ -407,15 +443,17 @@ pub mod treeland_dde_shell_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(skip).build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a dock preview."]
+            #[doc = ""]
             async fn set_skip_dock_preview(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
             ) -> crate::client::Result<()> {
@@ -424,15 +462,17 @@ pub mod treeland_dde_shell_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(skip).build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a mutitask view."]
+            #[doc = ""]
             async fn set_skip_muti_task_view(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 skip: u32,
             ) -> crate::client::Result<()> {
@@ -441,17 +481,19 @@ pub mod treeland_dde_shell_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(skip).build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Setting this will determine whether the surface can receive keyboard focus."]
             #[doc = "When set to 0, the surface will not receive keyboard focus even when clicked or activated."]
             #[doc = "When set to 1 (default), the surface will receive keyboard focus normally."]
+            #[doc = ""]
             async fn set_accept_keyboard_focus(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 accept: u32,
             ) -> crate::client::Result<()> {
@@ -460,14 +502,16 @@ pub mod treeland_dde_shell_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(accept).build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
         }
     }
+    #[doc = ""]
     #[doc = "An interface used to monitor special events."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_dde_active_v1 {
         use futures_util::SinkExt;
@@ -501,7 +545,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -514,7 +558,7 @@ pub mod treeland_dde_shell_v1 {
                             sender_id,
                             reason
                         );
-                        self.active_in(socket, sender_id, reason.try_into()?).await
+                        self.active_in(client, sender_id, reason.try_into()?).await
                     }
                     1u16 => {
                         let reason = message.uint()?;
@@ -523,56 +567,60 @@ pub mod treeland_dde_shell_v1 {
                             sender_id,
                             reason
                         );
-                        self.active_out(socket, sender_id, reason.try_into()?).await
+                        self.active_out(client, sender_id, reason.try_into()?).await
                     }
                     2u16 => {
                         tracing::debug!("treeland_dde_active_v1#{}.start_drag()", sender_id,);
-                        self.start_drag(socket, sender_id).await
+                        self.start_drag(client, sender_id).await
                     }
                     3u16 => {
                         tracing::debug!("treeland_dde_active_v1#{}.drop()", sender_id,);
-                        self.drop(socket, sender_id).await
+                        self.drop(client, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_dde_active_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn active_in(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
             ) -> crate::client::Result<()>;
             async fn active_out(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
             ) -> crate::client::Result<()>;
             async fn start_drag(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
             async fn drop(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
         }
     }
+    #[doc = ""]
     #[doc = "An interface used to control multitaskview."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_multitaskview_v1 {
         use futures_util::SinkExt;
@@ -584,7 +632,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -593,34 +641,40 @@ pub mod treeland_dde_shell_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_multitaskview_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Show or hide the multitaskview."]
+            #[doc = ""]
             async fn toggle(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_multitaskview_v1#{}.toggle()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
         }
     }
+    #[doc = ""]
     #[doc = "An interface used to pick window and return credentials."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_window_picker_v1 {
         use futures_util::SinkExt;
@@ -632,7 +686,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -641,27 +695,31 @@ pub mod treeland_dde_shell_v1 {
                     0u16 => {
                         let pid = message.int()?;
                         tracing::debug!("treeland_window_picker_v1#{}.window({})", sender_id, pid);
-                        self.window(socket, sender_id, pid).await
+                        self.window(client, sender_id, pid).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_window_picker_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Pick a window to get information."]
+            #[doc = ""]
             async fn pick(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 hint: String,
             ) -> crate::client::Result<()> {
@@ -669,21 +727,25 @@ pub mod treeland_dde_shell_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(hint))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Picked window information."]
+            #[doc = ""]
             async fn window(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 pid: i32,
             ) -> crate::client::Result<()>;
         }
     }
+    #[doc = ""]
     #[doc = "An interface used to operate lockscreen."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_lockscreen_v1 {
         use futures_util::SinkExt;
@@ -695,7 +757,7 @@ pub mod treeland_dde_shell_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -704,54 +766,62 @@ pub mod treeland_dde_shell_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_lockscreen_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Lock the screen."]
+            #[doc = ""]
             async fn lock(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_lockscreen_v1#{}.lock()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Show shutdown."]
+            #[doc = ""]
             async fn shutdown(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_lockscreen_v1#{}.shutdown()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Switch user."]
+            #[doc = ""]
             async fn switch_user(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_lockscreen_v1#{}.switch_user()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -760,8 +830,10 @@ pub mod treeland_dde_shell_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod treeland_ddm {
+    #[doc = ""]
     #[doc = "This object is primarily used for establish connection between"]
     #[doc = "treeland and ddm."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_ddm {
         use futures_util::SinkExt;
@@ -773,7 +845,7 @@ pub mod treeland_ddm {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -782,33 +854,37 @@ pub mod treeland_ddm {
                     0u16 => {
                         let vtnr = message.int()?;
                         tracing::debug!("treeland_ddm#{}.switch_to_vt({})", sender_id, vtnr);
-                        self.switch_to_vt(socket, sender_id, vtnr).await
+                        self.switch_to_vt(client, sender_id, vtnr).await
                     }
                     1u16 => {
                         let vtnr = message.int()?;
                         tracing::debug!("treeland_ddm#{}.acquire_vt({})", sender_id, vtnr);
-                        self.acquire_vt(socket, sender_id, vtnr).await
+                        self.acquire_vt(client, sender_id, vtnr).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Send treeland to Greeter mode."]
+            #[doc = ""]
             async fn switch_to_greeter(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_ddm#{}.switch_to_greeter()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Set lockscreen user to username. Ignore when username is \"ddm\"."]
+            #[doc = ""]
             async fn switch_to_user(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 username: String,
             ) -> crate::client::Result<()> {
@@ -816,58 +892,66 @@ pub mod treeland_ddm {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(username))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Activate treeland session. This will makes treeland try to take"]
             #[doc = "control of screen."]
+            #[doc = ""]
             async fn activate_session(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_ddm#{}.activate_session()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Deactivate treeland session. This will release control of the"]
             #[doc = "screen, but not to close the current seats."]
+            #[doc = ""]
             async fn deactivate_session(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_ddm#{}.deactivate_session()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Enable treeland rendering. This is primarily called after"]
             #[doc = "disable_render to resume treeland."]
+            #[doc = ""]
             async fn enable_render(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_ddm#{}.enable_render()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Disable treeland rendering. This will prevent treeland from"]
             #[doc = "output to DRM device."]
+            #[doc = ""]
             async fn disable_render(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
@@ -875,24 +959,28 @@ pub mod treeland_ddm {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(callback))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Call ddm to switch current virtual terminal to vtnr. ddm should"]
             #[doc = "take care of the switch and call ioctl respectively."]
+            #[doc = ""]
             async fn switch_to_vt(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 vtnr: i32,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "Call ddm to acquire control of VT at vtnr. ddm should call"]
             #[doc = "VT_SETMODE respectively."]
+            #[doc = ""]
             async fn acquire_vt(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 vtnr: i32,
             ) -> crate::client::Result<()>;
@@ -901,12 +989,14 @@ pub mod treeland_ddm {
 }
 #[allow(clippy::module_inception)]
 pub mod treeland_foreign_toplevel_manager_v1 {
+    #[doc = ""]
     #[doc = "This interface allows a client to get toplevel some info."]
     #[doc = ""]
     #[doc = "Warning! The protocol described in this file is currently in the testing"]
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_foreign_toplevel_manager_v1 {
         use futures_util::SinkExt;
@@ -918,7 +1008,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -933,26 +1023,30 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             toplevel
                         );
-                        self.toplevel(socket, sender_id, toplevel).await
+                        self.toplevel(client, sender_id, toplevel).await
                     }
                     1u16 => {
                         tracing::debug!(
                             "treeland_foreign_toplevel_manager_v1#{}.finished()",
                             sender_id,
                         );
-                        self.finished(socket, sender_id).await
+                        let result = self.finished(client, sender_id).await;
+                        client.remove(sender_id);
+                        result
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Indicates the client no longer wishes to receive events for new toplevels."]
             #[doc = "However the compositor may emit further toplevel_created events, until"]
             #[doc = "the finished event is emitted."]
             #[doc = ""]
             #[doc = "The client must not send any more requests after this one."]
+            #[doc = ""]
             async fn stop(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -960,14 +1054,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn get_dock_preview_context(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 relative_surface: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
@@ -980,11 +1074,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     .put_object(Some(relative_surface))
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "This event is emitted whenever a new toplevel window is created. It"]
             #[doc = "is emitted for all toplevels, regardless of the app that has created"]
             #[doc = "them."]
@@ -992,23 +1087,27 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             #[doc = "All initial details of the toplevel(title, app_id, states, etc.) will"]
             #[doc = "be sent immediately after this event via the corresponding events in"]
             #[doc = "treeland_foreign_toplevel_handle_v1."]
+            #[doc = ""]
             async fn toplevel(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 toplevel: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "treeland_foreign_toplevel_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request, so it will become invalid and"]
             #[doc = "the client should free any resources associated with it."]
+            #[doc = ""]
             async fn finished(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
         }
     }
+    #[doc = ""]
     #[doc = "A treeland_foreign_toplevel_handle_v1 object represents an opened toplevel window. Each"]
     #[doc = "app may have multiple opened toplevels."]
     #[doc = ""]
@@ -1016,13 +1115,16 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_foreign_toplevel_handle_v1 {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = ""]
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1080,7 +1182,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -1093,7 +1195,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             pid
                         );
-                        self.pid(socket, sender_id, pid).await
+                        self.pid(client, sender_id, pid).await
                     }
                     1u16 => {
                         let title = message
@@ -1104,7 +1206,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             title
                         );
-                        self.title(socket, sender_id, title).await
+                        self.title(client, sender_id, title).await
                     }
                     2u16 => {
                         let app_id = message
@@ -1115,7 +1217,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             app_id
                         );
-                        self.app_id(socket, sender_id, app_id).await
+                        self.app_id(client, sender_id, app_id).await
                     }
                     3u16 => {
                         let identifier = message.uint()?;
@@ -1124,7 +1226,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             identifier
                         );
-                        self.identifier(socket, sender_id, identifier).await
+                        self.identifier(client, sender_id, identifier).await
                     }
                     4u16 => {
                         let output = message
@@ -1135,7 +1237,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             output
                         );
-                        self.output_enter(socket, sender_id, output).await
+                        self.output_enter(client, sender_id, output).await
                     }
                     5u16 => {
                         let output = message
@@ -1146,7 +1248,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             output
                         );
-                        self.output_leave(socket, sender_id, output).await
+                        self.output_leave(client, sender_id, output).await
                     }
                     6u16 => {
                         let state = message.array()?;
@@ -1155,18 +1257,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             sender_id,
                             state.len()
                         );
-                        self.state(socket, sender_id, state).await
+                        self.state(client, sender_id, state).await
                     }
                     7u16 => {
                         tracing::debug!("treeland_foreign_toplevel_handle_v1#{}.done()", sender_id,);
-                        self.done(socket, sender_id).await
+                        self.done(client, sender_id).await
                     }
                     8u16 => {
                         tracing::debug!(
                             "treeland_foreign_toplevel_handle_v1#{}.closed()",
                             sender_id,
                         );
-                        self.closed(socket, sender_id).await
+                        self.closed(client, sender_id).await
                     }
                     9u16 => {
                         let parent = message.object()?;
@@ -1177,16 +1279,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                                 .as_ref()
                                 .map_or("null".to_string(), |v| v.to_string())
                         );
-                        self.parent(socket, sender_id, parent).await
+                        self.parent(client, sender_id, parent).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Requests that the toplevel be maximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
+            #[doc = ""]
             async fn set_maximized(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1194,16 +1298,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Requests that the toplevel be unmaximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
+            #[doc = ""]
             async fn unset_maximized(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1211,16 +1317,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Requests that the toplevel be minimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
+            #[doc = ""]
             async fn set_minimized(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1228,16 +1336,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Requests that the toplevel be unminimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
+            #[doc = ""]
             async fn unset_minimized(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1245,16 +1355,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Request that this toplevel be activated on the given seat."]
             #[doc = "There is no guarantee the toplevel will be actually activated."]
+            #[doc = ""]
             async fn activate(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 seat: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
@@ -1265,20 +1377,22 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(Some(seat))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Send a request to the toplevel to close itself. The compositor would"]
             #[doc = "typically use a shell-specific method to carry out this request, for"]
             #[doc = "example by sending the xdg_toplevel.close event. However, this gives"]
             #[doc = "no guarantees the toplevel will actually be destroyed. If and when"]
             #[doc = "this happens, the treeland_foreign_toplevel_handle_v1.closed event will"]
             #[doc = "be emitted."]
+            #[doc = ""]
             async fn close(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1286,11 +1400,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "The rectangle of the surface specified in this request corresponds to"]
             #[doc = "the place where the app using this protocol represents the given toplevel."]
             #[doc = "It can be used by the compositor as a hint for some operations, e.g"]
@@ -1302,9 +1417,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             #[doc = ""]
             #[doc = "The dimensions are given in surface-local coordinates."]
             #[doc = "Setting width=height=0 removes the already-set rectangle."]
+            #[doc = ""]
             async fn set_rectangle(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 x: i32,
@@ -1323,19 +1439,21 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     .put_int(width)
                     .put_int(height)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Destroys the treeland_foreign_toplevel_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
             #[doc = "use the toplevel anymore or after the closed event to finalize the"]
             #[doc = "destruction of the object."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1343,11 +1461,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Requests that the toplevel be fullscreened on the given output. If the"]
             #[doc = "fullscreen state and/or the outputs the toplevel is visible on actually"]
             #[doc = "change, this will be indicated by the state and output_enter/leave"]
@@ -1356,9 +1475,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             #[doc = "The output parameter is only a hint to the compositor. Also, if output"]
             #[doc = "is NULL, the compositor should decide which output the toplevel will be"]
             #[doc = "fullscreened on, if at all."]
+            #[doc = ""]
             async fn set_fullscreen(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()> {
@@ -1369,16 +1489,18 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_object(output)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Requests that the toplevel be unfullscreened. If the fullscreen state"]
             #[doc = "actually changes, this will be indicated by the state event."]
+            #[doc = ""]
             async fn unset_fullscreen(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1386,112 +1508,136 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "This event will be sent when the compositor has set the process id this window"]
             #[doc = "belongs to. This should be set once before the initial_state is sent."]
+            #[doc = ""]
             async fn pid(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 pid: u32,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
+            #[doc = ""]
             async fn title(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 title: String,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is emitted whenever the app-id of the toplevel changes."]
+            #[doc = ""]
             async fn app_id(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 app_id: String,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "The identifier of each top level and its handle must be unique."]
             #[doc = "Two different top layers cannot have the same identifier."]
             #[doc = "This identifier is only valid as long as the top level is mapped."]
             #[doc = "Identifiers must not be reused if the top level is not mapped."]
             #[doc = "The compositor must not reuse identifiers to ensure there are no races when"]
             #[doc = "identifiers are shared between processes."]
+            #[doc = ""]
             async fn identifier(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 identifier: u32,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is emitted whenever the toplevel becomes visible on"]
             #[doc = "the given output. A toplevel may be visible on multiple outputs."]
+            #[doc = ""]
             async fn output_enter(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is emitted whenever the toplevel stops being visible on"]
             #[doc = "the given output. It is guaranteed that an entered-output event"]
             #[doc = "with the same output has been emitted before this event."]
+            #[doc = ""]
             async fn output_leave(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is emitted immediately after the treeland_foreign_toplevel_handle_v1"]
             #[doc = "is created and each time the toplevel state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
+            #[doc = ""]
             async fn state(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: Vec<u8>,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is sent after all changes in the toplevel state have been"]
             #[doc = "sent."]
             #[doc = ""]
             #[doc = "This allows changes to the treeland_foreign_toplevel_handle_v1 properties"]
             #[doc = "to be seen as atomic, even if they happen via multiple events."]
+            #[doc = ""]
             async fn done(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event means the toplevel has been destroyed. It is guaranteed there"]
             #[doc = "won't be any more events for this treeland_foreign_toplevel_handle_v1. The"]
             #[doc = "toplevel itself becomes inert so any requests will be ignored except the"]
             #[doc = "destroy request."]
+            #[doc = ""]
             async fn closed(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is emitted whenever the parent of the toplevel changes."]
             #[doc = ""]
             #[doc = "No event is emitted when the parent handle is destroyed by the client."]
+            #[doc = ""]
             async fn parent(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 parent: Option<crate::wire::ObjectId>,
             ) -> crate::client::Result<()>;
         }
     }
+    #[doc = ""]
     #[doc = "This interface allows dock set windows preview."]
     #[doc = ""]
     #[doc = "Warning! The protocol described in this file is currently in the testing"]
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_dock_preview_context_v1 {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = ""]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1528,7 +1674,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -1536,20 +1682,22 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("treeland_dock_preview_context_v1#{}.enter()", sender_id,);
-                        self.enter(socket, sender_id).await
+                        self.enter(client, sender_id).await
                     }
                     1u16 => {
                         tracing::debug!("treeland_dock_preview_context_v1#{}.leave()", sender_id,);
-                        self.leave(socket, sender_id).await
+                        self.leave(client, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "X and Y are relative to the relative_surface."]
             #[doc = "surfaces wl_array is identifiers."]
+            #[doc = ""]
             async fn show(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surfaces: Vec<u8>,
                 x: i32,
@@ -1563,14 +1711,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     .put_int(y)
                     .put_uint(direction)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn show_tooltip(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 tooltip: String,
                 x: i32,
@@ -1587,28 +1735,32 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     .put_int(y)
                     .put_uint(direction)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "close preview box"]
+            #[doc = ""]
             async fn close(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_dock_preview_context_v1#{}.close()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Destroy the context object."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1616,21 +1768,25 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "This event is sent after mouse enter preview box."]
+            #[doc = ""]
             async fn enter(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "This event is sent after mouse leave preview box."]
+            #[doc = ""]
             async fn leave(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
         }
@@ -1638,8 +1794,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod treeland_output_manager_v1 {
+    #[doc = ""]
     #[doc = "Protocol for telling which is the primary display among the selection of enabled"]
     #[doc = "outputs."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_output_manager_v1 {
         use futures_util::SinkExt;
@@ -1651,7 +1809,7 @@ pub mod treeland_output_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -1666,14 +1824,14 @@ pub mod treeland_output_manager_v1 {
                             sender_id,
                             output_name
                         );
-                        self.primary_output(socket, sender_id, output_name).await
+                        self.primary_output(client, sender_id, output_name).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
             async fn set_primary_output(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: String,
             ) -> crate::client::Result<()> {
@@ -1684,27 +1842,29 @@ pub mod treeland_output_manager_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_output_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Specifies which output is the primary one identified by their name."]
+            #[doc = ""]
             async fn primary_output(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output_name: String,
             ) -> crate::client::Result<()>;
@@ -1713,12 +1873,14 @@ pub mod treeland_output_manager_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod treeland_shortcut_manager_v1 {
+    #[doc = ""]
     #[doc = "This interface allows a client to get some shell's info."]
     #[doc = ""]
     #[doc = "Warning! The protocol described in this file is currently in the testing"]
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_shortcut_manager_v1 {
         use futures_util::SinkExt;
@@ -1730,7 +1892,7 @@ pub mod treeland_shortcut_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -1739,13 +1901,15 @@ pub mod treeland_shortcut_manager_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
             #[doc = "If the format is wrong, the synthesizer will give a \"format error\". If the shortcut"]
             #[doc = "key is already registered,"]
             #[doc = "the compositor will give a \"register error\" and issue a destruction to the context."]
+            #[doc = ""]
             async fn register_shortcut_context(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 key: String,
                 id: crate::wire::ObjectId,
@@ -1758,19 +1922,21 @@ pub mod treeland_shortcut_manager_v1 {
                     .put_string(Some(key))
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
         }
     }
+    #[doc = ""]
     #[doc = "This interface allows a client to listen a shortcut action."]
     #[doc = ""]
     #[doc = "Warning! The protocol described in this file is currently in the testing"]
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_shortcut_context_v1 {
         use futures_util::SinkExt;
@@ -1803,7 +1969,7 @@ pub mod treeland_shortcut_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -1811,27 +1977,29 @@ pub mod treeland_shortcut_manager_v1 {
                 match message.opcode() {
                     0u16 => {
                         tracing::debug!("treeland_shortcut_context_v1#{}.shortcut()", sender_id,);
-                        self.shortcut(socket, sender_id).await
+                        self.shortcut(client, sender_id).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Destroy the context object."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_shortcut_context_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn shortcut(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()>;
         }
@@ -1839,7 +2007,9 @@ pub mod treeland_shortcut_manager_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod treeland_virtual_output_manager_v1 {
+    #[doc = ""]
     #[doc = "This interface is a manager that allows the creation of copied output."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_virtual_output_manager_v1 {
         use futures_util::SinkExt;
@@ -1851,7 +2021,7 @@ pub mod treeland_virtual_output_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -1864,11 +2034,12 @@ pub mod treeland_virtual_output_manager_v1 {
                             sender_id,
                             names.len()
                         );
-                        self.virtual_output_list(socket, sender_id, names).await
+                        self.virtual_output_list(client, sender_id, names).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Create virtual output that can be used when setting screen copy mode for use"]
             #[doc = "on multiple screens. Virtual outputs are created to mirror multiple wl_output"]
             #[doc = "outputs."]
@@ -1880,9 +2051,10 @@ pub mod treeland_virtual_output_manager_v1 {
             #[doc = ""]
             #[doc = "The client calling this interface will not generate an additional wl_output"]
             #[doc = "object on the client."]
+            #[doc = ""]
             async fn create_virtual_output(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 name: String,
@@ -1897,15 +2069,17 @@ pub mod treeland_virtual_output_manager_v1 {
                     .put_string(Some(name))
                     .put_array(outputs)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Gets a list of virtual output names."]
+            #[doc = ""]
             async fn get_virtual_output_list(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -1913,16 +2087,18 @@ pub mod treeland_virtual_output_manager_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "The client obtains the corresponding virtual_output_v1 object"]
             #[doc = "through the virtual output name."]
+            #[doc = ""]
             async fn get_virtual_output(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 id: crate::wire::ObjectId,
@@ -1935,21 +2111,25 @@ pub mod treeland_virtual_output_manager_v1 {
                     .put_string(Some(name))
                     .put_object(Some(id))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Sends a list of virtual output names to the client."]
+            #[doc = ""]
             async fn virtual_output_list(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 names: Vec<u8>,
             ) -> crate::client::Result<()>;
         }
     }
+    #[doc = ""]
     #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_virtual_output_v1 {
         use futures_util::SinkExt;
@@ -1988,7 +2168,7 @@ pub mod treeland_virtual_output_manager_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -2005,7 +2185,7 @@ pub mod treeland_virtual_output_manager_v1 {
                             name,
                             outputs.len()
                         );
-                        self.outputs(socket, sender_id, name, outputs).await
+                        self.outputs(client, sender_id, name, outputs).await
                     }
                     1u16 => {
                         let code = message.uint()?;
@@ -2018,24 +2198,27 @@ pub mod treeland_virtual_output_manager_v1 {
                             code,
                             message
                         );
-                        self.error(socket, sender_id, code, message).await
+                        self.error(client, sender_id, code, message).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Destroy the output."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_virtual_output_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "This event is sent to the client when any screen in the array changes."]
             #[doc = ""]
             #[doc = "The element of the array is the name of the screen."]
@@ -2046,18 +2229,21 @@ pub mod treeland_virtual_output_manager_v1 {
             #[doc = "When the primary screen (the screen being copied) is removed, a successor"]
             #[doc = "is selected from the queue as the primary screen, and the queue information"]
             #[doc = "is updated."]
+            #[doc = ""]
             async fn outputs(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 name: String,
                 outputs: Vec<u8>,
             ) -> crate::client::Result<()>;
+            #[doc = ""]
             #[doc = "When an error occurs, an error event is emitted, terminating the replication"]
             #[doc = "mode request issued by the client."]
+            #[doc = ""]
             async fn error(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 code: u32,
                 message: String,
@@ -2078,7 +2264,7 @@ pub mod treeland_wallpaper_color_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -2095,15 +2281,17 @@ pub mod treeland_wallpaper_color_v1 {
                             output,
                             isdark
                         );
-                        self.output_color(socket, sender_id, output, isdark).await
+                        self.output_color(client, sender_id, output, isdark).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Monitor the wallpaper color of a given screen."]
+            #[doc = ""]
             async fn watch(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: String,
             ) -> crate::client::Result<()> {
@@ -2114,15 +2302,17 @@ pub mod treeland_wallpaper_color_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Stop monitor the wallpaper color for the given screen."]
+            #[doc = ""]
             async fn unwatch(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: String,
             ) -> crate::client::Result<()> {
@@ -2133,15 +2323,17 @@ pub mod treeland_wallpaper_color_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_string(Some(output))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "The client no longer cares about wallpaper_color."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -2149,16 +2341,18 @@ pub mod treeland_wallpaper_color_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Tell the client that the wallpaper color of the screen it is monitoring has changed."]
             #[doc = "This event will also be sent immediately when the client requests a watch."]
+            #[doc = ""]
             async fn output_color(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 output: String,
                 isdark: u32,
@@ -2168,12 +2362,14 @@ pub mod treeland_wallpaper_color_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod treeland_window_management_v1 {
+    #[doc = ""]
     #[doc = "This interface manages application windows."]
     #[doc = "It provides requests to show and hide the desktop and emits"]
     #[doc = "an event every time a window is created so that the client can"]
     #[doc = "use it to manage the window."]
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_window_management_v1 {
         use futures_util::SinkExt;
@@ -2209,7 +2405,7 @@ pub mod treeland_window_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -2222,15 +2418,17 @@ pub mod treeland_window_management_v1 {
                             sender_id,
                             state
                         );
-                        self.show_desktop(socket, sender_id, state).await
+                        self.show_desktop(client, sender_id, state).await
                     }
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Tell the compositor to show/hide the desktop."]
+            #[doc = ""]
             async fn set_desktop(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
             ) -> crate::client::Result<()> {
@@ -2239,31 +2437,33 @@ pub mod treeland_window_management_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(state).build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> treeland_window_management_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is"]
             #[doc = "entered"]
             #[doc = "or left."]
             #[doc = ""]
             #[doc = "On binding the interface the current state is sent."]
+            #[doc = ""]
             async fn show_desktop(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 state: u32,
             ) -> crate::client::Result<()>;

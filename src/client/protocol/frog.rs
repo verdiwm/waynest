@@ -1,12 +1,16 @@
 #![allow(async_fn_in_trait)]
+#[doc = ""]
 #[doc = "The aim of this color management extension is to get HDR games working quickly,"]
 #[doc = "and have an easy way to test implementations in the wild before the upstream"]
 #[doc = "protocol is ready to be merged."]
 #[doc = "For that purpose it's intentionally limited and cut down and does not serve"]
 #[doc = "all uses cases."]
+#[doc = ""]
 #[allow(clippy::module_inception)]
 pub mod frog_color_management_v1 {
+    #[doc = ""]
     #[doc = "The color management factory singleton creates color managed surface objects."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_management_factory_v1 {
         use futures_util::SinkExt;
@@ -18,7 +22,7 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -29,7 +33,7 @@ pub mod frog_color_management_v1 {
             }
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!(
@@ -37,14 +41,16 @@ pub mod frog_color_management_v1 {
                     sender_id
                 );
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
+            #[doc = ""]
             async fn get_color_managed_surface(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
                 callback: crate::wire::ObjectId,
@@ -57,27 +63,31 @@ pub mod frog_color_management_v1 {
                     .put_object(Some(surface))
                     .put_object(Some(callback))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
         }
     }
+    #[doc = ""]
     #[doc = "Interface for changing surface color management and HDR state."]
     #[doc = ""]
     #[doc = "An implementation must: support every part of the version"]
     #[doc = "of the frog_color_managed_surface interface it exposes."]
     #[doc = "Including all known enums associated with a given version."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_managed_surface {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = ""]
         #[doc = "Extended information on the transfer functions described"]
         #[doc = "here can be found in the Khronos Data Format specification:"]
         #[doc = ""]
         #[doc = "https://registry.khronos.org/DataFormat/specs/1.3/dataformat.1.3.html"]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -138,10 +148,12 @@ pub mod frog_color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
+        #[doc = ""]
         #[doc = "Extended information on render intents described"]
         #[doc = "here can be found in ICC.1:2022:"]
         #[doc = ""]
         #[doc = "https://www.color.org/specification/ICC.1-2022-05.pdf"]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -169,7 +181,7 @@ pub mod frog_color_management_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -205,7 +217,7 @@ pub mod frog_color_management_v1 {
                             max_full_frame_luminance
                         );
                         self.preferred_metadata(
-                            socket,
+                            client,
                             sender_id,
                             transfer_function.try_into()?,
                             output_display_primary_red_x,
@@ -225,24 +237,26 @@ pub mod frog_color_management_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Destroying the color managed surface resets all known color"]
             #[doc = "state for the surface back to 'undefined' implementation-specific"]
             #[doc = "values."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> frog_color_managed_surface#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn set_known_transfer_function(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
             ) -> crate::client::Result<()> {
@@ -253,14 +267,14 @@ pub mod frog_color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(transfer_function as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
             async fn set_known_container_color_volume(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 primaries: Primaries,
             ) -> crate::client::Result<()> {
@@ -271,20 +285,22 @@ pub mod frog_color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(primaries as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "NOTE: On a surface with \"perceptual\" (default) render intent, handling of the container's color volume"]
             #[doc = "is implementation-specific, and may differ between different transfer functions it is paired with:"]
             #[doc = "ie. sRGB + 709 rendering may have it's primaries widened to more of the available display's gamut"]
             #[doc = "to be be more pleasing for the viewer."]
             #[doc = "Compared to scRGB Linear + 709 being treated faithfully as 709"]
             #[doc = "(including utilizing negatives out of the 709 gamut triangle)"]
+            #[doc = ""]
             async fn set_render_intent(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 render_intent: RenderIntent,
             ) -> crate::client::Result<()> {
@@ -295,20 +311,22 @@ pub mod frog_color_management_v1 {
                 let (payload, fds) = crate::wire::PayloadBuilder::new()
                     .put_uint(render_intent as u32)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Forwards HDR metadata from the client to the compositor."]
             #[doc = ""]
             #[doc = "HDR Metadata Infoframe as per CTA 861.G spec."]
             #[doc = ""]
             #[doc = "Usage of this HDR metadata is implementation specific and"]
             #[doc = "outside of the scope of this protocol."]
+            #[doc = ""]
             async fn set_hdr_metadata(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 mastering_display_primary_red_x: u32,
                 mastering_display_primary_red_y: u32,
@@ -341,20 +359,22 @@ pub mod frog_color_management_v1 {
                     .put_uint(max_cll)
                     .put_uint(max_fall)
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Current preferred metadata for a surface."]
             #[doc = "The application should use this information to tone-map its buffers"]
             #[doc = "to this target before committing."]
             #[doc = ""]
             #[doc = "This metadata does not necessarily correspond to any physical output, but"]
             #[doc = "rather what the compositor thinks would be best for a given surface."]
+            #[doc = ""]
             async fn preferred_metadata(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 transfer_function: TransferFunction,
                 output_display_primary_red_x: u32,
@@ -374,6 +394,7 @@ pub mod frog_color_management_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod frog_fifo_v1 {
+    #[doc = ""]
     #[doc = "When a Wayland compositor considers applying a content update,"]
     #[doc = "it must ensure all the update's readiness constraints (fences, etc)"]
     #[doc = "are met."]
@@ -385,13 +406,16 @@ pub mod frog_fifo_v1 {
     #[doc = "phase. Backward compatible changes may be added together with the"]
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_manager_v1 {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = ""]
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -419,7 +443,7 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -428,21 +452,24 @@ pub mod frog_fifo_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object. Existing objects created by this object"]
             #[doc = "are not affected."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> frog_fifo_manager_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Establish a fifo object for a surface that may be used to add"]
             #[doc = "display refresh constraints to content updates."]
             #[doc = ""]
@@ -451,9 +478,10 @@ pub mod frog_fifo_v1 {
             #[doc = "protocol error. If a surface is acted on by multiple software"]
             #[doc = "components, general best practice is that only the component"]
             #[doc = "performing wl_surface.attach operations should use this protocol."]
+            #[doc = ""]
             async fn get_fifo(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
                 id: crate::wire::ObjectId,
                 surface: crate::wire::ObjectId,
@@ -463,22 +491,26 @@ pub mod frog_fifo_v1 {
                     .put_object(Some(id))
                     .put_object(Some(surface))
                     .build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
         }
     }
+    #[doc = ""]
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
+    #[doc = ""]
     #[allow(clippy::too_many_arguments)]
     pub mod frog_fifo_surface_v1 {
         use futures_util::SinkExt;
         #[allow(unused)]
         use std::os::fd::AsRawFd;
+        #[doc = ""]
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
+        #[doc = ""]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -506,7 +538,7 @@ pub mod frog_fifo_v1 {
             const VERSION: u32 = 1u32;
             async fn handle_event(
                 &self,
-                _socket: &mut crate::wire::Socket,
+                _client: &mut crate::server::Client,
                 _sender_id: crate::wire::ObjectId,
                 message: &mut crate::wire::Message,
             ) -> crate::client::Result<()> {
@@ -515,6 +547,7 @@ pub mod frog_fifo_v1 {
                     _ => Err(crate::client::Error::UnknownOpcode),
                 }
             }
+            #[doc = ""]
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
             #[doc = "it sets a \"fifo_barrier\" condition on the surface associated with"]
             #[doc = "the fifo object. The condition is cleared immediately after the"]
@@ -529,18 +562,20 @@ pub mod frog_fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting set_barrier after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[doc = ""]
             async fn set_barrier(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> frog_fifo_surface_v1#{}.set_barrier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Indicate that this content update is not ready while a"]
             #[doc = "\"fifo_barrier\" condition is present on the surface."]
             #[doc = ""]
@@ -554,32 +589,35 @@ pub mod frog_fifo_v1 {
             #[doc = ""]
             #[doc = "Requesting \"wait_barrier\" after the fifo object's surface is"]
             #[doc = "destroyed will generate a \"surface_destroyed\" error."]
+            #[doc = ""]
             async fn wait_barrier(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> frog_fifo_surface_v1#{}.wait_barrier()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
+            #[doc = ""]
             #[doc = "Informs the server that the client will no longer be using"]
             #[doc = "this protocol object."]
             #[doc = ""]
             #[doc = "Surface state changes previously made by this protocol are"]
             #[doc = "unaffected by this object's destruction."]
+            #[doc = ""]
             async fn destroy(
                 &self,
-                socket: &mut crate::wire::Socket,
+                client: &mut crate::server::Client,
                 sender_id: crate::wire::ObjectId,
             ) -> crate::client::Result<()> {
                 tracing::debug!("-> frog_fifo_surface_v1#{}.destroy()", sender_id);
                 let (payload, fds) = crate::wire::PayloadBuilder::new().build();
-                socket
-                    .send(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                client
+                    .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
