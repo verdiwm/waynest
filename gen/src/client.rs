@@ -44,12 +44,12 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
             let handler_args = if dispatchers.is_empty() {
                 quote! {
                     _client: &mut crate::server::Client,
-                    _sender_id: crate::wire::ObjectId,
+                    _sender_id: crate::ObjectId,
                 }
             } else {
                 quote! {
                     client: &mut crate::server::Client,
-                    sender_id: crate::wire::ObjectId,
+                    sender_id: crate::ObjectId,
                 }
             };
 
@@ -71,7 +71,7 @@ pub fn generate_client_code(current: &[Pair], pairs: &[Pair]) -> TokenStream {
                         async fn handle_event(
                             &self,
                             #handler_args
-                            message: &mut crate::wire::Message,
+                            message: &mut crate::Message,
                         ) -> crate::client::Result<()> {
                             #[allow(clippy::match_single_binding)]
                             match message.opcode() {
@@ -122,7 +122,7 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
         let mut args = vec![
             quote! { &self },
             quote! { client: &mut crate::server::Client },
-            quote! { sender_id: crate::wire::ObjectId },
+            quote! { sender_id: crate::ObjectId },
         ];
 
         for arg in &request.args {
@@ -182,12 +182,12 @@ fn write_requests(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Tok
             async fn #name(#(#args),*) -> crate::client::Result<()> {
                 tracing::debug!(#tracing_inner, sender_id);
 
-                let (payload,fds) = crate::wire::PayloadBuilder::new()
+                let (payload,fds) = crate::PayloadBuilder::new()
                     #(#build_args)*
                     .build();
 
                 client
-                    .send_message(crate::wire::Message::new(sender_id, #opcode, payload, fds))
+                    .send_message(crate::Message::new(sender_id, #opcode, payload, fds))
                     .await
                     .map_err(crate::client::Error::IoError)
             }
@@ -206,7 +206,7 @@ fn write_events(pairs: &[Pair], pair: &Pair, interface: &Interface) -> Vec<Token
         let mut args = vec![
             quote! {&self },
             quote! { client: &mut crate::server::Client },
-            quote! { sender_id: crate::wire::ObjectId },
+            quote! { sender_id: crate::ObjectId },
         ];
 
         for arg in &request.args {

@@ -15,13 +15,13 @@ pub mod drm {
             InvalidName = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AuthenticateFail),
                     1u32 => Ok(Self::InvalidFormat),
                     2u32 => Ok(Self::InvalidName),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -97,7 +97,7 @@ pub mod drm {
             Xbgr16f = 1211384408u32,
         }
         impl TryFrom<u32> for Format {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     538982467u32 => Ok(Self::C8),
@@ -161,7 +161,7 @@ pub mod drm {
                     875714137u32 => Ok(Self::Yvu444),
                     1211384385u32 => Ok(Self::Abgr16f),
                     1211384408u32 => Ok(Self::Xbgr16f),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -181,11 +181,11 @@ pub mod drm {
             Prime = 1u32,
         }
         impl TryFrom<u32> for Capability {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::Prime),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -201,8 +201,8 @@ pub mod drm {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -215,7 +215,7 @@ pub mod drm {
                         1u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let name = message.uint()?;
                             let width = message.int()?;
                             let height = message.int()?;
@@ -239,7 +239,7 @@ pub mod drm {
                         2u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let name = message.uint()?;
                             let width = message.int()?;
                             let height = message.int()?;
@@ -274,7 +274,7 @@ pub mod drm {
                         3u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let name = message.fd()?;
                             let width = message.int()?;
                             let height = message.int()?;
@@ -313,14 +313,14 @@ pub mod drm {
             fn authenticate(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn create_buffer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
                 name: u32,
                 width: i32,
                 height: i32,
@@ -330,8 +330,8 @@ pub mod drm {
             fn create_planar_buffer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
                 name: u32,
                 width: i32,
                 height: i32,
@@ -346,8 +346,8 @@ pub mod drm {
             fn create_prime_buffer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
                 name: rustix::fd::OwnedFd,
                 width: i32,
                 height: i32,
@@ -362,63 +362,57 @@ pub mod drm {
             fn device(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_drm#{}.device(\"{}\")", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
+                    let (payload, fds) =
+                        crate::PayloadBuilder::new().put_string(Some(name)).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn format(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 format: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_drm#{}.format({})", sender_id, format);
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_uint(format).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(format).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn authenticated(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_drm#{}.authenticated()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn capabilities(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 value: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> wl_drm#{}.capabilities({})", sender_id, value);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(value).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(value).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }

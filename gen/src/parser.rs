@@ -227,14 +227,14 @@ impl Arg {
         match self.ty {
             ArgType::Int => quote! { i32 },
             ArgType::Uint => quote! { u32 },
-            ArgType::Fixed => quote! { crate::wire::Fixed },
+            ArgType::Fixed => quote! { crate::Fixed },
             ArgType::String => quote! { String },
-            ArgType::Object => quote! { crate::wire::ObjectId },
+            ArgType::Object => quote! { crate::ObjectId },
             ArgType::NewId => {
                 if self.interface.is_some() {
-                    quote! { crate::wire::ObjectId }
+                    quote! { crate::ObjectId }
                 } else {
-                    quote! { crate::wire::NewId }
+                    quote! { crate::NewId }
                 }
             }
             ArgType::Array => quote! { Vec<u8> },

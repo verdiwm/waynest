@@ -92,12 +92,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 }
 
                 impl TryFrom<u32> for #name {
-                    type Error = crate::wire::DecodeError;
+                    type Error = crate::DecodeError;
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
                         match v {
                             #(#match_variants),*
-                            _ => Err(crate::wire::DecodeError::MalformedPayload)
+                            _ => Err(crate::DecodeError::MalformedPayload)
                         }
                     }
                 }
@@ -134,10 +134,10 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 }
 
                 impl TryFrom<u32> for #name {
-                    type Error = crate::wire::DecodeError;
+                    type Error = crate::DecodeError;
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
-                       Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+                       Self::from_bits(v).ok_or(crate::DecodeError::MalformedPayload)
                     }
                 }
 

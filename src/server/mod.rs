@@ -9,11 +9,11 @@ pub use waynest_macros::Dispatcher;
 use async_trait::async_trait;
 use core::fmt;
 use futures_util::SinkExt;
-use std::{any::Any, collections::HashMap, io, sync::Arc};
+use std::{any::Any, collections::HashMap, sync::Arc};
 use tokio::net::UnixStream;
 use tokio_stream::StreamExt;
 
-use crate::wire::{Message, ObjectId, Socket};
+use crate::{Message, ObjectId, Socket};
 
 pub struct Client {
     socket: Socket,
@@ -78,8 +78,8 @@ impl Client {
         Ok(next)
     }
 
-    pub async fn send_message(&mut self, message: Message) -> Result<(), io::Error> {
-        self.socket.send(message).await
+    pub async fn send_message(&mut self, message: Message) -> Result<()> {
+        self.socket.send(message).await.map_err(Error::Decode)
     }
 }
 
