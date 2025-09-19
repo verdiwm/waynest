@@ -23,8 +23,8 @@ pub mod frog_color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -41,10 +41,10 @@ pub mod frog_color_management_v1 {
                         1u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let callback = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})",
                                 sender_id,
@@ -61,16 +61,16 @@ pub mod frog_color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = ""]
             fn get_color_managed_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                callback: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
+                callback: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -109,7 +109,7 @@ pub mod frog_color_management_v1 {
             ScrgbLinear = 4u32,
         }
         impl TryFrom<u32> for TransferFunction {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Undefined),
@@ -117,7 +117,7 @@ pub mod frog_color_management_v1 {
                     2u32 => Ok(Self::Gamma22),
                     3u32 => Ok(Self::St2084Pq),
                     4u32 => Ok(Self::ScrgbLinear),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -138,13 +138,13 @@ pub mod frog_color_management_v1 {
             Rec2020 = 2u32,
         }
         impl TryFrom<u32> for Primaries {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Undefined),
                     1u32 => Ok(Self::Rec709),
                     2u32 => Ok(Self::Rec2020),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -167,11 +167,11 @@ pub mod frog_color_management_v1 {
             Perceptual = 0u32,
         }
         impl TryFrom<u32> for RenderIntent {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Perceptual),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -187,8 +187,8 @@ pub mod frog_color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -296,18 +296,18 @@ pub mod frog_color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_known_transfer_function(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 transfer_function: TransferFunction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_known_container_color_volume(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 primaries: Primaries,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -321,7 +321,7 @@ pub mod frog_color_management_v1 {
             fn set_render_intent(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 render_intent: RenderIntent,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -335,7 +335,7 @@ pub mod frog_color_management_v1 {
             fn set_hdr_metadata(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 mastering_display_primary_red_x: u32,
                 mastering_display_primary_red_y: u32,
                 mastering_display_primary_green_x: u32,
@@ -360,7 +360,7 @@ pub mod frog_color_management_v1 {
             fn preferred_metadata(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 transfer_function: TransferFunction,
                 output_display_primary_red_x: u32,
                 output_display_primary_red_y: u32,
@@ -391,7 +391,7 @@ pub mod frog_color_management_v1 {
                         min_luminance,
                         max_full_frame_luminance
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(transfer_function as u32)
                         .put_uint(output_display_primary_red_x)
                         .put_uint(output_display_primary_red_y)
@@ -406,9 +406,8 @@ pub mod frog_color_management_v1 {
                         .put_uint(max_full_frame_luminance)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -447,11 +446,11 @@ pub mod frog_fifo_v1 {
             FifoSurfaceAlreadyExists = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::FifoSurfaceAlreadyExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -467,8 +466,8 @@ pub mod frog_fifo_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -482,10 +481,10 @@ pub mod frog_fifo_v1 {
                         1u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "frog_fifo_manager_v1#{}.get_fifo({}, {})",
                                 sender_id,
@@ -506,7 +505,7 @@ pub mod frog_fifo_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Establish a fifo object for a surface that may be used to add"]
@@ -521,9 +520,9 @@ pub mod frog_fifo_v1 {
             fn get_fifo(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -549,11 +548,11 @@ pub mod frog_fifo_v1 {
             SurfaceDestroyed = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::SurfaceDestroyed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -569,8 +568,8 @@ pub mod frog_fifo_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -612,7 +611,7 @@ pub mod frog_fifo_v1 {
             fn set_barrier(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Indicate that this content update is not ready while a"]
@@ -632,7 +631,7 @@ pub mod frog_fifo_v1 {
             fn wait_barrier(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Informs the server that the client will no longer be using"]
@@ -644,7 +643,7 @@ pub mod frog_fifo_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }

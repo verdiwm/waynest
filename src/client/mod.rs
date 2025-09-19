@@ -6,7 +6,7 @@ use std::{any::Any, sync::Arc};
 use async_trait::async_trait;
 pub use error::{Error, Result};
 
-use crate::wire::{Message, ObjectId, Socket};
+use crate::{Message, ObjectId, Socket};
 
 #[async_trait]
 pub trait Dispatcher: Any + Send + Sync + 'static {

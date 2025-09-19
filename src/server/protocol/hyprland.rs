@@ -25,11 +25,11 @@ pub mod hyprland_ctm_control_v1 {
             InvalidMatrix = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidMatrix),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -45,8 +45,8 @@ pub mod hyprland_ctm_control_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -54,7 +54,7 @@ pub mod hyprland_ctm_control_v1 {
                         0u16 => {
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let mat0 = message.fixed()?;
                             let mat1 = message.fixed()?;
                             let mat2 = message.fixed()?;
@@ -122,17 +122,17 @@ pub mod hyprland_ctm_control_v1 {
             fn set_ctm_for_output(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                mat0: crate::wire::Fixed,
-                mat1: crate::wire::Fixed,
-                mat2: crate::wire::Fixed,
-                mat3: crate::wire::Fixed,
-                mat4: crate::wire::Fixed,
-                mat5: crate::wire::Fixed,
-                mat6: crate::wire::Fixed,
-                mat7: crate::wire::Fixed,
-                mat8: crate::wire::Fixed,
+                sender_id: crate::ObjectId,
+                output: crate::ObjectId,
+                mat0: crate::Fixed,
+                mat1: crate::Fixed,
+                mat2: crate::Fixed,
+                mat3: crate::Fixed,
+                mat4: crate::Fixed,
+                mat5: crate::Fixed,
+                mat6: crate::Fixed,
+                mat7: crate::Fixed,
+                mat8: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
@@ -140,7 +140,7 @@ pub mod hyprland_ctm_control_v1 {
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "All objects created by the manager will still remain valid, until their"]
@@ -151,7 +151,7 @@ pub mod hyprland_ctm_control_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This event is sent if another manager was bound by any client"]
@@ -164,15 +164,14 @@ pub mod hyprland_ctm_control_v1 {
             fn blocked(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.blocked()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -201,8 +200,8 @@ pub mod hyprland_focus_grab_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -210,7 +209,7 @@ pub mod hyprland_focus_grab_v1 {
                         0u16 => {
                             let grab = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_focus_grab_manager_v1#{}.create_grab({})",
                                 sender_id,
@@ -237,8 +236,8 @@ pub mod hyprland_focus_grab_v1 {
             fn create_grab(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                grab: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                grab: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Destroy the focus grab manager."]
@@ -247,7 +246,7 @@ pub mod hyprland_focus_grab_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -281,8 +280,8 @@ pub mod hyprland_focus_grab_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -290,7 +289,7 @@ pub mod hyprland_focus_grab_v1 {
                         0u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_focus_grab_v1#{}.add_surface({})",
                                 sender_id,
@@ -301,7 +300,7 @@ pub mod hyprland_focus_grab_v1 {
                         1u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_focus_grab_v1#{}.remove_surface({})",
                                 sender_id,
@@ -333,8 +332,8 @@ pub mod hyprland_focus_grab_v1 {
             fn add_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Remove a surface from the whitelist. Destroying the surface is treated"]
@@ -348,8 +347,8 @@ pub mod hyprland_focus_grab_v1 {
             fn remove_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Commit pending changes to the surface whitelist."]
@@ -361,7 +360,7 @@ pub mod hyprland_focus_grab_v1 {
             fn commit(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Destroy the grab object and remove the grab if active."]
@@ -369,7 +368,7 @@ pub mod hyprland_focus_grab_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
@@ -378,15 +377,14 @@ pub mod hyprland_focus_grab_v1 {
             fn cleared(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_focus_grab_v1#{}.cleared()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -415,11 +413,11 @@ pub mod hyprland_global_shortcuts_v1 {
             AlreadyTaken = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AlreadyTaken),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -435,8 +433,8 @@ pub mod hyprland_global_shortcuts_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -444,19 +442,19 @@ pub mod hyprland_global_shortcuts_v1 {
                         0u16 => {
                             let shortcut = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let id = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let app_id = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let description = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let trigger_description = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")",
                                 sender_id,
@@ -502,8 +500,8 @@ pub mod hyprland_global_shortcuts_v1 {
             fn register_shortcut(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                shortcut: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                shortcut: crate::ObjectId,
                 id: String,
                 app_id: String,
                 description: String,
@@ -516,7 +514,7 @@ pub mod hyprland_global_shortcuts_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -536,8 +534,8 @@ pub mod hyprland_global_shortcuts_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -558,7 +556,7 @@ pub mod hyprland_global_shortcuts_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The keystroke was pressed."]
@@ -568,7 +566,7 @@ pub mod hyprland_global_shortcuts_v1 {
             fn pressed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -581,15 +579,14 @@ pub mod hyprland_global_shortcuts_v1 {
                         tv_sec_lo,
                         tv_nsec
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(tv_sec_hi)
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -600,7 +597,7 @@ pub mod hyprland_global_shortcuts_v1 {
             fn released(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -613,15 +610,14 @@ pub mod hyprland_global_shortcuts_v1 {
                         tv_sec_lo,
                         tv_nsec
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(tv_sec_hi)
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -646,8 +642,8 @@ pub mod hyprland_lock_notify_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -661,7 +657,7 @@ pub mod hyprland_lock_notify_v1 {
                         1u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_lock_notifier_v1#{}.get_lock_notification({})",
                                 sender_id,
@@ -680,7 +676,7 @@ pub mod hyprland_lock_notify_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Create a new lock notification object."]
@@ -691,8 +687,8 @@ pub mod hyprland_lock_notify_v1 {
             fn get_lock_notification(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -724,8 +720,8 @@ pub mod hyprland_lock_notify_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -749,7 +745,7 @@ pub mod hyprland_lock_notify_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This event is sent when the wayland session is locked."]
@@ -760,15 +756,14 @@ pub mod hyprland_lock_notify_v1 {
             fn locked(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_lock_notification_v1#{}.locked()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -781,15 +776,14 @@ pub mod hyprland_lock_notify_v1 {
             fn unlocked(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> hyprland_lock_notification_v1#{}.unlocked()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -817,11 +811,11 @@ pub mod hyprland_surface_v1 {
             AlreadyConstructed = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AlreadyConstructed),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -837,8 +831,8 @@ pub mod hyprland_surface_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -846,10 +840,10 @@ pub mod hyprland_surface_v1 {
                         0u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_surface_manager_v1#{}.get_hyprland_surface({}, {})",
                                 sender_id,
@@ -878,9 +872,9 @@ pub mod hyprland_surface_v1 {
             fn get_hyprland_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Destroy the surface manager."]
@@ -889,7 +883,7 @@ pub mod hyprland_surface_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -915,12 +909,12 @@ pub mod hyprland_surface_v1 {
             OutOfRange = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::NoSurface),
                     1u32 => Ok(Self::OutOfRange),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -936,8 +930,8 @@ pub mod hyprland_surface_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -984,8 +978,8 @@ pub mod hyprland_surface_v1 {
             fn set_opacity(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                opacity: crate::wire::Fixed,
+                sender_id: crate::ObjectId,
+                opacity: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Destroy the hyprland surface object, resetting properties provided"]
@@ -994,7 +988,7 @@ pub mod hyprland_surface_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This request sets the region of the surface that contains visible content."]
@@ -1020,8 +1014,8 @@ pub mod hyprland_surface_v1 {
             fn set_visible_region(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                region: Option<crate::wire::ObjectId>,
+                sender_id: crate::ObjectId,
+                region: Option<crate::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -1051,8 +1045,8 @@ pub mod hyprland_toplevel_export_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1060,7 +1054,7 @@ pub mod hyprland_toplevel_export_v1 {
                         0u16 => {
                             let frame = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let overlay_cursor = message.int()?;
                             let handle = message.uint()?;
                             tracing::debug!(
@@ -1085,11 +1079,11 @@ pub mod hyprland_toplevel_export_v1 {
                         2u16 => {
                             let frame = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let overlay_cursor = message.int()?;
                             let handle = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})",
                                 sender_id,
@@ -1125,8 +1119,8 @@ pub mod hyprland_toplevel_export_v1 {
             fn capture_toplevel(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                frame: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                frame: crate::ObjectId,
                 overlay_cursor: i32,
                 handle: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1137,7 +1131,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Same as capture_toplevel, but with a zwlr_foreign_toplevel_handle_v1 handle."]
@@ -1145,10 +1139,10 @@ pub mod hyprland_toplevel_export_v1 {
             fn capture_toplevel_with_wlr_toplevel_handle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                frame: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                frame: crate::ObjectId,
                 overlay_cursor: i32,
-                handle: crate::wire::ObjectId,
+                handle: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -1185,12 +1179,12 @@ pub mod hyprland_toplevel_export_v1 {
             InvalidBuffer = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AlreadyUsed),
                     1u32 => Ok(Self::InvalidBuffer),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -1201,9 +1195,9 @@ pub mod hyprland_toplevel_export_v1 {
         }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; } }
         impl TryFrom<u32> for Flags {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(crate::DecodeError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Flags {
@@ -1218,8 +1212,8 @@ pub mod hyprland_toplevel_export_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1227,7 +1221,7 @@ pub mod hyprland_toplevel_export_v1 {
                         0u16 => {
                             let buffer = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let ignore_damage = message.int()?;
                             tracing::debug!(
                                 "hyprland_toplevel_export_frame_v1#{}.copy({}, {})",
@@ -1265,8 +1259,8 @@ pub mod hyprland_toplevel_export_v1 {
             fn copy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                buffer: crate::ObjectId,
                 ignore_damage: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1275,7 +1269,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
@@ -1285,7 +1279,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn buffer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
@@ -1300,16 +1294,15 @@ pub mod hyprland_toplevel_export_v1 {
                         height,
                         stride
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(format as u32)
                         .put_uint(width)
                         .put_uint(height)
                         .put_uint(stride)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1327,7 +1320,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn damage(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 x: u32,
                 y: u32,
                 width: u32,
@@ -1342,16 +1335,15 @@ pub mod hyprland_toplevel_export_v1 {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(x)
                         .put_uint(y)
                         .put_uint(width)
                         .put_uint(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1361,7 +1353,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn flags(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 flags: Flags,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1370,13 +1362,11 @@ pub mod hyprland_toplevel_export_v1 {
                         sender_id,
                         flags
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(flags.bits())
-                        .build();
+                    let (payload, fds) =
+                        crate::PayloadBuilder::new().put_uint(flags.bits()).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1396,7 +1386,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn ready(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -1409,15 +1399,14 @@ pub mod hyprland_toplevel_export_v1 {
                         tv_sec_lo,
                         tv_nsec
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(tv_sec_hi)
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1428,18 +1417,17 @@ pub mod hyprland_toplevel_export_v1 {
             fn failed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.failed()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 4u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1450,7 +1438,7 @@ pub mod hyprland_toplevel_export_v1 {
             fn linux_dmabuf(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 format: u32,
                 width: u32,
                 height: u32,
@@ -1463,15 +1451,14 @@ pub mod hyprland_toplevel_export_v1 {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(format)
                         .put_uint(width)
                         .put_uint(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 5u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1483,18 +1470,17 @@ pub mod hyprland_toplevel_export_v1 {
             fn buffer_done(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_export_frame_v1#{}.buffer_done()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 6u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -1522,8 +1508,8 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1531,10 +1517,10 @@ pub mod hyprland_toplevel_mapping_v1 {
                         0u16 => {
                             let handle = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let toplevel = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel({}, {})",
                                 sender_id,
@@ -1547,10 +1533,10 @@ pub mod hyprland_toplevel_mapping_v1 {
                         1u16 => {
                             let handle = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let toplevel = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel_wlr({}, {})",
                                 sender_id,
@@ -1579,9 +1565,9 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn get_window_for_toplevel(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                handle: crate::wire::ObjectId,
-                toplevel: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                handle: crate::ObjectId,
+                toplevel: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Get the window address for a wlr toplevel."]
@@ -1589,9 +1575,9 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn get_window_for_toplevel_wlr(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                handle: crate::wire::ObjectId,
-                toplevel: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                handle: crate::ObjectId,
+                toplevel: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "All objects created by the manager will still remain valid, until their appropriate destroy"]
@@ -1600,7 +1586,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -1624,8 +1610,8 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1649,7 +1635,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The full 64bit window address. The `address` field contains the lower 32 bits whilst the"]
@@ -1658,7 +1644,7 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn window_address(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 address_hi: u32,
                 address: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1669,14 +1655,13 @@ pub mod hyprland_toplevel_mapping_v1 {
                         address_hi,
                         address
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(address_hi)
                         .put_uint(address)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1686,18 +1671,17 @@ pub mod hyprland_toplevel_mapping_v1 {
             fn failed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> hyprland_toplevel_window_mapping_handle_v1#{}.failed()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }

@@ -60,12 +60,12 @@ pub mod color_management_v1 {
             SurfaceExists = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::UnsupportedFeature),
                     1u32 => Ok(Self::SurfaceExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -100,7 +100,7 @@ pub mod color_management_v1 {
             RelativeBpc = 4u32,
         }
         impl TryFrom<u32> for RenderIntent {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Perceptual),
@@ -108,7 +108,7 @@ pub mod color_management_v1 {
                     2u32 => Ok(Self::Saturation),
                     3u32 => Ok(Self::Absolute),
                     4u32 => Ok(Self::RelativeBpc),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -135,7 +135,7 @@ pub mod color_management_v1 {
             ExtendedTargetVolume = 6u32,
         }
         impl TryFrom<u32> for Feature {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::IccV2V4),
@@ -145,7 +145,7 @@ pub mod color_management_v1 {
                     4u32 => Ok(Self::SetLuminances),
                     5u32 => Ok(Self::SetMasteringDisplayPrimaries),
                     6u32 => Ok(Self::ExtendedTargetVolume),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -177,7 +177,7 @@ pub mod color_management_v1 {
             AdobeRgb = 9u32,
         }
         impl TryFrom<u32> for Primaries {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Srgb),
@@ -190,7 +190,7 @@ pub mod color_management_v1 {
                     7u32 => Ok(Self::DciP3),
                     8u32 => Ok(Self::DisplayP3),
                     9u32 => Ok(Self::AdobeRgb),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -227,7 +227,7 @@ pub mod color_management_v1 {
             Hlg = 13u32,
         }
         impl TryFrom<u32> for TransferFunction {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Bt709),
@@ -244,7 +244,7 @@ pub mod color_management_v1 {
                     11u32 => Ok(Self::St2084Pq),
                     12u32 => Ok(Self::St428),
                     13u32 => Ok(Self::Hlg),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -260,8 +260,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -275,10 +275,10 @@ pub mod color_management_v1 {
                         1u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_manager_v4#{}.get_output({}, {})",
                                 sender_id,
@@ -290,10 +290,10 @@ pub mod color_management_v1 {
                         2u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_manager_v4#{}.get_surface({}, {})",
                                 sender_id,
@@ -305,10 +305,10 @@ pub mod color_management_v1 {
                         3u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_manager_v4#{}.get_feedback_surface({}, {})",
                                 sender_id,
@@ -321,7 +321,7 @@ pub mod color_management_v1 {
                         4u16 => {
                             let obj = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_manager_v4#{}.new_icc_creator({})",
                                 sender_id,
@@ -332,7 +332,7 @@ pub mod color_management_v1 {
                         5u16 => {
                             let obj = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_manager_v4#{}.new_parametric_creator({})",
                                 sender_id,
@@ -351,7 +351,7 @@ pub mod color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This creates a new xx_color_management_output_v4 object for the"]
@@ -362,9 +362,9 @@ pub mod color_management_v1 {
             fn get_output(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
+                output: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "If a xx_color_management_surface_v4 object already exists for the given"]
@@ -378,9 +378,9 @@ pub mod color_management_v1 {
             fn get_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This creates a new color xx_color_management_feedback_surface_v4 object"]
@@ -392,9 +392,9 @@ pub mod color_management_v1 {
             fn get_feedback_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Makes a new ICC-based image description creator object with all"]
@@ -409,8 +409,8 @@ pub mod color_management_v1 {
             fn new_icc_creator(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                obj: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                obj: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Makes a new parametric image description creator object with all"]
@@ -425,8 +425,8 @@ pub mod color_management_v1 {
             fn new_parametric_creator(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                obj: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                obj: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -435,7 +435,7 @@ pub mod color_management_v1 {
             fn supported_intent(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 render_intent: RenderIntent,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -444,13 +444,12 @@ pub mod color_management_v1 {
                         sender_id,
                         render_intent
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(render_intent as u32)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -460,7 +459,7 @@ pub mod color_management_v1 {
             fn supported_feature(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 feature: Feature,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -469,13 +468,12 @@ pub mod color_management_v1 {
                         sender_id,
                         feature
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(feature as u32)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -486,7 +484,7 @@ pub mod color_management_v1 {
             fn supported_tf_named(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tf: TransferFunction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -495,13 +493,10 @@ pub mod color_management_v1 {
                         sender_id,
                         tf
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tf as u32)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(tf as u32).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -512,7 +507,7 @@ pub mod color_management_v1 {
             fn supported_primaries_named(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 primaries: Primaries,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -521,13 +516,12 @@ pub mod color_management_v1 {
                         sender_id,
                         primaries
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(primaries as u32)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -554,8 +548,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -572,7 +566,7 @@ pub mod color_management_v1 {
                         1u16 => {
                             let image_description = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_management_output_v4#{}.get_image_description({})",
                                 sender_id,
@@ -592,7 +586,7 @@ pub mod color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This creates a new xx_image_description_v4 object for the current image"]
@@ -630,8 +624,8 @@ pub mod color_management_v1 {
             fn get_image_description(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                image_description: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                image_description: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This event is sent whenever the image description of the output changed,"]
@@ -645,18 +639,17 @@ pub mod color_management_v1 {
             fn image_description_changed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_management_output_v4#{}.image_description_changed()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -684,12 +677,12 @@ pub mod color_management_v1 {
             ImageDescription = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::RenderIntent),
                     1u32 => Ok(Self::ImageDescription),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -705,8 +698,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -723,7 +716,7 @@ pub mod color_management_v1 {
                         1u16 => {
                             let image_description = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let render_intent = message.uint()?;
                             tracing::debug!(
                                 "xx_color_management_surface_v4#{}.set_image_description({}, {})",
@@ -757,7 +750,7 @@ pub mod color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Set the image description of the underlying surface. The image"]
@@ -792,8 +785,8 @@ pub mod color_management_v1 {
             fn set_image_description(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                image_description: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                image_description: crate::ObjectId,
                 render_intent : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: RenderIntent,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -805,7 +798,7 @@ pub mod color_management_v1 {
             fn unset_image_description(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -830,11 +823,11 @@ pub mod color_management_v1 {
             Inert = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Inert),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -850,8 +843,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -868,7 +861,7 @@ pub mod color_management_v1 {
                         1u16 => {
                             let image_description = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_color_management_feedback_surface_v4#{}.get_preferred({})",
                                 sender_id,
@@ -887,7 +880,7 @@ pub mod color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -921,8 +914,8 @@ pub mod color_management_v1 {
             fn get_preferred(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                image_description: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                image_description: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The preferred image description is the one which likely has the most"]
@@ -944,18 +937,17 @@ pub mod color_management_v1 {
             fn preferred_changed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> xx_color_management_feedback_surface_v4#{}.preferred_changed()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -998,7 +990,7 @@ pub mod color_management_v1 {
             OutOfFile = 4u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::IncompleteSet),
@@ -1006,7 +998,7 @@ pub mod color_management_v1 {
                     2u32 => Ok(Self::BadFd),
                     3u32 => Ok(Self::BadSize),
                     4u32 => Ok(Self::OutOfFile),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -1022,8 +1014,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1031,7 +1023,7 @@ pub mod color_management_v1 {
                         0u16 => {
                             let image_description = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_image_description_creator_icc_v4#{}.create({})",
                                 sender_id,
@@ -1083,8 +1075,8 @@ pub mod color_management_v1 {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                image_description: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                image_description: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
@@ -1130,7 +1122,7 @@ pub mod color_management_v1 {
             fn set_icc_file(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 icc_profile: rustix::fd::OwnedFd,
                 offset: u32,
                 length: u32,
@@ -1191,7 +1183,7 @@ pub mod color_management_v1 {
             InvalidMastering = 7u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::IncompleteSet),
@@ -1202,7 +1194,7 @@ pub mod color_management_v1 {
                     5u32 => Ok(Self::InvalidPrimaries),
                     6u32 => Ok(Self::InvalidLuminance),
                     7u32 => Ok(Self::InvalidMastering),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -1218,8 +1210,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1227,7 +1219,7 @@ pub mod color_management_v1 {
                         0u16 => {
                             let image_description = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_image_description_creator_params_v4#{}.create({})",
                                 sender_id,
@@ -1392,8 +1384,8 @@ pub mod color_management_v1 {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                image_description: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                image_description: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
@@ -1412,7 +1404,7 @@ pub mod color_management_v1 {
             fn set_tf_named(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1439,7 +1431,7 @@ pub mod color_management_v1 {
             fn set_tf_power(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 eexp: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1457,7 +1449,7 @@ pub mod color_management_v1 {
             fn set_primaries_named(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1478,7 +1470,7 @@ pub mod color_management_v1 {
             fn set_primaries(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1534,7 +1526,7 @@ pub mod color_management_v1 {
             fn set_luminances(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
@@ -1589,7 +1581,7 @@ pub mod color_management_v1 {
             fn set_mastering_display_primaries(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1615,7 +1607,7 @@ pub mod color_management_v1 {
             fn set_mastering_luminance(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1632,7 +1624,7 @@ pub mod color_management_v1 {
             fn set_max_cll(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 max_cll: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1648,7 +1640,7 @@ pub mod color_management_v1 {
             fn set_max_fall(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 max_fall: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
@@ -1690,12 +1682,12 @@ pub mod color_management_v1 {
             NoInformation = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::NotReady),
                     1u32 => Ok(Self::NoInformation),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -1718,14 +1710,14 @@ pub mod color_management_v1 {
             NoOutput = 3u32,
         }
         impl TryFrom<u32> for Cause {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::LowVersion),
                     1u32 => Ok(Self::Unsupported),
                     2u32 => Ok(Self::OperatingSystem),
                     3u32 => Ok(Self::NoOutput),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -1741,8 +1733,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1756,7 +1748,7 @@ pub mod color_management_v1 {
                         1u16 => {
                             let information = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "xx_image_description_v4#{}.get_information({})",
                                 sender_id,
@@ -1778,7 +1770,7 @@ pub mod color_management_v1 {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Creates a xx_image_description_info_v4 object which delivers the"]
@@ -1792,8 +1784,8 @@ pub mod color_management_v1 {
             fn get_information(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                information: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                information: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "If creating a xx_image_description_v4 object fails for a reason that is"]
@@ -1810,7 +1802,7 @@ pub mod color_management_v1 {
             fn failed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 cause: Cause,
                 msg: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1821,14 +1813,13 @@ pub mod color_management_v1 {
                         cause,
                         msg
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(cause as u32)
                         .put_string(Some(msg))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1862,7 +1853,7 @@ pub mod color_management_v1 {
             fn ready(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 identity: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -1871,13 +1862,10 @@ pub mod color_management_v1 {
                         sender_id,
                         identity
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(identity)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(identity).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -1905,8 +1893,8 @@ pub mod color_management_v1 {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
-                _sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                _sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1921,15 +1909,14 @@ pub mod color_management_v1 {
             fn done(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> xx_image_description_info_v4#{}.done()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1945,7 +1932,7 @@ pub mod color_management_v1 {
             fn icc_file(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 icc: rustix::fd::OwnedFd,
                 icc_size: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1956,14 +1943,13 @@ pub mod color_management_v1 {
                         icc.as_raw_fd(),
                         icc_size
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_fd(icc)
                         .put_uint(icc_size)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1976,7 +1962,7 @@ pub mod color_management_v1 {
             fn primaries(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -1999,7 +1985,7 @@ pub mod color_management_v1 {
                         w_x,
                         w_y
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
                         .put_int(g_x)
@@ -2010,9 +1996,8 @@ pub mod color_management_v1 {
                         .put_int(w_y)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2022,7 +2007,7 @@ pub mod color_management_v1 {
             fn primaries_named(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2031,13 +2016,12 @@ pub mod color_management_v1 {
                         sender_id,
                         primaries
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(primaries as u32)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2052,7 +2036,7 @@ pub mod color_management_v1 {
             fn tf_power(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 eexp: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2061,11 +2045,10 @@ pub mod color_management_v1 {
                         sender_id,
                         eexp
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(eexp).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(eexp).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 4u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2075,7 +2058,7 @@ pub mod color_management_v1 {
             fn tf_named(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2084,13 +2067,10 @@ pub mod color_management_v1 {
                         sender_id,
                         tf
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(tf as u32)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(tf as u32).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 5u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2104,7 +2084,7 @@ pub mod color_management_v1 {
             fn luminances(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
@@ -2117,15 +2097,14 @@ pub mod color_management_v1 {
                         max_lum,
                         reference_lum
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(min_lum)
                         .put_uint(max_lum)
                         .put_uint(reference_lum)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 6u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2144,7 +2123,7 @@ pub mod color_management_v1 {
             fn target_primaries(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 r_x: i32,
                 r_y: i32,
                 g_x: i32,
@@ -2167,7 +2146,7 @@ pub mod color_management_v1 {
                         w_x,
                         w_y
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
                         .put_int(g_x)
@@ -2178,9 +2157,8 @@ pub mod color_management_v1 {
                         .put_int(w_y)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 7u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2197,7 +2175,7 @@ pub mod color_management_v1 {
             fn target_luminance(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2208,14 +2186,13 @@ pub mod color_management_v1 {
                         min_lum,
                         max_lum
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(min_lum)
                         .put_uint(max_lum)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 8u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2228,7 +2205,7 @@ pub mod color_management_v1 {
             fn target_max_cll(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 max_cll: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2237,12 +2214,10 @@ pub mod color_management_v1 {
                         sender_id,
                         max_cll
                     );
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_uint(max_cll).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(max_cll).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 9u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -2255,7 +2230,7 @@ pub mod color_management_v1 {
             fn target_max_fall(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 max_fall: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2264,13 +2239,10 @@ pub mod color_management_v1 {
                         sender_id,
                         max_fall
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(max_fall)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(max_fall).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 10u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -2291,8 +2263,8 @@ pub mod ivi_application {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -2314,7 +2286,7 @@ pub mod ivi_application {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The configure event asks the client to resize its surface."]
@@ -2332,7 +2304,7 @@ pub mod ivi_application {
             fn configure(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -2343,14 +2315,13 @@ pub mod ivi_application {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -2376,12 +2347,12 @@ pub mod ivi_application {
             IviId = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Role),
                     1u32 => Ok(Self::IviId),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -2397,8 +2368,8 @@ pub mod ivi_application {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -2407,10 +2378,10 @@ pub mod ivi_application {
                             let ivi_id = message.uint()?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "ivi_application#{}.surface_create({}, {}, {})",
                                 sender_id,
@@ -2451,10 +2422,10 @@ pub mod ivi_application {
             fn surface_create(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 ivi_id: u32,
-                surface: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                surface: crate::ObjectId,
+                id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -2477,14 +2448,14 @@ pub mod ivi_hmi_controller {
             Random = 3u32,
         }
         impl TryFrom<u32> for LayoutMode {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Tiling),
                     1u32 => Ok(Self::SideBySide),
                     2u32 => Ok(Self::FullScreen),
                     3u32 => Ok(Self::Random),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -2501,12 +2472,12 @@ pub mod ivi_hmi_controller {
             On = 1u32,
         }
         impl TryFrom<u32> for Home {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Off),
                     1u32 => Ok(Self::On),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -2522,8 +2493,8 @@ pub mod ivi_hmi_controller {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -2535,7 +2506,7 @@ pub mod ivi_hmi_controller {
                         1u16 => {
                             let seat = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let serial = message.uint()?;
                             tracing::debug!(
                                 "ivi_hmi_controller#{}.workspace_control({}, {})",
@@ -2567,7 +2538,7 @@ pub mod ivi_hmi_controller {
             fn ui_ready(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Reference protocol to control a surface by server."]
@@ -2583,8 +2554,8 @@ pub mod ivi_hmi_controller {
             fn workspace_control(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                seat: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                seat: crate::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -2594,7 +2565,7 @@ pub mod ivi_hmi_controller {
             fn switch_mode(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layout_mode: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -2616,13 +2587,13 @@ pub mod ivi_hmi_controller {
             fn home(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 home: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn workspace_end_control(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 is_controlled: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -2631,13 +2602,11 @@ pub mod ivi_hmi_controller {
                         sender_id,
                         is_controlled
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_int(is_controlled)
-                        .build();
+                    let (payload, fds) =
+                        crate::PayloadBuilder::new().put_int(is_controlled).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -2658,8 +2627,8 @@ pub mod text_cursor_position {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -2667,7 +2636,7 @@ pub mod text_cursor_position {
                         0u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let x = message.fixed()?;
                             let y = message.fixed()?;
                             tracing::debug!(
@@ -2686,10 +2655,10 @@ pub mod text_cursor_position {
             fn notify(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
+                x: crate::Fixed,
+                y: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -2762,11 +2731,11 @@ pub mod weston_content_protection {
             SurfaceExists = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::SurfaceExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -2782,8 +2751,8 @@ pub mod weston_content_protection {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -2797,10 +2766,10 @@ pub mod weston_content_protection {
                         1u16 => {
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_content_protection#{}.get_protection({}, {})",
                                 sender_id,
@@ -2821,7 +2790,7 @@ pub mod weston_content_protection {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Instantiate an interface extension for the given wl_surface to"]
@@ -2832,9 +2801,9 @@ pub mod weston_content_protection {
             fn get_protection(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -2890,11 +2859,11 @@ pub mod weston_content_protection {
             InvalidType = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidType),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -2924,13 +2893,13 @@ pub mod weston_content_protection {
             Hdcp1 = 2u32,
         }
         impl TryFrom<u32> for Type {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Unprotected),
                     1u32 => Ok(Self::Hdcp0),
                     2u32 => Ok(Self::Hdcp1),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -2946,8 +2915,8 @@ pub mod weston_content_protection {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -2987,7 +2956,7 @@ pub mod weston_content_protection {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Informs the server about the type of content. The level of"]
@@ -3005,7 +2974,7 @@ pub mod weston_content_protection {
             fn set_type(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 r#type: Type,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -3017,7 +2986,7 @@ pub mod weston_content_protection {
             fn enforce(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Do not enforce censored-visibility of the wl_surface contents on"]
@@ -3031,7 +3000,7 @@ pub mod weston_content_protection {
             fn relax(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This event is sent to the client to inform about the actual protection"]
@@ -3062,7 +3031,7 @@ pub mod weston_content_protection {
             fn status(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 r#type: Type,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -3071,13 +3040,11 @@ pub mod weston_content_protection {
                         sender_id,
                         r#type
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(r#type as u32)
-                        .build();
+                    let (payload, fds) =
+                        crate::PayloadBuilder::new().put_uint(r#type as u32).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -3119,8 +3086,8 @@ pub mod weston_debug {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3134,11 +3101,11 @@ pub mod weston_debug {
                         1u16 => {
                             let name = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let streamfd = message.fd()?;
                             let stream = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_debug_v1#{}.subscribe(\"{}\", {}, {})",
                                 sender_id,
@@ -3159,7 +3126,7 @@ pub mod weston_debug {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Subscribe to a named debug stream. The server will start printing"]
@@ -3176,10 +3143,10 @@ pub mod weston_debug {
             fn subscribe(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 name: String,
                 streamfd: rustix::fd::OwnedFd,
-                stream: crate::wire::ObjectId,
+                stream: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Advertises an available debug scope which the client may be able to"]
@@ -3190,7 +3157,7 @@ pub mod weston_debug {
             fn available(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 name: String,
                 description: Option<String>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3203,14 +3170,13 @@ pub mod weston_debug {
                             .as_ref()
                             .map_or("null".to_string(), |v| v.to_string())
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_string(description)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -3235,8 +3201,8 @@ pub mod weston_debug {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3262,7 +3228,7 @@ pub mod weston_debug {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The server has successfully finished writing to and has closed the"]
@@ -3275,15 +3241,14 @@ pub mod weston_debug {
             fn complete(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_debug_stream_v1#{}.complete()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -3298,7 +3263,7 @@ pub mod weston_debug {
             fn failure(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 message: Option<String>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -3309,13 +3274,10 @@ pub mod weston_debug {
                             .as_ref()
                             .map_or("null".to_string(), |v| v.to_string())
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(message)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_string(message).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -3352,7 +3314,7 @@ pub mod weston_desktop {
             Busy = 11u32,
         }
         impl TryFrom<u32> for Cursor {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::None),
@@ -3367,7 +3329,7 @@ pub mod weston_desktop {
                     9u32 => Ok(Self::ResizeTopRight),
                     10u32 => Ok(Self::ResizeBottomRight),
                     11u32 => Ok(Self::Busy),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -3386,14 +3348,14 @@ pub mod weston_desktop {
             Right = 3u32,
         }
         impl TryFrom<u32> for PanelPosition {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Top),
                     1u32 => Ok(Self::Bottom),
                     2u32 => Ok(Self::Left),
                     3u32 => Ok(Self::Right),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -3410,11 +3372,11 @@ pub mod weston_desktop {
             InvalidArgument = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidArgument),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -3430,8 +3392,8 @@ pub mod weston_desktop {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3439,10 +3401,10 @@ pub mod weston_desktop {
                         0u16 => {
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_desktop_shell#{}.set_background({}, {})",
                                 sender_id,
@@ -3455,10 +3417,10 @@ pub mod weston_desktop {
                         1u16 => {
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_desktop_shell#{}.set_panel({}, {})",
                                 sender_id,
@@ -3470,7 +3432,7 @@ pub mod weston_desktop {
                         2u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_desktop_shell#{}.set_lock_surface({})",
                                 sender_id,
@@ -3485,7 +3447,7 @@ pub mod weston_desktop {
                         4u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_desktop_shell#{}.set_grab_surface({})",
                                 sender_id,
@@ -3513,27 +3475,27 @@ pub mod weston_desktop {
             fn set_background(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                output: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_panel(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                output: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn set_lock_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn unlock(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The surface set by this request will receive a fake"]
@@ -3544,8 +3506,8 @@ pub mod weston_desktop {
             fn set_grab_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Tell the server, that enough desktop elements have been drawn"]
@@ -3558,7 +3520,7 @@ pub mod weston_desktop {
             fn desktop_ready(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Tell the shell which side of the screen the panel is"]
@@ -3568,15 +3530,15 @@ pub mod weston_desktop {
             fn set_panel_position(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 position: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn configure(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 edges: u32,
-                surface: crate::wire::ObjectId,
+                surface: crate::ObjectId,
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -3589,16 +3551,15 @@ pub mod weston_desktop {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(edges)
                         .put_object(Some(surface))
                         .put_int(width)
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -3611,18 +3572,17 @@ pub mod weston_desktop {
             fn prepare_lock_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_desktop_shell#{}.prepare_lock_surface()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -3632,7 +3592,7 @@ pub mod weston_desktop {
             fn grab_cursor(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 cursor: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -3641,12 +3601,10 @@ pub mod weston_desktop {
                         sender_id,
                         cursor
                     );
-                    let (payload, fds) =
-                        crate::wire::PayloadBuilder::new().put_uint(cursor).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(cursor).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -3667,8 +3625,8 @@ pub mod weston_desktop {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3676,10 +3634,10 @@ pub mod weston_desktop {
                         0u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_screensaver#{}.set_surface({}, {})",
                                 sender_id,
@@ -3699,9 +3657,9 @@ pub mod weston_desktop {
             fn set_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
+                output: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -3750,8 +3708,8 @@ pub mod weston_direct_display {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3759,7 +3717,7 @@ pub mod weston_direct_display {
                         0u16 => {
                             let dmabuf = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_direct_display_v1#{}.enable({})",
                                 sender_id,
@@ -3792,8 +3750,8 @@ pub mod weston_direct_display {
             fn enable(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                dmabuf: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                dmabuf: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Destroys the factory object, but does not affect any other objects."]
@@ -3801,7 +3759,7 @@ pub mod weston_direct_display {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -3828,11 +3786,11 @@ pub mod weston_output_capture {
             InvalidSource = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidSource),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -3855,14 +3813,14 @@ pub mod weston_output_capture {
             Blending = 3u32,
         }
         impl TryFrom<u32> for Source {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Writeback),
                     1u32 => Ok(Self::Framebuffer),
                     2u32 => Ok(Self::FullFramebuffer),
                     3u32 => Ok(Self::Blending),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -3878,8 +3836,8 @@ pub mod weston_output_capture {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3893,11 +3851,11 @@ pub mod weston_output_capture {
                         1u16 => {
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let source = message.uint()?;
                             let capture_source_new_id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_capture_v1#{}.create({}, {}, {})",
                                 sender_id,
@@ -3924,7 +3882,7 @@ pub mod weston_output_capture {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This creates a weston_capture_source_v1 object corresponding to the"]
@@ -3959,10 +3917,10 @@ pub mod weston_output_capture {
             fn create(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                output: crate::ObjectId,
                 source: Source,
-                capture_source_new_id: crate::wire::ObjectId,
+                capture_source_new_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -3988,12 +3946,12 @@ pub mod weston_output_capture {
             Sequence = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::BadBuffer),
                     1u32 => Ok(Self::Sequence),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -4009,8 +3967,8 @@ pub mod weston_output_capture {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4024,7 +3982,7 @@ pub mod weston_output_capture {
                         1u16 => {
                             let buffer = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_capture_source_v1#{}.capture({})",
                                 sender_id,
@@ -4045,7 +4003,7 @@ pub mod weston_output_capture {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "If the given wl_buffer is compatible, the associated output will go"]
@@ -4079,8 +4037,8 @@ pub mod weston_output_capture {
             fn capture(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                buffer: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This event delivers the pixel format that should be used for the"]
@@ -4095,7 +4053,7 @@ pub mod weston_output_capture {
             fn format(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 drm_format: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -4104,13 +4062,10 @@ pub mod weston_output_capture {
                         sender_id,
                         drm_format
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(drm_format)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(drm_format).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -4127,7 +4082,7 @@ pub mod weston_output_capture {
             fn size(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4138,14 +4093,13 @@ pub mod weston_output_capture {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -4158,15 +4112,14 @@ pub mod weston_output_capture {
             fn complete(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_capture_source_v1#{}.complete()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -4178,15 +4131,14 @@ pub mod weston_output_capture {
             fn retry(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_capture_source_v1#{}.retry()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -4202,7 +4154,7 @@ pub mod weston_output_capture {
             fn failed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 msg: Option<String>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -4211,11 +4163,10 @@ pub mod weston_output_capture {
                         sender_id,
                         msg.as_ref().map_or("null".to_string(), |v| v.to_string())
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_string(msg).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_string(msg).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 4u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -4246,11 +4197,11 @@ pub mod weston_test {
             TouchUpWithCoordinate = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::TouchUpWithCoordinate),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -4267,11 +4218,11 @@ pub mod weston_test {
             PostRepaint = 0u32,
         }
         impl TryFrom<u32> for Breakpoint {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::PostRepaint),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -4287,8 +4238,8 @@ pub mod weston_test {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4296,7 +4247,7 @@ pub mod weston_test {
                         0u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let x = message.int()?;
                             let y = message.int()?;
                             tracing::debug!(
@@ -4402,7 +4353,7 @@ pub mod weston_test {
                         6u16 => {
                             let device = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_test#{}.device_release(\"{}\")",
                                 sender_id,
@@ -4413,7 +4364,7 @@ pub mod weston_test {
                         7u16 => {
                             let device = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!("weston_test#{}.device_add(\"{}\")", sender_id, device);
                             self.device_add(client, sender_id, device).await
                         }
@@ -4466,15 +4417,15 @@ pub mod weston_test {
             fn move_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
                 x: i32,
                 y: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn move_pointer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -4484,7 +4435,7 @@ pub mod weston_test {
             fn send_button(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -4494,23 +4445,23 @@ pub mod weston_test {
             fn send_axis(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
                 axis: u32,
-                value: crate::wire::Fixed,
+                value: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn activate_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: Option<crate::wire::ObjectId>,
+                sender_id: crate::ObjectId,
+                surface: Option<crate::ObjectId>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn send_key(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
@@ -4520,25 +4471,25 @@ pub mod weston_test {
             fn device_release(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 device: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn device_add(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 device: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn send_touch(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
                 touch_id: i32,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
+                x: crate::Fixed,
+                y: crate::Fixed,
                 touch_type: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -4549,16 +4500,16 @@ pub mod weston_test {
             fn client_break(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 breakpoint: Breakpoint,
                 resource_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn pointer_position(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                x: crate::wire::Fixed,
-                y: crate::wire::Fixed,
+                sender_id: crate::ObjectId,
+                x: crate::Fixed,
+                y: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
@@ -4567,14 +4518,13 @@ pub mod weston_test {
                         x,
                         y
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_fixed(x)
                         .put_fixed(y)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -4614,12 +4564,12 @@ pub mod weston_test {
             UnknownTest = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::TestFailed),
                     1u32 => Ok(Self::UnknownTest),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -4635,8 +4585,8 @@ pub mod weston_test {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4650,7 +4600,7 @@ pub mod weston_test {
                         1u16 => {
                             let test_name = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_test_runner#{}.run(\"{}\")",
                                 sender_id,
@@ -4665,26 +4615,25 @@ pub mod weston_test {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn run(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 test_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             fn finished(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_test_runner#{}.finished()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -4739,13 +4688,13 @@ pub mod weston_touch_calibration {
             AlreadyExists = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidSurface),
                     1u32 => Ok(Self::InvalidDevice),
                     2u32 => Ok(Self::AlreadyExists),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -4761,8 +4710,8 @@ pub mod weston_touch_calibration {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4776,13 +4725,13 @@ pub mod weston_touch_calibration {
                         1u16 => {
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let device = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let cal = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_touch_calibration#{}.create_calibrator({}, \"{}\", {})",
                                 sender_id,
@@ -4796,7 +4745,7 @@ pub mod weston_touch_calibration {
                         2u16 => {
                             let device = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let matrix = message.array()?;
                             tracing::debug!(
                                 "weston_touch_calibration#{}.save(\"{}\", array[{}])",
@@ -4817,7 +4766,7 @@ pub mod weston_touch_calibration {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This gives the calibrator role to the surface and ties it with the"]
@@ -4835,10 +4784,10 @@ pub mod weston_touch_calibration {
             fn create_calibrator(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                surface: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                surface: crate::ObjectId,
                 device: String,
-                cal: crate::wire::ObjectId,
+                cal: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This request asks the compositor to save the calibration data for the"]
@@ -4862,7 +4811,7 @@ pub mod weston_touch_calibration {
             fn save(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 device: String,
                 matrix: Vec<u8>,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -4882,7 +4831,7 @@ pub mod weston_touch_calibration {
             fn touch_device(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 device: String,
                 head: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -4893,14 +4842,13 @@ pub mod weston_touch_calibration {
                         device,
                         head
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_string(Some(device))
                         .put_string(Some(head))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -4953,13 +4901,13 @@ pub mod weston_touch_calibration {
             BadCoordinates = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::BadSize),
                     1u32 => Ok(Self::NotMapped),
                     2u32 => Ok(Self::BadCoordinates),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -4975,8 +4923,8 @@ pub mod weston_touch_calibration {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4992,7 +4940,7 @@ pub mod weston_touch_calibration {
                             let y = message.int()?;
                             let reply = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "weston_touch_calibrator#{}.convert({}, {}, {})",
                                 sender_id,
@@ -5014,7 +4962,7 @@ pub mod weston_touch_calibration {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This request asks the compositor to convert the surface-local"]
@@ -5038,10 +4986,10 @@ pub mod weston_touch_calibration {
             fn convert(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 x: i32,
                 y: i32,
-                reply: crate::wire::ObjectId,
+                reply: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "This event tells the client what size to make the surface. The client"]
@@ -5053,7 +5001,7 @@ pub mod weston_touch_calibration {
             fn configure(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5064,14 +5012,13 @@ pub mod weston_touch_calibration {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5085,18 +5032,17 @@ pub mod weston_touch_calibration {
             fn cancel_calibration(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
                         "-> weston_touch_calibrator#{}.cancel_calibration()",
                         sender_id,
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5116,15 +5062,14 @@ pub mod weston_touch_calibration {
             fn invalid_touch(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_touch_calibrator#{}.invalid_touch()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5138,7 +5083,7 @@ pub mod weston_touch_calibration {
             fn down(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 time: u32,
                 id: i32,
                 x: u32,
@@ -5153,16 +5098,15 @@ pub mod weston_touch_calibration {
                         x,
                         y
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(time)
                         .put_int(id)
                         .put_uint(x)
                         .put_uint(y)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5173,7 +5117,7 @@ pub mod weston_touch_calibration {
             fn up(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 time: u32,
                 id: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5184,14 +5128,13 @@ pub mod weston_touch_calibration {
                         time,
                         id
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(time)
                         .put_int(id)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 4u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5202,7 +5145,7 @@ pub mod weston_touch_calibration {
             fn motion(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 time: u32,
                 id: i32,
                 x: u32,
@@ -5217,16 +5160,15 @@ pub mod weston_touch_calibration {
                         x,
                         y
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(time)
                         .put_int(id)
                         .put_uint(x)
                         .put_uint(y)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 5u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5242,15 +5184,14 @@ pub mod weston_touch_calibration {
             fn frame(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_touch_calibrator#{}.frame()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 6u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -5264,15 +5205,14 @@ pub mod weston_touch_calibration {
             fn cancel(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> weston_touch_calibrator#{}.cancel()", sender_id,);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().build();
+                    let (payload, fds) = crate::PayloadBuilder::new().build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 7u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -5290,8 +5230,8 @@ pub mod weston_touch_calibration {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
-                _sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                _sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -5312,7 +5252,7 @@ pub mod weston_touch_calibration {
             fn result(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 x: u32,
                 y: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -5323,14 +5263,11 @@ pub mod weston_touch_calibration {
                         x,
                         y
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(x)
-                        .put_uint(y)
-                        .build();
+                    let (payload, fds) =
+                        crate::PayloadBuilder::new().put_uint(x).put_uint(y).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }

@@ -13,8 +13,8 @@ pub mod ivi_application {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -36,7 +36,7 @@ pub mod ivi_application {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The configure event asks the client to resize its surface."]
@@ -54,7 +54,7 @@ pub mod ivi_application {
             fn configure(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -65,14 +65,13 @@ pub mod ivi_application {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -98,12 +97,12 @@ pub mod ivi_application {
             IviId = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Role),
                     1u32 => Ok(Self::IviId),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -119,8 +118,8 @@ pub mod ivi_application {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -129,10 +128,10 @@ pub mod ivi_application {
                             let ivi_id = message.uint()?;
                             let surface = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "ivi_application#{}.surface_create({}, {}, {})",
                                 sender_id,
@@ -173,10 +172,10 @@ pub mod ivi_application {
             fn surface_create(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 ivi_id: u32,
-                surface: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                surface: crate::ObjectId,
+                id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
         }
     }
@@ -200,8 +199,8 @@ pub mod ivi_input {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -224,7 +223,7 @@ pub mod ivi_input {
                             let surface = message.uint()?;
                             let seat = message
                                 .string()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let accepted = message.int()?;
                             tracing::debug!(
                                 "ivi_input#{}.set_input_acceptance({}, \"{}\", {})",
@@ -251,7 +250,7 @@ pub mod ivi_input {
             fn set_input_focus(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface: u32,
                 device: u32,
                 enabled: i32,
@@ -267,7 +266,7 @@ pub mod ivi_input {
             fn set_input_acceptance(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface: u32,
                 seat: String,
                 accepted: i32,
@@ -277,7 +276,7 @@ pub mod ivi_input {
             fn seat_created(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 name: String,
                 capabilities: u32,
                 is_default: i32,
@@ -290,15 +289,14 @@ pub mod ivi_input {
                         capabilities,
                         is_default
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(capabilities)
                         .put_int(is_default)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -306,7 +304,7 @@ pub mod ivi_input {
             fn seat_capabilities(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 name: String,
                 capabilities: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -317,14 +315,13 @@ pub mod ivi_input {
                         name,
                         capabilities
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(capabilities)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -332,18 +329,16 @@ pub mod ivi_input {
             fn seat_destroyed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .build();
+                    let (payload, fds) =
+                        crate::PayloadBuilder::new().put_string(Some(name)).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -354,7 +349,7 @@ pub mod ivi_input {
             fn input_focus(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface: u32,
                 device: u32,
                 enabled: i32,
@@ -367,15 +362,14 @@ pub mod ivi_input {
                         device,
                         enabled
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface)
                         .put_uint(device)
                         .put_int(enabled)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -388,7 +382,7 @@ pub mod ivi_input {
             fn input_acceptance(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface: u32,
                 seat: String,
                 accepted: i32,
@@ -401,15 +395,14 @@ pub mod ivi_input {
                         seat,
                         accepted
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface)
                         .put_string(Some(seat))
                         .put_int(accepted)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 4u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -435,13 +428,13 @@ pub mod ivi_wm {
             BadParam = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::NoLayer),
                     1u32 => Ok(Self::NoScreen),
                     2u32 => Ok(Self::BadParam),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -457,8 +450,8 @@ pub mod ivi_wm {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -490,10 +483,10 @@ pub mod ivi_wm {
                         4u16 => {
                             let buffer = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let screenshot = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "ivi_wm_screen#{}.screenshot({}, {})",
                                 sender_id,
@@ -517,7 +510,7 @@ pub mod ivi_wm {
             fn destroy(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -528,7 +521,7 @@ pub mod ivi_wm {
             fn clear(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -538,7 +531,7 @@ pub mod ivi_wm {
             fn add_layer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -548,7 +541,7 @@ pub mod ivi_wm {
             fn remove_layer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -558,9 +551,9 @@ pub mod ivi_wm {
             fn screenshot(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
-                screenshot: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                buffer: crate::ObjectId,
+                screenshot: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "After this request, compositor sends the requested parameter."]
@@ -568,7 +561,7 @@ pub mod ivi_wm {
             fn get(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -577,16 +570,15 @@ pub mod ivi_wm {
             fn screen_id(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", sender_id, id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new().put_uint(id).build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(id).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -595,18 +587,15 @@ pub mod ivi_wm {
             fn layer_added(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm_screen#{}.layer_added({})", sender_id, layer_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(layer_id).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -615,7 +604,7 @@ pub mod ivi_wm {
             fn connector_name(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 process_name: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
@@ -624,13 +613,12 @@ pub mod ivi_wm {
                         sender_id,
                         process_name
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_string(Some(process_name))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -639,7 +627,7 @@ pub mod ivi_wm {
             fn error(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 error: u32,
                 message: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -650,14 +638,13 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -693,7 +680,7 @@ pub mod ivi_wm {
             NoMemory = 6u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::IoError),
@@ -703,7 +690,7 @@ pub mod ivi_wm {
                     4u32 => Ok(Self::NoContent),
                     5u32 => Ok(Self::BadBuffer),
                     6u32 => Ok(Self::NoMemory),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -719,8 +706,8 @@ pub mod ivi_wm {
             fn handle_request(
                 &self,
                 _client: &mut crate::server::Client,
-                _sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                _sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -736,18 +723,15 @@ pub mod ivi_wm {
             fn done(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 timestamp: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_screenshot#{}.done({})", sender_id, timestamp);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(timestamp)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(timestamp).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -756,7 +740,7 @@ pub mod ivi_wm {
             fn error(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 error: Error,
                 message: String,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -767,14 +751,13 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(error as u32)
                         .put_string(Some(message))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }
@@ -795,12 +778,12 @@ pub mod ivi_wm {
             Remove = 1u32,
         }
         impl TryFrom<u32> for Sync {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Add),
                     1u32 => Ok(Self::Remove),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -811,9 +794,9 @@ pub mod ivi_wm {
         }
         bitflags::bitflags! { # [doc = ""] # [doc = "The HMI controller can request different types of parameters of an"] # [doc = "ivi-object."] # [doc = ""] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Param : u32 { const Opacity = 1u32 ; const Visibility = 2u32 ; const Size = 4u32 ; const RenderOrder = 8u32 ; } }
         impl TryFrom<u32> for Param {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(crate::wire::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(crate::DecodeError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Param {
@@ -846,12 +829,12 @@ pub mod ivi_wm {
             Desktop = 1u32,
         }
         impl TryFrom<u32> for SurfaceType {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Restricted),
                     1u32 => Ok(Self::Desktop),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -872,13 +855,13 @@ pub mod ivi_wm {
             NotSupported = 2u32,
         }
         impl TryFrom<u32> for SurfaceError {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::NoSurface),
                     1u32 => Ok(Self::BadParam),
                     2u32 => Ok(Self::NotSupported),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -899,13 +882,13 @@ pub mod ivi_wm {
             BadParam = 2u32,
         }
         impl TryFrom<u32> for LayerError {
-            type Error = crate::wire::DecodeError;
+            type Error = crate::DecodeError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::NoSurface),
                     1u32 => Ok(Self::NoLayer),
                     2u32 => Ok(Self::BadParam),
-                    _ => Err(crate::wire::DecodeError::MalformedPayload),
+                    _ => Err(crate::DecodeError::MalformedPayload),
                 }
             }
         }
@@ -921,8 +904,8 @@ pub mod ivi_wm {
             fn handle_request(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                message: &mut crate::wire::Message,
+                sender_id: crate::ObjectId,
+                message: &mut crate::Message,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -934,10 +917,10 @@ pub mod ivi_wm {
                         1u16 => {
                             let output = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let id = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             tracing::debug!(
                                 "ivi_wm#{}.create_screen({}, {})",
                                 sender_id,
@@ -1123,10 +1106,10 @@ pub mod ivi_wm {
                         14u16 => {
                             let buffer = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let screenshot = message
                                 .object()?
-                                .ok_or(crate::wire::DecodeError::MalformedPayload)?;
+                                .ok_or(crate::DecodeError::MalformedPayload)?;
                             let surface_id = message.uint()?;
                             tracing::debug!(
                                 "ivi_wm#{}.surface_screenshot({}, {}, {})",
@@ -1217,7 +1200,7 @@ pub mod ivi_wm {
             fn commit_changes(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "Ask the ivi-wm to create a ivi-screen for given wl_output."]
@@ -1225,9 +1208,9 @@ pub mod ivi_wm {
             fn create_screen(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                output: crate::wire::ObjectId,
-                id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                output: crate::ObjectId,
+                id: crate::ObjectId,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "If visibility argument is 0, the surface in the ivi compositor is set to invisible."]
@@ -1236,7 +1219,7 @@ pub mod ivi_wm {
             fn set_surface_visibility(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 visibility: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1247,7 +1230,7 @@ pub mod ivi_wm {
             fn set_layer_visibility(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 visibility: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1257,9 +1240,9 @@ pub mod ivi_wm {
             fn set_surface_opacity(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
-                opacity: crate::wire::Fixed,
+                opacity: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
@@ -1267,9 +1250,9 @@ pub mod ivi_wm {
             fn set_layer_opacity(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
-                opacity: crate::wire::Fixed,
+                opacity: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
             #[doc = "The source rectangle defines the part of the surface content, that is used for"]
@@ -1284,7 +1267,7 @@ pub mod ivi_wm {
             fn set_surface_source_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 x: i32,
                 y: i32,
@@ -1304,7 +1287,7 @@ pub mod ivi_wm {
             fn set_layer_source_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 x: i32,
                 y: i32,
@@ -1323,7 +1306,7 @@ pub mod ivi_wm {
             fn set_surface_destination_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 x: i32,
                 y: i32,
@@ -1342,7 +1325,7 @@ pub mod ivi_wm {
             fn set_layer_destination_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 x: i32,
                 y: i32,
@@ -1358,7 +1341,7 @@ pub mod ivi_wm {
             fn surface_sync(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 sync_state: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1371,7 +1354,7 @@ pub mod ivi_wm {
             fn layer_sync(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 sync_state: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1381,7 +1364,7 @@ pub mod ivi_wm {
             fn surface_get(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1391,7 +1374,7 @@ pub mod ivi_wm {
             fn layer_get(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 param: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1404,9 +1387,9 @@ pub mod ivi_wm {
             fn surface_screenshot(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
-                buffer: crate::wire::ObjectId,
-                screenshot: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
+                buffer: crate::ObjectId,
+                screenshot: crate::ObjectId,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1415,7 +1398,7 @@ pub mod ivi_wm {
             fn set_surface_type(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 r#type: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1426,7 +1409,7 @@ pub mod ivi_wm {
             fn layer_clear(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1437,7 +1420,7 @@ pub mod ivi_wm {
             fn layer_add_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1450,7 +1433,7 @@ pub mod ivi_wm {
             fn layer_remove_surface(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
@@ -1460,7 +1443,7 @@ pub mod ivi_wm {
             fn create_layout_layer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 width: i32,
                 height: i32,
@@ -1471,7 +1454,7 @@ pub mod ivi_wm {
             fn destroy_layout_layer(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send;
             #[doc = ""]
@@ -1482,7 +1465,7 @@ pub mod ivi_wm {
             fn surface_visibility(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 visibility: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1493,14 +1476,13 @@ pub mod ivi_wm {
                         surface_id,
                         visibility
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(visibility)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 0u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 0u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1511,7 +1493,7 @@ pub mod ivi_wm {
             fn layer_visibility(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 visibility: i32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1522,14 +1504,13 @@ pub mod ivi_wm {
                         layer_id,
                         visibility
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(visibility)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 1u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 1u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1539,9 +1520,9 @@ pub mod ivi_wm {
             fn surface_opacity(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
-                opacity: crate::wire::Fixed,
+                opacity: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
@@ -1550,14 +1531,13 @@ pub mod ivi_wm {
                         surface_id,
                         opacity
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_fixed(opacity)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 2u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 2u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1567,9 +1547,9 @@ pub mod ivi_wm {
             fn layer_opacity(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
-                opacity: crate::wire::Fixed,
+                opacity: crate::Fixed,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!(
@@ -1578,14 +1558,13 @@ pub mod ivi_wm {
                         layer_id,
                         opacity
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_fixed(opacity)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 3u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 3u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1599,7 +1578,7 @@ pub mod ivi_wm {
             fn surface_source_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 x: i32,
                 y: i32,
@@ -1616,7 +1595,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(x)
                         .put_int(y)
@@ -1624,9 +1603,8 @@ pub mod ivi_wm {
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 4u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 4u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1640,7 +1618,7 @@ pub mod ivi_wm {
             fn layer_source_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 x: i32,
                 y: i32,
@@ -1657,7 +1635,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(x)
                         .put_int(y)
@@ -1665,9 +1643,8 @@ pub mod ivi_wm {
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 5u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 5u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1680,7 +1657,7 @@ pub mod ivi_wm {
             fn surface_destination_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 x: i32,
                 y: i32,
@@ -1697,7 +1674,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(x)
                         .put_int(y)
@@ -1705,9 +1682,8 @@ pub mod ivi_wm {
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 6u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 6u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1720,7 +1696,7 @@ pub mod ivi_wm {
             fn layer_destination_rectangle(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 x: i32,
                 y: i32,
@@ -1737,7 +1713,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(x)
                         .put_int(y)
@@ -1745,77 +1721,64 @@ pub mod ivi_wm {
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 7u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 7u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn surface_created(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.surface_created({})", sender_id, surface_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(surface_id).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 8u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 8u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn layer_created(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.layer_created({})", sender_id, layer_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(layer_id).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 9u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 9u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn surface_destroyed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.surface_destroyed({})", sender_id, surface_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(surface_id)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(surface_id).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 10u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 10u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             fn layer_destroyed(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
                 async move {
                     tracing::debug!("-> ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
-                        .put_uint(layer_id)
-                        .build();
+                    let (payload, fds) = crate::PayloadBuilder::new().put_uint(layer_id).build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 11u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 11u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1824,7 +1787,7 @@ pub mod ivi_wm {
             fn surface_error(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 object_id: u32,
                 error: u32,
                 message: String,
@@ -1837,15 +1800,14 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(object_id)
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 12u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 12u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1854,7 +1816,7 @@ pub mod ivi_wm {
             fn layer_error(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 object_id: u32,
                 error: u32,
                 message: String,
@@ -1867,15 +1829,14 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(object_id)
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 13u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 13u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1885,7 +1846,7 @@ pub mod ivi_wm {
             fn surface_size(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 width: i32,
                 height: i32,
@@ -1898,15 +1859,14 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(width)
                         .put_int(height)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 14u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 14u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1916,7 +1876,7 @@ pub mod ivi_wm {
             fn surface_stats(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 surface_id: u32,
                 frame_count: u32,
                 pid: u32,
@@ -1929,15 +1889,14 @@ pub mod ivi_wm {
                         frame_count,
                         pid
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_uint(frame_count)
                         .put_uint(pid)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 15u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 15u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
             #[doc = ""]
@@ -1946,7 +1905,7 @@ pub mod ivi_wm {
             fn layer_surface_added(
                 &self,
                 client: &mut crate::server::Client,
-                sender_id: crate::wire::ObjectId,
+                sender_id: crate::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
             ) -> impl Future<Output = crate::server::Result<()>> + Send {
@@ -1957,14 +1916,13 @@ pub mod ivi_wm {
                         layer_id,
                         surface_id
                     );
-                    let (payload, fds) = crate::wire::PayloadBuilder::new()
+                    let (payload, fds) = crate::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_uint(surface_id)
                         .build();
                     client
-                        .send_message(crate::wire::Message::new(sender_id, 16u16, payload, fds))
+                        .send_message(crate::Message::new(sender_id, 16u16, payload, fds))
                         .await
-                        .map_err(crate::server::error::Error::IoError)
                 }
             }
         }

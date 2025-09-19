@@ -16,8 +16,8 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
             async fn dispatch(
                 &self,
                 client: &mut waynest::server::Client,
-                sender_id: waynest::wire::ObjectId,
-                message: &mut waynest::wire::Message,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
             ) -> Result<()> {
                 self.handle_request(client, sender_id, message).await
             }
