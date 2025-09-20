@@ -1,6 +1,7 @@
 [workspace]
-members = ["gen", "macros"]
+members = ["crates/*"]
 exclude = ["fuzz"]
+resolver = "3"
 
 [workspace.package]
 version = "0.0.26"
@@ -8,46 +9,3 @@ edition = "2024"
 license = "Apache-2.0"
 authors = ["Matilde Morrone <contact@morrone.dev>"]
 repository = "https://github.com/verdiwm/waynest"
-
-[package]
-name = "waynest"
-version.workspace = true
-edition.workspace = true
-license.workspace = true
-authors.workspace = true
-description = "Core wayland stuff"
-readme = "README.md"
-documentation = "https://docs.rs/waynest"
-repository.workspace = true
-include = ["src/**/*.rs", "README.md", "LICENSE"]
-
-[features]
-# Internal features
-fuzz = ["dep:arbitrary"]
-
-[dependencies]
-bytes = "1.10.1"
-pin-project-lite = "0.2.16"
-rustix = { version = "1.1.2", features = ["net"] }
-tokio = { version = "1.47.1", features = ["net"] }
-tokio-util = { version = "0.7.16", features = ["codec"] }
-futures-core = "0.3.31"
-futures-sink = "0.3.31"
-
-# Waynest libs
-waynest-macros = { version = "0.0.26", path = "macros" }
-
-# Internal features
-arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }
-
-[dev-dependencies]
-anyhow = "1.0.99"
-tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros"] }
-
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
-
-# [[example]]
-# name = "client"
-# required-features = ["client"]

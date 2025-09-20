@@ -20,19 +20,19 @@ echo '{}' >"$TEMP_JSON"
 
 declare -a ordered_keys=("core" "stable" "staging" "unstable" "wlr" "plasma" "weston" "cosmic" "frog" "ivi" "hyprland" "mesa" "treeland")
 declare -A folders=(
-    ["core"]="protocols/wayland/protocol"
-    ["stable"]="protocols/wayland-protocols/stable"
-    ["staging"]="protocols/wayland-protocols/staging"
-    ["unstable"]="protocols/wayland-protocols/unstable"
-    ["wlr"]="protocols/wlr-protocols/unstable"
-    ["plasma"]="protocols/plasma-wayland-protocols/src/protocols"
-    ["weston"]="protocols/weston/protocol"
-    ["cosmic"]="protocols/cosmic-protocols/unstable"
-    ["frog"]="protocols/frog-protcols/frog-protocols"
-    ["ivi"]="protocols/wayland-ivi-extension/protocol"
-    ["hyprland"]="protocols/hyprland-protocols/protocols"
-    ["mesa"]="protocols/mesa/src/egl/wayland/wayland-drm"
-    ["treeland"]="protocols/treeland-protocols/xml"
+    ["core"]="wayland/protocol"
+    ["stable"]="wayland-protocols/stable"
+    ["staging"]="wayland-protocols/staging"
+    ["unstable"]="wayland-protocols/unstable"
+    ["wlr"]="wlr-protocols/unstable"
+    ["plasma"]="plasma-wayland-protocols/src/protocols"
+    ["weston"]="weston/protocol"
+    ["cosmic"]="cosmic-protocols/unstable"
+    ["frog"]="frog-protcols/frog-protocols"
+    ["ivi"]="wayland-ivi-extension/protocol"
+    ["hyprland"]="hyprland-protocols/protocols"
+    ["mesa"]="mesa/src/egl/wayland/wayland-drm"
+    ["treeland"]="treeland-protocols/xml"
 )
 declare -a excluded_files=(
     "tests.xml"
@@ -44,7 +44,7 @@ declare -a excluded_files=(
 
 # Process each folder in the specified order
 for key in "${ordered_keys[@]}"; do
-    folder="${folders[$key]}"
+    folder="external/protocols/${folders[$key]}"
     echo "Processing $folder -> $key"
 
     if [[ -d "$folder" ]]; then
