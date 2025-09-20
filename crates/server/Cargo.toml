@@ -1,0 +1,9 @@
+[package]
+name = "waynest-server"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+version = "0.1.0"
+
+[dependencies]

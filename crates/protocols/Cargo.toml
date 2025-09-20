@@ -1,16 +1,16 @@
 [package]
 name = "waynest-protocols"
-version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
+version = "0.1.0"
 
 [dependencies]
 bitflags = { version = "2.9.4", features = ["std"] }
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
-waynest = { version = "0.0.26", path = "../core" }
+waynest = { version = "0.1", path = "../core" }
 
 [features]
 stable = []

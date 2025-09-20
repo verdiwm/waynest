@@ -1,10 +1,10 @@
 
 [package]
 name = "waynest"
-version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
+version = "0.1.0"
 description = "Core wayland stuff"
 readme = "README.md"
 documentation = "https://docs.rs/waynest"
@@ -25,7 +25,7 @@ futures-core = "0.3.31"
 futures-sink = "0.3.31"
 
 # Waynest libs
-waynest-macros = { version = "0.0.26", path = "../macros" }
+waynest-macros = { version = "0.1", path = "../macros" }
 
 # Internal features
 arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }

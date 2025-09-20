@@ -4,7 +4,6 @@ exclude = ["fuzz"]
 resolver = "3"
 
 [workspace.package]
-version = "0.0.26"
 edition = "2024"
 license = "Apache-2.0"
 authors = ["Matilde Morrone <contact@morrone.dev>"]
