@@ -39,13 +39,19 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
                 tryinto = quote! {.try_into()?}
             }
 
-            let caller = make_ident(arg.to_caller());
-
             let name = make_ident(arg.name.to_snek_case());
 
-            setters.push(quote! {
-               let #name = message.#caller()? #optional;
-            });
+            if matches!(arg.ty, ArgType::Fd) {
+                setters.push(quote! {
+                   let #name = client.fd()? #optional;
+                });
+            } else {
+                let caller = make_ident(arg.to_caller());
+
+                setters.push(quote! {
+                   let #name = message.#caller()? #optional;
+                });
+            }
 
             args.push(quote! {
                 #name #tryinto

@@ -361,7 +361,7 @@ pub mod linux_dmabuf_v1 {
                             result
                         }
                         1u16 => {
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             let plane_idx = message.uint()?;
                             let offset = message.uint()?;
                             let stride = message.uint()?;

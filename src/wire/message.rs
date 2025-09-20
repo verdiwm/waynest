@@ -1,40 +1,40 @@
-use std::{collections::VecDeque, os::fd::RawFd};
+use std::collections::VecDeque;
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
-use rustix::fd::{FromRawFd, OwnedFd};
+use rustix::fd::OwnedFd;
 
 use super::{DecodeError, Fixed, NewId, ObjectId};
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug)]
 pub struct Message {
     object_id: ObjectId,
     opcode: u16,
     payload: Bytes,
-    pub(crate) fds: VecDeque<RawFd>,
+    pub(crate) fds: VecDeque<OwnedFd>,
 }
 
-#[cfg(feature = "fuzz")]
-impl<'a> arbitrary::Arbitrary<'a> for Message {
-    fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-        let len = u.arbitrary_len::<u8>()?;
+// #[cfg(feature = "fuzz")]
+// impl<'a> arbitrary::Arbitrary<'a> for Message {
+//     fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
+//         let len = u.arbitrary_len::<u8>()?;
 
-        let payload = u.bytes(len).map(Bytes::copy_from_slice)?;
+//         let payload = u.bytes(len).map(Bytes::copy_from_slice)?;
 
-        Ok(Self {
-            object_id: ObjectId::arbitrary(u)?,
-            opcode: u16::arbitrary(u)?,
-            payload,
-            fds: VecDeque::<RawFd>::arbitrary(u)?,
-        })
-    }
-}
+//         Ok(Self {
+//             object_id: ObjectId::arbitrary(u)?,
+//             opcode: u16::arbitrary(u)?,
+//             payload,
+//             fds: VecDeque::<OwnedFd>::arbitrary(u)?,
+//         })
+//     }
+// }
 
 impl Message {
     pub const fn new(
         object_id: ObjectId,
         opcode: u16,
         payload: Bytes,
-        fds: VecDeque<RawFd>,
+        fds: VecDeque<OwnedFd>,
     ) -> Self {
         Self {
             object_id,
@@ -160,13 +160,6 @@ impl Message {
         self.payload.advance(self.payload.remaining() % 4);
 
         Ok(array)
-    }
-
-    pub fn fd(&mut self) -> Result<OwnedFd, DecodeError> {
-        self.fds
-            .pop_front()
-            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
-            .ok_or(DecodeError::MalformedPayload)
     }
 }
 

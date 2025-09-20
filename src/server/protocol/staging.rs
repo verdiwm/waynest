@@ -1394,7 +1394,7 @@ pub mod color_management_v1 {
                             result
                         }
                         1u16 => {
-                            let icc_profile = message.fd()?;
+                            let icc_profile = client.fd()?;
                             let offset = message.uint()?;
                             let length = message.uint()?;
                             tracing::debug!(
@@ -5376,7 +5376,7 @@ pub mod ext_data_control_v1 {
                             let mime_type = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "ext_data_control_offer_v1#{}.receive(\"{}\", {})",
                                 sender_id,
@@ -9315,7 +9315,7 @@ pub mod linux_drm_syncobj_v1 {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "wp_linux_drm_syncobj_manager_v1#{}.import_timeline({}, {})",
                                 sender_id,
@@ -9826,8 +9826,8 @@ pub mod security_context_v1 {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let listen_fd = message.fd()?;
-                            let close_fd = message.fd()?;
+                            let listen_fd = client.fd()?;
+                            let close_fd = client.fd()?;
                             tracing::debug!(
                                 "wp_security_context_manager_v1#{}.create_listener({}, {}, {})",
                                 sender_id,

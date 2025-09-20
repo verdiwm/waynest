@@ -275,7 +275,7 @@ pub mod drm {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let name = message.fd()?;
+                            let name = client.fd()?;
                             let width = message.int()?;
                             let height = message.int()?;
                             let format = message.uint()?;

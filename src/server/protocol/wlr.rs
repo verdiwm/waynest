@@ -511,7 +511,7 @@ pub mod wlr_data_control_unstable_v1 {
                             let mime_type = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "zwlr_data_control_offer_v1#{}.receive(\"{}\", {})",
                                 sender_id,
@@ -1701,7 +1701,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
                         0u16 => {
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "zwlr_gamma_control_v1#{}.set_gamma({})",
                                 sender_id,

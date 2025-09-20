@@ -9,7 +9,7 @@ pub use waynest_macros::Dispatcher;
 use async_trait::async_trait;
 use core::fmt;
 use futures_util::SinkExt;
-use std::{any::Any, collections::HashMap, io, sync::Arc};
+use std::{any::Any, collections::HashMap, io, os::fd::OwnedFd, sync::Arc};
 use tokio::net::UnixStream;
 use tokio_stream::StreamExt;
 
@@ -80,6 +80,10 @@ impl Client {
 
     pub async fn send_message(&mut self, message: Message) -> Result<(), io::Error> {
         self.socket.send(message).await
+    }
+
+    pub fn fd(&mut self) -> Result<OwnedFd> {
+        Ok(self.socket.fd()?)
     }
 }
 

@@ -7174,7 +7174,7 @@ pub mod plasma_window_management {
                             result
                         }
                         8u16 => {
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "org_kde_plasma_window#{}.get_icon({})",
                                 sender_id,

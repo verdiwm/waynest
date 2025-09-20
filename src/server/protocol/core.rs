@@ -993,7 +993,7 @@ pub mod wayland {
                             let id = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             let size = message.int()?;
                             tracing::debug!(
                                 "wl_shm#{}.create_pool({}, {}, {})",
@@ -1227,7 +1227,7 @@ pub mod wayland {
                             let mime_type = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "wl_data_offer#{}.receive(\"{}\", {})",
                                 sender_id,

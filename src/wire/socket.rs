@@ -2,10 +2,7 @@ use std::{
     collections::VecDeque,
     io::{self, IoSlice, IoSliceMut},
     mem::MaybeUninit,
-    os::{
-        fd::{IntoRawFd, RawFd},
-        unix::net::UnixStream,
-    },
+    os::{fd::OwnedFd, unix::net::UnixStream},
     task::Poll,
 };
 
@@ -25,6 +22,7 @@ pin_project! {
     pub struct Socket {
         #[pin]
         inner: Framed<StreamWrapper, MessageCodec>,
+        decode_fds: VecDeque<OwnedFd>,
     }
 }
 
@@ -33,7 +31,14 @@ impl Socket {
     pub fn new(stream: UnixStream) -> io::Result<Self> {
         Ok(Self {
             inner: Framed::new(StreamWrapper::new(stream)?, MessageCodec::new()),
+            decode_fds: VecDeque::new(),
         })
+    }
+
+    pub fn fd(&mut self) -> Result<OwnedFd, DecodeError> {
+        self.decode_fds
+            .pop_front()
+            .ok_or(DecodeError::MalformedPayload)
     }
 }
 
@@ -47,10 +52,10 @@ impl Stream for Socket {
         let mut this = self.project();
 
         match this.inner.as_mut().poll_next(cx) {
-            Poll::Ready(Some(Ok(mut msg))) => {
+            Poll::Ready(Some(Ok(msg))) => {
                 let stream = Framed::get_mut(&mut this.inner);
 
-                core::mem::swap(&mut msg.fds, &mut stream.decode_fds);
+                this.decode_fds.extend(stream.decode_fds.drain(..));
 
                 Poll::Ready(Some(Ok(msg)))
             }
@@ -73,7 +78,7 @@ impl Sink<Message> for Socket {
         let mut this = self.project();
 
         let stream = Framed::get_mut(&mut this.inner);
-        core::mem::swap(&mut msg.fds, &mut stream.decode_fds);
+        core::mem::swap(&mut msg.fds, &mut stream.encode_fds);
 
         this.inner.start_send(msg)
     }
@@ -96,9 +101,8 @@ impl Sink<Message> for Socket {
 pin_project! {
     struct StreamWrapper {
         stream: AsyncFd<UnixStream>,
-        pub decode_fds: VecDeque<RawFd>,
-        pub encode_fds: VecDeque<RawFd>,
-
+        pub decode_fds: VecDeque<OwnedFd>,
+        pub encode_fds: VecDeque<OwnedFd>,
     }
 }
 
@@ -139,7 +143,7 @@ impl AsyncRead for StreamWrapper {
                     for message in ancillary_buf.drain() {
                         if let RecvAncillaryMessage::ScmRights(scm_rights) = message {
                             for fd in scm_rights {
-                                self.decode_fds.push_back(fd.into_raw_fd());
+                                self.decode_fds.push_back(fd);
                             }
                         }
                     }
@@ -177,7 +181,7 @@ impl AsyncWrite for StreamWrapper {
             match guard.try_io(|stream| {
                 sendmsg(
                     stream,
-                    &mut [IoSlice::new(buf)],
+                    &[IoSlice::new(buf)],
                     &mut ancillary_buf,
                     SendFlags::DONTWAIT | SendFlags::NOSIGNAL,
                 )

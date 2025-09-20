@@ -2231,7 +2231,7 @@ pub mod linux_dmabuf_unstable_v1 {
                             result
                         }
                         1u16 => {
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             let plane_idx = message.uint()?;
                             let offset = message.uint()?;
                             let stride = message.uint()?;
@@ -3060,7 +3060,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                             result
                         }
                         1u16 => {
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "zwp_linux_surface_synchronization_v1#{}.set_acquire_fence({})",
                                 sender_id,
@@ -4712,7 +4712,7 @@ pub mod wp_primary_selection_unstable_v1 {
                             let mime_type = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let fd = message.fd()?;
+                            let fd = client.fd()?;
                             tracing::debug!(
                                 "zwp_primary_selection_offer_v1#{}.receive(\"{}\", {})",
                                 sender_id,

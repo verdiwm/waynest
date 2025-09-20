@@ -1042,7 +1042,7 @@ pub mod color_management_v1 {
                             result
                         }
                         1u16 => {
-                            let icc_profile = message.fd()?;
+                            let icc_profile = client.fd()?;
                             let offset = message.uint()?;
                             let length = message.uint()?;
                             tracing::debug!(
@@ -3135,7 +3135,7 @@ pub mod weston_debug {
                             let name = message
                                 .string()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
-                            let streamfd = message.fd()?;
+                            let streamfd = client.fd()?;
                             let stream = message
                                 .object()?
                                 .ok_or(crate::wire::DecodeError::MalformedPayload)?;
