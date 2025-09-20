@@ -1,0 +1,24 @@
+mod unstable {
+    mod fullscreen_shell_unstable_v1 {}
+    mod idle_inhibit_unstable_v1 {}
+    mod input_method_unstable_v1 {}
+    mod input_timestamps_unstable_v1 {}
+    mod keyboard_shortcuts_inhibit_unstable_v1 {}
+    mod linux_dmabuf_unstable_v1 {}
+    mod zwp_linux_explicit_synchronization_unstable_v1 {}
+    mod pointer_constraints_unstable_v1 {}
+    mod pointer_gestures_unstable_v1 {}
+    mod wp_primary_selection_unstable_v1 {}
+    mod relative_pointer_unstable_v1 {}
+    mod tablet_unstable_v1 {}
+    mod tablet_unstable_v2 {}
+    mod text_input_unstable_v1 {}
+    mod text_input_unstable_v3 {}
+    mod xdg_decoration_unstable_v1 {}
+    mod xdg_foreign_unstable_v1 {}
+    mod xdg_foreign_unstable_v2 {}
+    mod xdg_output_unstable_v1 {}
+    mod xdg_shell_unstable_v5 {}
+    mod xdg_shell_unstable_v6 {}
+    mod xwayland_keyboard_grab_unstable_v1 {}
+}

@@ -1,0 +1,14 @@
+[package]
+name = "xtask"
+version = "0.1.0"
+edition = "2024"
+publish = false
+authors = ["Matilde Morrone <contact@morrone.dev>"]
+repository = "https://github.com/verdiwm/waynest"
+
+[dependencies]
+anyhow = "1.0.100"
+quote = "1.0.40"
+sap = "0.0.7"
+walkdir = "2.5.0"
+waynest-gen = { path = "../crates/gen" }

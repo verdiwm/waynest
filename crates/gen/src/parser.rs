@@ -17,11 +17,11 @@ pub enum Error {
     Decode(#[from] DeError),
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Pair {
-    pub protocol: Protocol,
-    pub module: String,
-}
+// #[derive(Debug, Deserialize, Serialize, Clone)]
+// pub struct Pair {
+//     pub protocol: Protocol,
+//     pub module: String,
+// }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
@@ -154,15 +154,15 @@ pub struct Entry {
     pub description: Option<String>,
 }
 
-impl Pair {
-    pub fn from_path<D: Display, P: AsRef<Path>>(module: D, path: P) -> Result<Self, Error> {
-        debug!("Parsing protocol {}", path.as_ref().display());
-        Ok(Self {
-            protocol: quick_xml::de::from_str(&fs::read_to_string(path)?)?,
-            module: module.to_string(),
-        })
-    }
-}
+// impl Pair {
+//     pub fn from_path<D: Display, P: AsRef<Path>>(module: D, path: P) -> Result<Self, Error> {
+//         debug!("Parsing protocol {}", path.as_ref().display());
+//         Ok(Self {
+//             protocol: quick_xml::de::from_str(&fs::read_to_string(path)?)?,
+//             module: module.to_string(),
+//         })
+//     }
+// }
 
 impl Arg {
     pub fn to_enum_name(&self) -> Option<(Option<String>, String)> {
@@ -177,51 +177,51 @@ impl Arg {
         None
     }
 
-    pub fn find_protocol(&self, pairs: &[Pair]) -> Option<Pair> {
-        if let Some((enum_interface, _name)) = self.to_enum_name()
-            && let Some(enum_interface) = enum_interface
-        {
-            return pairs
-                .iter()
-                .find(|pair| {
-                    pair.protocol
-                        .interfaces
-                        .iter()
-                        .any(|e| e.name == enum_interface)
-                })
-                .cloned();
-        }
+    // pub fn find_protocol(&self, pairs: &[Pair]) -> Option<Pair> {
+    //     if let Some((enum_interface, _name)) = self.to_enum_name()
+    //         && let Some(enum_interface) = enum_interface
+    //     {
+    //         return pairs
+    //             .iter()
+    //             .find(|pair| {
+    //                 pair.protocol
+    //                     .interfaces
+    //                     .iter()
+    //                     .any(|e| e.name == enum_interface)
+    //             })
+    //             .cloned();
+    //     }
 
-        None
-    }
+    //     None
+    // }
 
-    pub fn to_rust_type_token(&self, pair: &Pair) -> TokenStream {
-        if let Some(e) = &self.r#enum {
-            if let Some((module, name)) = e.split_once('.') {
-                // Check if the referenced interface actually exists in the current pair
-                let interface_exists = pair
-                    .protocol
-                    .interfaces
-                    .iter()
-                    .any(|iface| iface.name == module);
-                if interface_exists {
-                    let protocol_name = make_ident(&pair.protocol.name);
-                    let name = make_ident(name.to_upper_camel_case());
-                    let module = make_ident(module);
-                    let protocol_module = make_ident(&pair.module);
+    // pub fn to_rust_type_token(&self, pair: &Pair) -> TokenStream {
+    //     if let Some(e) = &self.r#enum {
+    //         if let Some((module, name)) = e.split_once('.') {
+    //             // Check if the referenced interface actually exists in the current pair
+    //             let interface_exists = pair
+    //                 .protocol
+    //                 .interfaces
+    //                 .iter()
+    //                 .any(|iface| iface.name == module);
+    //             if interface_exists {
+    //                 let protocol_name = make_ident(&pair.protocol.name);
+    //                 let name = make_ident(name.to_upper_camel_case());
+    //                 let module = make_ident(module);
+    //                 let protocol_module = make_ident(&pair.module);
 
-                    return quote! {super::super::super::#protocol_module::#protocol_name::#module::#name};
-                } else {
-                    // Invalid cross-protocol reference, fall back to the underlying type
-                    return self.to_underlying_type_token();
-                }
-            } else {
-                return make_ident(e.to_upper_camel_case()).to_token_stream();
-            }
-        }
+    //                 return quote! {super::super::super::#protocol_module::#protocol_name::#module::#name};
+    //             } else {
+    //                 // Invalid cross-protocol reference, fall back to the underlying type
+    //                 return self.to_underlying_type_token();
+    //             }
+    //         } else {
+    //             return make_ident(e.to_upper_camel_case()).to_token_stream();
+    //         }
+    //     }
 
-        self.to_underlying_type_token()
-    }
+    //     self.to_underlying_type_token()
+    // }
 
     pub fn to_underlying_type_token(&self) -> TokenStream {
         match self.ty {

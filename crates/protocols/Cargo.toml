@@ -7,3 +7,17 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+
+[features]
+stable = []
+staging = []
+unstable = []
+wlr = []
+plasma = []
+weston = []
+cosmic = ["wlr"]
+frog = []
+ivi = []
+hyprland = []
+mesa = []
+treeland = []
