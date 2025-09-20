@@ -43,12 +43,10 @@ const PROTOCOLS: [(&str, &str); 13] = [
     ("treeland", "treeland-protocols/xml"),
 ];
 
-const SKIP: [&str; 5] = [
+const SKIP: [&str; 3] = [
     "tests.xml",
     "cosmic-image-source-unstable-v1.xml",
-    "cosmic-workspace-unstable-v1.xml",
     "treeland-personalization-manager-v1.xml",
-    "treeland-capture-unstable-v1.xml",
 ];
 
 fn generate() -> Result<()> {

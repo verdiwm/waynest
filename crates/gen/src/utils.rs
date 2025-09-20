@@ -1,7 +1,7 @@
 use heck::ToUpperCamelCase;
 use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
-use std::fmt::Display;
+use std::{collections::VecDeque, fmt::Display};
 
 use crate::parser::{Enum, Interface, Protocol};
 
@@ -14,17 +14,28 @@ const KEYWORDS: [&str; 52] = [
 ];
 
 pub fn description_to_docs(description: Option<&String>) -> Vec<TokenStream> {
-    let mut docs = Vec::new();
+    let mut docs = VecDeque::new();
 
     if let Some(description) = description {
         for line in description.lines() {
-            // writeln!(&mut generated_path, r##"#[doc = r#"{}"#]"##, line.trim())?;
             let doc = line.trim();
-            docs.push(quote! {#[doc = #doc]})
+            docs.push_back(doc)
         }
     }
 
-    docs
+    if let Some(doc) = docs.front()
+        && doc.is_empty()
+    {
+        docs.pop_front();
+    }
+
+    if let Some(doc) = docs.back()
+        && doc.is_empty()
+    {
+        docs.pop_back();
+    }
+
+    docs.iter().map(|doc| quote! { #[doc = #doc]}).collect()
 }
 
 pub fn value_to_u32(value: &str) -> u32 {
@@ -92,12 +103,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 }
 
                 impl TryFrom<u32> for #name {
-                    type Error = crate::DecodeError;
+                    type Error = waynest::DecodeError;
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
                         match v {
                             #(#match_variants),*
-                            _ => Err(crate::DecodeError::MalformedPayload)
+                            _ => Err(waynest::DecodeError::MalformedPayload)
                         }
                     }
                 }
@@ -134,10 +145,10 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 }
 
                 impl TryFrom<u32> for #name {
-                    type Error = crate::DecodeError;
+                    type Error = waynest::DecodeError;
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
-                       Self::from_bits(v).ok_or(crate::DecodeError::MalformedPayload)
+                       Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
                     }
                 }
 

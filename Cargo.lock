@@ -468,6 +468,7 @@ dependencies = [
 name = "waynest-protocols"
 version = "0.0.26"
 dependencies = [
+ "bitflags",
  "futures-core",
  "futures-sink",
  "waynest",
