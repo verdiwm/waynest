@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Output JSON file
-OUTPUT_FILE="gen/src/protocols.json"
+OUTPUT_FILE="crates/gen/src/protocols.json"
 
 # Check if jq is available
 if ! command -v jq &>/dev/null; then
