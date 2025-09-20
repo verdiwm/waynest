@@ -467,6 +467,11 @@ dependencies = [
 [[package]]
 name = "waynest-protocols"
 version = "0.0.26"
+dependencies = [
+ "futures-core",
+ "futures-sink",
+ "waynest",
+]
 
 [[package]]
 name = "winapi-util"

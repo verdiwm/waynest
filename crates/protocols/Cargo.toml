@@ -7,6 +7,9 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+futures-core = "0.3.31"
+futures-sink = "0.3.31"
+waynest = { version = "0.0.26", path = "../core" }
 
 [features]
 stable = []

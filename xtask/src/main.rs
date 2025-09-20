@@ -4,7 +4,7 @@ use anyhow::{Context, Result, anyhow, bail};
 use quote::quote;
 use sap::{Argument, Parser};
 use walkdir::WalkDir;
-use waynest_gen::{generate_module, utils::make_ident};
+use waynest_gen::generate_module;
 
 fn main() -> Result<()> {
     let mut parser = Parser::from_env().context("Failed to init sap")?;
@@ -71,12 +71,8 @@ fn generate() -> Result<()> {
             }
         }
 
-        let module_name = make_ident(module);
-
         let module_content = quote! {
-            mod #module_name {
-                #(#modules)*
-            }
+            #(#modules)*
         };
 
         let mut module_file = OpenOptions::new()
