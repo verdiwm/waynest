@@ -24,7 +24,7 @@ include = ["src/**/*.rs", "README.md", "LICENSE"]
 [features]
 client = ["dep:async-trait", "dep:bitflags", "dep:downcast-rs"]
 server = ["dep:async-trait", "dep:bitflags"]
-tracing = ["dep:tracing"]
+tracing = []
 
 # Various protocols
 stable = []
@@ -59,9 +59,12 @@ waynest-macros = { version = "0.0.26", path = "macros" }
 async-trait = { version = "0.1.89", optional = true }
 bitflags = { version = "2.9.4", optional = true }
 
-tracing = { version = "0.1.41", optional = true }
+tracing = { version = "0.1.41", optional = false }
 arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }
 downcast-rs = { version = "2.0.2", optional = true }
+futures-core = "0.3.31"
+futures-sink = "0.3.31"
+tokio-util = { version = "0.7.16", features = ["codec"] }
 
 [dev-dependencies]
 anyhow = "1.0.99"
