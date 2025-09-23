@@ -3,7 +3,7 @@ use std::{
     io::{self, IoSlice, IoSliceMut},
     mem::MaybeUninit,
     os::{
-        fd::{IntoRawFd, RawFd},
+        fd::{FromRawFd, IntoRawFd, OwnedFd, RawFd},
         unix::net::UnixStream,
     },
     task::Poll,
@@ -19,12 +19,13 @@ use rustix::net::{
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf, unix::AsyncFd};
 use tokio_util::codec::{Decoder, Encoder, Framed};
 
-use crate::{DecodeError, Message};
+use crate::{Connection, DecodeError, Message};
 
 pin_project! {
     pub struct Socket {
         #[pin]
         inner: Framed<StreamWrapper, MessageCodec>,
+        decode_fds: VecDeque<RawFd>,
     }
 }
 
@@ -33,7 +34,17 @@ impl Socket {
     pub fn new(stream: UnixStream) -> io::Result<Self> {
         Ok(Self {
             inner: Framed::new(StreamWrapper::new(stream)?, MessageCodec::new()),
+            decode_fds: VecDeque::new(),
         })
+    }
+}
+
+impl Connection for Socket {
+    fn fd(&mut self) -> Result<std::os::unix::prelude::OwnedFd, DecodeError> {
+        self.decode_fds
+            .pop_front()
+            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
+            .ok_or(DecodeError::MalformedPayload)
     }
 }
 
@@ -47,10 +58,10 @@ impl Stream for Socket {
         let mut this = self.project();
 
         match this.inner.as_mut().poll_next(cx) {
-            Poll::Ready(Some(Ok(mut msg))) => {
+            Poll::Ready(Some(Ok(msg))) => {
                 let stream = Framed::get_mut(&mut this.inner);
 
-                core::mem::swap(&mut msg.fds, &mut stream.decode_fds);
+                this.decode_fds.extend(stream.decode_fds.drain(..));
 
                 Poll::Ready(Some(Ok(msg)))
             }
@@ -73,7 +84,7 @@ impl Sink<Message> for Socket {
         let mut this = self.project();
 
         let stream = Framed::get_mut(&mut this.inner);
-        core::mem::swap(&mut msg.fds, &mut stream.decode_fds);
+        core::mem::swap(&mut msg.fds, &mut stream.encode_fds);
 
         this.inner.start_send(msg)
     }
@@ -177,7 +188,7 @@ impl AsyncWrite for StreamWrapper {
             match guard.try_io(|stream| {
                 sendmsg(
                     stream,
-                    &mut [IoSlice::new(buf)],
+                    &[IoSlice::new(buf)],
                     &mut ancillary_buf,
                     SendFlags::DONTWAIT | SendFlags::NOSIGNAL,
                 )

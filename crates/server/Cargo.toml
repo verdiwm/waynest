@@ -7,3 +7,10 @@ repository.workspace = true
 version = "0.1.0"
 
 [dependencies]
+async-trait = "0.1.89"
+futures-util = { version = "0.3.31", features = ["sink"] }
+pin-project-lite = "0.2.16"
+thiserror = "2.0.16"
+tokio = { version = "1.47.1", features = ["net"] }
+tokio-stream = "0.1.17"
+waynest = { version = "0.1.0", path = "../core" }

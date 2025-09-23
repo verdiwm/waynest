@@ -95,7 +95,7 @@ fn generate() -> Result<()> {
         .truncate(true)
         .write(true)
         .create(true)
-        .open(format!("crates/protocols/src/lib.rs"))?;
+        .open("crates/protocols/src/lib.rs")?;
 
     write!(&mut lib_rs, "{lib_rs_contents}")?;
 

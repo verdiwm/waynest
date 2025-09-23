@@ -37,10 +37,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_display interface. See the module level documentation for more info"]
-        pub trait WlDisplay<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlDisplay<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_display";
             const VERSION: u32 = 1u32;
             #[doc = "The sync request asks the server to emit the 'done' event"]
@@ -59,7 +56,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 callback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request creates a registry object that allows the client"]
             #[doc = "to list and bind the global objects available from the"]
             #[doc = "compositor."]
@@ -74,7 +71,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 registry: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The error event is sent out when a fatal (non-recoverable)"]
             #[doc = "error has occurred.  The object_id argument is the object"]
             #[doc = "where the error occurred, most often in response to a request"]
@@ -89,7 +86,7 @@ pub mod wayland {
                 object_id: waynest::ObjectId,
                 code: u32,
                 message: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is used internally by the object ID management"]
             #[doc = "logic. When a client deletes an object that it had created,"]
             #[doc = "the server will send this event to acknowledge that it has"]
@@ -100,7 +97,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The singleton global registry object.  The server has a number of"]
@@ -126,10 +123,7 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_registry {
         #[doc = "Trait to implement the wl_registry interface. See the module level documentation for more info"]
-        pub trait WlRegistry<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlRegistry<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_registry";
             const VERSION: u32 = 1u32;
             #[doc = "Binds a new, client-created object to the server using the"]
@@ -140,7 +134,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 name: u32,
                 id: waynest::NewId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notify the client of global objects."]
             #[doc = ""]
             #[doc = "The event notifies the client that a global object with"]
@@ -153,7 +147,7 @@ pub mod wayland {
                 name: u32,
                 interface: String,
                 version: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notify the client of removed global objects."]
             #[doc = ""]
             #[doc = "This event notifies the client that the global identified"]
@@ -169,7 +163,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "Clients can handle the 'done' event to get notified when"]
@@ -180,10 +174,7 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_callback {
         #[doc = "Trait to implement the wl_callback interface. See the module level documentation for more info"]
-        pub trait WlCallback<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlCallback<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_callback";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the client when the related request is done."]
@@ -192,7 +183,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 callback_data: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A compositor.  This object is a singleton global.  The"]
@@ -201,10 +192,7 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_compositor {
         #[doc = "Trait to implement the wl_compositor interface. See the module level documentation for more info"]
-        pub trait WlCompositor<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlCompositor<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_compositor";
             const VERSION: u32 = 6u32;
             #[doc = "Ask the compositor to create a new surface."]
@@ -213,14 +201,14 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Ask the compositor to create a new region."]
             fn create_region(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wl_shm_pool object encapsulates a piece of memory shared"]
@@ -233,10 +221,7 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_shm_pool {
         #[doc = "Trait to implement the wl_shm_pool interface. See the module level documentation for more info"]
-        pub trait WlShmPool<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlShmPool<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_shm_pool";
             const VERSION: u32 = 2u32;
             #[doc = "Create a wl_buffer object from the pool."]
@@ -260,7 +245,7 @@ pub mod wayland {
                 height: i32,
                 stride: i32,
                 format: super::super::super::core::wayland::wl_shm::Format,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroy the shared memory pool."]
             #[doc = ""]
             #[doc = "The mmapped memory will be released when all"]
@@ -270,7 +255,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request will cause the server to remap the backing memory"]
             #[doc = "for the pool from the file descriptor passed when the pool was"]
             #[doc = "created, but using the new size.  This request can only be"]
@@ -286,7 +271,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 size: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A singleton global object that provides support for shared"]
@@ -716,10 +701,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_shm interface. See the module level documentation for more info"]
-        pub trait WlShm<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlShm<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_shm";
             const VERSION: u32 = 2u32;
             #[doc = "Create a new wl_shm_pool object."]
@@ -734,7 +716,7 @@ pub mod wayland {
                 id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
                 size: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the shm object anymore."]
             #[doc = ""]
@@ -743,7 +725,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Informs the client about a valid pixel format that"]
             #[doc = "can be used for buffers. Known formats include"]
             #[doc = "argb8888 and xrgb8888."]
@@ -752,7 +734,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: Format,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A buffer provides the content for a wl_surface. Buffers are"]
@@ -773,10 +755,7 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_buffer {
         #[doc = "Trait to implement the wl_buffer interface. See the module level documentation for more info"]
-        pub trait WlBuffer<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlBuffer<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_buffer";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy a buffer. If and how you need to release the backing"]
@@ -787,7 +766,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent when this wl_buffer is no longer used by the compositor."]
             #[doc = ""]
             #[doc = "For more information on when release events may or may not be sent,"]
@@ -806,7 +785,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A wl_data_offer represents a piece of data offered for transfer"]
@@ -848,10 +827,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_data_offer interface. See the module level documentation for more info"]
-        pub trait WlDataOffer<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlDataOffer<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_data_offer";
             const VERSION: u32 = 3u32;
             #[doc = "Indicate that the client can accept the given mime type, or"]
@@ -874,7 +850,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 mime_type: Option<String>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "To transfer the offered data, the client issues this request"]
             #[doc = "and indicates the mime type it wants to receive.  The transfer"]
             #[doc = "happens through the passed file descriptor (typically created"]
@@ -896,13 +872,13 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroy the data offer."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notifies the compositor that the drag destination successfully"]
             #[doc = "finished the drag-and-drop operation."]
             #[doc = ""]
@@ -921,7 +897,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sets the actions that the destination side client supports for"]
             #[doc = "this operation. This request may trigger the emission of"]
             #[doc = "wl_data_source.action and wl_data_offer.action events if the compositor"]
@@ -959,7 +935,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
                 preferred_action : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent immediately after creating the wl_data_offer object.  One"]
             #[doc = "event per offered mime type."]
             fn offer(
@@ -967,7 +943,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates the actions offered by the data source. It"]
             #[doc = "will be sent immediately after creating the wl_data_offer object,"]
             #[doc = "or anytime the source side changes its offered actions through"]
@@ -977,7 +953,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source_actions : super :: super :: super :: core :: wayland :: wl_data_device_manager :: DndAction,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates the action selected by the compositor after"]
             #[doc = "matching the source/destination side actions. Only one action (or"]
             #[doc = "none) will be offered here."]
@@ -1018,7 +994,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wl_data_source object is the source side of a wl_data_offer."]
@@ -1052,10 +1028,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_data_source interface. See the module level documentation for more info"]
-        pub trait WlDataSource<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlDataSource<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_data_source";
             const VERSION: u32 = 3u32;
             #[doc = "This request adds a mime type to the set of mime types"]
@@ -1066,13 +1039,13 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroy the data source."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sets the actions that the source side client supports for this"]
             #[doc = "operation. This request may trigger wl_data_source.action and"]
             #[doc = "wl_data_offer.action events if the compositor needs to change the"]
@@ -1091,7 +1064,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 dnd_actions: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent when a target accepts pointer_focus or motion events.  If"]
             #[doc = "a target does not accept any of the offered types, type is NULL."]
             #[doc = ""]
@@ -1101,7 +1074,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: Option<String>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Request for data from the client.  Send the data as the"]
             #[doc = "specified mime type over the passed file descriptor, then"]
             #[doc = "close it."]
@@ -1111,7 +1084,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This data source is no longer valid. There are several reasons why"]
             #[doc = "this could happen:"]
             #[doc = ""]
@@ -1136,7 +1109,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The user performed the drop action. This event does not indicate"]
             #[doc = "acceptance, wl_data_source.cancelled may still be emitted afterwards"]
             #[doc = "if the drop destination does not accept any mime type."]
@@ -1150,7 +1123,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The drop destination finished interoperating with this data"]
             #[doc = "source, so the client is now free to destroy this data source and"]
             #[doc = "free all associated data."]
@@ -1161,7 +1134,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates the action selected by the compositor after"]
             #[doc = "matching the source/destination side actions. Only one action (or"]
             #[doc = "none) will be offered here."]
@@ -1192,7 +1165,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 dnd_action: super::super::super::core::wayland::wl_data_device_manager::DndAction,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "There is one wl_data_device per seat which can be obtained"]
@@ -1227,10 +1200,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_data_device interface. See the module level documentation for more info"]
-        pub trait WlDataDevice<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlDataDevice<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_data_device";
             const VERSION: u32 = 3u32;
             #[doc = "This request asks the compositor to start a drag-and-drop"]
@@ -1270,7 +1240,7 @@ pub mod wayland {
                 origin: waynest::ObjectId,
                 icon: Option<waynest::ObjectId>,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request asks the compositor to set the selection"]
             #[doc = "to the data from the source on behalf of the client."]
             #[doc = ""]
@@ -1285,13 +1255,13 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 source: Option<waynest::ObjectId>,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request destroys the data device."]
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The data_offer event introduces a new wl_data_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "data_device.enter event (for drag-and-drop) or the"]
@@ -1304,7 +1274,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent when an active drag-and-drop pointer enters"]
             #[doc = "a surface owned by the client.  The position of the pointer at"]
             #[doc = "enter time is provided by the x and y arguments, in surface-local"]
@@ -1318,7 +1288,7 @@ pub mod wayland {
                 x: waynest::Fixed,
                 y: waynest::Fixed,
                 id: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent when the drag-and-drop pointer leaves the"]
             #[doc = "surface and the session ends.  The client must destroy the"]
             #[doc = "wl_data_offer introduced at enter time at this point."]
@@ -1326,7 +1296,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent when the drag-and-drop pointer moves within"]
             #[doc = "the currently focused surface. The new position of the pointer"]
             #[doc = "is provided by the x and y arguments, in surface-local"]
@@ -1338,7 +1308,7 @@ pub mod wayland {
                 time: u32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The event is sent when a drag-and-drop operation is ended"]
             #[doc = "because the implicit grab is removed."]
             #[doc = ""]
@@ -1356,7 +1326,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "wl_data_offer for the selection for this device.  The"]
             #[doc = "data_device.data_offer and the data_offer.offer events are"]
@@ -1374,7 +1344,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wl_data_device_manager is a singleton global object that"]
@@ -1402,10 +1372,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_data_device_manager interface. See the module level documentation for more info"]
-        pub trait WlDataDeviceManager<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlDataDeviceManager<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_data_device_manager";
             const VERSION: u32 = 3u32;
             #[doc = "Create a new data source."]
@@ -1414,7 +1381,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a new data device for a given seat."]
             fn get_data_device(
                 &self,
@@ -1422,7 +1389,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This interface is implemented by servers that provide"]
@@ -1458,10 +1425,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_shell interface. See the module level documentation for more info"]
-        pub trait WlShell<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlShell<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_shell";
             const VERSION: u32 = 1u32;
             #[doc = "Create a shell surface for an existing surface. This gives"]
@@ -1475,7 +1439,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -1549,10 +1513,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_shell_surface interface. See the module level documentation for more info"]
-        pub trait WlShellSurface<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlShellSurface<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_shell_surface";
             const VERSION: u32 = 1u32;
             #[doc = "A client must respond to a ping event with a pong request or"]
@@ -1562,7 +1523,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Start a pointer-driven move of the surface."]
             #[doc = ""]
             #[doc = "This request must be used in response to a button press event."]
@@ -1574,7 +1535,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Start a pointer-driven resizing of the surface."]
             #[doc = ""]
             #[doc = "This request must be used in response to a button press event."]
@@ -1587,7 +1548,7 @@ pub mod wayland {
                 seat: waynest::ObjectId,
                 serial: u32,
                 edges: Resize,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Map the surface as a toplevel surface."]
             #[doc = ""]
             #[doc = "A toplevel surface is not fullscreen, maximized or transient."]
@@ -1595,7 +1556,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Map the surface relative to an existing surface."]
             #[doc = ""]
             #[doc = "The x and y arguments specify the location of the upper left"]
@@ -1611,7 +1572,7 @@ pub mod wayland {
                 x: i32,
                 y: i32,
                 flags: Transient,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Map the surface as a fullscreen surface."]
             #[doc = ""]
             #[doc = "If an output parameter is given then the surface will be made"]
@@ -1652,7 +1613,7 @@ pub mod wayland {
                 method: FullscreenMethod,
                 framerate: u32,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Map the surface as a popup."]
             #[doc = ""]
             #[doc = "A popup surface is a transient surface with an added pointer"]
@@ -1682,7 +1643,7 @@ pub mod wayland {
                 x: i32,
                 y: i32,
                 flags: Transient,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Map the surface as a maximized surface."]
             #[doc = ""]
             #[doc = "If an output parameter is given then the surface will be"]
@@ -1706,7 +1667,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
             #[doc = "This string may be used to identify the surface in a task bar,"]
@@ -1719,7 +1680,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set a class for the surface."]
             #[doc = ""]
             #[doc = "The surface class identifies the general class of applications"]
@@ -1731,7 +1692,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 class: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Ping a client to check if it is receiving events and sending"]
             #[doc = "requests. A client is expected to reply with a pong request."]
             fn ping(
@@ -1739,7 +1700,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -1764,7 +1725,7 @@ pub mod wayland {
                 edges: Resize,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The popup_done event is sent out when a popup grab is broken,"]
             #[doc = "that is, when the user clicks a surface that doesn't belong"]
             #[doc = "to the client owning the popup surface."]
@@ -1772,7 +1733,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A surface is a rectangular area that may be displayed on zero"]
@@ -1854,10 +1815,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_surface interface. See the module level documentation for more info"]
-        pub trait WlSurface<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlSurface<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_surface";
             const VERSION: u32 = 6u32;
             #[doc = "Deletes the surface and invalidates its object ID."]
@@ -1865,7 +1823,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set a buffer as the content of this surface."]
             #[doc = ""]
             #[doc = "The new size of the surface is calculated based on the buffer"]
@@ -1938,7 +1896,7 @@ pub mod wayland {
                 buffer: Option<waynest::ObjectId>,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request is used to describe the regions where the pending"]
             #[doc = "buffer is different from the current surface contents, and where"]
             #[doc = "the surface therefore needs to be repainted. The compositor"]
@@ -1968,7 +1926,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Request a notification when it is a good time to start drawing a new"]
             #[doc = "frame, by creating a frame callback. This is useful for throttling"]
             #[doc = "redrawing operations, and driving animations."]
@@ -2006,7 +1964,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 callback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request sets the region of the surface that contains"]
             #[doc = "opaque content."]
             #[doc = ""]
@@ -2036,7 +1994,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request sets the region of the surface that can receive"]
             #[doc = "pointer and touch events."]
             #[doc = ""]
@@ -2064,7 +2022,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Surface state (input, opaque, and damage regions, attached buffers,"]
             #[doc = "etc.) is double-buffered. Protocol requests modify the pending state,"]
             #[doc = "as opposed to the active state in use by the compositor."]
@@ -2088,7 +2046,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request sets the transformation that the client has already applied"]
             #[doc = "to the content of the buffer. The accepted values for the transform"]
             #[doc = "parameter are the values for wl_output.transform."]
@@ -2125,7 +2083,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request sets an optional scaling factor on how the compositor"]
             #[doc = "interprets the contents of the buffer attached to the window."]
             #[doc = ""]
@@ -2154,7 +2112,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 scale: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request is used to describe the regions where the pending"]
             #[doc = "buffer is different from the current surface contents, and where"]
             #[doc = "the surface therefore needs to be repainted. The compositor"]
@@ -2195,7 +2153,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The x and y arguments specify the location of the new pending"]
             #[doc = "buffer's upper left corner, relative to the current buffer's upper"]
             #[doc = "left corner, in surface-local coordinates. In other words, the"]
@@ -2217,7 +2175,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in some part of it being within the scanout region of an"]
             #[doc = "output."]
@@ -2228,7 +2186,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in it no longer having any part of it within the scanout region"]
             #[doc = "of an output."]
@@ -2243,7 +2201,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates the preferred buffer scale for this surface. It is"]
             #[doc = "sent whenever the compositor's preference changes."]
             #[doc = ""]
@@ -2261,7 +2219,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 factor: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates the preferred buffer transform for this surface."]
             #[doc = "It is sent whenever the compositor's preference changes."]
             #[doc = ""]
@@ -2276,7 +2234,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 transform: super::super::super::core::wayland::wl_output::Transform,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A seat is a group of keyboards, pointer and touch devices. This"]
@@ -2320,10 +2278,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_seat interface. See the module level documentation for more info"]
-        pub trait WlSeat<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlSeat<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_seat";
             const VERSION: u32 = 10u32;
             #[doc = "The ID provided will be initialized to the wl_pointer interface"]
@@ -2339,7 +2294,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The ID provided will be initialized to the wl_keyboard interface"]
             #[doc = "for this seat."]
             #[doc = ""]
@@ -2353,7 +2308,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The ID provided will be initialized to the wl_touch interface"]
             #[doc = "for this seat."]
             #[doc = ""]
@@ -2367,14 +2322,14 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the seat object anymore."]
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This is sent on binding to the seat global or whenever a seat gains"]
             #[doc = "or loses the pointer, keyboard or touch capabilities."]
             #[doc = "The argument is a capability enum containing the complete set of"]
@@ -2405,7 +2360,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: Capability,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "In a multi-seat configuration the seat name can be used by clients to"]
             #[doc = "help identify which physical devices the seat represents."]
             #[doc = ""]
@@ -2427,7 +2382,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wl_pointer interface represents one or more input devices,"]
@@ -2585,10 +2540,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_pointer interface. See the module level documentation for more info"]
-        pub trait WlPointer<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlPointer<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_pointer";
             const VERSION: u32 = 10u32;
             #[doc = "Set the pointer surface, i.e., the surface that contains the"]
@@ -2632,7 +2584,7 @@ pub mod wayland {
                 surface: Option<waynest::ObjectId>,
                 hotspot_x: i32,
                 hotspot_y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Using this request a client can tell the server that it is not going to"]
             #[doc = "use the pointer object anymore."]
             #[doc = ""]
@@ -2642,7 +2594,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this seat's pointer is focused on a certain"]
             #[doc = "surface."]
             #[doc = ""]
@@ -2657,7 +2609,7 @@ pub mod wayland {
                 surface: waynest::ObjectId,
                 surface_x: waynest::Fixed,
                 surface_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this seat's pointer is no longer focused on"]
             #[doc = "a certain surface."]
             #[doc = ""]
@@ -2669,7 +2621,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification of pointer location change. The arguments"]
             #[doc = "surface_x and surface_y are the location relative to the"]
             #[doc = "focused surface."]
@@ -2680,7 +2632,7 @@ pub mod wayland {
                 time: u32,
                 surface_x: waynest::Fixed,
                 surface_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Mouse button click and release notifications."]
             #[doc = ""]
             #[doc = "The location of the click is given by the last motion or"]
@@ -2703,7 +2655,7 @@ pub mod wayland {
                 time: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Scroll and other axis notifications."]
             #[doc = ""]
             #[doc = "For scroll events (vertical and horizontal scroll axes), the"]
@@ -2727,7 +2679,7 @@ pub mod wayland {
                 time: u32,
                 axis: Axis,
                 value: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Indicates the end of a set of events that logically belong together."]
             #[doc = "A client is expected to accumulate the data in all events within the"]
             #[doc = "frame before proceeding."]
@@ -2766,7 +2718,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Source information for scroll and other axes."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -2797,7 +2749,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 axis_source: AxisSource,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Stop notification for scroll and other axes."]
             #[doc = ""]
             #[doc = "For some wl_pointer.axis_source types, a wl_pointer.axis_stop event"]
@@ -2818,7 +2770,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 time: u32,
                 axis: Axis,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
             #[doc = "This event carries the axis value of the wl_pointer.axis event in"]
@@ -2855,7 +2807,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 axis: Axis,
                 discrete: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Discrete high-resolution scroll information."]
             #[doc = ""]
             #[doc = "This event carries high-resolution wheel scroll information,"]
@@ -2883,7 +2835,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 axis: Axis,
                 value120: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Relative directional information of the entity causing the axis"]
             #[doc = "motion."]
             #[doc = ""]
@@ -2925,7 +2877,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 axis: Axis,
                 direction: AxisRelativeDirection,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wl_keyboard interface represents one or more keyboards"]
@@ -3005,17 +2957,14 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_keyboard interface. See the module level documentation for more info"]
-        pub trait WlKeyboard<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlKeyboard<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_keyboard";
             const VERSION: u32 = 10u32;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event provides a file descriptor to the client which can be"]
             #[doc = "memory-mapped in read-only mode to provide a keyboard mapping"]
             #[doc = "description."]
@@ -3029,7 +2978,7 @@ pub mod wayland {
                 format: KeymapFormat,
                 fd: std::os::fd::OwnedFd,
                 size: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this seat's keyboard focus is on a certain"]
             #[doc = "surface."]
             #[doc = ""]
@@ -3050,7 +2999,7 @@ pub mod wayland {
                 serial: u32,
                 surface: waynest::ObjectId,
                 keys: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this seat's keyboard focus is no longer on"]
             #[doc = "a certain surface."]
             #[doc = ""]
@@ -3067,7 +3016,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A key was pressed or released."]
             #[doc = "The time argument is a timestamp with millisecond"]
             #[doc = "granularity, with an undefined base."]
@@ -3099,7 +3048,7 @@ pub mod wayland {
                 time: u32,
                 key: u32,
                 state: KeyState,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notifies clients that the modifier and/or group state has"]
             #[doc = "changed, and it should update its local state."]
             #[doc = ""]
@@ -3122,7 +3071,7 @@ pub mod wayland {
                 mods_latched: u32,
                 mods_locked: u32,
                 group: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Informs the client about the keyboard's repeat rate and delay."]
             #[doc = ""]
             #[doc = "This event is sent as soon as the wl_keyboard object has been created,"]
@@ -3141,7 +3090,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 rate: i32,
                 delay: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wl_touch interface represents a touchscreen"]
@@ -3155,17 +3104,14 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_touch {
         #[doc = "Trait to implement the wl_touch interface. See the module level documentation for more info"]
-        pub trait WlTouch<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlTouch<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_touch";
             const VERSION: u32 = 10u32;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A new touch point has appeared on the surface. This touch point is"]
             #[doc = "assigned a unique ID. Future events from this touch point reference"]
             #[doc = "this ID. The ID ceases to be valid after a touch up event and may be"]
@@ -3180,7 +3126,7 @@ pub mod wayland {
                 id: i32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The touch point has disappeared. No further events will be sent for"]
             #[doc = "this touch point and the touch point's ID is released and may be"]
             #[doc = "reused in a future touch down event."]
@@ -3191,7 +3137,7 @@ pub mod wayland {
                 serial: u32,
                 time: u32,
                 id: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A touch point has changed coordinates."]
             fn motion(
                 &self,
@@ -3201,7 +3147,7 @@ pub mod wayland {
                 id: i32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Indicates the end of a set of events that logically belong together."]
             #[doc = "A client is expected to accumulate the data in all events within the"]
             #[doc = "frame before proceeding."]
@@ -3214,7 +3160,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent if the compositor decides the touch stream is a global"]
             #[doc = "gesture. No further events are sent to the clients from that"]
             #[doc = "particular gesture. Touch cancellation applies to all touch points"]
@@ -3227,7 +3173,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent when a touchpoint has changed its shape."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -3260,7 +3206,7 @@ pub mod wayland {
                 id: i32,
                 major: waynest::Fixed,
                 minor: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent when a touchpoint has changed its orientation."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -3290,7 +3236,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 id: i32,
                 orientation: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An output describes part of the compositor geometry.  The"]
@@ -3404,10 +3350,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_output interface. See the module level documentation for more info"]
-        pub trait WlOutput<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlOutput<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_output";
             const VERSION: u32 = 4u32;
             #[doc = "Using this request a client can tell the server that it is not going to"]
@@ -3416,7 +3359,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -3449,7 +3392,7 @@ pub mod wayland {
                 make: String,
                 model: String,
                 transform: Transform,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The mode event describes an available mode for the output."]
             #[doc = ""]
             #[doc = "The event is sent when binding to the output object and there"]
@@ -3491,7 +3434,7 @@ pub mod wayland {
                 width: i32,
                 height: i32,
                 refresh: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent after all other properties have been"]
             #[doc = "sent after binding to the output object and after any"]
             #[doc = "other property changes done after that. This allows"]
@@ -3501,7 +3444,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event contains scaling geometry information"]
             #[doc = "that is not in the geometry event. It may be sent after"]
             #[doc = "binding the output object or if the output scale changes"]
@@ -3525,7 +3468,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 factor: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Many compositors will assign user-friendly names to their outputs, show"]
             #[doc = "them to the user, allow the user to refer to an output, etc. The client"]
             #[doc = "may wish to know this name as well to offer the user similar behaviors."]
@@ -3559,7 +3502,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Many compositors can produce human-readable descriptions of their"]
             #[doc = "outputs. The client may wish to know this description as well, e.g. for"]
             #[doc = "output selection purposes."]
@@ -3579,7 +3522,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 description: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A region object describes an area."]
@@ -3589,10 +3532,7 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_region {
         #[doc = "Trait to implement the wl_region interface. See the module level documentation for more info"]
-        pub trait WlRegion<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlRegion<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_region";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the region.  This will invalidate the object ID."]
@@ -3600,7 +3540,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Add the specified rectangle to the region."]
             fn add(
                 &self,
@@ -3610,7 +3550,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Subtract the specified rectangle from the region."]
             fn subtract(
                 &self,
@@ -3620,7 +3560,7 @@ pub mod wayland {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The global interface exposing sub-surface compositing capabilities."]
@@ -3669,10 +3609,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_subcompositor interface. See the module level documentation for more info"]
-        pub trait WlSubcompositor<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlSubcompositor<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_subcompositor";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this"]
@@ -3682,7 +3619,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a sub-surface interface for the given surface, and"]
             #[doc = "associate it with the given parent surface. This turns a"]
             #[doc = "plain wl_surface into a sub-surface."]
@@ -3709,7 +3646,7 @@ pub mod wayland {
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 parent: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An additional interface to a wl_surface object, which has been"]
@@ -3788,10 +3725,7 @@ pub mod wayland {
             }
         }
         #[doc = "Trait to implement the wl_subsurface interface. See the module level documentation for more info"]
-        pub trait WlSubsurface<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlSubsurface<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_subsurface";
             const VERSION: u32 = 1u32;
             #[doc = "The sub-surface interface is removed from the wl_surface object"]
@@ -3802,7 +3736,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This schedules a sub-surface position change."]
             #[doc = "The sub-surface will be moved so that its origin (top left"]
             #[doc = "corner pixel) will be at the location x, y of the parent surface"]
@@ -3823,7 +3757,7 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This sub-surface is taken from the stack, and put back just"]
             #[doc = "above the reference surface, changing the z-order of the sub-surfaces."]
             #[doc = "The reference surface must be one of the sibling surfaces, or the"]
@@ -3842,7 +3776,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 sibling: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The sub-surface is placed just below the reference surface."]
             #[doc = "See wl_subsurface.place_above."]
             fn place_below(
@@ -3850,7 +3784,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 sibling: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Change the commit behaviour of the sub-surface to synchronized"]
             #[doc = "mode, also described as the parent dependent mode."]
             #[doc = ""]
@@ -3868,7 +3802,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Change the commit behaviour of the sub-surface to desynchronized"]
             #[doc = "mode, also described as independent or freely running mode."]
             #[doc = ""]
@@ -3892,7 +3826,7 @@ pub mod wayland {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This global fixes problems with other core-protocol interfaces that"]
@@ -3900,17 +3834,14 @@ pub mod wayland {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_fixes {
         #[doc = "Trait to implement the wl_fixes interface. See the module level documentation for more info"]
-        pub trait WlFixes<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WlFixes<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wl_fixes";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request destroys a wl_registry object."]
             #[doc = ""]
             #[doc = "The client should no longer use the wl_registry after making this"]
@@ -3925,7 +3856,7 @@ pub mod wayland {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 registry: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }

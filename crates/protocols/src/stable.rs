@@ -65,10 +65,7 @@ pub mod linux_dmabuf_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_v1 {
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpLinuxDmabufV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
@@ -77,7 +74,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This temporary object is used to collect multiple dmabuf handles into"]
             #[doc = "a single batch to create a wl_buffer. It can only be used once and"]
             #[doc = "should be destroyed after a 'created' or 'failed' event has been"]
@@ -87,7 +84,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 params_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
             #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
             #[doc = "parameters to use if the client doesn't support per-surface feedback"]
@@ -97,7 +94,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
             #[doc = "specified wl_surface. This object will deliver feedback about dmabuf"]
             #[doc = "parameters to use for buffers attached to this surface."]
@@ -110,7 +107,7 @@ pub mod linux_dmabuf_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event advertises one buffer format that the server supports."]
             #[doc = "All the supported formats are advertised once when the client"]
             #[doc = "binds to this interface. A roundtrip after binding guarantees"]
@@ -127,7 +124,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event advertises the formats that the server supports, along with"]
             #[doc = "the modifiers supported for each format. All the supported modifiers"]
             #[doc = "for all the supported formats are advertised once when the client"]
@@ -158,7 +155,7 @@ pub mod linux_dmabuf_v1 {
                 format: u32,
                 modifier_hi: u32,
                 modifier_lo: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This temporary object is a collection of dmabufs and other"]
@@ -235,10 +232,7 @@ pub mod linux_dmabuf_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferParamsV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
@@ -247,7 +241,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request adds one dmabuf to the set in this"]
             #[doc = "zwp_linux_buffer_params_v1."]
             #[doc = ""]
@@ -277,7 +271,7 @@ pub mod linux_dmabuf_v1 {
                 stride: u32,
                 modifier_hi: u32,
                 modifier_lo: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This asks for creation of a wl_buffer from the added dmabuf"]
             #[doc = "buffers. The wl_buffer is not created immediately but returned via"]
             #[doc = "the 'created' event if the dmabuf sharing succeeds. The sharing"]
@@ -345,7 +339,7 @@ pub mod linux_dmabuf_v1 {
                 height: i32,
                 format: u32,
                 flags: Flags,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
             #[doc = "added dmabufs."]
             #[doc = ""]
@@ -378,7 +372,7 @@ pub mod linux_dmabuf_v1 {
                 height: i32,
                 format: u32,
                 flags: Flags,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
             #[doc = ""]
@@ -389,7 +383,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates that the attempted buffer creation has"]
             #[doc = "failed. It usually means that one of the dmabuf constraints"]
             #[doc = "has not been fulfilled."]
@@ -400,7 +394,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
@@ -443,10 +437,7 @@ pub mod linux_dmabuf_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufFeedbackV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Using this request a client can tell the server that it is not going to"]
@@ -455,7 +446,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
             #[doc = "object have been sent."]
             #[doc = ""]
@@ -465,7 +456,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event provides a file descriptor which can be memory-mapped to"]
             #[doc = "access the format and modifier table."]
             #[doc = ""]
@@ -486,7 +477,7 @@ pub mod linux_dmabuf_v1 {
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
                 size: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event advertises the main device that the server prefers to use"]
             #[doc = "when direct scan-out to the target device isn't possible. The"]
             #[doc = "advertised main device may be different for each"]
@@ -515,7 +506,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event splits tranche_target_device and tranche_formats events in"]
             #[doc = "preference tranches. It is sent after a set of tranche_target_device"]
             #[doc = "and tranche_formats events; it represents the end of a tranche. The"]
@@ -524,7 +515,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event advertises the target device that the server prefers to use"]
             #[doc = "for a buffer created given this tranche. The advertised target device"]
             #[doc = "may be different for each preference tranche, and may change over time."]
@@ -556,7 +547,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event advertises the format + modifier combinations that the"]
             #[doc = "compositor supports."]
             #[doc = ""]
@@ -586,7 +577,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 indices: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event sets tranche-specific flags."]
             #[doc = ""]
             #[doc = "The scanout flag is a hint that direct scan-out may be attempted by the"]
@@ -600,7 +591,7 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: TrancheFlags,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -657,10 +648,7 @@ pub mod presentation_time {
             }
         }
         #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
-        pub trait WpPresentation<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WpPresentation<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wp_presentation";
             const VERSION: u32 = 2u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -670,7 +658,7 @@ pub mod presentation_time {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Request presentation feedback for the current content submission"]
             #[doc = "on the given surface. This creates a new presentation_feedback"]
             #[doc = "object, which will deliver the feedback information once. If"]
@@ -685,7 +673,7 @@ pub mod presentation_time {
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 callback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event tells the client in which clock domain the"]
             #[doc = "compositor interprets the timestamps used by the presentation"]
             #[doc = "extension. This clock is called the presentation clock."]
@@ -719,7 +707,7 @@ pub mod presentation_time {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 clk_id: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A presentation_feedback object returns an indication that a"]
@@ -748,10 +736,7 @@ pub mod presentation_time {
             }
         }
         #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
-        pub trait WpPresentationFeedback<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WpPresentationFeedback<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wp_presentation_feedback";
             const VERSION: u32 = 2u32;
             #[doc = "As presentation can be synchronized to only one output at a"]
@@ -767,7 +752,7 @@ pub mod presentation_time {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The associated content update was displayed to the user at the"]
             #[doc = "indicated time (tv_sec_hi/lo, tv_nsec). For the interpretation of"]
             #[doc = "the timestamp, see presentation.clock_id event."]
@@ -823,13 +808,13 @@ pub mod presentation_time {
                 seq_hi: u32,
                 seq_lo: u32,
                 flags: Kind,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The content update was never displayed to the user."]
             fn discarded(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -917,10 +902,7 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletManagerV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
@@ -931,14 +913,14 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 tablet_seat: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An object that provides access to the graphics tablets available on this"]
@@ -947,10 +929,7 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletSeatV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
@@ -959,7 +938,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
             #[doc = "seat. This event only provides the object id of the tablet, any"]
             #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
@@ -969,7 +948,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent whenever a tool that has not previously been used"]
             #[doc = "with a tablet comes into use. This event only provides the object id"]
             #[doc = "of the tool; any static information about the tool (capabilities,"]
@@ -979,7 +958,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent whenever a new pad is known to the system. Typically,"]
             #[doc = "pads are physically attached to tablets and a pad_added event is"]
             #[doc = "sent immediately after the wp_tablet_seat.tablet_added."]
@@ -995,7 +974,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
@@ -1158,10 +1137,7 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletToolV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
@@ -1202,13 +1178,13 @@ pub mod tablet_v2 {
                 surface: Option<waynest::ObjectId>,
                 hotspot_x: i32,
                 hotspot_y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This destroys the client's resource for this tool object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
             #[doc = "the interaction expected from this tool."]
             #[doc = ""]
@@ -1219,7 +1195,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tool_type: Type,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
             #[doc = "number, this event notifies the client of this serial number."]
             #[doc = ""]
@@ -1241,7 +1217,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event notifies the client of a hardware id available on this tool."]
             #[doc = ""]
             #[doc = "The hardware id is a device-specific 64-bit id that provides extra"]
@@ -1258,7 +1234,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event notifies the client of any capabilities of this tool,"]
             #[doc = "beyond the main set of x/y axes and tip up/down detection."]
             #[doc = ""]
@@ -1271,7 +1247,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capability: Capability,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event signals the end of the initial burst of descriptive"]
             #[doc = "events. A client may consider the static description of the tool to"]
             #[doc = "be complete and finalize initialization of the tool."]
@@ -1279,7 +1255,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent when the tool is removed from the system and will"]
             #[doc = "send no further events. Should the physical tool come back into"]
             #[doc = "proximity later, a new wp_tablet_tool object will be created."]
@@ -1298,7 +1274,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this tool is focused on a certain surface."]
             #[doc = ""]
             #[doc = "This event can be received when the tool has moved from one surface to"]
@@ -1315,7 +1291,7 @@ pub mod tablet_v2 {
                 serial: u32,
                 tablet: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this tool has either left proximity, or is no"]
             #[doc = "longer focused on a certain surface."]
             #[doc = ""]
@@ -1332,7 +1308,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
             #[doc = "tablet."]
             #[doc = ""]
@@ -1350,7 +1326,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
             #[doc = "the tablet, or when the tablet tool moves out of the input region"]
             #[doc = "and the compositor grab (if any) is dismissed."]
@@ -1371,7 +1347,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever a tablet tool moves."]
             fn motion(
                 &self,
@@ -1379,7 +1355,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
             #[doc = "event is normalized to a value between 0 and 65535."]
             #[doc = ""]
@@ -1390,7 +1366,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pressure: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
             #[doc = "event is normalized to a value between 0 and 65535."]
             #[doc = ""]
@@ -1401,7 +1377,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 distance: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
             #[doc = "value is in degrees, relative to the z-axis of the tablet."]
             #[doc = "The angle is positive when the top of a tool tilts along the"]
@@ -1412,7 +1388,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 tilt_x: waynest::Fixed,
                 tilt_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
             #[doc = "rotation value is in degrees clockwise from the tool's"]
             #[doc = "logical neutral position."]
@@ -1421,7 +1397,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 degrees: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the slider position on the tool changes. The"]
             #[doc = "value is normalized between -65535 and 65535, with 0 as the logical"]
             #[doc = "neutral position of the slider."]
@@ -1432,7 +1408,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 position: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
             #[doc = "contains two values for the same axis change. The degrees value is"]
             #[doc = "in the same orientation as the wl_pointer.vertical_scroll axis. The"]
@@ -1451,7 +1427,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 degrees: waynest::Fixed,
                 clicks: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever a button on the tool is pressed or released."]
             #[doc = ""]
             #[doc = "If a button is held down when the tool moves in or out of proximity,"]
@@ -1465,7 +1441,7 @@ pub mod tablet_v2 {
                 serial: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Marks the end of a series of axis and/or button updates from the"]
             #[doc = "tablet. The Wayland protocol requires axis updates to be sent"]
             #[doc = "sequentially, however all events within a frame should be considered"]
@@ -1475,7 +1451,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
@@ -1523,10 +1499,7 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 2u32;
             #[doc = "This destroys the client's resource for this tablet object."]
@@ -1534,7 +1507,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A descriptive name for the tablet device."]
             #[doc = ""]
             #[doc = "If the device has no descriptive name, this event is not sent."]
@@ -1546,7 +1519,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The vendor and product IDs for the tablet device."]
             #[doc = ""]
             #[doc = "The interpretation of the id depends on the wp_tablet.bustype."]
@@ -1565,7 +1538,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 vid: u32,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
             #[doc = "this wp_tablet. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
@@ -1585,7 +1558,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 path: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent immediately to signal the end of the initial"]
             #[doc = "burst of descriptive events. A client may consider the static"]
             #[doc = "description of the tablet to be complete and finalize initialization"]
@@ -1594,7 +1567,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
             #[doc = "is removed, some tools may be removed."]
             #[doc = ""]
@@ -1604,7 +1577,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The bustype argument is one of the BUS_ defines in the Linux kernel's"]
             #[doc = "linux/input.h"]
             #[doc = ""]
@@ -1618,7 +1591,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 bustype: Bustype,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
@@ -1654,10 +1627,7 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadRingV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletPadRingV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor use the provided feedback string"]
@@ -1685,13 +1655,13 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This destroys the client's resource for this ring object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Source information for ring events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -1709,7 +1679,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Source,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the angle on a ring changes."]
             #[doc = ""]
             #[doc = "The angle is provided in degrees clockwise from the logical"]
@@ -1719,7 +1689,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 degrees: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Stop notification for ring events."]
             #[doc = ""]
             #[doc = "For some wp_tablet_pad_ring.source types, a wp_tablet_pad_ring.stop"]
@@ -1734,7 +1704,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Indicates the end of a set of ring events that logically belong"]
             #[doc = "together. A client is expected to accumulate the data in all events"]
             #[doc = "within the frame before proceeding."]
@@ -1753,7 +1723,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
@@ -1789,10 +1759,7 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadStripV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletPadStripV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -1820,13 +1787,13 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This destroys the client's resource for this strip object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Source information for strip events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
@@ -1844,7 +1811,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Source,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the position on a strip changes."]
             #[doc = ""]
             #[doc = "The position is normalized to a range of [0, 65535], the 0-value"]
@@ -1855,7 +1822,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 position: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Stop notification for strip events."]
             #[doc = ""]
             #[doc = "For some wp_tablet_pad_strip.source types, a wp_tablet_pad_strip.stop"]
@@ -1870,7 +1837,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Indicates the end of a set of events that represent one logical"]
             #[doc = "hardware strip event. A client is expected to accumulate the data"]
             #[doc = "in all events within the frame before proceeding."]
@@ -1890,7 +1857,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
@@ -1917,10 +1884,7 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadGroupV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletPadGroupV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
@@ -1929,7 +1893,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
             #[doc = "buttons in the group. Button indices start at 0, a button may only be"]
             #[doc = "in one group at a time."]
@@ -1947,7 +1911,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buttons: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad_group initialization to announce available rings."]
             #[doc = "One event is sent for each ring available on this pad group."]
             #[doc = ""]
@@ -1958,7 +1922,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 ring: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce available strips."]
             #[doc = "One event is sent for each strip available on this pad group."]
             #[doc = ""]
@@ -1969,7 +1933,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 strip: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad_group initialization to announce that the pad"]
             #[doc = "group may switch between modes. A client may use a mode to store a"]
             #[doc = "specific configuration for buttons, rings and strips and use the"]
@@ -1987,7 +1951,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 modes: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent immediately to signal the end of the initial"]
             #[doc = "burst of descriptive events. A client may consider the static"]
             #[doc = "description of the tablet to be complete and finalize initialization"]
@@ -1996,7 +1960,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that the mode was switched."]
             #[doc = ""]
             #[doc = "A mode applies to all buttons, rings, strips and dials in a group"]
@@ -2031,7 +1995,7 @@ pub mod tablet_v2 {
                 time: u32,
                 serial: u32,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce available dials."]
             #[doc = "One event is sent for each dial available on this pad group."]
             #[doc = ""]
@@ -2042,7 +2006,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 dial: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A pad device is a set of buttons, rings, strips and dials"]
@@ -2096,10 +2060,7 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletPadV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2133,14 +2094,14 @@ pub mod tablet_v2 {
                 button: u32,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroy the wp_tablet_pad object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
             #[doc = "One event is sent for each pad group available."]
             #[doc = ""]
@@ -2151,7 +2112,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pad_group: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
             #[doc = "this wp_tablet_pad. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
@@ -2167,7 +2128,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 path: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce the available"]
             #[doc = "buttons."]
             #[doc = ""]
@@ -2179,7 +2140,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buttons: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event signals the end of the initial burst of descriptive"]
             #[doc = "events. A client may consider the static description of the pad to"]
             #[doc = "be complete and finalize initialization of the pad."]
@@ -2187,7 +2148,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the physical state of a button changes."]
             fn button(
                 &self,
@@ -2196,7 +2157,7 @@ pub mod tablet_v2 {
                 time: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this pad is focused on the specified surface."]
             fn enter(
                 &self,
@@ -2205,7 +2166,7 @@ pub mod tablet_v2 {
                 serial: u32,
                 tablet: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Notification that this pad is no longer focused on the specified"]
             #[doc = "surface."]
             fn leave(
@@ -2214,7 +2175,7 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent when the pad has been removed from the system. When a tablet"]
             #[doc = "is removed its pad(s) will be removed too."]
             #[doc = ""]
@@ -2225,7 +2186,7 @@ pub mod tablet_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A rotary control, e.g. a dial or a wheel."]
@@ -2235,10 +2196,7 @@ pub mod tablet_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_dial_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_dial_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadDialV2<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait ZwpTabletPadDialV2<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "zwp_tablet_pad_dial_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2266,13 +2224,13 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This destroys the client's resource for this dial object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sent whenever the position on a dial changes."]
             #[doc = ""]
             #[doc = "This event carries the wheel delta as multiples or fractions"]
@@ -2288,7 +2246,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value120: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Indicates the end of a set of events that represent one logical"]
             #[doc = "hardware dial event. A client is expected to accumulate the data"]
             #[doc = "in all events within the frame before proceeding."]
@@ -2305,7 +2263,7 @@ pub mod tablet_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -2341,10 +2299,7 @@ pub mod viewporter {
             }
         }
         #[doc = "Trait to implement the wp_viewporter interface. See the module level documentation for more info"]
-        pub trait WpViewporter<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WpViewporter<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wp_viewporter";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this"]
@@ -2354,7 +2309,7 @@ pub mod viewporter {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Instantiate an interface extension for the given wl_surface to"]
             #[doc = "crop and scale its content. If the given wl_surface already has"]
             #[doc = "a wp_viewport object associated, the viewport_exists"]
@@ -2365,7 +2320,7 @@ pub mod viewporter {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An additional interface to a wl_surface object, which allows the"]
@@ -2455,10 +2410,7 @@ pub mod viewporter {
             }
         }
         #[doc = "Trait to implement the wp_viewport interface. See the module level documentation for more info"]
-        pub trait WpViewport<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait WpViewport<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "wp_viewport";
             const VERSION: u32 = 1u32;
             #[doc = "The associated wl_surface's crop and scale state is removed."]
@@ -2467,7 +2419,7 @@ pub mod viewporter {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the source rectangle of the associated wl_surface. See"]
             #[doc = "wp_viewport for the description, and relation to the wl_buffer"]
             #[doc = "size."]
@@ -2486,7 +2438,7 @@ pub mod viewporter {
                 y: waynest::Fixed,
                 width: waynest::Fixed,
                 height: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the destination size of the associated wl_surface. See"]
             #[doc = "wp_viewport for the description, and relation to the wl_buffer"]
             #[doc = "size."]
@@ -2503,7 +2455,7 @@ pub mod viewporter {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -2556,10 +2508,7 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_wm_base interface. See the module level documentation for more info"]
-        pub trait XdgWmBase<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait XdgWmBase<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "xdg_wm_base";
             const VERSION: u32 = 7u32;
             #[doc = "Destroy this xdg_wm_base object."]
@@ -2571,7 +2520,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a positioner object. A positioner object is used to position"]
             #[doc = "surfaces relative to some parent surface. See the interface description"]
             #[doc = "and xdg_surface.get_popup for details."]
@@ -2580,7 +2529,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This creates an xdg_surface for the given surface. While xdg_surface"]
             #[doc = "itself is not a role, the corresponding surface may only be assigned"]
             #[doc = "a role extending xdg_surface, such as xdg_toplevel or xdg_popup. It is"]
@@ -2600,7 +2549,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "A client must respond to a ping event with a pong request or"]
             #[doc = "the client may be deemed unresponsive. See xdg_wm_base.ping"]
             #[doc = "and xdg_wm_base.error.unresponsive."]
@@ -2609,7 +2558,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
             #[doc = "serial specified in the event back to the compositor by sending"]
             #[doc = "a \"pong\" request back with the specified serial. See xdg_wm_base.pong."]
@@ -2628,7 +2577,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
@@ -2758,10 +2707,7 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_positioner interface. See the module level documentation for more info"]
-        pub trait XdgPositioner<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait XdgPositioner<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "xdg_positioner";
             const VERSION: u32 = 7u32;
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
@@ -2769,7 +2715,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the size of the surface that is to be positioned with the positioner"]
             #[doc = "object. The size is in surface-local coordinates and corresponds to the"]
             #[doc = "window geometry. See xdg_surface.set_window_geometry."]
@@ -2781,7 +2727,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Specify the anchor rectangle within the parent surface that the child"]
             #[doc = "surface will be placed relative to. The rectangle is relative to the"]
             #[doc = "window geometry as defined by xdg_surface.set_window_geometry of the"]
@@ -2800,7 +2746,7 @@ pub mod xdg_shell {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Defines the anchor point for the anchor rectangle. The specified anchor"]
             #[doc = "is used derive an anchor point that the child surface will be"]
             #[doc = "positioned relative to. If a corner anchor is set (e.g. 'top_left' or"]
@@ -2812,7 +2758,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 anchor: Anchor,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Defines in what direction a surface should be positioned, relative to"]
             #[doc = "the anchor point of the parent surface. If a corner gravity is"]
             #[doc = "specified (e.g. 'bottom_right' or 'top_left'), then the child surface"]
@@ -2825,7 +2771,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 gravity: Gravity,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Specify how the window should be positioned if the originally intended"]
             #[doc = "position caused the surface to be constrained, meaning at least"]
             #[doc = "partially outside positioning boundaries set by the compositor. The"]
@@ -2844,7 +2790,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 constraint_adjustment: ConstraintAdjustment,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Specify the surface position offset relative to the position of the"]
             #[doc = "anchor on the anchor rectangle and the anchor on the surface. For"]
             #[doc = "example if the anchor of the anchor rectangle is at (x, y), the surface"]
@@ -2862,7 +2808,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "When set reactive, the surface is reconstrained if the conditions used"]
             #[doc = "for constraining changed, e.g. the parent window moved."]
             #[doc = ""]
@@ -2873,7 +2819,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the parent window geometry the compositor should use when"]
             #[doc = "positioning the popup. The compositor may use this information to"]
             #[doc = "determine the future state the popup should be constrained using. If"]
@@ -2887,7 +2833,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 parent_width: i32,
                 parent_height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the serial of an xdg_surface.configure event this positioner will be"]
             #[doc = "used in response to. The compositor may use this information together"]
             #[doc = "with set_parent_size to determine what future state the popup should be"]
@@ -2897,7 +2843,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -2987,10 +2933,7 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
-        pub trait XdgSurface<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait XdgSurface<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 7u32;
             #[doc = "Destroy the xdg_surface object. An xdg_surface must only be destroyed"]
@@ -3000,7 +2943,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This creates an xdg_toplevel object for the given xdg_surface and gives"]
             #[doc = "the associated wl_surface the xdg_toplevel role."]
             #[doc = ""]
@@ -3011,7 +2954,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This creates an xdg_popup object for the given xdg_surface and gives"]
             #[doc = "the associated wl_surface the xdg_popup role."]
             #[doc = ""]
@@ -3027,7 +2970,7 @@ pub mod xdg_shell {
                 id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
                 positioner: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The window geometry of a surface is its \"visible bounds\" from the"]
             #[doc = "user's perspective. Client-side decorations often have invisible"]
             #[doc = "portions like drop-shadows which should be ignored for the"]
@@ -3073,7 +3016,7 @@ pub mod xdg_shell {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
             #[doc = "must make an ack_configure request sometime before the commit"]
@@ -3111,7 +3054,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The configure event marks the end of a configure sequence. A configure"]
             #[doc = "sequence is a set of one or more events configuring the state of the"]
             #[doc = "xdg_surface, including the final xdg_surface.configure event."]
@@ -3133,7 +3076,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
@@ -3310,10 +3253,7 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel interface. See the module level documentation for more info"]
-        pub trait XdgToplevel<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait XdgToplevel<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "xdg_toplevel";
             const VERSION: u32 = 7u32;
             #[doc = "This request destroys the role surface and unmaps the surface;"]
@@ -3322,7 +3262,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the \"parent\" of this surface. This surface should be stacked"]
             #[doc = "above the parent surface and all other ancestor surfaces."]
             #[doc = ""]
@@ -3348,7 +3288,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set a short title for the surface."]
             #[doc = ""]
             #[doc = "This string may be used to identify the surface in a task bar,"]
@@ -3361,7 +3301,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set an application identifier for the surface."]
             #[doc = ""]
             #[doc = "The app ID identifies the general class of applications to which"]
@@ -3390,7 +3330,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Clients implementing client-side decorations might want to show"]
             #[doc = "a context menu when right-clicking on the decorations, giving the"]
             #[doc = "user a menu that they can use to maximize or minimize the window."]
@@ -3411,7 +3351,7 @@ pub mod xdg_shell {
                 serial: u32,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Start an interactive, user-driven move of the surface."]
             #[doc = ""]
             #[doc = "This request must be used in response to some sort of user action"]
@@ -3434,7 +3374,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Start a user-driven, interactive resize of the surface."]
             #[doc = ""]
             #[doc = "This request must be used in response to some sort of user action"]
@@ -3473,7 +3413,7 @@ pub mod xdg_shell {
                 seat: waynest::ObjectId,
                 serial: u32,
                 edges: ResizeEdge,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set a maximum size for the window."]
             #[doc = ""]
             #[doc = "The client can specify a maximum size so that the compositor does"]
@@ -3513,7 +3453,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set a minimum size for the window."]
             #[doc = ""]
             #[doc = "The client can specify a minimum size so that the compositor does"]
@@ -3553,7 +3493,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Maximize the surface."]
             #[doc = ""]
             #[doc = "After requesting that the surface should be maximized, the compositor"]
@@ -3577,7 +3517,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Unmaximize the surface."]
             #[doc = ""]
             #[doc = "After requesting that the surface should be unmaximized, the compositor"]
@@ -3603,7 +3543,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Make the surface fullscreen."]
             #[doc = ""]
             #[doc = "After requesting that the surface should be fullscreened, the"]
@@ -3632,7 +3572,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Make the surface no longer fullscreen."]
             #[doc = ""]
             #[doc = "After requesting that the surface should be unfullscreened, the"]
@@ -3654,7 +3594,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Request that the compositor minimize your surface. There is no"]
             #[doc = "way to know if the surface is currently minimized, nor is there"]
             #[doc = "any way to unset minimization on this surface."]
@@ -3667,7 +3607,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This configure event asks the client to resize its toplevel surface or"]
             #[doc = "to change its state. The configured state should not be applied"]
             #[doc = "immediately. See xdg_surface.configure for details."]
@@ -3694,7 +3634,7 @@ pub mod xdg_shell {
                 width: i32,
                 height: i32,
                 states: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The close event is sent by the compositor when the user"]
             #[doc = "wants the surface to be closed. This should be equivalent to"]
             #[doc = "the user clicking the close button in client-side decorations,"]
@@ -3707,7 +3647,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The configure_bounds event may be sent prior to a xdg_toplevel.configure"]
             #[doc = "event to communicate the bounds a window geometry size is recommended"]
             #[doc = "to constrain to."]
@@ -3729,7 +3669,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -3755,7 +3695,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
@@ -3806,10 +3746,7 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
-        pub trait XdgPopup<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait XdgPopup<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 7u32;
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]
@@ -3821,7 +3758,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This request makes the created popup take an explicit grab. An explicit"]
             #[doc = "grab will be dismissed when the user dismisses the popup, or when the"]
             #[doc = "client destroys the xdg_popup. This can be done by the user clicking"]
@@ -3865,7 +3802,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Reposition an already-mapped popup. The popup will be placed given the"]
             #[doc = "details in the passed xdg_positioner object, and a"]
             #[doc = "xdg_popup.repositioned followed by xdg_popup.configure and"]
@@ -3895,7 +3832,7 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 positioner: waynest::ObjectId,
                 token: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event asks the popup surface to configure itself given the"]
             #[doc = "configuration. The configured state should not be applied immediately."]
             #[doc = "See xdg_surface.configure for details."]
@@ -3916,7 +3853,7 @@ pub mod xdg_shell {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
             #[doc = "compositor. The client should destroy the xdg_popup object at this"]
             #[doc = "point."]
@@ -3924,7 +3861,7 @@ pub mod xdg_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The repositioned event is sent as part of a popup configuration"]
             #[doc = "sequence, together with xdg_popup.configure and lastly"]
             #[doc = "xdg_surface.configure to notify the completion of a reposition request."]
@@ -3945,7 +3882,7 @@ pub mod xdg_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 token: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }

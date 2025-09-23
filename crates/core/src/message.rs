@@ -1,7 +1,6 @@
 use std::{collections::VecDeque, os::fd::RawFd};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
-use rustix::fd::{FromRawFd, OwnedFd};
 
 use super::{DecodeError, Fixed, NewId, ObjectId};
 
@@ -160,13 +159,6 @@ impl Message {
         self.payload.advance(self.payload.remaining() % 4);
 
         Ok(array)
-    }
-
-    pub fn fd(&mut self) -> Result<OwnedFd, DecodeError> {
-        self.fds
-            .pop_front()
-            .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
-            .ok_or(DecodeError::MalformedPayload)
     }
 }
 

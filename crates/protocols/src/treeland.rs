@@ -44,10 +44,7 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureSessionV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandCaptureSessionV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Unreferences the frame. This request must be called as soon as it's no longer valid."]
@@ -55,13 +52,13 @@ pub mod treeland_capture_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Start session and keeps sending frame."]
             fn start(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This is the ACK to the current \"ready\" event. The next \"frame\" event will be sent only when current"]
             #[doc = "\"ready\" event is acknowledged. The timestamp should be the same as the one sent in \"ready\" event."]
             #[doc = "If the frame has the \"transient\" flag, all objects sent before become invalid after this event."]
@@ -72,7 +69,7 @@ pub mod treeland_capture_unstable_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_usec: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Main event supplying the client with information about the frame. If the capture didn't fail, this event is always"]
             #[doc = "emitted first before any other events."]
             #[doc = "When mask is provided, x and y should be offset relative to mask surface origin. Otherwise offset_x and offset_y should always"]
@@ -91,7 +88,7 @@ pub mod treeland_capture_unstable_v1 {
                 mod_high: u32,
                 mod_low: u32,
                 num_objects: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn object(
                 &self,
                 connection: &mut C,
@@ -102,7 +99,7 @@ pub mod treeland_capture_unstable_v1 {
                 offset: u32,
                 stride: u32,
                 plane_index: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent as soon as the frame is presented, indicating it is available for reading. This event"]
             #[doc = "includes the time at which presentation happened at."]
             fn ready(
@@ -112,7 +109,7 @@ pub mod treeland_capture_unstable_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "If the capture failed or if the frame is no longer valid after the \"frame\" event has been emitted, this"]
             #[doc = "event will be used to inform the client to scrap the frame."]
             fn cancel(
@@ -120,7 +117,7 @@ pub mod treeland_capture_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_capture_unstable_v1 :: treeland_capture_session_v1 :: CancelReason,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -138,10 +135,7 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureFrameV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandCaptureFrameV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -149,14 +143,14 @@ pub mod treeland_capture_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Copy capture contents to provided buffer"]
             fn copy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Inform client to prepare buffer."]
             fn buffer(
                 &self,
@@ -166,13 +160,13 @@ pub mod treeland_capture_unstable_v1 {
                 width: u32,
                 height: u32,
                 stride: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Inform client that all buffer formats supported are emitted."]
             fn buffer_done(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Provides flags about the frame. This event is sent once before the"]
             #[doc = "\"ready\" event."]
             fn flags(
@@ -180,19 +174,19 @@ pub mod treeland_capture_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Inform that buffer is ready for reading"]
             fn ready(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Inform that frame copy fails."]
             fn failed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -240,10 +234,7 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureContextV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandCaptureContextV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_capture_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -251,7 +242,7 @@ pub mod treeland_capture_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Selector is provided by compositor. Client can provide source hint to hint compositor"]
             #[doc = "to provide certain kinds of source."]
             fn select_source(
@@ -262,7 +253,7 @@ pub mod treeland_capture_unstable_v1 {
                 freeze: u32,
                 with_cursor: u32,
                 mask: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event can be called just once. A second call might result in a protocol error cause"]
             #[doc = "we just provide transient"]
             fn capture(
@@ -270,14 +261,14 @@ pub mod treeland_capture_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 frame: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Often used by a screen recorder."]
             fn create_session(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 session: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event supplies the client some information about the capture source, including"]
             #[doc = "the capture region relative to mask and source type."]
             fn source_ready(
@@ -289,23 +280,20 @@ pub mod treeland_capture_unstable_v1 {
                 region_width: u32,
                 region_height: u32,
                 source_type: SourceType,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "There could a lot of reasons but the most common one is that selector is busy"]
             fn source_failed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason: SourceFailure,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_capture_manager_v1 {
         #[doc = "Trait to implement the treeland_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandCaptureManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the treeland_capture_manager_v1 object."]
@@ -313,13 +301,13 @@ pub mod treeland_capture_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn get_context(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 context: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -334,10 +322,7 @@ pub mod treeland_dde_shell_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_dde_shell_manager_v1 {
         #[doc = "Trait to implement the treeland_dde_shell_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandDdeShellManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_dde_shell_manager_v1";
             const VERSION: u32 = 1u32;
             fn get_window_overlap_checker(
@@ -345,7 +330,7 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a shell surface for an existing wl_surface."]
             #[doc = ""]
             #[doc = "Only one shell surface can be associated with a given surface."]
@@ -357,7 +342,7 @@ pub mod treeland_dde_shell_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a new dde active for a given seat."]
             fn get_treeland_dde_active(
                 &self,
@@ -365,28 +350,28 @@ pub mod treeland_dde_shell_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a new multitaskview context for toggle."]
             fn get_treeland_multitaskview(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a new window picker to pick window."]
             fn get_treeland_window_picker(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Create a new lockscreen context for toggle."]
             fn get_treeland_lockscreen(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A treeland_dde_shell_handle_v1 object represents an opened toplevel window. Each"]
@@ -412,7 +397,8 @@ pub mod treeland_dde_shell_v1 {
         }
         #[doc = "Trait to implement the treeland_window_overlap_checker interface. See the module level documentation for more info"]
         pub trait TreelandWindowOverlapChecker<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
+            C: waynest::Connection,
+            E: From<waynest::DecodeError>,
         >
         {
             const INTERFACE: &'static str = "treeland_window_overlap_checker";
@@ -430,7 +416,7 @@ pub mod treeland_dde_shell_v1 {
                 height: i32,
                 anchor: Anchor,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroys the treeland_window_overlap_checker object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
@@ -440,21 +426,21 @@ pub mod treeland_dde_shell_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent when windows overlapped."]
             #[doc = "This event is sent only once."]
             fn enter(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent when windows not overlapped."]
             #[doc = "This event is sent only once."]
             fn leave(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -497,10 +483,7 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_shell_surface_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellSurfaceV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_dde_shell_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
@@ -512,7 +495,7 @@ pub mod treeland_dde_shell_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Move the surface to new coordinates."]
             #[doc = ""]
             #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
@@ -523,14 +506,14 @@ pub mod treeland_dde_shell_v1 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Assign a role to a shell surface."]
             fn set_role(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 role : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_shell_surface_v1 :: Role,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set the vertical alignment of the surface within the cursor width."]
             #[doc = ""]
             #[doc = "Do not use it together with set_surface_position to avoid exceptions."]
@@ -543,28 +526,28 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 y_offset: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
             fn set_skip_switcher(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a dock preview."]
             fn set_skip_dock_preview(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a mutitask view."]
             fn set_skip_muti_task_view(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Setting this will determine whether the surface can receive keyboard focus."]
             #[doc = "When set to 0, the surface will not receive keyboard focus even when clicked or activated."]
             #[doc = "When set to 1 (default), the surface will receive keyboard focus normally."]
@@ -573,7 +556,7 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 accept: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface used to monitor special events."]
@@ -602,128 +585,116 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_active_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeActiveV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandDdeActiveV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_dde_active_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn active_in(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn active_out(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn start_drag(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn drop(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface used to control multitaskview."]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_multitaskview_v1 {
         #[doc = "Trait to implement the treeland_multitaskview_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandMultitaskviewV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandMultitaskviewV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_multitaskview_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Show or hide the multitaskview."]
             fn toggle(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface used to pick window and return credentials."]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_window_picker_v1 {
         #[doc = "Trait to implement the treeland_window_picker_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowPickerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandWindowPickerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_window_picker_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Pick a window to get information."]
             fn pick(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 hint: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Picked window information."]
             fn window(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pid: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "An interface used to operate lockscreen."]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_lockscreen_v1 {
         #[doc = "Trait to implement the treeland_lockscreen_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandLockscreenV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandLockscreenV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_lockscreen_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Lock the screen."]
             fn lock(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Show shutdown."]
             fn shutdown(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Switch user."]
             fn switch_user(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -734,10 +705,7 @@ pub mod treeland_ddm {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_ddm {
         #[doc = "Trait to implement the treeland_ddm interface. See the module level documentation for more info"]
-        pub trait TreelandDdm<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandDdm<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_ddm";
             const VERSION: u32 = 1u32;
             #[doc = "Send treeland to Greeter mode."]
@@ -745,35 +713,35 @@ pub mod treeland_ddm {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Set lockscreen user to username. Ignore when username is \"ddm\"."]
             fn switch_to_user(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 username: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Activate treeland session. This will makes treeland try to take"]
             #[doc = "control of screen."]
             fn activate_session(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Deactivate treeland session. This will release control of the"]
             #[doc = "screen, but not to close the current seats."]
             fn deactivate_session(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Enable treeland rendering. This is primarily called after"]
             #[doc = "disable_render to resume treeland."]
             fn enable_render(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Disable treeland rendering. This will prevent treeland from"]
             #[doc = "output to DRM device."]
             fn disable_render(
@@ -781,7 +749,7 @@ pub mod treeland_ddm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 callback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Call ddm to switch current virtual terminal to vtnr. ddm should"]
             #[doc = "take care of the switch and call ioctl respectively."]
             fn switch_to_vt(
@@ -789,7 +757,7 @@ pub mod treeland_ddm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 vtnr: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Call ddm to acquire control of VT at vtnr. ddm should call"]
             #[doc = "VT_SETMODE respectively."]
             fn acquire_vt(
@@ -797,7 +765,7 @@ pub mod treeland_ddm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 vtnr: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -813,7 +781,8 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     pub mod treeland_foreign_toplevel_manager_v1 {
         #[doc = "Trait to implement the treeland_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait TreelandForeignToplevelManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
+            C: waynest::Connection,
+            E: From<waynest::DecodeError>,
         >
         {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_manager_v1";
@@ -827,14 +796,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn get_dock_preview_context(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 relative_surface: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted whenever a new toplevel window is created. It"]
             #[doc = "is emitted for all toplevels, regardless of the app that has created"]
             #[doc = "them."]
@@ -847,7 +816,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "treeland_foreign_toplevel_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request, so it will become invalid and"]
@@ -856,7 +825,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A treeland_foreign_toplevel_handle_v1 object represents an opened toplevel window. Each"]
@@ -923,7 +892,8 @@ pub mod treeland_foreign_toplevel_manager_v1 {
         }
         #[doc = "Trait to implement the treeland_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait TreelandForeignToplevelHandleV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
+            C: waynest::Connection,
+            E: From<waynest::DecodeError>,
         >
         {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_handle_v1";
@@ -934,28 +904,28 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Requests that the toplevel be unmaximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn unset_maximized(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Requests that the toplevel be minimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn set_minimized(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Requests that the toplevel be unminimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn unset_minimized(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Request that this toplevel be activated on the given seat."]
             #[doc = "There is no guarantee the toplevel will be actually activated."]
             fn activate(
@@ -963,7 +933,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Send a request to the toplevel to close itself. The compositor would"]
             #[doc = "typically use a shell-specific method to carry out this request, for"]
             #[doc = "example by sending the xdg_toplevel.close event. However, this gives"]
@@ -974,7 +944,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The rectangle of the surface specified in this request corresponds to"]
             #[doc = "the place where the app using this protocol represents the given toplevel."]
             #[doc = "It can be used by the compositor as a hint for some operations, e.g"]
@@ -995,7 +965,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroys the treeland_foreign_toplevel_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
@@ -1005,7 +975,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Requests that the toplevel be fullscreened on the given output. If the"]
             #[doc = "fullscreen state and/or the outputs the toplevel is visible on actually"]
             #[doc = "change, this will be indicated by the state and output_enter/leave"]
@@ -1019,14 +989,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Requests that the toplevel be unfullscreened. If the fullscreen state"]
             #[doc = "actually changes, this will be indicated by the state event."]
             fn unset_fullscreen(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event will be sent when the compositor has set the process id this window"]
             #[doc = "belongs to. This should be set once before the initial_state is sent."]
             fn pid(
@@ -1034,21 +1004,21 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             fn title(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted whenever the app-id of the toplevel changes."]
             fn app_id(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The identifier of each top level and its handle must be unique."]
             #[doc = "Two different top layers cannot have the same identifier."]
             #[doc = "This identifier is only valid as long as the top level is mapped."]
@@ -1060,7 +1030,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identifier: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted whenever the toplevel becomes visible on"]
             #[doc = "the given output. A toplevel may be visible on multiple outputs."]
             fn output_enter(
@@ -1068,7 +1038,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted whenever the toplevel stops being visible on"]
             #[doc = "the given output. It is guaranteed that an entered-output event"]
             #[doc = "with the same output has been emitted before this event."]
@@ -1077,7 +1047,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted immediately after the treeland_foreign_toplevel_handle_v1"]
             #[doc = "is created and each time the toplevel state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -1086,7 +1056,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent after all changes in the toplevel state have been"]
             #[doc = "sent."]
             #[doc = ""]
@@ -1096,7 +1066,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event means the toplevel has been destroyed. It is guaranteed there"]
             #[doc = "won't be any more events for this treeland_foreign_toplevel_handle_v1. The"]
             #[doc = "toplevel itself becomes inert so any requests will be ignored except the"]
@@ -1105,7 +1075,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is emitted whenever the parent of the toplevel changes."]
             #[doc = ""]
             #[doc = "No event is emitted when the parent handle is destroyed by the client."]
@@ -1114,7 +1084,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This interface allows dock set windows preview."]
@@ -1157,7 +1127,8 @@ pub mod treeland_foreign_toplevel_manager_v1 {
         }
         #[doc = "Trait to implement the treeland_dock_preview_context_v1 interface. See the module level documentation for more info"]
         pub trait TreelandDockPreviewContextV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
+            C: waynest::Connection,
+            E: From<waynest::DecodeError>,
         >
         {
             const INTERFACE: &'static str = "treeland_dock_preview_context_v1";
@@ -1172,7 +1143,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 x: i32,
                 y: i32,
                 direction: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn show_tooltip(
                 &self,
                 connection: &mut C,
@@ -1181,31 +1152,31 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 x: i32,
                 y: i32,
                 direction: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "close preview box"]
             fn close(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Destroy the context object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent after mouse enter preview box."]
             fn enter(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent after mouse leave preview box."]
             fn leave(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -1216,10 +1187,7 @@ pub mod treeland_output_manager_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_output_manager_v1 {
         #[doc = "Trait to implement the treeland_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandOutputManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandOutputManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_output_manager_v1";
             const VERSION: u32 = 1u32;
             fn set_primary_output(
@@ -1227,19 +1195,19 @@ pub mod treeland_output_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Specifies which output is the primary one identified by their name."]
             fn primary_output(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output_name: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -1254,10 +1222,7 @@ pub mod treeland_shortcut_manager_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_shortcut_manager_v1 {
         #[doc = "Trait to implement the treeland_shortcut_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandShortcutManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_shortcut_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
@@ -1270,7 +1235,7 @@ pub mod treeland_shortcut_manager_v1 {
                 sender_id: waynest::ObjectId,
                 key: String,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "This interface allows a client to listen a shortcut action."]
@@ -1303,10 +1268,7 @@ pub mod treeland_shortcut_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_shortcut_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutContextV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandShortcutContextV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_shortcut_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the context object."]
@@ -1314,12 +1276,12 @@ pub mod treeland_shortcut_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn shortcut(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -1330,7 +1292,8 @@ pub mod treeland_virtual_output_manager_v1 {
     pub mod treeland_virtual_output_manager_v1 {
         #[doc = "Trait to implement the treeland_virtual_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait TreelandVirtualOutputManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
+            C: waynest::Connection,
+            E: From<waynest::DecodeError>,
         >
         {
             const INTERFACE: &'static str = "treeland_virtual_output_manager_v1";
@@ -1353,13 +1316,13 @@ pub mod treeland_virtual_output_manager_v1 {
                 id: waynest::ObjectId,
                 name: String,
                 outputs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Gets a list of virtual output names."]
             fn get_virtual_output_list(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The client obtains the corresponding virtual_output_v1 object"]
             #[doc = "through the virtual output name."]
             fn get_virtual_output(
@@ -1368,14 +1331,14 @@ pub mod treeland_virtual_output_manager_v1 {
                 sender_id: waynest::ObjectId,
                 name: String,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Sends a list of virtual output names to the client."]
             fn virtual_output_list(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 names: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
     #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
@@ -1409,10 +1372,7 @@ pub mod treeland_virtual_output_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_virtual_output_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
-        {
+        pub trait TreelandVirtualOutputV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
             const INTERFACE: &'static str = "treeland_virtual_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the output."]
@@ -1420,7 +1380,7 @@ pub mod treeland_virtual_output_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event is sent to the client when any screen in the array changes."]
             #[doc = ""]
             #[doc = "The element of the array is the name of the screen."]
@@ -1437,7 +1397,7 @@ pub mod treeland_virtual_output_manager_v1 {
                 sender_id: waynest::ObjectId,
                 name: String,
                 outputs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "When an error occurs, an error event is emitted, terminating the replication"]
             #[doc = "mode request issued by the client."]
             fn error(
@@ -1446,7 +1406,7 @@ pub mod treeland_virtual_output_manager_v1 {
                 sender_id: waynest::ObjectId,
                 code: u32,
                 message: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -1456,7 +1416,8 @@ pub mod treeland_wallpaper_color_v1 {
     pub mod treeland_wallpaper_color_manager_v1 {
         #[doc = "Trait to implement the treeland_wallpaper_color_manager_v1 interface. See the module level documentation for more info"]
         pub trait TreelandWallpaperColorManagerV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
+            C: waynest::Connection,
+            E: From<waynest::DecodeError>,
         >
         {
             const INTERFACE: &'static str = "treeland_wallpaper_color_manager_v1";
@@ -1467,20 +1428,20 @@ pub mod treeland_wallpaper_color_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Stop monitor the wallpaper color for the given screen."]
             fn unwatch(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: String,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "The client no longer cares about wallpaper_color."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "Tell the client that the wallpaper color of the screen it is monitoring has changed."]
             #[doc = "This event will also be sent immediately when the client requests a watch."]
             fn output_color(
@@ -1489,7 +1450,7 @@ pub mod treeland_wallpaper_color_v1 {
                 sender_id: waynest::ObjectId,
                 output: String,
                 isdark: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }
@@ -1528,9 +1489,7 @@ pub mod treeland_window_management_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_window_management_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowManagementV1<
-            C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>,
-        >
+        pub trait TreelandWindowManagementV1<C: waynest::Connection, E: From<waynest::DecodeError>>
         {
             const INTERFACE: &'static str = "treeland_window_management_v1";
             const VERSION: u32 = 1u32;
@@ -1540,12 +1499,12 @@ pub mod treeland_window_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
             #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is"]
             #[doc = "entered"]
             #[doc = "or left."]
@@ -1556,7 +1515,7 @@ pub mod treeland_window_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send;
         }
     }
 }

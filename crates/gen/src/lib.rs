@@ -55,7 +55,7 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
 
             requests.push(quote! {
                 #(#docs)*
-                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), E>> + Send;
             });
         }
 
@@ -85,7 +85,7 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
 
             events.push(quote! {
                 #(#docs)*
-                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), waynest::DecodeError>> + Send;
+                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), E>> + Send;
             });
         }
 
@@ -101,7 +101,7 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                 #(#enums)*
 
                 #[doc = #trait_docs]
-                pub trait #trait_name<C: futures_core::Stream<Item = waynest::Message> + futures_sink::Sink<waynest::Message>> {
+                pub trait #trait_name<C: waynest::Connection, E: From<waynest::DecodeError>> {
                     const INTERFACE: &'static str = #name;
                     const VERSION: u32 = #version;
 
