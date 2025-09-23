@@ -10,6 +10,7 @@ version = "0.1.0"
 bitflags = { version = "2.9.4", features = ["std"] }
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
+tracing = { version = "0.1.41", optional = true }
 waynest = { version = "0.1", path = "../core" }
 
 [features]
@@ -28,3 +29,5 @@ ivi = []
 hyprland = []
 mesa = []
 treeland = []
+
+tracing = ["dep:tracing"]
