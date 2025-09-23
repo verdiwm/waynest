@@ -20,3 +20,6 @@ jobs:
 
       - name: Check clippy
         run: cargo clippy --all-targets --all-features
+
+      - name: Check all features
+        run: cargo all-features clippy --all-targets
