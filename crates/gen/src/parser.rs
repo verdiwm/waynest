@@ -1,20 +1,11 @@
-use std::{fmt::Display, io};
+use std::fmt::Display;
 
 use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
-use quick_xml::DeError;
 use quote::{ToTokens, quote};
 use serde::{Deserialize, Serialize};
 
 use crate::utils::make_ident;
-
-#[derive(Debug, thiserror::Error)]
-pub enum Error {
-    #[error("{0}")]
-    IoError(#[from] io::Error),
-    #[error("{0}")]
-    Decode(#[from] DeError),
-}
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]

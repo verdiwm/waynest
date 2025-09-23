@@ -4,11 +4,13 @@ use heck::{ToSnekCase, ToUpperCamelCase};
 use proc_macro2::TokenStream;
 use quote::quote;
 
+mod error;
 mod parser;
 pub mod utils;
 
 use crate::{
-    parser::{Error, Protocol},
+    error::Error,
+    parser::Protocol,
     utils::{description_to_docs, make_ident, write_enums},
 };
 

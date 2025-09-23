@@ -11,7 +11,6 @@ async-trait = "0.1.89"
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
 pin-project-lite = "0.2.16"
-thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["net"] }
 tokio-stream = "0.1.17"
 waynest = { version = "0.1.0", path = "../core" }

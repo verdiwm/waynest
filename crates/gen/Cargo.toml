@@ -11,7 +11,6 @@ repository.workspace = true
 include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 
 [dependencies]
-thiserror = "2.0.16"
 heck = "0.5.0"
 proc-macro2 = { version = "1.0.101", default-features = false }
 quick-xml = { version = "0.38.3", features = ["serialize", "overlapped-lists"] }
