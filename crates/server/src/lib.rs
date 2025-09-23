@@ -1,18 +1,20 @@
+use std::{any::Any, collections::HashMap, sync::Arc};
+
+use async_trait::async_trait;
+use core::fmt;
+use futures_core::Stream;
+use futures_sink::Sink;
+use pin_project_lite::pin_project;
+use tokio::net::UnixStream;
+
+use waynest::{DecodeError, Message, ObjectId, Socket};
+// pub use waynest_macros::Dispatcher;
+
 mod error;
 mod listener;
 
 pub use error::{Error, Result};
 pub use listener::Listener;
-// pub use waynest_macros::Dispatcher;
-
-use async_trait::async_trait;
-use core::fmt;
-use futures_util::{Sink, Stream};
-use pin_project_lite::pin_project;
-use std::{any::Any, collections::HashMap, sync::Arc};
-use tokio::net::UnixStream;
-
-use waynest::{DecodeError, Message, ObjectId, Socket};
 
 pin_project! {
     pub struct Connection {
