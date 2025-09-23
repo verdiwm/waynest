@@ -3,6 +3,7 @@
 #[allow(clippy::module_inception)]
 pub mod treeland_capture_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_session_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -44,7 +45,10 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureSessionV1<C: waynest::Connection> {
+        pub trait TreelandCaptureSessionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Unreferences the frame. This request must be called as soon as it's no longer valid."]
@@ -140,6 +144,31 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_session_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_session_v1#{}.start()", sender_id,);
+                            self.start(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_usec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_session_v1#{}.frame_done({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_usec
+                            );
+                            self.frame_done(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_usec)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -147,6 +176,7 @@ pub mod treeland_capture_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_frame_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInverted = 1u32 ; } }
         impl TryFrom<u32> for Flags {
@@ -161,7 +191,10 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureFrameV1<C: waynest::Connection> {
+        pub trait TreelandCaptureFrameV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -182,7 +215,7 @@ pub mod treeland_capture_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                format: u32,
+                format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
                 stride: u32,
@@ -238,6 +271,23 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_frame_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_frame_v1#{}.copy({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.copy(connection, sender_id, buffer).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -245,6 +295,7 @@ pub mod treeland_capture_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_context_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct SourceType : u32 { # [doc = "output source type"] const Output = 1u32 ; # [doc = "window source type"] const Window = 2u32 ; # [doc = "region source type"] const Region = 4u32 ; } }
         impl TryFrom<u32> for SourceType {
@@ -289,7 +340,10 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureContextV1<C: waynest::Connection> {
+        pub trait TreelandCaptureContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -359,6 +413,59 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_context_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let source_hint = message.uint()?;
+                            let freeze = message.uint()?;
+                            let with_cursor = message.uint()?;
+                            let mask = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_context_v1#{}.select_source({}, {}, {}, {})",
+                                sender_id,
+                                source_hint,
+                                freeze,
+                                with_cursor,
+                                mask.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.select_source(
+                                connection,
+                                sender_id,
+                                source_hint.try_into()?,
+                                freeze,
+                                with_cursor,
+                                mask,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_context_v1#{}.capture({})",
+                                sender_id,
+                                frame
+                            );
+                            self.capture(connection, sender_id, frame).await
+                        }
+                        3u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_context_v1#{}.create_session({})",
+                                sender_id,
+                                session
+                            );
+                            self.create_session(connection, sender_id, session).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -366,9 +473,13 @@ pub mod treeland_capture_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_manager_v1 {
         #[doc = "Trait to implement the treeland_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureManagerV1<C: waynest::Connection> {
+        pub trait TreelandCaptureManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the treeland_capture_manager_v1 object."]
@@ -393,6 +504,23 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let context = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_manager_v1#{}.get_context({})",
+                                sender_id,
+                                context
+                            );
+                            self.get_context(connection, sender_id, context).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -409,9 +537,13 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dde_shell_manager_v1 {
         #[doc = "Trait to implement the treeland_dde_shell_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellManagerV1<C: waynest::Connection> {
+        pub trait TreelandDdeShellManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dde_shell_manager_v1";
             const VERSION: u32 = 1u32;
             fn get_window_overlap_checker(
@@ -471,6 +603,92 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_window_overlap_checker({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_window_overlap_checker(connection, sender_id, id)
+                                .await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_shell_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_shell_surface(connection, sender_id, id, surface)
+                                .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_dde_active({}, {})",
+                                sender_id,
+                                id,
+                                seat
+                            );
+                            self.get_treeland_dde_active(connection, sender_id, id, seat)
+                                .await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_multitaskview({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_treeland_multitaskview(connection, sender_id, id)
+                                .await
+                        }
+                        4u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_window_picker({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_treeland_window_picker(connection, sender_id, id)
+                                .await
+                        }
+                        5u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_lockscreen({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_treeland_lockscreen(connection, sender_id, id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -485,6 +703,7 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_window_overlap_checker {
         bitflags::bitflags! { # [doc = "same layershell"] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
@@ -499,7 +718,10 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_window_overlap_checker interface. See the module level documentation for more info"]
-        pub trait TreelandWindowOverlapChecker<C: waynest::Connection> {
+        pub trait TreelandWindowOverlapChecker<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_window_overlap_checker";
             const VERSION: u32 = 1u32;
             #[doc = "This interface is used to receive the detected surface."]
@@ -556,6 +778,40 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let anchor = message.uint()?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_overlap_checker#{}.update({}, {}, {}, {})",
+                                sender_id,
+                                width,
+                                height,
+                                anchor,
+                                output
+                            );
+                            self.update(
+                                connection,
+                                sender_id,
+                                width,
+                                height,
+                                anchor.try_into()?,
+                                output,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_overlap_checker#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -573,6 +829,7 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "treeland_dde_shell_surface_v1.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dde_shell_surface_v1 {
         #[doc = "These values indicate which roles a surface can be rendered in, They"]
         #[doc = "are ordered by z depth."]
@@ -602,7 +859,10 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_shell_surface_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection> {
+        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dde_shell_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
@@ -686,6 +946,90 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_surface_position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.set_surface_position(connection, sender_id, x, y).await
+                        }
+                        2u16 => {
+                            let role = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_role({})",
+                                sender_id,
+                                role
+                            );
+                            self.set_role(connection, sender_id, role.try_into()?).await
+                        }
+                        3u16 => {
+                            let y_offset = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_auto_placement({})",
+                                sender_id,
+                                y_offset
+                            );
+                            self.set_auto_placement(connection, sender_id, y_offset)
+                                .await
+                        }
+                        4u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_skip_switcher({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_switcher(connection, sender_id, skip).await
+                        }
+                        5u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_skip_dock_preview({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_dock_preview(connection, sender_id, skip)
+                                .await
+                        }
+                        6u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_skip_muti_task_view({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_muti_task_view(connection, sender_id, skip)
+                                .await
+                        }
+                        7u16 => {
+                            let accept = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_accept_keyboard_focus({})",
+                                sender_id,
+                                accept
+                            );
+                            self.set_accept_keyboard_focus(connection, sender_id, accept)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -694,6 +1038,7 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to monitor special events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dde_active_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -718,7 +1063,10 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_active_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeActiveV1<C: waynest::Connection> {
+        pub trait TreelandDdeActiveV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dde_active_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -770,6 +1118,11 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_dde_active_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -778,9 +1131,13 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to control multitaskview."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_multitaskview_v1 {
         #[doc = "Trait to implement the treeland_multitaskview_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandMultitaskviewV1<C: waynest::Connection> {
+        pub trait TreelandMultitaskviewV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_multitaskview_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -804,6 +1161,16 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_multitaskview_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_multitaskview_v1#{}.toggle()", sender_id,);
+                            self.toggle(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -812,9 +1179,13 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to pick window and return credentials."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_window_picker_v1 {
         #[doc = "Trait to implement the treeland_window_picker_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowPickerV1<C: waynest::Connection> {
+        pub trait TreelandWindowPickerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_window_picker_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -849,6 +1220,23 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_window_picker_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let hint = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_picker_v1#{}.pick(\"{}\")",
+                                sender_id,
+                                hint
+                            );
+                            self.pick(connection, sender_id, hint).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -857,9 +1245,13 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to operate lockscreen."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_lockscreen_v1 {
         #[doc = "Trait to implement the treeland_lockscreen_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandLockscreenV1<C: waynest::Connection> {
+        pub trait TreelandLockscreenV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_lockscreen_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -895,6 +1287,26 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.lock()", sender_id,);
+                            self.lock(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.shutdown()", sender_id,);
+                            self.shutdown(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.switch_user()", sender_id,);
+                            self.switch_user(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -907,9 +1319,13 @@ pub mod treeland_ddm {
     #[doc = "This object is primarily used for establish connection between"]
     #[doc = "treeland and ddm."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_ddm {
         #[doc = "Trait to implement the treeland_ddm interface. See the module level documentation for more info"]
-        pub trait TreelandDdm<C: waynest::Connection> {
+        pub trait TreelandDdm<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_ddm";
             const VERSION: u32 = 1u32;
             #[doc = "Send treeland to Greeter mode."]
@@ -986,6 +1402,50 @@ pub mod treeland_ddm {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm#{}.switch_to_greeter()", sender_id,);
+                            self.switch_to_greeter(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let username = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_ddm#{}.switch_to_user(\"{}\")",
+                                sender_id,
+                                username
+                            );
+                            self.switch_to_user(connection, sender_id, username).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm#{}.activate_session()", sender_id,);
+                            self.activate_session(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm#{}.deactivate_session()", sender_id,);
+                            self.deactivate_session(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm#{}.enable_render()", sender_id,);
+                            self.enable_render(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let callback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_ddm#{}.disable_render({})",
+                                sender_id,
+                                callback
+                            );
+                            self.disable_render(connection, sender_id, callback).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1002,9 +1462,13 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_foreign_toplevel_manager_v1 {
         #[doc = "Trait to implement the treeland_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandForeignToplevelManagerV1<C: waynest::Connection> {
+        pub trait TreelandForeignToplevelManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Indicates the client no longer wishes to receive events for new toplevels."]
@@ -1062,6 +1526,36 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_manager_v1#{}.stop()",
+                                sender_id,
+                            );
+                            self.stop(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let relative_surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_manager_v1#{}.get_dock_preview_context({}, {})",
+                                sender_id,
+                                relative_surface,
+                                id
+                            );
+                            self.get_dock_preview_context(
+                                connection,
+                                sender_id,
+                                relative_surface,
+                                id,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1076,6 +1570,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_foreign_toplevel_handle_v1 {
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
@@ -1131,7 +1626,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandForeignToplevelHandleV1<C: waynest::Connection> {
+        pub trait TreelandForeignToplevelHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Requests that the toplevel be maximized. If the maximized state actually"]
@@ -1361,6 +1859,107 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.set_maximized()",
+                                sender_id,
+                            );
+                            self.set_maximized(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.unset_maximized()",
+                                sender_id,
+                            );
+                            self.unset_maximized(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.set_minimized()",
+                                sender_id,
+                            );
+                            self.set_minimized(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.unset_minimized()",
+                                sender_id,
+                            );
+                            self.unset_minimized(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.activate({})",
+                                sender_id,
+                                seat
+                            );
+                            self.activate(connection, sender_id, seat).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.close()",
+                                sender_id,
+                            );
+                            self.close(connection, sender_id).await
+                        }
+                        6u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.set_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_rectangle(connection, sender_id, surface, x, y, width, height)
+                                .await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        8u16 => {
+                            let output = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.set_fullscreen({})",
+                                sender_id,
+                                output
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_fullscreen(connection, sender_id, output).await
+                        }
+                        9u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
+                                sender_id,
+                            );
+                            self.unset_fullscreen(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1374,6 +1973,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dock_preview_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1406,7 +2006,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dock_preview_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDockPreviewContextV1<C: waynest::Connection> {
+        pub trait TreelandDockPreviewContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dock_preview_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "X and Y are relative to the relative_surface."]
@@ -1469,6 +2072,58 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let surfaces = message.array()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let direction = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dock_preview_context_v1#{}.show(array[{}], {}, {}, {})",
+                                sender_id,
+                                surfaces.len(),
+                                x,
+                                y,
+                                direction
+                            );
+                            self.show(connection, sender_id, surfaces, x, y, direction)
+                                .await
+                        }
+                        1u16 => {
+                            let tooltip = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let direction = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dock_preview_context_v1#{}.show_tooltip(\"{}\", {}, {}, {})",
+                                sender_id,
+                                tooltip,
+                                x,
+                                y,
+                                direction
+                            );
+                            self.show_tooltip(connection, sender_id, tooltip, x, y, direction)
+                                .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dock_preview_context_v1#{}.close()",
+                                sender_id,
+                            );
+                            self.close(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dock_preview_context_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1481,9 +2136,13 @@ pub mod treeland_output_manager_v1 {
     #[doc = "Protocol for telling which is the primary display among the selection of enabled"]
     #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_output_manager_v1 {
         #[doc = "Trait to implement the treeland_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandOutputManagerV1<C: waynest::Connection> {
+        pub trait TreelandOutputManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_output_manager_v1";
             const VERSION: u32 = 1u32;
             fn set_primary_output(
@@ -1517,6 +2176,23 @@ pub mod treeland_output_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let output = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_output_manager_v1#{}.set_primary_output(\"{}\")",
+                                sender_id,
+                                output
+                            );
+                            self.set_primary_output(connection, sender_id, output).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_output_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1533,9 +2209,13 @@ pub mod treeland_shortcut_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_shortcut_manager_v1 {
         #[doc = "Trait to implement the treeland_shortcut_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutManagerV1<C: waynest::Connection> {
+        pub trait TreelandShortcutManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_shortcut_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
@@ -1559,6 +2239,23 @@ pub mod treeland_shortcut_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let key = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_shortcut_manager_v1#{}.register_shortcut_context(\"{}\", {})",
+                                sender_id,
+                                key,
+                                id
+                            );
+                            self.register_shortcut_context(connection, sender_id, key, id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1572,6 +2269,7 @@ pub mod treeland_shortcut_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_shortcut_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1595,7 +2293,10 @@ pub mod treeland_shortcut_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_shortcut_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutContextV1<C: waynest::Connection> {
+        pub trait TreelandShortcutContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_shortcut_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the context object."]
@@ -1622,6 +2323,11 @@ pub mod treeland_shortcut_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_shortcut_context_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1633,9 +2339,13 @@ pub mod treeland_shortcut_manager_v1 {
 pub mod treeland_virtual_output_manager_v1 {
     #[doc = "This interface is a manager that allows the creation of copied output."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_virtual_output_manager_v1 {
         #[doc = "Trait to implement the treeland_virtual_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputManagerV1<C: waynest::Connection> {
+        pub trait TreelandVirtualOutputManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_virtual_output_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create virtual output that can be used when setting screen copy mode for use"]
@@ -1692,6 +2402,50 @@ pub mod treeland_virtual_output_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let outputs = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_virtual_output_manager_v1#{}.create_virtual_output({}, \"{}\", array[{}])",
+                                sender_id,
+                                id,
+                                name,
+                                outputs.len()
+                            );
+                            self.create_virtual_output(connection, sender_id, id, name, outputs)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_virtual_output_manager_v1#{}.get_virtual_output_list()",
+                                sender_id,
+                            );
+                            self.get_virtual_output_list(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_virtual_output_manager_v1#{}.get_virtual_output(\"{}\", {})",
+                                sender_id,
+                                name,
+                                id
+                            );
+                            self.get_virtual_output(connection, sender_id, name, id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1700,6 +2454,7 @@ pub mod treeland_virtual_output_manager_v1 {
     }
     #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_virtual_output_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1729,7 +2484,10 @@ pub mod treeland_virtual_output_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_virtual_output_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputV1<C: waynest::Connection> {
+        pub trait TreelandVirtualOutputV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_virtual_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the output."]
@@ -1780,6 +2538,11 @@ pub mod treeland_virtual_output_manager_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_virtual_output_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1790,9 +2553,13 @@ pub mod treeland_virtual_output_manager_v1 {
 #[allow(clippy::module_inception)]
 pub mod treeland_wallpaper_color_v1 {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_wallpaper_color_manager_v1 {
         #[doc = "Trait to implement the treeland_wallpaper_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWallpaperColorManagerV1<C: waynest::Connection> {
+        pub trait TreelandWallpaperColorManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_wallpaper_color_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Monitor the wallpaper color of a given screen."]
@@ -1837,6 +2604,38 @@ pub mod treeland_wallpaper_color_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let output = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_color_manager_v1#{}.watch(\"{}\")",
+                                sender_id,
+                                output
+                            );
+                            self.watch(connection, sender_id, output).await
+                        }
+                        1u16 => {
+                            let output = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_color_manager_v1#{}.unwatch(\"{}\")",
+                                sender_id,
+                                output
+                            );
+                            self.unwatch(connection, sender_id, output).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_color_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1853,6 +2652,7 @@ pub mod treeland_window_management_v1 {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_window_management_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1879,7 +2679,10 @@ pub mod treeland_window_management_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_window_management_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowManagementV1<C: waynest::Connection> {
+        pub trait TreelandWindowManagementV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_window_management_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Tell the compositor to show/hide the desktop."]
@@ -1918,6 +2721,24 @@ pub mod treeland_window_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_management_v1#{}.set_desktop({})",
+                                sender_id,
+                                state
+                            );
+                            self.set_desktop(connection, sender_id, state).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_management_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

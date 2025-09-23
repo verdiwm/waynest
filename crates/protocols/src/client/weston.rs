@@ -41,6 +41,7 @@ pub mod color_management_v1 {
     #[doc = "getting the image description of outputs and setting the image"]
     #[doc = "description of surfaces."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_color_manager_v4 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -240,7 +241,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_manager_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagerV4<C: waynest::Connection> {
+        pub trait XxColorManagerV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_color_manager_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xx_color_manager_v4 object. This does not affect any other"]
@@ -377,9 +381,13 @@ pub mod color_management_v1 {
     #[doc = "wl_output object has no impact, but the compositor removing the output"]
     #[doc = "global makes the xx_color_management_output_v4 object inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_color_management_output_v4 {
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementOutputV4<C: waynest::Connection> {
+        pub trait XxColorManagementOutputV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_color_management_output_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the color xx_color_management_output_v4 object. This does not"]
@@ -452,6 +460,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with the xx_color_management_surface_v4 is"]
     #[doc = "destroyed, the xx_color_management_surface_v4 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_color_management_surface_v4 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -478,7 +487,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_management_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementSurfaceV4<C: waynest::Connection> {
+        pub trait XxColorManagementSurfaceV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_color_management_surface_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xx_color_management_surface_v4 object and do the same as"]
@@ -549,6 +561,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with this object is destroyed, the"]
     #[doc = "xx_color_management_feedback_surface_v4 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_color_management_feedback_surface_v4 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -572,7 +585,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_management_feedback_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementFeedbackSurfaceV4<C: waynest::Connection> {
+        pub trait XxColorManagementFeedbackSurfaceV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_color_management_feedback_surface_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xx_color_management_feedback_surface_v4 object."]
@@ -657,6 +673,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_image_description_creator_icc_v4 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -692,7 +709,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_icc_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorIccV4<C: waynest::Connection> {
+        pub trait XxImageDescriptionCreatorIccV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_image_description_creator_icc_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the ICC information"]
@@ -800,6 +820,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_image_description_creator_params_v4 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -844,7 +865,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_params_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorParamsV4<C: waynest::Connection> {
+        pub trait XxImageDescriptionCreatorParamsV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_image_description_creator_params_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the parameters previously"]
@@ -1165,6 +1189,7 @@ pub mod color_management_v1 {
     #[doc = "xx_image_description_v4 object always refers to one fixed image"]
     #[doc = "description. It cannot change after creation."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_image_description_v4 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1221,7 +1246,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionV4<C: waynest::Connection> {
+        pub trait XxImageDescriptionV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_image_description_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
@@ -1313,9 +1341,13 @@ pub mod color_management_v1 {
     #[doc = "Every xx_image_description_info_v4 created from the same"]
     #[doc = "xx_image_description_v4 shall always return the exact same data."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xx_image_description_info_v4 {
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionInfoV4<C: waynest::Connection> {
+        pub trait XxImageDescriptionInfoV4<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xx_image_description_info_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Signals the end of information events and destroys the object."]
@@ -1468,9 +1500,13 @@ pub mod color_management_v1 {
 #[allow(clippy::module_inception)]
 pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_surface {
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface<C: waynest::Connection> {
+        pub trait IviSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_surface";
             const VERSION: u32 = 1u32;
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
@@ -1507,6 +1543,7 @@ pub mod ivi_application {
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_application {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1533,7 +1570,10 @@ pub mod ivi_application {
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication<C: waynest::Connection> {
+        pub trait IviApplication<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_application";
             const VERSION: u32 = 1u32;
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
@@ -1574,6 +1614,7 @@ pub mod ivi_application {
 #[allow(clippy::module_inception)]
 pub mod ivi_hmi_controller {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_hmi_controller {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1624,7 +1665,10 @@ pub mod ivi_hmi_controller {
             }
         }
         #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
-        pub trait IviHmiController<C: waynest::Connection> {
+        pub trait IviHmiController<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_hmi_controller";
             const VERSION: u32 = 1u32;
             fn ui_ready(
@@ -1700,9 +1744,13 @@ pub mod ivi_hmi_controller {
 #[allow(clippy::module_inception)]
 pub mod text_cursor_position {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod text_cursor_position {
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
-        pub trait TextCursorPosition<C: waynest::Connection> {
+        pub trait TextCursorPosition<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "text_cursor_position";
             const VERSION: u32 = 1u32;
             fn notify(
@@ -1770,6 +1818,7 @@ pub mod weston_content_protection {
     #[doc = "which is an extension to the wl_surface to provide content-protection, and"]
     #[doc = "set the censored-visibility on the non-secured-outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_content_protection {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1793,7 +1842,10 @@ pub mod weston_content_protection {
             }
         }
         #[doc = "Trait to implement the weston_content_protection interface. See the module level documentation for more info"]
-        pub trait WestonContentProtection<C: waynest::Connection> {
+        pub trait WestonContentProtection<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_content_protection";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this"]
@@ -1860,6 +1912,7 @@ pub mod weston_content_protection {
     #[doc = "If the wl_surface associated with the protected_surface is destroyed,"]
     #[doc = "the protected_surface becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_protected_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1917,7 +1970,10 @@ pub mod weston_content_protection {
             }
         }
         #[doc = "Trait to implement the weston_protected_surface interface. See the module level documentation for more info"]
-        pub trait WestonProtectedSurface<C: waynest::Connection> {
+        pub trait WestonProtectedSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_protected_surface";
             const VERSION: u32 = 1u32;
             #[doc = "If the protected_surface is destroyed, the wl_surface desired protection"]
@@ -2033,9 +2089,13 @@ pub mod weston_debug {
     #[doc = "information and then closes it, or continuous where server keeps on"]
     #[doc = "printing until the client stops it. Or anything in between."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_debug_v1 {
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugV1<C: waynest::Connection> {
+        pub trait WestonDebugV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_debug_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the factory object, but does not affect any other objects."]
@@ -2087,9 +2147,13 @@ pub mod weston_debug {
     #[doc = "file descriptor until the object is destroyed or the server sends an"]
     #[doc = "event through the object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_debug_stream_v1 {
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugStreamV1<C: waynest::Connection> {
+        pub trait WestonDebugStreamV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_debug_stream_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the object, which causes the server to stop writing into"]
@@ -2139,6 +2203,7 @@ pub mod weston_desktop {
     #[doc = "foundations of typical desktops. Currently it's possible to set up"]
     #[doc = "background, panels and locking surfaces."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_desktop_shell {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2230,7 +2295,10 @@ pub mod weston_desktop {
             }
         }
         #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
-        pub trait WestonDesktopShell<C: waynest::Connection> {
+        pub trait WestonDesktopShell<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_desktop_shell";
             const VERSION: u32 = 1u32;
             fn set_background(
@@ -2340,9 +2408,13 @@ pub mod weston_desktop {
     }
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_screensaver {
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
-        pub trait WestonScreensaver<C: waynest::Connection> {
+        pub trait WestonScreensaver<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_screensaver";
             const VERSION: u32 = 1u32;
             #[doc = "A screensaver surface is normally hidden, and only visible after an"]
@@ -2390,9 +2462,13 @@ pub mod weston_direct_display {
     #[doc = "WARNING: This extension requires 'linux-dmabuf' protocol and"]
     #[doc = "'zwp_linux_buffer_params_v1' be already created by 'zwp_linux_buffer_v1'."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_direct_display_v1 {
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDirectDisplayV1<C: waynest::Connection> {
+        pub trait WestonDirectDisplayV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_direct_display_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request tells the compositor not to import the dmabuf to the GPU"]
@@ -2433,6 +2509,7 @@ pub mod weston_output_capture {
     #[doc = ""]
     #[doc = "This is a privileged inteface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_capture_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2486,7 +2563,10 @@ pub mod weston_output_capture {
             }
         }
         #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureV1<C: waynest::Connection> {
+        pub trait WestonCaptureV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_capture_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Affects no other protocol objects in any way."]
@@ -2544,6 +2624,7 @@ pub mod weston_output_capture {
     #[doc = "output still exists and the specified pixel source is available on"]
     #[doc = "the output."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_capture_source_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2570,7 +2651,10 @@ pub mod weston_output_capture {
             }
         }
         #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureSourceV1<C: waynest::Connection> {
+        pub trait WestonCaptureSourceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_capture_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "If a capture is on-going on this object, this will cancel it and"]
@@ -2697,6 +2781,7 @@ pub mod weston_test {
     #[doc = ""]
     #[doc = "These requests may allow clients to do very bad things."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_test {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2741,7 +2826,10 @@ pub mod weston_test {
             }
         }
         #[doc = "Trait to implement the weston_test interface. See the module level documentation for more info"]
-        pub trait WestonTest<C: waynest::Connection> {
+        pub trait WestonTest<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_test";
             const VERSION: u32 = 1u32;
             fn move_surface(
@@ -2889,6 +2977,7 @@ pub mod weston_test {
     #[doc = ""]
     #[doc = "Unknown test name will raise \"unknown_test\" protocol error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_test_runner {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2915,7 +3004,10 @@ pub mod weston_test {
             }
         }
         #[doc = "Trait to implement the weston_test_runner interface. See the module level documentation for more info"]
-        pub trait WestonTestRunner<C: waynest::Connection> {
+        pub trait WestonTestRunner<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_test_runner";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -2973,6 +3065,7 @@ pub mod weston_touch_calibration {
     #[doc = "the compositor. The compositor may take this new calibration into use and"]
     #[doc = "may write it into persistent storage."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_touch_calibration {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3002,7 +3095,10 @@ pub mod weston_touch_calibration {
             }
         }
         #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibration<C: waynest::Connection> {
+        pub trait WestonTouchCalibration<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_touch_calibration";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the binding to the global interface, does not affect any"]
@@ -3113,6 +3209,7 @@ pub mod weston_touch_calibration {
     #[doc = "from the [0.0, 1.0] real values, but the matrix elements do not need to"]
     #[doc = "fall into that range."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_touch_calibrator {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3142,7 +3239,10 @@ pub mod weston_touch_calibration {
             }
         }
         #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibrator<C: waynest::Connection> {
+        pub trait WestonTouchCalibrator<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_touch_calibrator";
             const VERSION: u32 = 1u32;
             #[doc = "This unmaps the surface if it was mapped. The input device grab"]
@@ -3288,9 +3388,13 @@ pub mod weston_touch_calibration {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod weston_touch_coordinate {
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
-        pub trait WestonTouchCoordinate<C: waynest::Connection> {
+        pub trait WestonTouchCoordinate<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "weston_touch_coordinate";
             const VERSION: u32 = 1u32;
             #[doc = "This event returns the conversion result from surface coordinates to"]

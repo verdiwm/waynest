@@ -1,6 +1,7 @@
 #[allow(clippy::module_inception)]
 pub mod drm {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_drm {
         #[repr(u32)]
         #[non_exhaustive]
@@ -189,7 +190,10 @@ pub mod drm {
             }
         }
         #[doc = "Trait to implement the wl_drm interface. See the module level documentation for more info"]
-        pub trait WlDrm<C: waynest::Connection> {
+        pub trait WlDrm<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_drm";
             const VERSION: u32 = 2u32;
             fn authenticate(
@@ -286,6 +290,109 @@ pub mod drm {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_drm#{}.authenticate({})", sender_id, id);
+                            self.authenticate(connection, sender_id, id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message.uint()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let stride = message.uint()?;
+                            let format = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_drm#{}.create_buffer({}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                id,
+                                name,
+                                width,
+                                height,
+                                stride,
+                                format
+                            );
+                            self.create_buffer(
+                                connection, sender_id, id, name, width, height, stride, format,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message.uint()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let format = message.uint()?;
+                            let offset0 = message.int()?;
+                            let stride0 = message.int()?;
+                            let offset1 = message.int()?;
+                            let stride1 = message.int()?;
+                            let offset2 = message.int()?;
+                            let stride2 = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_drm#{}.create_planar_buffer({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                id,
+                                name,
+                                width,
+                                height,
+                                format,
+                                offset0,
+                                stride0,
+                                offset1,
+                                stride1,
+                                offset2,
+                                stride2
+                            );
+                            self.create_planar_buffer(
+                                connection, sender_id, id, name, width, height, format, offset0,
+                                stride0, offset1, stride1, offset2, stride2,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = connection.fd()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let format = message.uint()?;
+                            let offset0 = message.int()?;
+                            let stride0 = message.int()?;
+                            let offset1 = message.int()?;
+                            let stride1 = message.int()?;
+                            let offset2 = message.int()?;
+                            let stride2 = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_drm#{}.create_prime_buffer({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                id,
+                                std::os::fd::AsRawFd::as_raw_fd(&name),
+                                width,
+                                height,
+                                format,
+                                offset0,
+                                stride0,
+                                offset1,
+                                stride1,
+                                offset2,
+                                stride2
+                            );
+                            self.create_prime_buffer(
+                                connection, sender_id, id, name, width, height, format, offset0,
+                                stride0, offset1, stride1, offset2, stride2,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

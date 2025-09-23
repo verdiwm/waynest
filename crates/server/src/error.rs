@@ -1,6 +1,6 @@
 use std::{error, fmt, io};
 
-use waynest::{ProtocolError, ObjectId};
+use waynest::{ObjectId, ProtocolError};
 
 #[derive(Debug)]
 pub enum Error {

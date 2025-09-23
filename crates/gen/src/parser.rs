@@ -1,11 +1,11 @@
-use std::fmt::Display;
+use std::{collections::HashMap, fs, path::Path};
 
 use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
 use quote::{ToTokens, quote};
 use serde::{Deserialize, Serialize};
 
-use crate::utils::make_ident;
+use crate::{error::Error, utils::make_ident};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
@@ -16,6 +16,12 @@ pub struct Protocol {
     pub description: Option<String>,
     #[serde(default, rename(deserialize = "interface"))]
     pub interfaces: Vec<Interface>,
+}
+
+impl Protocol {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+        Ok(quick_xml::de::from_str(&fs::read_to_string(path)?)?)
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -151,24 +157,26 @@ impl Arg {
         None
     }
 
-    pub fn find_protocol(&self, protocols: &[Protocol]) -> Option<Protocol> {
+    pub fn find_protocol(
+        &self,
+        protocols: &HashMap<&'static str, Protocol>,
+    ) -> Option<(&'static str, Protocol)> {
         if let Some((enum_interface, _name)) = self.to_enum_name()
             && let Some(enum_interface) = enum_interface
         {
-            return protocols
-                .iter()
-                .find(|protocol| protocol.interfaces.iter().any(|e| e.name == enum_interface))
-                .cloned();
+            return protocols.iter().find_map(|(str, protocol)| {
+                if protocol.interfaces.iter().any(|e| e.name == enum_interface) {
+                    Some((*str, protocol.clone()))
+                } else {
+                    None
+                }
+            });
         }
 
         None
     }
 
-    pub fn to_rust_type_token<D: Display>(
-        &self,
-        protocol: &Protocol,
-        module_name: D,
-    ) -> TokenStream {
+    pub fn to_rust_type_token(&self, (module_name, protocol): (&str, Protocol)) -> TokenStream {
         if let Some(e) = &self.r#enum {
             if let Some((module, name)) = e.split_once('.') {
                 // Check if the referenced interface actually exists in the current pair

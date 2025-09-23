@@ -9,6 +9,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_alpha_modifier_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -32,7 +33,10 @@ pub mod alpha_modifier_v1 {
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierV1<C: waynest::Connection> {
+        pub trait WpAlphaModifierV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
@@ -62,6 +66,27 @@ pub mod alpha_modifier_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_alpha_modifier_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_alpha_modifier_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -76,6 +101,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "wl_surface is destroyed, all request on this object will raise the"]
     #[doc = "no_surface error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_alpha_modifier_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -99,7 +125,10 @@ pub mod alpha_modifier_v1 {
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierSurfaceV1<C: waynest::Connection> {
+        pub trait WpAlphaModifierSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
@@ -139,6 +168,21 @@ pub mod alpha_modifier_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_alpha_modifier_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let factor = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_alpha_modifier_surface_v1#{}.set_multiplier({})",
+                                sender_id,
+                                factor
+                            );
+                            self.set_multiplier(connection, sender_id, factor).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -196,6 +240,7 @@ pub mod color_management_v1 {
     #[doc = ""]
     #[doc = "Compositors should never remove this global."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -400,7 +445,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagerV1<C: waynest::Connection> {
+        pub trait WpColorManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
@@ -591,6 +639,98 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_color_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_output({}, {})",
+                                sender_id,
+                                id,
+                                output
+                            );
+                            self.get_output(connection, sender_id, id, output).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(connection, sender_id, id, surface).await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_surface_feedback({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface_feedback(connection, sender_id, id, surface)
+                                .await
+                        }
+                        4u16 => {
+                            let obj = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_icc_creator({})",
+                                sender_id,
+                                obj
+                            );
+                            self.create_icc_creator(connection, sender_id, obj).await
+                        }
+                        5u16 => {
+                            let obj = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_parametric_creator({})",
+                                sender_id,
+                                obj
+                            );
+                            self.create_parametric_creator(connection, sender_id, obj)
+                                .await
+                        }
+                        6u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_windows_scrgb({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create_windows_scrgb(connection, sender_id, image_description)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -605,9 +745,13 @@ pub mod color_management_v1 {
     #[doc = "wl_output object has no impact, but the compositor removing the output"]
     #[doc = "global makes the wp_color_management_output_v1 object inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_management_output_v1 {
         #[doc = "Trait to implement the wp_color_management_output_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementOutputV1<C: waynest::Connection> {
+        pub trait WpColorManagementOutputV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_management_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
@@ -679,6 +823,27 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_output_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_output_v1#{}.get_image_description({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.get_image_description(connection, sender_id, image_description)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -691,6 +856,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with the wp_color_management_surface_v1 is"]
     #[doc = "destroyed, the wp_color_management_surface_v1 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_management_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -720,7 +886,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_management_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceV1<C: waynest::Connection> {
+        pub trait WpColorManagementSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_management_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
@@ -797,6 +966,42 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let render_intent = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_surface_v1#{}.set_image_description({}, {})",
+                                sender_id,
+                                image_description,
+                                render_intent
+                            );
+                            self.set_image_description(
+                                connection,
+                                sender_id,
+                                image_description,
+                                render_intent.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_surface_v1#{}.unset_image_description()",
+                                sender_id,
+                            );
+                            self.unset_image_description(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -809,6 +1014,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with this object is destroyed, the"]
     #[doc = "wp_color_management_surface_feedback_v1 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_management_surface_feedback_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -835,7 +1041,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_management_surface_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceFeedbackV1<C: waynest::Connection> {
+        pub trait WpColorManagementSurfaceFeedbackV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
@@ -930,6 +1139,40 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_surface_feedback_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_surface_feedback_v1#{}.get_preferred({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.get_preferred(connection, sender_id, image_description)
+                                .await
+                        }
+                        2u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_management_surface_feedback_v1#{}.get_preferred_parametric({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.get_preferred_parametric(connection, sender_id, image_description)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -951,6 +1194,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_creator_icc_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -986,7 +1230,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_creator_icc_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorIccV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionCreatorIccV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the ICC information"]
@@ -1071,6 +1318,33 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_icc_v1#{}.create({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create(connection, sender_id, image_description).await
+                        }
+                        1u16 => {
+                            let icc_profile = connection.fd()?;
+                            let offset = message.uint()?;
+                            let length = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_icc_v1#{}.set_icc_file({}, {}, {})",
+                                sender_id,
+                                std::os::fd::AsRawFd::as_raw_fd(&icc_profile),
+                                offset,
+                                length
+                            );
+                            self.set_icc_file(connection, sender_id, icc_profile, offset, length)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1105,6 +1379,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_creator_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1143,7 +1418,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_creator_params_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorParamsV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionCreatorParamsV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the parameters previously"]
@@ -1452,6 +1730,158 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.create({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create(connection, sender_id, image_description).await
+                        }
+                        1u16 => {
+                            let tf = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_tf_named({})",
+                                sender_id,
+                                tf
+                            );
+                            self.set_tf_named(connection, sender_id, tf.try_into()?)
+                                .await
+                        }
+                        2u16 => {
+                            let eexp = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_tf_power({})",
+                                sender_id,
+                                eexp
+                            );
+                            self.set_tf_power(connection, sender_id, eexp).await
+                        }
+                        3u16 => {
+                            let primaries = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_primaries_named({})",
+                                sender_id,
+                                primaries
+                            );
+                            self.set_primaries_named(connection, sender_id, primaries.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            let r_x = message.int()?;
+                            let r_y = message.int()?;
+                            let g_x = message.int()?;
+                            let g_y = message.int()?;
+                            let b_x = message.int()?;
+                            let b_y = message.int()?;
+                            let w_x = message.int()?;
+                            let w_y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
+                            self.set_primaries(
+                                connection, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            )
+                            .await
+                        }
+                        5u16 => {
+                            let min_lum = message.uint()?;
+                            let max_lum = message.uint()?;
+                            let reference_lum = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_luminances({}, {}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum,
+                                reference_lum
+                            );
+                            self.set_luminances(
+                                connection,
+                                sender_id,
+                                min_lum,
+                                max_lum,
+                                reference_lum,
+                            )
+                            .await
+                        }
+                        6u16 => {
+                            let r_x = message.int()?;
+                            let r_y = message.int()?;
+                            let g_x = message.int()?;
+                            let g_y = message.int()?;
+                            let b_x = message.int()?;
+                            let b_y = message.int()?;
+                            let w_x = message.int()?;
+                            let w_y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_mastering_display_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
+                            self.set_mastering_display_primaries(
+                                connection, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            )
+                            .await
+                        }
+                        7u16 => {
+                            let min_lum = message.uint()?;
+                            let max_lum = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_mastering_luminance({}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum
+                            );
+                            self.set_mastering_luminance(connection, sender_id, min_lum, max_lum)
+                                .await
+                        }
+                        8u16 => {
+                            let max_cll = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_max_cll({})",
+                                sender_id,
+                                max_cll
+                            );
+                            self.set_max_cll(connection, sender_id, max_cll).await
+                        }
+                        9u16 => {
+                            let max_fall = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_creator_params_v1#{}.set_max_fall({})",
+                                sender_id,
+                                max_fall
+                            );
+                            self.set_max_fall(connection, sender_id, max_fall).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1478,6 +1908,7 @@ pub mod color_management_v1 {
     #[doc = "wp_image_description_v1 object always refers to one fixed image"]
     #[doc = "description. It cannot change after creation."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1534,7 +1965,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
@@ -1626,6 +2060,24 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_image_description_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let information = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_v1#{}.get_information({})",
+                                sender_id,
+                                information
+                            );
+                            self.get_information(connection, sender_id, information)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1655,9 +2107,13 @@ pub mod color_management_v1 {
     #[doc = "Every wp_image_description_info_v1 created from the same"]
     #[doc = "wp_image_description_v1 shall always return the exact same data."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_info_v1 {
         #[doc = "Trait to implement the wp_image_description_info_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionInfoV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionInfoV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_info_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Signals the end of information events and destroys the object."]
@@ -1882,6 +2338,7 @@ pub mod color_representation_v1 {
     #[doc = ""]
     #[doc = "Compositors should never remove this global."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_representation_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1905,7 +2362,10 @@ pub mod color_representation_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_representation_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorRepresentationManagerV1<C: waynest::Connection> {
+        pub trait WpColorRepresentationManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_representation_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_representation_manager_v1 object. This does not"]
@@ -1979,6 +2439,30 @@ pub mod color_representation_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_representation_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_representation_manager_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1996,6 +2480,7 @@ pub mod color_representation_v1 {
     #[doc = "If the wl_surface associated with the wp_color_representation_surface_v1"]
     #[doc = "is destroyed, the wp_color_representation_surface_v1 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_representation_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2158,7 +2643,10 @@ pub mod color_representation_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_representation_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorRepresentationSurfaceV1<C: waynest::Connection> {
+        pub trait WpColorRepresentationSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_representation_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_representation_surface_v1 object."]
@@ -2253,6 +2741,58 @@ pub mod color_representation_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_representation_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let alpha_mode = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_representation_surface_v1#{}.set_alpha_mode({})",
+                                sender_id,
+                                alpha_mode
+                            );
+                            self.set_alpha_mode(connection, sender_id, alpha_mode.try_into()?)
+                                .await
+                        }
+                        2u16 => {
+                            let coefficients = message.uint()?;
+                            let range = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_representation_surface_v1#{}.set_coefficients_and_range({}, {})",
+                                sender_id,
+                                coefficients,
+                                range
+                            );
+                            self.set_coefficients_and_range(
+                                connection,
+                                sender_id,
+                                coefficients.try_into()?,
+                                range.try_into()?,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let chroma_location = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_representation_surface_v1#{}.set_chroma_location({})",
+                                sender_id,
+                                chroma_location
+                            );
+                            self.set_chroma_location(
+                                connection,
+                                sender_id,
+                                chroma_location.try_into()?,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2284,6 +2824,7 @@ pub mod commit_timing_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_commit_timing_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2307,7 +2848,10 @@ pub mod commit_timing_v1 {
             }
         }
         #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimingManagerV1<C: waynest::Connection> {
+        pub trait WpCommitTimingManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -2339,6 +2883,27 @@ pub mod commit_timing_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_commit_timing_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_commit_timing_manager_v1#{}.get_timer({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_timer(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2347,6 +2912,7 @@ pub mod commit_timing_v1 {
     }
     #[doc = "An object to set a time constraint for a content update on a surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_commit_timer_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2376,7 +2942,10 @@ pub mod commit_timing_v1 {
             }
         }
         #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimerV1<C: waynest::Connection> {
+        pub trait WpCommitTimerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_commit_timer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Provide a timing constraint for a surface content update."]
@@ -2420,6 +2989,26 @@ pub mod commit_timing_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_commit_timer_v1#{}.set_timestamp({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.set_timestamp(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_commit_timer_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2437,6 +3026,7 @@ pub mod content_type_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_content_type_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2460,7 +3050,10 @@ pub mod content_type_v1 {
             }
         }
         #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeManagerV1<C: waynest::Connection> {
+        pub trait WpContentTypeManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
@@ -2491,6 +3084,28 @@ pub mod content_type_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_content_type_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_content_type_manager_v1#{}.get_surface_content_type({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface_content_type(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2505,6 +3120,7 @@ pub mod content_type_v1 {
     #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
     #[doc = "the client should destroy it."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_content_type_v1 {
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
@@ -2534,7 +3150,10 @@ pub mod content_type_v1 {
             }
         }
         #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeV1<C: waynest::Connection> {
+        pub trait WpContentTypeV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_content_type_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Switch back to not specifying the content type of this surface. This is"]
@@ -2569,6 +3188,22 @@ pub mod content_type_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_content_type_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let content_type = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_content_type_v1#{}.set_content_type({})",
+                                sender_id,
+                                content_type
+                            );
+                            self.set_content_type(connection, sender_id, content_type.try_into()?)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2587,9 +3222,13 @@ pub mod cursor_shape_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_cursor_shape_manager_v1 {
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeManagerV1<C: waynest::Connection> {
+        pub trait WpCursorShapeManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the cursor shape manager."]
@@ -2630,6 +3269,50 @@ pub mod cursor_shape_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_cursor_shape_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let cursor_shape_device = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_cursor_shape_manager_v1#{}.get_pointer({}, {})",
+                                sender_id,
+                                cursor_shape_device,
+                                pointer
+                            );
+                            self.get_pointer(connection, sender_id, cursor_shape_device, pointer)
+                                .await
+                        }
+                        2u16 => {
+                            let cursor_shape_device = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let tablet_tool = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_cursor_shape_manager_v1#{}.get_tablet_tool_v2({}, {})",
+                                sender_id,
+                                cursor_shape_device,
+                                tablet_tool
+                            );
+                            self.get_tablet_tool_v2(
+                                connection,
+                                sender_id,
+                                cursor_shape_device,
+                                tablet_tool,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2638,6 +3321,7 @@ pub mod cursor_shape_v1 {
     }
     #[doc = "This interface allows clients to set the cursor shape."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_cursor_shape_device_v1 {
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
@@ -2799,7 +3483,10 @@ pub mod cursor_shape_v1 {
             }
         }
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeDeviceV1<C: waynest::Connection> {
+        pub trait WpCursorShapeDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the cursor shape device."]
@@ -2845,6 +3532,24 @@ pub mod cursor_shape_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_cursor_shape_device_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let serial = message.uint()?;
+                            let shape = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_cursor_shape_device_v1#{}.set_shape({}, {})",
+                                sender_id,
+                                serial,
+                                shape
+                            );
+                            self.set_shape(connection, sender_id, serial, shape.try_into()?)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2885,9 +3590,13 @@ pub mod drm_lease_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_device_v1 {
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseDeviceV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a lease request object."]
@@ -2983,6 +3692,23 @@ pub mod drm_lease_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_drm_lease_device_v1#{}.create_lease_request({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_lease_request(connection, sender_id, id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_drm_lease_device_v1#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2997,9 +3723,13 @@ pub mod drm_lease_v1 {
     #[doc = "event. When the description is updated the compositor will send a"]
     #[doc = "description event followed by a done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_connector_v1 {
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseConnectorV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseConnectorV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client may send this request to indicate that it will not use this"]
@@ -3095,6 +3825,11 @@ pub mod drm_lease_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_drm_lease_connector_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3106,6 +3841,7 @@ pub mod drm_lease_v1 {
     #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
     #[doc = "request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_request_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3135,7 +3871,10 @@ pub mod drm_lease_v1 {
             }
         }
         #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseRequestV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseRequestV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_request_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Indicates that the client would like to lease the given connector."]
@@ -3177,6 +3916,27 @@ pub mod drm_lease_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let connector = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_drm_lease_request_v1#{}.request_connector({})",
+                                sender_id,
+                                connector
+                            );
+                            self.request_connector(connection, sender_id, connector)
+                                .await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_drm_lease_request_v1#{}.submit({})", sender_id, id);
+                            self.submit(connection, sender_id, id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3192,9 +3952,13 @@ pub mod drm_lease_v1 {
     #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_v1 {
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client should send this to indicate that it no longer wishes to use"]
@@ -3256,6 +4020,11 @@ pub mod drm_lease_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_drm_lease_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3277,6 +4046,7 @@ pub mod ext_background_effect_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_background_effect_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3312,7 +4082,10 @@ pub mod ext_background_effect_v1 {
             }
         }
         #[doc = "Trait to implement the ext_background_effect_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtBackgroundEffectManagerV1<C: waynest::Connection> {
+        pub trait ExtBackgroundEffectManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_background_effect_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this"]
@@ -3355,6 +4128,31 @@ pub mod ext_background_effect_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_background_effect_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_background_effect_manager_v1#{}.get_background_effect({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_background_effect(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3367,6 +4165,7 @@ pub mod ext_background_effect_v1 {
     #[doc = "If the wl_surface associated with the ext_background_effect_surface_v1"]
     #[doc = "object has been destroyed, this object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_background_effect_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3390,7 +4189,10 @@ pub mod ext_background_effect_v1 {
             }
         }
         #[doc = "Trait to implement the ext_background_effect_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtBackgroundEffectSurfaceV1<C: waynest::Connection> {
+        pub trait ExtBackgroundEffectSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_background_effect_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this protocol"]
@@ -3433,6 +4235,26 @@ pub mod ext_background_effect_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_background_effect_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let region = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_background_effect_surface_v1#{}.set_blur_region({})",
+                                sender_id,
+                                region
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_blur_region(connection, sender_id, region).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3453,9 +4275,13 @@ pub mod ext_data_control_v1 {
     #[doc = "This interface is a manager that allows creating per-seat data device"]
     #[doc = "controls."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_manager_v1 {
         #[doc = "Trait to implement the ext_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlManagerV1<C: waynest::Connection> {
+        pub trait ExtDataControlManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new data source."]
@@ -3490,6 +4316,39 @@ pub mod ext_data_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_data_control_manager_v1#{}.create_data_source({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_data_source(connection, sender_id, id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_data_control_manager_v1#{}.get_data_device({}, {})",
+                                sender_id,
+                                id,
+                                seat
+                            );
+                            self.get_data_device(connection, sender_id, id, seat).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_data_control_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3500,6 +4359,7 @@ pub mod ext_data_control_v1 {
     #[doc = ""]
     #[doc = "When the seat is destroyed, this object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_device_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3523,7 +4383,10 @@ pub mod ext_data_control_v1 {
             }
         }
         #[doc = "Trait to implement the ext_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlDeviceV1<C: waynest::Connection> {
+        pub trait ExtDataControlDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request asks the compositor to set the selection to the data from"]
@@ -3646,6 +4509,36 @@ pub mod ext_data_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let source = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_data_control_device_v1#{}.set_selection({})",
+                                sender_id,
+                                source
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_selection(connection, sender_id, source).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_data_control_device_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let source = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_data_control_device_v1#{}.set_primary_selection({})",
+                                sender_id,
+                                source
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_primary_selection(connection, sender_id, source)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3657,6 +4550,7 @@ pub mod ext_data_control_v1 {
     #[doc = "transfer and provides a way to describe the offered data and a way to"]
     #[doc = "respond to requests to transfer the data."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_source_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3680,7 +4574,10 @@ pub mod ext_data_control_v1 {
             }
         }
         #[doc = "Trait to implement the ext_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlSourceV1<C: waynest::Connection> {
+        pub trait ExtDataControlSourceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
@@ -3734,6 +4631,23 @@ pub mod ext_data_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let mime_type = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_data_control_source_v1#{}.offer(\"{}\")",
+                                sender_id,
+                                mime_type
+                            );
+                            self.offer(connection, sender_id, mime_type).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_data_control_source_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3745,9 +4659,13 @@ pub mod ext_data_control_v1 {
     #[doc = "MIME types that the data can be converted to and provides the mechanism"]
     #[doc = "for transferring the data directly from the source client."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_offer_v1 {
         #[doc = "Trait to implement the ext_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlOfferV1<C: waynest::Connection> {
+        pub trait ExtDataControlOfferV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_offer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "To transfer the offered data, the client issues this request and"]
@@ -3794,6 +4712,25 @@ pub mod ext_data_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let mime_type = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let fd = connection.fd()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_data_control_offer_v1#{}.receive(\"{}\", {})",
+                                sender_id,
+                                mime_type,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd)
+                            );
+                            self.receive(connection, sender_id, mime_type, fd).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_data_control_offer_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3840,9 +4777,13 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "event after the global is bound, the compositor must not send any"]
     #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_foreign_toplevel_list_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelListV1<C: waynest::Connection> {
+        pub trait ExtForeignToplevelListV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -3909,6 +4850,16 @@ pub mod ext_foreign_toplevel_list_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_foreign_toplevel_list_v1#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_foreign_toplevel_list_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3918,9 +4869,13 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
     #[doc = "window. A single app may have multiple mapped toplevels."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_foreign_toplevel_handle_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelHandleV1<C: waynest::Connection> {
+        pub trait ExtForeignToplevelHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request should be used when the client will no longer use the handle"]
@@ -4038,6 +4993,14 @@ pub mod ext_foreign_toplevel_list_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_foreign_toplevel_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4052,9 +5015,13 @@ pub mod ext_idle_notify_v1 {
     #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
     #[doc = "objects to get notified when the user is idle for a given amount of time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_idle_notifier_v1 {
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotifierV1<C: waynest::Connection> {
+        pub trait ExtIdleNotifierV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the manager object. All objects created via this interface"]
@@ -4108,6 +5075,51 @@ pub mod ext_idle_notify_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_idle_notifier_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let timeout = message.uint()?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_idle_notifier_v1#{}.get_idle_notification({}, {}, {})",
+                                sender_id,
+                                id,
+                                timeout,
+                                seat
+                            );
+                            self.get_idle_notification(connection, sender_id, id, timeout, seat)
+                                .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let timeout = message.uint()?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_idle_notifier_v1#{}.get_input_idle_notification({}, {}, {})",
+                                sender_id,
+                                id,
+                                timeout,
+                                seat
+                            );
+                            self.get_input_idle_notification(
+                                connection, sender_id, id, timeout, seat,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4137,9 +5149,13 @@ pub mod ext_idle_notify_v1 {
     #[doc = "user activity starts again, the notification object stops being idle,"]
     #[doc = "a resumed event is sent and the timeout is restarted."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_idle_notification_v1 {
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotificationV1<C: waynest::Connection> {
+        pub trait ExtIdleNotificationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the notification object."]
@@ -4183,6 +5199,11 @@ pub mod ext_idle_notify_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_idle_notification_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4212,9 +5233,13 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
     #[doc = "frozen at version 1."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_capture_source_v1 {
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCaptureSourceV1<C: waynest::Connection> {
+        pub trait ExtImageCaptureSourceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_capture_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the image capture source. This request may be sent at any time"]
@@ -4234,6 +5259,11 @@ pub mod ext_image_capture_source_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_image_capture_source_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4242,9 +5272,13 @@ pub mod ext_image_capture_source_v1 {
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_output_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtOutputImageCaptureSourceManagerV1<C: waynest::Connection> {
+        pub trait ExtOutputImageCaptureSourceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for an output. Images captured from this source"]
@@ -4276,6 +5310,31 @@ pub mod ext_image_capture_source_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_output_image_capture_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                output
+                            );
+                            self.create_source(connection, sender_id, source, output)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_output_image_capture_source_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4285,9 +5344,13 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "A manager for creating image capture source objects for"]
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelImageCaptureSourceManagerV1<C: waynest::Connection> {
+        pub trait ExtForeignToplevelImageCaptureSourceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
@@ -4317,6 +5380,31 @@ pub mod ext_image_capture_source_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel_handle = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_foreign_toplevel_image_capture_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                toplevel_handle
+                            );
+                            self.create_source(connection, sender_id, source, toplevel_handle)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_foreign_toplevel_image_capture_source_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4336,6 +5424,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4371,7 +5460,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureManagerV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capturing session for an image capture source."]
@@ -4418,6 +5510,62 @@ pub mod ext_image_copy_capture_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let options = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_manager_v1#{}.create_session({}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                options
+                            );
+                            self.create_session(
+                                connection,
+                                sender_id,
+                                session,
+                                source,
+                                options.try_into()?,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_manager_v1#{}.create_pointer_cursor_session({}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                pointer
+                            );
+                            self.create_pointer_cursor_session(
+                                connection, sender_id, session, source, pointer,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4441,6 +5589,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_session_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4464,7 +5613,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureSessionV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureSessionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capture frame for this session."]
@@ -4509,7 +5661,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                format: u32,
+                format: super::super::super::core::wayland::wl_shm::Format,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
                 async move { Ok(()) }
@@ -4585,6 +5737,26 @@ pub mod ext_image_copy_capture_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_session_v1#{}.create_frame({})",
+                                sender_id,
+                                frame
+                            );
+                            self.create_frame(connection, sender_id, frame).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_session_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4602,6 +5774,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = ""]
     #[doc = "If the capture fails, the compositor must send the failed event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_frame_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4655,7 +5828,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureFrameV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureFrameV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the frame. This request can be sent at any time by the"]
@@ -4729,7 +5905,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                transform: u32,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
                 async move { Ok(()) }
@@ -4810,6 +5986,51 @@ pub mod ext_image_copy_capture_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.attach_buffer({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_buffer(connection, sender_id, buffer).await
+                        }
+                        2u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.damage_buffer({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.damage_buffer(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_frame_v1#{}.capture()",
+                                sender_id,
+                            );
+                            self.capture(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4819,6 +6040,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_cursor_session_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4842,7 +6064,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureCursorSessionV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureCursorSessionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -4941,6 +6166,27 @@ pub mod ext_image_copy_capture_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_cursor_session_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_image_copy_capture_cursor_session_v1#{}.get_capture_session({})",
+                                sender_id,
+                                session
+                            );
+                            self.get_capture_session(connection, sender_id, session)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4972,9 +6218,13 @@ pub mod ext_image_copy_capture_v1 {
 pub mod ext_session_lock_v1 {
     #[doc = "This interface is used to request that the session be locked."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_session_lock_manager_v1 {
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockManagerV1<C: waynest::Connection> {
+        pub trait ExtSessionLockManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the session lock manager object will"]
@@ -5005,6 +6255,23 @@ pub mod ext_session_lock_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_session_lock_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_session_lock_manager_v1#{}.lock({})",
+                                sender_id,
+                                id
+                            );
+                            self.lock(connection, sender_id, id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5060,6 +6327,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "for unlocking the session, they may even start a new lock client"]
     #[doc = "instance automatically."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_session_lock_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5095,7 +6363,10 @@ pub mod ext_session_lock_v1 {
             }
         }
         #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockV1<C: waynest::Connection> {
+        pub trait ExtSessionLockV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the lock object will no longer be"]
@@ -5216,6 +6487,40 @@ pub mod ext_session_lock_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_session_lock_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_session_lock_v1#{}.get_lock_surface({}, {}, {})",
+                                sender_id,
+                                id,
+                                surface,
+                                output
+                            );
+                            self.get_lock_surface(connection, sender_id, id, surface, output)
+                                .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_session_lock_v1#{}.unlock_and_destroy()",
+                                sender_id,
+                            );
+                            self.unlock_and_destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5238,6 +6543,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "give the first lock surface created keyboard focus and change keyboard"]
     #[doc = "focus if the user clicks on other surfaces."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_session_lock_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5270,7 +6576,10 @@ pub mod ext_session_lock_v1 {
             }
         }
         #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockSurfaceV1<C: waynest::Connection> {
+        pub trait ExtSessionLockSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_session_lock_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the lock surface object will no"]
@@ -5344,6 +6653,21 @@ pub mod ext_session_lock_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_session_lock_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_session_lock_surface_v1#{}.ack_configure({})",
+                                sender_id,
+                                serial
+                            );
+                            self.ack_configure(connection, sender_id, serial).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5373,9 +6697,13 @@ pub mod ext_session_lock_v1 {
 pub mod ext_transient_seat_v1 {
     #[doc = "The transient seat manager creates short-lived seats."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_transient_seat_manager_v1 {
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatManagerV1<C: waynest::Connection> {
+        pub trait ExtTransientSeatManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new seat that is removed when the client side transient seat"]
@@ -5408,6 +6736,26 @@ pub mod ext_transient_seat_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_transient_seat_manager_v1#{}.create({})",
+                                sender_id,
+                                seat
+                            );
+                            self.create(connection, sender_id, seat).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_transient_seat_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5417,9 +6765,13 @@ pub mod ext_transient_seat_v1 {
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
     #[doc = "destroyed."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_transient_seat_v1 {
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatV1<C: waynest::Connection> {
+        pub trait ExtTransientSeatV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the transient seat object is destroyed by the client, the"]
@@ -5469,6 +6821,11 @@ pub mod ext_transient_seat_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_transient_seat_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5498,9 +6855,13 @@ pub mod ext_workspace_v1 {
     #[doc = "After a client binds the ext_workspace_manager_v1, each workspace will be"]
     #[doc = "sent via the workspace event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_workspace_manager_v1 {
         #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceManagerV1<C: waynest::Connection> {
+        pub trait ExtWorkspaceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_workspace_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client must send this request after it has finished sending other"]
@@ -5598,6 +6959,16 @@ pub mod ext_workspace_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_workspace_manager_v1#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_workspace_manager_v1#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5616,6 +6987,7 @@ pub mod ext_workspace_v1 {
     #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
     #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_workspace_group_handle_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct GroupCapabilities : u32 { # [doc = "create_workspace request is available"] const CreateWorkspace = 1u32 ; } }
         impl TryFrom<u32> for GroupCapabilities {
@@ -5630,7 +7002,10 @@ pub mod ext_workspace_v1 {
             }
         }
         #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceGroupHandleV1<C: waynest::Connection> {
+        pub trait ExtWorkspaceGroupHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Request that the compositor create a new workspace with the given name"]
@@ -5747,6 +7122,27 @@ pub mod ext_workspace_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let workspace = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_workspace_group_handle_v1#{}.create_workspace(\"{}\")",
+                                sender_id,
+                                workspace
+                            );
+                            self.create_workspace(connection, sender_id, workspace)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_workspace_group_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5770,6 +7166,7 @@ pub mod ext_workspace_v1 {
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_workspace_handle_v1 {
         bitflags::bitflags! { # [doc = "The different states that a workspace can have."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct State : u32 { # [doc = "the workspace is active"] const Active = 1u32 ; # [doc = "the workspace requests attention"] const Urgent = 2u32 ; const Hidden = 4u32 ; } }
         impl TryFrom<u32> for State {
@@ -5796,7 +7193,10 @@ pub mod ext_workspace_v1 {
             }
         }
         #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceHandleV1<C: waynest::Connection> {
+        pub trait ExtWorkspaceHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_workspace_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the ext_workspace_handle_v1 object."]
@@ -5972,6 +7372,38 @@ pub mod ext_workspace_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_workspace_handle_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_workspace_handle_v1#{}.activate()", sender_id,);
+                            self.activate(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_workspace_handle_v1#{}.deactivate()", sender_id,);
+                            self.deactivate(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let workspace_group = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ext_workspace_handle_v1#{}.assign({})",
+                                sender_id,
+                                workspace_group
+                            );
+                            self.assign(connection, sender_id, workspace_group).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ext_workspace_handle_v1#{}.remove()", sender_id,);
+                            self.remove(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5993,6 +7425,7 @@ pub mod fifo_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fifo_manager_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -6018,7 +7451,10 @@ pub mod fifo_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoManagerV1<C: waynest::Connection> {
+        pub trait WpFifoManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fifo_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -6054,6 +7490,27 @@ pub mod fifo_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_fifo_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_fifo_manager_v1#{}.get_fifo({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_fifo(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6063,6 +7520,7 @@ pub mod fifo_v1 {
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fifo_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -6088,7 +7546,10 @@ pub mod fifo_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoV1<C: waynest::Connection> {
+        pub trait WpFifoV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fifo_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
@@ -6155,6 +7616,21 @@ pub mod fifo_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_fifo_v1#{}.set_barrier()", sender_id,);
+                            self.set_barrier(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_fifo_v1#{}.wait_barrier()", sender_id,);
+                            self.wait_barrier(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_fifo_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6184,6 +7660,7 @@ pub mod fifo_v1 {
 pub mod fractional_scale_v1 {
     #[doc = "A global interface for requesting surfaces to use fractional scales."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fractional_scale_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6207,7 +7684,10 @@ pub mod fractional_scale_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleManagerV1<C: waynest::Connection> {
+        pub trait WpFractionalScaleManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this protocol"]
@@ -6239,6 +7719,31 @@ pub mod fractional_scale_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_fractional_scale_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_fractional_scale_manager_v1#{}.get_fractional_scale({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_fractional_scale(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6248,9 +7753,13 @@ pub mod fractional_scale_v1 {
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
     #[doc = "to inform the client of the preferred scale."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fractional_scale_v1 {
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleV1<C: waynest::Connection> {
+        pub trait WpFractionalScaleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
@@ -6283,6 +7792,11 @@ pub mod fractional_scale_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_fractional_scale_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6323,6 +7837,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = ""]
     #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_linux_drm_syncobj_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6349,7 +7864,10 @@ pub mod linux_drm_syncobj_v1 {
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjManagerV1<C: waynest::Connection> {
+        pub trait WpLinuxDrmSyncobjManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this explicit synchronization factory object. Other objects"]
@@ -6397,6 +7915,44 @@ pub mod linux_drm_syncobj_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_manager_v1#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(connection, sender_id, id, surface).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let fd = connection.fd()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_manager_v1#{}.import_timeline({}, {})",
+                                sender_id,
+                                id,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd)
+                            );
+                            self.import_timeline(connection, sender_id, id, fd).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6406,9 +7962,13 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "This object represents an explicit synchronization object timeline"]
     #[doc = "imported by the client to the compositor."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjTimelineV1<C: waynest::Connection> {
+        pub trait WpLinuxDrmSyncobjTimelineV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the synchronization object timeline. Other objects are not"]
@@ -6429,6 +7989,14 @@ pub mod linux_drm_syncobj_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_timeline_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6461,6 +8029,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "release point value, or else the conflicting_points protocol error is"]
     #[doc = "raised."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_linux_drm_syncobj_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6499,7 +8068,10 @@ pub mod linux_drm_syncobj_v1 {
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjSurfaceV1<C: waynest::Connection> {
+        pub trait WpLinuxDrmSyncobjSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this surface synchronization object."]
@@ -6604,6 +8176,52 @@ pub mod linux_drm_syncobj_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let timeline = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let point_hi = message.uint()?;
+                            let point_lo = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_surface_v1#{}.set_acquire_point({}, {}, {})",
+                                sender_id,
+                                timeline,
+                                point_hi,
+                                point_lo
+                            );
+                            self.set_acquire_point(
+                                connection, sender_id, timeline, point_hi, point_lo,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let timeline = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let point_hi = message.uint()?;
+                            let point_lo = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_linux_drm_syncobj_surface_v1#{}.set_release_point({}, {}, {})",
+                                sender_id,
+                                timeline,
+                                point_hi,
+                                point_lo
+                            );
+                            self.set_release_point(
+                                connection, sender_id, timeline, point_hi, point_lo,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6626,9 +8244,13 @@ pub mod pointer_warp_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_pointer_warp_v1 {
         #[doc = "Trait to implement the wp_pointer_warp_v1 interface. See the module level documentation for more info"]
-        pub trait WpPointerWarpV1<C: waynest::Connection> {
+        pub trait WpPointerWarpV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_pointer_warp_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the pointer warp manager."]
@@ -6668,6 +8290,34 @@ pub mod pointer_warp_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_pointer_warp_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_pointer_warp_v1#{}.warp_pointer({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface,
+                                pointer,
+                                x,
+                                y,
+                                serial
+                            );
+                            self.warp_pointer(connection, sender_id, surface, pointer, x, y, serial)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6696,6 +8346,7 @@ pub mod security_context_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_security_context_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6722,7 +8373,10 @@ pub mod security_context_v1 {
             }
         }
         #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextManagerV1<C: waynest::Connection> {
+        pub trait WpSecurityContextManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
@@ -6765,6 +8419,31 @@ pub mod security_context_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_security_context_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let listen_fd = connection.fd()?;
+                            let close_fd = connection.fd()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_security_context_manager_v1#{}.create_listener({}, {}, {})",
+                                sender_id,
+                                id,
+                                std::os::fd::AsRawFd::as_raw_fd(&listen_fd),
+                                std::os::fd::AsRawFd::as_raw_fd(&close_fd)
+                            );
+                            self.create_listener(connection, sender_id, id, listen_fd, close_fd)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6782,6 +8461,7 @@ pub mod security_context_v1 {
     #[doc = "When both are set, the combination of the instance ID and the sandbox"]
     #[doc = "engine must uniquely identify a running instance of an application."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_security_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6811,7 +8491,10 @@ pub mod security_context_v1 {
             }
         }
         #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextV1<C: waynest::Connection> {
+        pub trait WpSecurityContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_security_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the security context object."]
@@ -6895,6 +8578,53 @@ pub mod security_context_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_security_context_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_security_context_v1#{}.set_sandbox_engine(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.set_sandbox_engine(connection, sender_id, name).await
+                        }
+                        2u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_security_context_v1#{}.set_app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.set_app_id(connection, sender_id, app_id).await
+                        }
+                        3u16 => {
+                            let instance_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_security_context_v1#{}.set_instance_id(\"{}\")",
+                                sender_id,
+                                instance_id
+                            );
+                            self.set_instance_id(connection, sender_id, instance_id)
+                                .await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_security_context_v1#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6917,9 +8647,13 @@ pub mod single_pixel_buffer_v1 {
     #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
     #[doc = "single-pixel buffers."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_single_pixel_buffer_manager_v1 {
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSinglePixelBufferManagerV1<C: waynest::Connection> {
+        pub trait WpSinglePixelBufferManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
@@ -6963,6 +8697,35 @@ pub mod single_pixel_buffer_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_single_pixel_buffer_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let r = message.uint()?;
+                            let g = message.uint()?;
+                            let b = message.uint()?;
+                            let a = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_single_pixel_buffer_manager_v1#{}.create_u32_rgba_buffer({}, {}, {}, {}, {})",
+                                sender_id,
+                                id,
+                                r,
+                                g,
+                                b,
+                                a
+                            );
+                            self.create_u32_rgba_buffer(connection, sender_id, id, r, g, b, a)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6988,6 +8751,7 @@ pub mod tearing_control_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_tearing_control_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7011,7 +8775,10 @@ pub mod tearing_control_v1 {
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlManagerV1<C: waynest::Connection> {
+        pub trait WpTearingControlManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this tearing control factory object. Other objects, including"]
@@ -7044,6 +8811,31 @@ pub mod tearing_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_tearing_control_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_tearing_control_manager_v1#{}.get_tearing_control({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_tearing_control(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7059,6 +8851,7 @@ pub mod tearing_control_v1 {
     #[doc = "If the associated wl_surface is destroyed, this object becomes inert and"]
     #[doc = "should be destroyed."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_tearing_control_v1 {
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
@@ -7085,7 +8878,10 @@ pub mod tearing_control_v1 {
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlV1<C: waynest::Connection> {
+        pub trait WpTearingControlV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_tearing_control_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Set the presentation hint for the associated wl_surface. This state is"]
@@ -7117,6 +8913,22 @@ pub mod tearing_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let hint = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_tearing_control_v1#{}.set_presentation_hint({})",
+                                sender_id,
+                                hint
+                            );
+                            self.set_presentation_hint(connection, sender_id, hint.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_tearing_control_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7168,9 +8980,13 @@ pub mod xdg_activation_v1 {
     #[doc = "being activated or started, or for applications to request to be"]
     #[doc = "activated."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_activation_v1 {
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationV1<C: waynest::Connection> {
+        pub trait XdgActivationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_activation_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_activation object will no longer be"]
@@ -7219,6 +9035,39 @@ pub mod xdg_activation_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_activation_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_activation_v1#{}.get_activation_token({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_activation_token(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            let token = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_activation_v1#{}.activate(\"{}\", {})",
+                                sender_id,
+                                token,
+                                surface
+                            );
+                            self.activate(connection, sender_id, token, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7234,6 +9083,7 @@ pub mod xdg_activation_v1 {
     #[doc = "done event with the token. In case the request's parameters are invalid,"]
     #[doc = "the compositor will provide an invalid token."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_activation_token_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7257,7 +9107,10 @@ pub mod xdg_activation_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationTokenV1<C: waynest::Connection> {
+        pub trait XdgActivationTokenV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Provides information about the seat and serial event that requested the"]
@@ -7337,6 +9190,54 @@ pub mod xdg_activation_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let serial = message.uint()?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_activation_token_v1#{}.set_serial({}, {})",
+                                sender_id,
+                                serial,
+                                seat
+                            );
+                            self.set_serial(connection, sender_id, serial, seat).await
+                        }
+                        1u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_activation_token_v1#{}.set_app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.set_app_id(connection, sender_id, app_id).await
+                        }
+                        2u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_activation_token_v1#{}.set_surface({})",
+                                sender_id,
+                                surface
+                            );
+                            self.set_surface(connection, sender_id, surface).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_activation_token_v1#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_activation_token_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7358,6 +9259,7 @@ pub mod xdg_dialog_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_wm_dialog_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7381,7 +9283,10 @@ pub mod xdg_dialog_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgWmDialogV1<C: waynest::Connection> {
+        pub trait XdgWmDialogV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_wm_dialog_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
@@ -7413,6 +9318,28 @@ pub mod xdg_dialog_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_wm_dialog_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_wm_dialog_v1#{}.get_xdg_dialog({}, {})",
+                                sender_id,
+                                id,
+                                toplevel
+                            );
+                            self.get_xdg_dialog(connection, sender_id, id, toplevel)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7429,9 +9356,13 @@ pub mod xdg_dialog_v1 {
     #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
     #[doc = "on toplevels that are not attached to a parent toplevel."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_dialog_v1 {
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgDialogV1<C: waynest::Connection> {
+        pub trait XdgDialogV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_dialog_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
@@ -7475,6 +9406,21 @@ pub mod xdg_dialog_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_dialog_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_dialog_v1#{}.set_modal()", sender_id,);
+                            self.set_modal(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_dialog_v1#{}.unset_modal()", sender_id,);
+                            self.unset_modal(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7491,9 +9437,13 @@ pub mod xdg_system_bell_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_system_bell_v1 {
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
-        pub trait XdgSystemBellV1<C: waynest::Connection> {
+        pub trait XdgSystemBellV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_system_bell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify that the object will no longer be used."]
@@ -7527,6 +9477,23 @@ pub mod xdg_system_bell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_system_bell_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_system_bell_v1#{}.ring({})",
+                                sender_id,
+                                surface
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.ring(connection, sender_id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7570,6 +9537,7 @@ pub mod xdg_toplevel_drag_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_drag_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7593,7 +9561,10 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragManagerV1<C: waynest::Connection> {
+        pub trait XdgToplevelDragManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
@@ -7631,6 +9602,28 @@ pub mod xdg_toplevel_drag_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel_drag_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let data_source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_drag_manager_v1#{}.get_xdg_toplevel_drag({}, {})",
+                                sender_id,
+                                id,
+                                data_source
+                            );
+                            self.get_xdg_toplevel_drag(connection, sender_id, id, data_source)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7638,6 +9631,7 @@ pub mod xdg_toplevel_drag_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_drag_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7664,7 +9658,10 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragV1<C: waynest::Connection> {
+        pub trait XdgToplevelDragV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
@@ -7709,6 +9706,28 @@ pub mod xdg_toplevel_drag_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel_drag_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x_offset = message.int()?;
+                            let y_offset = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_drag_v1#{}.attach({}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                x_offset,
+                                y_offset
+                            );
+                            self.attach(connection, sender_id, toplevel, x_offset, y_offset)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7736,9 +9755,13 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "This interface allows clients to create toplevel window icons and set"]
     #[doc = "them on toplevel windows to be displayed to the user."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_icon_manager_v1 {
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconManagerV1<C: waynest::Connection> {
+        pub trait XdgToplevelIconManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the toplevel icon manager."]
@@ -7823,6 +9846,37 @@ pub mod xdg_toplevel_icon_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel_icon_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_icon_manager_v1#{}.create_icon({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_icon(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let icon = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_icon_manager_v1#{}.set_icon({}, {})",
+                                sender_id,
+                                toplevel,
+                                icon.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_icon(connection, sender_id, toplevel, icon).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7838,6 +9892,7 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
     #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_icon_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7867,7 +9922,10 @@ pub mod xdg_toplevel_icon_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconV1<C: waynest::Connection> {
+        pub trait XdgToplevelIconV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
@@ -7940,6 +9998,37 @@ pub mod xdg_toplevel_icon_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel_icon_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let icon_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_icon_v1#{}.set_name(\"{}\")",
+                                sender_id,
+                                icon_name
+                            );
+                            self.set_name(connection, sender_id, icon_name).await
+                        }
+                        2u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let scale = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_icon_v1#{}.add_buffer({}, {})",
+                                sender_id,
+                                buffer,
+                                scale
+                            );
+                            self.add_buffer(connection, sender_id, buffer, scale).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7961,9 +10050,13 @@ pub mod xdg_toplevel_tag_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_tag_manager_v1 {
         #[doc = "Trait to implement the xdg_toplevel_tag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelTagManagerV1<C: waynest::Connection> {
+        pub trait XdgToplevelTagManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_tag_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this toplevel tag manager object. This request has no other"]
@@ -8019,6 +10112,50 @@ pub mod xdg_toplevel_tag_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel_tag_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let tag = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_tag_manager_v1#{}.set_toplevel_tag({}, \"{}\")",
+                                sender_id,
+                                toplevel,
+                                tag
+                            );
+                            self.set_toplevel_tag(connection, sender_id, toplevel, tag)
+                                .await
+                        }
+                        2u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_tag_manager_v1#{}.set_toplevel_description({}, \"{}\")",
+                                sender_id,
+                                toplevel,
+                                description
+                            );
+                            self.set_toplevel_description(
+                                connection,
+                                sender_id,
+                                toplevel,
+                                description,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -8073,6 +10210,7 @@ pub mod xwayland_shell_v1 {
     #[doc = "An Xwayland server that has bound this interface must not"]
     #[doc = "set the `WL_SURFACE_ID` atom on a window."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xwayland_shell_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8096,7 +10234,10 @@ pub mod xwayland_shell_v1 {
             }
         }
         #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandShellV1<C: waynest::Connection> {
+        pub trait XwaylandShellV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xwayland_shell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xwayland_shell_v1 object."]
@@ -8133,6 +10274,28 @@ pub mod xwayland_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xwayland_shell_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xwayland_shell_v1#{}.get_xwayland_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_xwayland_surface(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -8148,6 +10311,7 @@ pub mod xwayland_shell_v1 {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xwayland_surface_v1 state to take effect."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xwayland_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8174,7 +10338,10 @@ pub mod xwayland_shell_v1 {
             }
         }
         #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandSurfaceV1<C: waynest::Connection> {
+        pub trait XwaylandSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xwayland_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Associates an Xwayland window to a wl_surface."]
@@ -8223,6 +10390,24 @@ pub mod xwayland_shell_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let serial_lo = message.uint()?;
+                            let serial_hi = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xwayland_surface_v1#{}.set_serial({}, {})",
+                                sender_id,
+                                serial_lo,
+                                serial_hi
+                            );
+                            self.set_serial(connection, sender_id, serial_lo, serial_hi)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xwayland_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

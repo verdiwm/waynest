@@ -3,9 +3,13 @@ pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
     #[doc = "interface registered on DBus."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_appmenu_manager {
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -30,6 +34,27 @@ pub mod appmenu {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_appmenu_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_appmenu_manager#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -40,9 +65,13 @@ pub mod appmenu {
     #[doc = "The object should be registered on the session bus before sending this request."]
     #[doc = "If not applicable, clients should remove this object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_appmenu {
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenu<C: waynest::Connection> {
+        pub trait OrgKdeKwinAppmenu<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu";
             const VERSION: u32 = 2u32;
             #[doc = "Set or update the service name and object path."]
@@ -69,6 +98,28 @@ pub mod appmenu {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let service_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let object_path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_appmenu#{}.set_address(\"{}\", \"{}\")",
+                                sender_id,
+                                service_name,
+                                object_path
+                            );
+                            self.set_address(connection, sender_id, service_name, object_path)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_appmenu#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -79,9 +130,13 @@ pub mod appmenu {
 #[allow(clippy::module_inception)]
 pub mod blur {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_blur_manager {
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlurManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinBlurManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -107,6 +162,34 @@ pub mod blur {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_blur_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_blur_manager#{}.unset({})",
+                                sender_id,
+                                surface
+                            );
+                            self.unset(connection, sender_id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -114,9 +197,13 @@ pub mod blur {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_blur {
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlur<C: waynest::Connection> {
+        pub trait OrgKdeKwinBlur<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_blur";
             const VERSION: u32 = 1u32;
             fn commit(
@@ -145,6 +232,28 @@ pub mod blur {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_blur#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let region = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_blur#{}.set_region({})",
+                                sender_id,
+                                region
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_region(connection, sender_id, region).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_blur#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -155,9 +264,13 @@ pub mod blur {
 #[allow(clippy::module_inception)]
 pub mod contrast {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_contrast_manager {
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrastManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinContrastManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -183,6 +296,34 @@ pub mod contrast {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast_manager#{}.unset({})",
+                                sender_id,
+                                surface
+                            );
+                            self.unset(connection, sender_id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -190,9 +331,13 @@ pub mod contrast {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_contrast {
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrast<C: waynest::Connection> {
+        pub trait OrgKdeKwinContrast<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_contrast";
             const VERSION: u32 = 2u32;
             fn commit(
@@ -261,6 +406,80 @@ pub mod contrast {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_contrast#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let region = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast#{}.set_region({})",
+                                sender_id,
+                                region
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_region(connection, sender_id, region).await
+                        }
+                        2u16 => {
+                            let contrast = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast#{}.set_contrast({})",
+                                sender_id,
+                                contrast
+                            );
+                            self.set_contrast(connection, sender_id, contrast).await
+                        }
+                        3u16 => {
+                            let intensity = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast#{}.set_intensity({})",
+                                sender_id,
+                                intensity
+                            );
+                            self.set_intensity(connection, sender_id, intensity).await
+                        }
+                        4u16 => {
+                            let saturation = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast#{}.set_saturation({})",
+                                sender_id,
+                                saturation
+                            );
+                            self.set_saturation(connection, sender_id, saturation).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_contrast#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
+                        6u16 => {
+                            let red = message.int()?;
+                            let green = message.int()?;
+                            let blue = message.int()?;
+                            let alpha = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_contrast#{}.set_frost({}, {}, {}, {})",
+                                sender_id,
+                                red,
+                                green,
+                                blue,
+                                alpha
+                            );
+                            self.set_frost(connection, sender_id, red, green, blue, alpha)
+                                .await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_contrast#{}.unset_frost()", sender_id,);
+                            self.unset_frost(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -281,9 +500,13 @@ pub mod dpms {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_dpms_manager {
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
@@ -304,6 +527,22 @@ pub mod dpms {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_dpms_manager#{}.get({}, {})",
+                                sender_id,
+                                id,
+                                output
+                            );
+                            self.get(connection, sender_id, id, output).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -318,6 +557,7 @@ pub mod dpms {
     #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_dpms {
         #[repr(u32)]
         #[non_exhaustive]
@@ -346,7 +586,10 @@ pub mod dpms {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpms<C: waynest::Connection> {
+        pub trait OrgKdeKwinDpms<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_dpms";
             const VERSION: u32 = 1u32;
             #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
@@ -414,6 +657,17 @@ pub mod dpms {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let mode = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_dpms#{}.set({})", sender_id, mode);
+                            self.set(connection, sender_id, mode).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_dpms#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -436,9 +690,13 @@ pub mod fake_input {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_fake_input {
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinFakeInput<C: waynest::Connection> {
+        pub trait OrgKdeKwinFakeInput<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_fake_input";
             const VERSION: u32 = 6u32;
             #[doc = "A client should use this request to tell the compositor why it wants to"]
@@ -549,6 +807,152 @@ pub mod fake_input {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let application = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let reason = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.authenticate(\"{}\", \"{}\")",
+                                sender_id,
+                                application,
+                                reason
+                            );
+                            self.authenticate(connection, sender_id, application, reason)
+                                .await
+                        }
+                        1u16 => {
+                            let delta_x = message.fixed()?;
+                            let delta_y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.pointer_motion({}, {})",
+                                sender_id,
+                                delta_x,
+                                delta_y
+                            );
+                            self.pointer_motion(connection, sender_id, delta_x, delta_y)
+                                .await
+                        }
+                        2u16 => {
+                            let button = message.uint()?;
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.button({}, {})",
+                                sender_id,
+                                button,
+                                state
+                            );
+                            self.button(connection, sender_id, button, state).await
+                        }
+                        3u16 => {
+                            let axis = message.uint()?;
+                            let value = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.axis({}, {})",
+                                sender_id,
+                                axis,
+                                value
+                            );
+                            self.axis(connection, sender_id, axis, value).await
+                        }
+                        4u16 => {
+                            let id = message.uint()?;
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.touch_down({}, {}, {})",
+                                sender_id,
+                                id,
+                                x,
+                                y
+                            );
+                            self.touch_down(connection, sender_id, id, x, y).await
+                        }
+                        5u16 => {
+                            let id = message.uint()?;
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.touch_motion({}, {}, {})",
+                                sender_id,
+                                id,
+                                x,
+                                y
+                            );
+                            self.touch_motion(connection, sender_id, id, x, y).await
+                        }
+                        6u16 => {
+                            let id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.touch_up({})",
+                                sender_id,
+                                id
+                            );
+                            self.touch_up(connection, sender_id, id).await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_fake_input#{}.touch_cancel()", sender_id,);
+                            self.touch_cancel(connection, sender_id).await
+                        }
+                        8u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_fake_input#{}.touch_frame()", sender_id,);
+                            self.touch_frame(connection, sender_id).await
+                        }
+                        9u16 => {
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.pointer_motion_absolute({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.pointer_motion_absolute(connection, sender_id, x, y)
+                                .await
+                        }
+                        10u16 => {
+                            let button = message.uint()?;
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.keyboard_key({}, {})",
+                                sender_id,
+                                button,
+                                state
+                            );
+                            self.keyboard_key(connection, sender_id, button, state)
+                                .await
+                        }
+                        11u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_fake_input#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        12u16 => {
+                            let keysym = message.uint()?;
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_fake_input#{}.keyboard_keysym({}, {})",
+                                sender_id,
+                                keysym,
+                                state
+                            );
+                            self.keyboard_keysym(connection, sender_id, keysym, state)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -583,6 +987,7 @@ pub mod fullscreen_shell {
     #[doc = "output.  This way, the client can update the output's contents by"]
     #[doc = "simply attaching a new buffer."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod _wl_fullscreen_shell {
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -688,7 +1093,10 @@ pub mod fullscreen_shell {
             }
         }
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShell<C: waynest::Connection> {
+        pub trait WlFullscreenShell<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "_wl_fullscreen_shell";
             const VERSION: u32 = 1u32;
             #[doc = "Release the binding from the wl_fullscreen_shell interface"]
@@ -799,6 +1207,55 @@ pub mod fullscreen_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("_wl_fullscreen_shell#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message.object()?;
+                            let method = message.uint()?;
+                            let output = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "_wl_fullscreen_shell#{}.present_surface({}, {}, {})",
+                                sender_id,
+                                surface
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string()),
+                                method,
+                                output
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.present_surface(connection, sender_id, surface, method, output)
+                                .await
+                        }
+                        2u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let framerate = message.int()?;
+                            let feedback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "_wl_fullscreen_shell#{}.present_surface_for_mode({}, {}, {}, {})",
+                                sender_id,
+                                surface,
+                                output,
+                                framerate,
+                                feedback
+                            );
+                            self.present_surface_for_mode(
+                                connection, sender_id, surface, output, framerate, feedback,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -806,9 +1263,13 @@ pub mod fullscreen_shell {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShellModeFeedback<C: waynest::Connection> {
+        pub trait WlFullscreenShellModeFeedback<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -880,9 +1341,13 @@ pub mod idle {
     #[doc = "interacting with the system, e.g. chat applications setting the user as away, power"]
     #[doc = "management features to dim screen, etc.."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_idle {
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdle<C: waynest::Connection> {
+        pub trait OrgKdeKwinIdle<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_idle";
             const VERSION: u32 = 1u32;
             fn get_idle_timeout(
@@ -903,6 +1368,25 @@ pub mod idle {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let timeout = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_idle#{}.get_idle_timeout({}, {}, {})",
+                                sender_id,
+                                id,
+                                seat,
+                                timeout
+                            );
+                            self.get_idle_timeout(connection, sender_id, id, seat, timeout)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -910,9 +1394,13 @@ pub mod idle {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_idle_timeout {
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection> {
+        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
             const VERSION: u32 = 1u32;
             fn release(
@@ -951,6 +1439,19 @@ pub mod idle {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_idle_timeout#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_idle_timeout#{}.simulate_user_activity()",
+                                sender_id,
+                            );
+                            self.simulate_user_activity(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -965,9 +1466,13 @@ pub mod kde_external_brightness_v1 {
     #[doc = "This protocol is for outsourcing the actual brightness-setting to a"]
     #[doc = "process outside of the compositor."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessV1<C: waynest::Connection> {
+        pub trait KdeExternalBrightnessV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_external_brightness_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
@@ -991,6 +1496,24 @@ pub mod kde_external_brightness_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_external_brightness_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_v1#{}.create_brightness_control({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_brightness_control(connection, sender_id, id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1002,9 +1525,13 @@ pub mod kde_external_brightness_v1 {
     #[doc = "and finish the sequence with commit."]
     #[doc = "Afterwards, for each change in values, the client must call commit again."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_external_brightness_device_v1 {
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessDeviceV1<C: waynest::Connection> {
+        pub trait KdeExternalBrightnessDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
@@ -1077,6 +1604,75 @@ pub mod kde_external_brightness_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let internal = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.set_internal({})",
+                                sender_id,
+                                internal
+                            );
+                            self.set_internal(connection, sender_id, internal).await
+                        }
+                        2u16 => {
+                            let string = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.set_edid(\"{}\")",
+                                sender_id,
+                                string
+                            );
+                            self.set_edid(connection, sender_id, string).await
+                        }
+                        3u16 => {
+                            let value = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.set_max_brightness({})",
+                                sender_id,
+                                value
+                            );
+                            self.set_max_brightness(connection, sender_id, value).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.commit()",
+                                sender_id,
+                            );
+                            self.commit(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let value = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.set_observed_brightness({})",
+                                sender_id,
+                                value
+                            );
+                            self.set_observed_brightness(connection, sender_id, value)
+                                .await
+                        }
+                        6u16 => {
+                            let value = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_external_brightness_device_v1#{}.set_uses_ddc_ci({})",
+                                sender_id,
+                                value
+                            );
+                            self.set_uses_ddc_ci(connection, sender_id, value).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1095,6 +1691,7 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_lockscreen_overlay_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1118,7 +1715,10 @@ pub mod kde_lockscreen_overlay_v1 {
             }
         }
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
-        pub trait KdeLockscreenOverlayV1<C: waynest::Connection> {
+        pub trait KdeLockscreenOverlayV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
@@ -1144,6 +1744,23 @@ pub mod kde_lockscreen_overlay_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_lockscreen_overlay_v1#{}.allow({})",
+                                sender_id,
+                                surface
+                            );
+                            self.allow(connection, sender_id, surface).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_lockscreen_overlay_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1175,6 +1792,7 @@ pub mod kde_output_device_v2 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_device_v2 {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -1413,7 +2031,10 @@ pub mod kde_output_device_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2<C: waynest::Connection> {
+        pub trait KdeOutputDeviceV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_device_v2";
             const VERSION: u32 = 17u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -1857,9 +2478,13 @@ pub mod kde_output_device_v2 {
     #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_device_mode_v2 {
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2<C: waynest::Connection> {
+        pub trait KdeOutputDeviceModeV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
             const VERSION: u32 = 1u32;
             #[doc = "This event describes the mode size. The size is given in physical"]
@@ -1969,9 +2594,13 @@ pub mod kde_output_management_v2 {
     #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
     #[doc = "changes may be added without bumping the major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2<C: waynest::Connection> {
+        pub trait KdeOutputManagementV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_management_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
@@ -1992,6 +2621,18 @@ pub mod kde_output_management_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_management_v2#{}.create_configuration({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_configuration(connection, sender_id, id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2011,6 +2652,7 @@ pub mod kde_output_management_v2 {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_configuration_v2 {
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
@@ -2183,7 +2825,10 @@ pub mod kde_output_management_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2<C: waynest::Connection> {
+        pub trait KdeOutputConfigurationV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_configuration_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Mark the output as enabled or disabled."]
@@ -2476,6 +3121,480 @@ pub mod kde_output_management_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let enable = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.enable({}, {})",
+                                sender_id,
+                                outputdevice,
+                                enable
+                            );
+                            self.enable(connection, sender_id, outputdevice, enable)
+                                .await
+                        }
+                        1u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let mode = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.mode({}, {})",
+                                sender_id,
+                                outputdevice,
+                                mode
+                            );
+                            self.mode(connection, sender_id, outputdevice, mode).await
+                        }
+                        2u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let transform = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.transform({}, {})",
+                                sender_id,
+                                outputdevice,
+                                transform
+                            );
+                            self.transform(connection, sender_id, outputdevice, transform)
+                                .await
+                        }
+                        3u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.position({}, {}, {})",
+                                sender_id,
+                                outputdevice,
+                                x,
+                                y
+                            );
+                            self.position(connection, sender_id, outputdevice, x, y)
+                                .await
+                        }
+                        4u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let scale = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.scale({}, {})",
+                                sender_id,
+                                outputdevice,
+                                scale
+                            );
+                            self.scale(connection, sender_id, outputdevice, scale).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_configuration_v2#{}.apply()", sender_id,);
+                            self.apply(connection, sender_id).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_configuration_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        7u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let overscan = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.overscan({}, {})",
+                                sender_id,
+                                outputdevice,
+                                overscan
+                            );
+                            self.overscan(connection, sender_id, outputdevice, overscan)
+                                .await
+                        }
+                        8u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_vrr_policy({}, {})",
+                                sender_id,
+                                outputdevice,
+                                policy
+                            );
+                            self.set_vrr_policy(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                policy.try_into()?,
+                            )
+                            .await
+                        }
+                        9u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let rgb_range = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_rgb_range({}, {})",
+                                sender_id,
+                                outputdevice,
+                                rgb_range
+                            );
+                            self.set_rgb_range(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                rgb_range.try_into()?,
+                            )
+                            .await
+                        }
+                        10u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_primary_output({})",
+                                sender_id,
+                                output
+                            );
+                            self.set_primary_output(connection, sender_id, output).await
+                        }
+                        11u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let priority = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_priority({}, {})",
+                                sender_id,
+                                outputdevice,
+                                priority
+                            );
+                            self.set_priority(connection, sender_id, outputdevice, priority)
+                                .await
+                        }
+                        12u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let enable_hdr = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_high_dynamic_range({}, {})",
+                                sender_id,
+                                outputdevice,
+                                enable_hdr
+                            );
+                            self.set_high_dynamic_range(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                enable_hdr,
+                            )
+                            .await
+                        }
+                        13u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let sdr_brightness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_sdr_brightness({}, {})",
+                                sender_id,
+                                outputdevice,
+                                sdr_brightness
+                            );
+                            self.set_sdr_brightness(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                sdr_brightness,
+                            )
+                            .await
+                        }
+                        14u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let enable_wcg = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_wide_color_gamut({}, {})",
+                                sender_id,
+                                outputdevice,
+                                enable_wcg
+                            );
+                            self.set_wide_color_gamut(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                enable_wcg,
+                            )
+                            .await
+                        }
+                        15u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_auto_rotate_policy({}, {})",
+                                sender_id,
+                                outputdevice,
+                                policy
+                            );
+                            self.set_auto_rotate_policy(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                policy.try_into()?,
+                            )
+                            .await
+                        }
+                        16u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let profile_path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_icc_profile_path({}, \"{}\")",
+                                sender_id,
+                                outputdevice,
+                                profile_path
+                            );
+                            self.set_icc_profile_path(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                profile_path,
+                            )
+                            .await
+                        }
+                        17u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let max_peak_brightness = message.int()?;
+                            let max_frame_average_brightness = message.int()?;
+                            let min_brightness = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})",
+                                sender_id,
+                                outputdevice,
+                                max_peak_brightness,
+                                max_frame_average_brightness,
+                                min_brightness
+                            );
+                            self.set_brightness_overrides(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                max_peak_brightness,
+                                max_frame_average_brightness,
+                                min_brightness,
+                            )
+                            .await
+                        }
+                        18u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let gamut_wideness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_sdr_gamut_wideness({}, {})",
+                                sender_id,
+                                outputdevice,
+                                gamut_wideness
+                            );
+                            self.set_sdr_gamut_wideness(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                gamut_wideness,
+                            )
+                            .await
+                        }
+                        19u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let color_profile_source = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_color_profile_source({}, {})",
+                                sender_id,
+                                outputdevice,
+                                color_profile_source
+                            );
+                            self.set_color_profile_source(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                color_profile_source.try_into()?,
+                            )
+                            .await
+                        }
+                        20u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let brightness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_brightness({}, {})",
+                                sender_id,
+                                outputdevice,
+                                brightness
+                            );
+                            self.set_brightness(connection, sender_id, outputdevice, brightness)
+                                .await
+                        }
+                        21u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let preference = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_color_power_tradeoff({}, {})",
+                                sender_id,
+                                outputdevice,
+                                preference
+                            );
+                            self.set_color_power_tradeoff(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                preference.try_into()?,
+                            )
+                            .await
+                        }
+                        22u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let multiplier = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_dimming({}, {})",
+                                sender_id,
+                                outputdevice,
+                                multiplier
+                            );
+                            self.set_dimming(connection, sender_id, outputdevice, multiplier)
+                                .await
+                        }
+                        23u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let source = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_replication_source({}, \"{}\")",
+                                sender_id,
+                                outputdevice,
+                                source
+                            );
+                            self.set_replication_source(connection, sender_id, outputdevice, source)
+                                .await
+                        }
+                        24u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let allowed = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_ddc_ci_allowed({}, {})",
+                                sender_id,
+                                outputdevice,
+                                allowed
+                            );
+                            self.set_ddc_ci_allowed(connection, sender_id, outputdevice, allowed)
+                                .await
+                        }
+                        25u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let max_bpc = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_max_bits_per_color({}, {})",
+                                sender_id,
+                                outputdevice,
+                                max_bpc
+                            );
+                            self.set_max_bits_per_color(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                max_bpc,
+                            )
+                            .await
+                        }
+                        26u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_edr_policy({}, {})",
+                                sender_id,
+                                outputdevice,
+                                policy
+                            );
+                            self.set_edr_policy(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                policy.try_into()?,
+                            )
+                            .await
+                        }
+                        27u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let sharpness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_sharpness({}, {})",
+                                sender_id,
+                                outputdevice,
+                                sharpness
+                            );
+                            self.set_sharpness(connection, sender_id, outputdevice, sharpness)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2493,9 +3612,13 @@ pub mod kde_output_order_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_order_v1 {
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
-        pub trait KdeOutputOrderV1<C: waynest::Connection> {
+        pub trait KdeOutputOrderV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_order_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -2532,6 +3655,11 @@ pub mod kde_output_order_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_order_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2549,9 +3677,13 @@ pub mod kde_primary_output_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_primary_output_v1 {
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
-        pub trait KdePrimaryOutputV1<C: waynest::Connection> {
+        pub trait KdePrimaryOutputV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_primary_output_v1";
             const VERSION: u32 = 2u32;
             fn destroy(
@@ -2579,6 +3711,11 @@ pub mod kde_primary_output_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_primary_output_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2601,6 +3738,7 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_screen_edge_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2661,7 +3799,10 @@ pub mod kde_screen_edge_v1 {
             }
         }
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
-        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection> {
+        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
@@ -2701,6 +3842,36 @@ pub mod kde_screen_edge_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_screen_edge_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let border = message.uint()?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_screen_edge_manager_v1#{}.get_auto_hide_screen_edge({}, {}, {})",
+                                sender_id,
+                                id,
+                                border,
+                                surface
+                            );
+                            self.get_auto_hide_screen_edge(
+                                connection,
+                                sender_id,
+                                id,
+                                border.try_into()?,
+                                surface,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2722,9 +3893,13 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
     #[doc = "client to activate the screen edge."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_auto_hide_screen_edge_v1 {
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
-        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection> {
+        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
@@ -2757,6 +3932,27 @@ pub mod kde_screen_edge_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_auto_hide_screen_edge_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_auto_hide_screen_edge_v1#{}.deactivate()",
+                                sender_id,
+                            );
+                            self.deactivate(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_auto_hide_screen_edge_v1#{}.activate()",
+                                sender_id,
+                            );
+                            self.activate(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2768,6 +3964,7 @@ pub mod kde_screen_edge_v1 {
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_keystate {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2830,7 +4027,10 @@ pub mod keystate {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinKeystate<C: waynest::Connection> {
+        pub trait OrgKdeKwinKeystate<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_keystate";
             const VERSION: u32 = 5u32;
             fn fetch_states(
@@ -2863,6 +4063,16 @@ pub mod keystate {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_keystate#{}.fetch_states()", sender_id,);
+                            self.fetch_states(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_keystate#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2873,9 +4083,13 @@ pub mod keystate {
 #[allow(clippy::module_inception)]
 pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_virtual_desktop_management {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktopManagement<C: waynest::Connection> {
+        pub trait OrgKdePlasmaVirtualDesktopManagement<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
             const VERSION: u32 = 3u32;
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
@@ -2960,6 +4174,53 @@ pub mod org_kde_plasma_virtual_desktop {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let desktop_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop_management#{}.get_virtual_desktop({}, \"{}\")",
+                                sender_id,
+                                id,
+                                desktop_id
+                            );
+                            self.get_virtual_desktop(connection, sender_id, id, desktop_id)
+                                .await
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let position = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop_management#{}.request_create_virtual_desktop(\"{}\", {})",
+                                sender_id,
+                                name,
+                                position
+                            );
+                            self.request_create_virtual_desktop(
+                                connection, sender_id, name, position,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let desktop_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop_management#{}.request_remove_virtual_desktop(\"{}\")",
+                                sender_id,
+                                desktop_id
+                            );
+                            self.request_remove_virtual_desktop(connection, sender_id, desktop_id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2967,9 +4228,13 @@ pub mod org_kde_plasma_virtual_desktop {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_virtual_desktop {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktop<C: waynest::Connection> {
+        pub trait OrgKdePlasmaVirtualDesktop<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
             const VERSION: u32 = 3u32;
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
@@ -3061,6 +4326,14 @@ pub mod org_kde_plasma_virtual_desktop {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop#{}.request_activate()",
+                                sender_id,
+                            );
+                            self.request_activate(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3110,9 +4383,13 @@ pub mod outputmanagement {
     #[doc = "internally supported by the server."]
     #[doc = ""]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_outputmanagement {
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputmanagement<C: waynest::Connection> {
+        pub trait OrgKdeKwinOutputmanagement<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
             const VERSION: u32 = 4u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
@@ -3133,6 +4410,18 @@ pub mod outputmanagement {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputmanagement#{}.create_configuration({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_configuration(connection, sender_id, id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3152,6 +4441,7 @@ pub mod outputmanagement {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_outputconfiguration {
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
@@ -3179,7 +4469,10 @@ pub mod outputmanagement {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputconfiguration<C: waynest::Connection> {
+        pub trait OrgKdeKwinOutputconfiguration<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
             const VERSION: u32 = 4u32;
             #[doc = "Mark the output as enabled or disabled."]
@@ -3310,6 +4603,167 @@ pub mod outputmanagement {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let enable = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.enable({}, {})",
+                                sender_id,
+                                outputdevice,
+                                enable
+                            );
+                            self.enable(connection, sender_id, outputdevice, enable)
+                                .await
+                        }
+                        1u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let mode_id = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.mode({}, {})",
+                                sender_id,
+                                outputdevice,
+                                mode_id
+                            );
+                            self.mode(connection, sender_id, outputdevice, mode_id)
+                                .await
+                        }
+                        2u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let transform = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.transform({}, {})",
+                                sender_id,
+                                outputdevice,
+                                transform
+                            );
+                            self.transform(connection, sender_id, outputdevice, transform)
+                                .await
+                        }
+                        3u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.position({}, {}, {})",
+                                sender_id,
+                                outputdevice,
+                                x,
+                                y
+                            );
+                            self.position(connection, sender_id, outputdevice, x, y)
+                                .await
+                        }
+                        4u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let scale = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.scale({}, {})",
+                                sender_id,
+                                outputdevice,
+                                scale
+                            );
+                            self.scale(connection, sender_id, outputdevice, scale).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.apply()",
+                                sender_id,
+                            );
+                            self.apply(connection, sender_id).await
+                        }
+                        6u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let scale = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.scalef({}, {})",
+                                sender_id,
+                                outputdevice,
+                                scale
+                            );
+                            self.scalef(connection, sender_id, outputdevice, scale)
+                                .await
+                        }
+                        7u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let red = message.array()?;
+                            let green = message.array()?;
+                            let blue = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.colorcurves({}, array[{}], array[{}], array[{}])",
+                                sender_id,
+                                outputdevice,
+                                red.len(),
+                                green.len(),
+                                blue.len()
+                            );
+                            self.colorcurves(connection, sender_id, outputdevice, red, green, blue)
+                                .await
+                        }
+                        8u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        9u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let overscan = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.overscan({}, {})",
+                                sender_id,
+                                outputdevice,
+                                overscan
+                            );
+                            self.overscan(connection, sender_id, outputdevice, overscan)
+                                .await
+                        }
+                        10u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_outputconfiguration#{}.set_vrr_policy({}, {})",
+                                sender_id,
+                                outputdevice,
+                                policy
+                            );
+                            self.set_vrr_policy(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                policy.try_into()?,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3336,6 +4790,7 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_outputdevice {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -3502,7 +4957,10 @@ pub mod org_kde_kwin_outputdevice {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection> {
+        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
             const VERSION: u32 = 4u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -3767,9 +5225,13 @@ pub mod plasma_shell {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_shell {
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaShell<C: waynest::Connection> {
+        pub trait OrgKdePlasmaShell<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_shell";
             const VERSION: u32 = 8u32;
             #[doc = "Create a shell surface for an existing surface."]
@@ -3793,6 +5255,22 @@ pub mod plasma_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_shell#{}.get_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3810,6 +5288,7 @@ pub mod plasma_shell {
     #[doc = "org_kde_plasma_surface.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3893,7 +5372,10 @@ pub mod plasma_shell {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaSurface<C: waynest::Connection> {
+        pub trait OrgKdePlasmaSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_surface";
             const VERSION: u32 = 8u32;
             #[doc = "The org_kde_plasma_surface interface is removed from the"]
@@ -4119,6 +5601,110 @@ pub mod plasma_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_surface#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_output({})",
+                                sender_id,
+                                output
+                            );
+                            self.set_output(connection, sender_id, output).await
+                        }
+                        2u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.set_position(connection, sender_id, x, y).await
+                        }
+                        3u16 => {
+                            let role = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_role({})",
+                                sender_id,
+                                role
+                            );
+                            self.set_role(connection, sender_id, role).await
+                        }
+                        4u16 => {
+                            let flag = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_panel_behavior({})",
+                                sender_id,
+                                flag
+                            );
+                            self.set_panel_behavior(connection, sender_id, flag).await
+                        }
+                        5u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_skip_taskbar({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_taskbar(connection, sender_id, skip).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.panel_auto_hide_hide()",
+                                sender_id,
+                            );
+                            self.panel_auto_hide_hide(connection, sender_id).await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.panel_auto_hide_show()",
+                                sender_id,
+                            );
+                            self.panel_auto_hide_show(connection, sender_id).await
+                        }
+                        8u16 => {
+                            let takes_focus = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_panel_takes_focus({})",
+                                sender_id,
+                                takes_focus
+                            );
+                            self.set_panel_takes_focus(connection, sender_id, takes_focus)
+                                .await
+                        }
+                        9u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.set_skip_switcher({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_switcher(connection, sender_id, skip).await
+                        }
+                        10u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_surface#{}.open_under_cursor()",
+                                sender_id,
+                            );
+                            self.open_under_cursor(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4140,6 +5726,7 @@ pub mod plasma_window_management {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_window_management {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4224,7 +5811,10 @@ pub mod plasma_window_management {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement<C: waynest::Connection> {
+        pub trait OrgKdePlasmaWindowManagement<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
             const VERSION: u32 = 19u32;
             #[doc = "Tell the compositor to show/hide the desktop."]
@@ -4332,6 +5922,61 @@ pub mod plasma_window_management {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.show_desktop({})",
+                                sender_id,
+                                state
+                            );
+                            self.show_desktop(connection, sender_id, state).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let internal_window_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.get_window({}, {})",
+                                sender_id,
+                                id,
+                                internal_window_id
+                            );
+                            self.get_window(connection, sender_id, id, internal_window_id)
+                                .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let internal_window_uuid = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
+                                sender_id,
+                                id,
+                                internal_window_uuid
+                            );
+                            self.get_window_by_uuid(connection, sender_id, id, internal_window_uuid)
+                                .await
+                        }
+                        3u16 => {
+                            let stacking_order = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.get_stacking_order({})",
+                                sender_id,
+                                stacking_order
+                            );
+                            self.get_stacking_order(connection, sender_id, stacking_order)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4342,9 +5987,13 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_window {
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow<C: waynest::Connection> {
+        pub trait OrgKdePlasmaWindow<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_window";
             const VERSION: u32 = 18u32;
             #[doc = "Set window state."]
@@ -4683,6 +6332,166 @@ pub mod plasma_window_management {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let flags = message.uint()?;
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.set_state({}, {})",
+                                sender_id,
+                                flags,
+                                state
+                            );
+                            self.set_state(connection, sender_id, flags, state).await
+                        }
+                        1u16 => {
+                            let number = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.set_virtual_desktop({})",
+                                sender_id,
+                                number
+                            );
+                            self.set_virtual_desktop(connection, sender_id, number)
+                                .await
+                        }
+                        2u16 => {
+                            let panel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.uint()?;
+                            let y = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
+                                sender_id,
+                                panel,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_minimized_geometry(
+                                connection, sender_id, panel, x, y, width, height,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let panel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.unset_minimized_geometry({})",
+                                sender_id,
+                                panel
+                            );
+                            self.unset_minimized_geometry(connection, sender_id, panel)
+                                .await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.close()", sender_id,);
+                            self.close(connection, sender_id).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.request_move()", sender_id,);
+                            self.request_move(connection, sender_id).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.request_resize()", sender_id,);
+                            self.request_resize(connection, sender_id).await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        8u16 => {
+                            let fd = connection.fd()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.get_icon({})",
+                                sender_id,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd)
+                            );
+                            self.get_icon(connection, sender_id, fd).await
+                        }
+                        9u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.request_enter_virtual_desktop(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.request_enter_virtual_desktop(connection, sender_id, id)
+                                .await
+                        }
+                        10u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
+                                sender_id,
+                            );
+                            self.request_enter_new_virtual_desktop(connection, sender_id)
+                                .await
+                        }
+                        11u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.request_leave_virtual_desktop(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.request_leave_virtual_desktop(connection, sender_id, id)
+                                .await
+                        }
+                        12u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.request_enter_activity(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.request_enter_activity(connection, sender_id, id).await
+                        }
+                        13u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.request_leave_activity(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.request_leave_activity(connection, sender_id, id).await
+                        }
+                        14u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.send_to_output({})",
+                                sender_id,
+                                output
+                            );
+                            self.send_to_output(connection, sender_id, output).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4692,9 +6501,13 @@ pub mod plasma_window_management {
     #[doc = "The activation manager interface provides a way to get notified"]
     #[doc = "when an application is about to be activated."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_activation_feedback {
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback<C: waynest::Connection> {
+        pub trait OrgKdePlasmaActivationFeedback<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the activation manager object. The activation objects introduced"]
@@ -4726,6 +6539,14 @@ pub mod plasma_window_management {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_activation_feedback#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4733,9 +6554,13 @@ pub mod plasma_window_management {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_activation {
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation<C: waynest::Connection> {
+        pub trait OrgKdePlasmaActivation<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_activation";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
@@ -4772,6 +6597,11 @@ pub mod plasma_window_management {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_activation#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4782,9 +6612,13 @@ pub mod plasma_window_management {
     #[doc = "each window in the stacking order, and afterwards sends the done event"]
     #[doc = "and destroys this object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_stacking_order {
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection> {
+        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
             const VERSION: u32 = 17u32;
             fn window(
@@ -4824,9 +6658,13 @@ pub mod plasma_window_management {
 #[allow(clippy::module_inception)]
 pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_remote_access_manager {
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteAccessManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinRemoteAccessManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
             const VERSION: u32 = 1u32;
             fn get_buffer(
@@ -4861,6 +6699,29 @@ pub mod remote_access {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let internal_buffer_id = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_remote_access_manager#{}.get_buffer({}, {})",
+                                sender_id,
+                                buffer,
+                                internal_buffer_id
+                            );
+                            self.get_buffer(connection, sender_id, buffer, internal_buffer_id)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_remote_access_manager#{}.release()",
+                                sender_id,
+                            );
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4868,9 +6729,13 @@ pub mod remote_access {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_remote_buffer {
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection> {
+        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
             const VERSION: u32 = 1u32;
             fn release(
@@ -4901,6 +6766,11 @@ pub mod remote_access {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_remote_buffer#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4912,9 +6782,13 @@ pub mod remote_access {
 pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPaletteManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecorationPaletteManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -4934,6 +6808,22 @@ pub mod server_decoration_palette {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_server_decoration_palette_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4942,9 +6832,13 @@ pub mod server_decoration_palette {
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPalette<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecorationPalette<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
             const VERSION: u32 = 1u32;
             #[doc = "Color scheme that should be applied to the window decoration."]
@@ -4971,6 +6865,26 @@ pub mod server_decoration_palette {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let palette = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_server_decoration_palette#{}.set_palette(\"{}\")",
+                                sender_id,
+                                palette
+                            );
+                            self.set_palette(connection, sender_id, palette).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_server_decoration_palette#{}.release()",
+                                sender_id,
+                            );
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4988,6 +6902,7 @@ pub mod server_decoration {
     #[doc = ""]
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_manager {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5017,7 +6932,10 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecorationManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
             const VERSION: u32 = 1u32;
             #[doc = "When a client creates a server-side decoration object it indicates"]
@@ -5062,6 +6980,22 @@ pub mod server_decoration {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_server_decoration_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5069,6 +7003,7 @@ pub mod server_decoration {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5098,7 +7033,10 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecoration<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecoration<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration";
             const VERSION: u32 = 1u32;
             fn release(
@@ -5144,6 +7082,24 @@ pub mod server_decoration {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_server_decoration#{}.release()",
+                                sender_id,
+                            );
+                            self.release(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let mode = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_server_decoration#{}.request_mode({})",
+                                sender_id,
+                                mode
+                            );
+                            self.request_mode(connection, sender_id, mode).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5154,9 +7110,13 @@ pub mod server_decoration {
 #[allow(clippy::module_inception)]
 pub mod shadow {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_shadow_manager {
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadowManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinShadowManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -5188,6 +7148,39 @@ pub mod shadow {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow_manager#{}.unset({})",
+                                sender_id,
+                                surface
+                            );
+                            self.unset(connection, sender_id, surface).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_shadow_manager#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5195,9 +7188,13 @@ pub mod shadow {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_shadow {
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadow<C: waynest::Connection> {
+        pub trait OrgKdeKwinShadow<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_shadow";
             const VERSION: u32 = 2u32;
             fn commit(
@@ -5296,6 +7293,153 @@ pub mod shadow {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_shadow#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_left({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_left(connection, sender_id, buffer).await
+                        }
+                        2u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_top_left({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_top_left(connection, sender_id, buffer).await
+                        }
+                        3u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_top({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_top(connection, sender_id, buffer).await
+                        }
+                        4u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_top_right({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_top_right(connection, sender_id, buffer).await
+                        }
+                        5u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_right({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_right(connection, sender_id, buffer).await
+                        }
+                        6u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_bottom_right({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_bottom_right(connection, sender_id, buffer)
+                                .await
+                        }
+                        7u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_bottom({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_bottom(connection, sender_id, buffer).await
+                        }
+                        8u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.attach_bottom_left({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_bottom_left(connection, sender_id, buffer).await
+                        }
+                        9u16 => {
+                            let offset = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.set_left_offset({})",
+                                sender_id,
+                                offset
+                            );
+                            self.set_left_offset(connection, sender_id, offset).await
+                        }
+                        10u16 => {
+                            let offset = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.set_top_offset({})",
+                                sender_id,
+                                offset
+                            );
+                            self.set_top_offset(connection, sender_id, offset).await
+                        }
+                        11u16 => {
+                            let offset = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.set_right_offset({})",
+                                sender_id,
+                                offset
+                            );
+                            self.set_right_offset(connection, sender_id, offset).await
+                        }
+                        12u16 => {
+                            let offset = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_shadow#{}.set_bottom_offset({})",
+                                sender_id,
+                                offset
+                            );
+                            self.set_bottom_offset(connection, sender_id, offset).await
+                        }
+                        13u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_shadow#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5306,9 +7450,13 @@ pub mod shadow {
 #[allow(clippy::module_inception)]
 pub mod slide {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_slide_manager {
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlideManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinSlideManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -5334,6 +7482,34 @@ pub mod slide {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_slide_manager#{}.create({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.create(connection, sender_id, id, surface).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_slide_manager#{}.unset({})",
+                                sender_id,
+                                surface
+                            );
+                            self.unset(connection, sender_id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5346,6 +7522,7 @@ pub mod slide {
     #[doc = "The from argument provides a clue about where the slide animation"]
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_slide {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5374,7 +7551,10 @@ pub mod slide {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlide<C: waynest::Connection> {
+        pub trait OrgKdeKwinSlide<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_slide";
             const VERSION: u32 = 1u32;
             fn commit(
@@ -5409,6 +7589,36 @@ pub mod slide {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_slide#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let location = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_slide#{}.set_location({})",
+                                sender_id,
+                                location
+                            );
+                            self.set_location(connection, sender_id, location).await
+                        }
+                        2u16 => {
+                            let offset = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_kwin_slide#{}.set_offset({})",
+                                sender_id,
+                                offset
+                            );
+                            self.set_offset(connection, sender_id, offset).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_kwin_slide#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5419,9 +7629,13 @@ pub mod slide {
 #[allow(clippy::module_inception)]
 pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod qt_surface_extension {
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
-        pub trait QtSurfaceExtension<C: waynest::Connection> {
+        pub trait QtSurfaceExtension<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "qt_surface_extension";
             const VERSION: u32 = 1u32;
             fn get_extended_surface(
@@ -5441,6 +7655,23 @@ pub mod surface_extension {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "qt_surface_extension#{}.get_extended_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_extended_surface(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5448,6 +7679,7 @@ pub mod surface_extension {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod qt_extended_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5502,7 +7734,10 @@ pub mod surface_extension {
             }
         }
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
-        pub trait QtExtendedSurface<C: waynest::Connection> {
+        pub trait QtExtendedSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "qt_extended_surface";
             const VERSION: u32 = 1u32;
             fn update_generic_property(
@@ -5571,6 +7806,52 @@ pub mod surface_extension {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let value = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "qt_extended_surface#{}.update_generic_property(\"{}\", array[{}])",
+                                sender_id,
+                                name,
+                                value.len()
+                            );
+                            self.update_generic_property(connection, sender_id, name, value)
+                                .await
+                        }
+                        1u16 => {
+                            let orientation = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "qt_extended_surface#{}.set_content_orientation_mask({})",
+                                sender_id,
+                                orientation
+                            );
+                            self.set_content_orientation_mask(connection, sender_id, orientation)
+                                .await
+                        }
+                        2u16 => {
+                            let flags = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "qt_extended_surface#{}.set_window_flags({})",
+                                sender_id,
+                                flags
+                            );
+                            self.set_window_flags(connection, sender_id, flags).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("qt_extended_surface#{}.raise()", sender_id,);
+                            self.raise(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("qt_extended_surface#{}.lower()", sender_id,);
+                            self.lower(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5603,6 +7884,7 @@ pub mod text_input_unstable_v2 {
     #[doc = "client. A reset or entering a new widget on client side also"]
     #[doc = "invalidates all current state information."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_text_input_v2 {
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -5803,7 +8085,10 @@ pub mod text_input_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV2<C: waynest::Connection> {
+        pub trait ZwpTextInputV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_text_input_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
@@ -6188,6 +8473,115 @@ pub mod text_input_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v2#{}.enable({})", sender_id, surface);
+                            self.enable(connection, sender_id, surface).await
+                        }
+                        2u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v2#{}.disable({})", sender_id, surface);
+                            self.disable(connection, sender_id, surface).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v2#{}.show_input_panel()", sender_id,);
+                            self.show_input_panel(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v2#{}.hide_input_panel()", sender_id,);
+                            self.hide_input_panel(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let text = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let cursor = message.int()?;
+                            let anchor = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v2#{}.set_surrounding_text(\"{}\", {}, {})",
+                                sender_id,
+                                text,
+                                cursor,
+                                anchor
+                            );
+                            self.set_surrounding_text(connection, sender_id, text, cursor, anchor)
+                                .await
+                        }
+                        6u16 => {
+                            let hint = message.uint()?;
+                            let purpose = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v2#{}.set_content_type({}, {})",
+                                sender_id,
+                                hint,
+                                purpose
+                            );
+                            self.set_content_type(
+                                connection,
+                                sender_id,
+                                hint.try_into()?,
+                                purpose.try_into()?,
+                            )
+                            .await
+                        }
+                        7u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v2#{}.set_cursor_rectangle({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_cursor_rectangle(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        8u16 => {
+                            let language = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v2#{}.set_preferred_language(\"{}\")",
+                                sender_id,
+                                language
+                            );
+                            self.set_preferred_language(connection, sender_id, language)
+                                .await
+                        }
+                        9u16 => {
+                            let serial = message.uint()?;
+                            let reason = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v2#{}.update_state({}, {})",
+                                sender_id,
+                                serial,
+                                reason
+                            );
+                            self.update_state(connection, sender_id, serial, reason.try_into()?)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6196,9 +8590,13 @@ pub mod text_input_unstable_v2 {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_text_input_manager_v2 {
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV2<C: waynest::Connection> {
+        pub trait ZwpTextInputManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_text_input_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input_manager object."]
@@ -6225,6 +8623,27 @@ pub mod text_input_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_manager_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_manager_v2#{}.get_text_input({}, {})",
+                                sender_id,
+                                id,
+                                seat
+                            );
+                            self.get_text_input(connection, sender_id, id, seat).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6254,6 +8673,7 @@ pub mod text {
     #[doc = "and keysym. The text input can then ignore events from the input method"]
     #[doc = "which are based on an outdated state (for example after a reset)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_text_input {
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
@@ -6440,7 +8860,10 @@ pub mod text {
             }
         }
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
-        pub trait WlTextInput<C: waynest::Connection> {
+        pub trait WlTextInput<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_text_input";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the text-input object to be activated (typically when the"]
@@ -6748,6 +9171,124 @@ pub mod text {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input#{}.activate({}, {})",
+                                sender_id,
+                                seat,
+                                surface
+                            );
+                            self.activate(connection, sender_id, seat, surface).await
+                        }
+                        1u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_text_input#{}.deactivate({})", sender_id, seat);
+                            self.deactivate(connection, sender_id, seat).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_text_input#{}.show_input_panel()", sender_id,);
+                            self.show_input_panel(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_text_input#{}.hide_input_panel()", sender_id,);
+                            self.hide_input_panel(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_text_input#{}.reset()", sender_id,);
+                            self.reset(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let text = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let cursor = message.uint()?;
+                            let anchor = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input#{}.set_surrounding_text(\"{}\", {}, {})",
+                                sender_id,
+                                text,
+                                cursor,
+                                anchor
+                            );
+                            self.set_surrounding_text(connection, sender_id, text, cursor, anchor)
+                                .await
+                        }
+                        6u16 => {
+                            let hint = message.uint()?;
+                            let purpose = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input#{}.set_content_type({}, {})",
+                                sender_id,
+                                hint,
+                                purpose
+                            );
+                            self.set_content_type(connection, sender_id, hint, purpose)
+                                .await
+                        }
+                        7u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input#{}.set_cursor_rectangle({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_cursor_rectangle(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        8u16 => {
+                            let language = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input#{}.set_preferred_language(\"{}\")",
+                                sender_id,
+                                language
+                            );
+                            self.set_preferred_language(connection, sender_id, language)
+                                .await
+                        }
+                        9u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_text_input#{}.commit_state({})", sender_id, serial);
+                            self.commit_state(connection, sender_id, serial).await
+                        }
+                        10u16 => {
+                            let button = message.uint()?;
+                            let index = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input#{}.invoke_action({}, {})",
+                                sender_id,
+                                button,
+                                index
+                            );
+                            self.invoke_action(connection, sender_id, button, index)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6756,9 +9297,13 @@ pub mod text {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_text_input_manager {
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
-        pub trait WlTextInputManager<C: waynest::Connection> {
+        pub trait WlTextInputManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_text_input_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a new text-input object."]
@@ -6778,6 +9323,18 @@ pub mod text {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_text_input_manager#{}.create_text_input({})",
+                                sender_id,
+                                id
+                            );
+                            self.create_text_input(connection, sender_id, id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6788,6 +9345,7 @@ pub mod text {
 #[allow(clippy::module_inception)]
 pub mod wl_eglstream_controller {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_eglstream_controller {
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
@@ -6854,7 +9412,10 @@ pub mod wl_eglstream_controller {
             }
         }
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
-        pub trait WlEglstreamController<C: waynest::Connection> {
+        pub trait WlEglstreamController<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_eglstream_controller";
             const VERSION: u32 = 2u32;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
@@ -6886,6 +9447,53 @@ pub mod wl_eglstream_controller {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let wl_surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let wl_resource = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_eglstream_controller#{}.attach_eglstream_consumer({}, {})",
+                                sender_id,
+                                wl_surface,
+                                wl_resource
+                            );
+                            self.attach_eglstream_consumer(
+                                connection,
+                                sender_id,
+                                wl_surface,
+                                wl_resource,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let wl_surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let wl_resource = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let attribs = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wl_eglstream_controller#{}.attach_eglstream_consumer_attribs({}, {}, array[{}])",
+                                sender_id,
+                                wl_surface,
+                                wl_resource,
+                                attribs.len()
+                            );
+                            self.attach_eglstream_consumer_attribs(
+                                connection,
+                                sender_id,
+                                wl_surface,
+                                wl_resource,
+                                attribs,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -6900,6 +9508,7 @@ pub mod zkde_screencast_unstable_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zkde_screencast_unstable_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6929,7 +9538,10 @@ pub mod zkde_screencast_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection> {
+        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
             const VERSION: u32 = 5u32;
             fn stream_output(
@@ -7001,6 +9613,142 @@ pub mod zkde_screencast_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let stream = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let pointer = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_output({}, {}, {})",
+                                sender_id,
+                                stream,
+                                output,
+                                pointer
+                            );
+                            self.stream_output(connection, sender_id, stream, output, pointer)
+                                .await
+                        }
+                        1u16 => {
+                            let stream = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let window_uuid = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let pointer = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_window({}, \"{}\", {})",
+                                sender_id,
+                                stream,
+                                window_uuid,
+                                pointer
+                            );
+                            self.stream_window(connection, sender_id, stream, window_uuid, pointer)
+                                .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zkde_screencast_unstable_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let stream = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let scale = message.fixed()?;
+                            let pointer = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_virtual_output({}, \"{}\", {}, {}, {}, {})",
+                                sender_id,
+                                stream,
+                                name,
+                                width,
+                                height,
+                                scale,
+                                pointer
+                            );
+                            self.stream_virtual_output(
+                                connection, sender_id, stream, name, width, height, scale, pointer,
+                            )
+                            .await
+                        }
+                        4u16 => {
+                            let stream = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            let scale = message.fixed()?;
+                            let pointer = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_region({}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                stream,
+                                x,
+                                y,
+                                width,
+                                height,
+                                scale,
+                                pointer
+                            );
+                            self.stream_region(
+                                connection, sender_id, stream, x, y, width, height, scale, pointer,
+                            )
+                            .await
+                        }
+                        5u16 => {
+                            let stream = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let scale = message.fixed()?;
+                            let pointer = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zkde_screencast_unstable_v1#{}.stream_virtual_output_with_description({}, \"{}\", \"{}\", {}, {}, {}, {})",
+                                sender_id,
+                                stream,
+                                name,
+                                description,
+                                width,
+                                height,
+                                scale,
+                                pointer
+                            );
+                            self.stream_virtual_output_with_description(
+                                connection,
+                                sender_id,
+                                stream,
+                                name,
+                                description,
+                                width,
+                                height,
+                                scale,
+                                pointer,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7008,9 +9756,13 @@ pub mod zkde_screencast_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastStreamUnstableV1<C: waynest::Connection> {
+        pub trait ZkdeScreencastStreamUnstableV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
             const VERSION: u32 = 5u32;
             fn close(
@@ -7054,6 +9806,14 @@ pub mod zkde_screencast_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zkde_screencast_stream_unstable_v1#{}.close()",
+                                sender_id,
+                            );
+                            self.close(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

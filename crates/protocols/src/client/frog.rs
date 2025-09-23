@@ -7,9 +7,13 @@
 pub mod frog_color_management_v1 {
     #[doc = "The color management factory singleton creates color managed surface objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_color_management_factory_v1 {
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
-        pub trait FrogColorManagementFactoryV1<C: waynest::Connection> {
+        pub trait FrogColorManagementFactoryV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_color_management_factory_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -38,6 +42,7 @@ pub mod frog_color_management_v1 {
     #[doc = "of the frog_color_managed_surface interface it exposes."]
     #[doc = "Including all known enums associated with a given version."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_color_managed_surface {
         #[doc = "Extended information on the transfer functions described"]
         #[doc = "here can be found in the Khronos Data Format specification:"]
@@ -129,7 +134,10 @@ pub mod frog_color_management_v1 {
             }
         }
         #[doc = "Trait to implement the frog_color_managed_surface interface. See the module level documentation for more info"]
-        pub trait FrogColorManagedSurface<C: waynest::Connection> {
+        pub trait FrogColorManagedSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_color_managed_surface";
             const VERSION: u32 = 1u32;
             #[doc = "Destroying the color managed surface resets all known color"]
@@ -242,6 +250,7 @@ pub mod frog_fifo_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_fifo_manager_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -267,7 +276,10 @@ pub mod frog_fifo_v1 {
             }
         }
         #[doc = "Trait to implement the frog_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoManagerV1<C: waynest::Connection> {
+        pub trait FrogFifoManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_fifo_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -304,6 +316,7 @@ pub mod frog_fifo_v1 {
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_fifo_surface_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -329,7 +342,10 @@ pub mod frog_fifo_v1 {
             }
         }
         #[doc = "Trait to implement the frog_fifo_surface_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoSurfaceV1<C: waynest::Connection> {
+        pub trait FrogFifoSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_fifo_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]

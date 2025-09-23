@@ -1,6 +1,7 @@
 #[allow(clippy::module_inception)]
 pub mod drm {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_drm {
         #[repr(u32)]
         #[non_exhaustive]
@@ -189,7 +190,10 @@ pub mod drm {
             }
         }
         #[doc = "Trait to implement the wl_drm interface. See the module level documentation for more info"]
-        pub trait WlDrm<C: waynest::Connection> {
+        pub trait WlDrm<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_drm";
             const VERSION: u32 = 2u32;
             fn authenticate(

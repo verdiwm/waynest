@@ -4,6 +4,7 @@
 pub mod cosmic_a11y_v1 {
     #[doc = "Manager to toggle accessibility features."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod cosmic_a11y_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -87,7 +88,10 @@ pub mod cosmic_a11y_v1 {
             }
         }
         #[doc = "Trait to implement the cosmic_a11y_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicA11yManagerV1<C: waynest::Connection> {
+        pub trait CosmicA11yManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Sets the state of the screen magnifier."]
@@ -198,6 +202,56 @@ pub mod cosmic_a11y_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let active = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.set_magnifier({})",
+                                sender_id,
+                                active
+                            );
+                            self.set_magnifier(connection, sender_id, active.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            let inverted = message.uint()?;
+                            let filter = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.set_screen_filter({}, {})",
+                                sender_id,
+                                inverted,
+                                filter
+                            );
+                            self.set_screen_filter(
+                                connection,
+                                sender_id,
+                                inverted.try_into()?,
+                                filter.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let inverted = message.uint()?;
+                            let filter = message.uint()?;
+                            let filter_state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.set_screen_filter2({}, {}, {})",
+                                sender_id,
+                                inverted,
+                                filter,
+                                filter_state
+                            );
+                            self.set_screen_filter2(
+                                connection,
+                                sender_id,
+                                inverted.try_into()?,
+                                filter.try_into()?,
+                                filter_state.try_into()?,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -215,9 +269,13 @@ pub mod cosmic_a11y_v1 {
 pub mod cosmic_atspi_v1 {
     #[doc = "Manager for adding grabs and monitoring key input."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod cosmic_atspi_manager_v1 {
         #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicAtspiManagerV1<C: waynest::Connection> {
+        pub trait CosmicAtspiManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Any grabs that are still active will be disabled."]
@@ -276,6 +334,57 @@ pub mod cosmic_atspi_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("cosmic_atspi_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let mods = message.uint()?;
+                            let virtual_mods = message.array()?;
+                            let key = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_atspi_manager_v1#{}.add_key_grab({}, array[{}], {})",
+                                sender_id,
+                                mods,
+                                virtual_mods.len(),
+                                key
+                            );
+                            self.add_key_grab(connection, sender_id, mods, virtual_mods, key)
+                                .await
+                        }
+                        2u16 => {
+                            let mods = message.uint()?;
+                            let virtual_mods = message.array()?;
+                            let key = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_atspi_manager_v1#{}.remove_key_grab({}, array[{}], {})",
+                                sender_id,
+                                mods,
+                                virtual_mods.len(),
+                                key
+                            );
+                            self.remove_key_grab(connection, sender_id, mods, virtual_mods, key)
+                                .await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_atspi_manager_v1#{}.grab_keyboard()",
+                                sender_id,
+                            );
+                            self.grab_keyboard(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_atspi_manager_v1#{}.ungrab_keyboard()",
+                                sender_id,
+                            );
+                            self.ungrab_keyboard(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -289,9 +398,13 @@ pub mod cosmic_atspi_v1 {
 pub mod cosmic_image_source_unstable_v1 {
     #[doc = "A manager for creating image source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for a workspaces. Images captured from this source"]
@@ -323,6 +436,31 @@ pub mod cosmic_image_source_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_image_capture_source_manager_v1#{}.create_source({}, {})",
+                                sender_id,
+                                source,
+                                output
+                            );
+                            self.create_source(connection, sender_id, source, output)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_image_capture_source_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -341,6 +479,7 @@ pub mod cosmic_image_source_unstable_v1 {
 pub mod cosmic_output_management_unstable_v1 {
     #[doc = "This interface provides extension points for wlr-output-management types."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -364,7 +503,10 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Gets an extension object for zwlr_output_head_v1."]
@@ -433,6 +575,76 @@ pub mod cosmic_output_management_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let extended = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let head = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_manager_v1#{}.get_head({}, {})",
+                                sender_id,
+                                extended,
+                                head
+                            );
+                            self.get_head(connection, sender_id, extended, head).await
+                        }
+                        1u16 => {
+                            let extended = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let config = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_manager_v1#{}.get_configuration({}, {})",
+                                sender_id,
+                                extended,
+                                config
+                            );
+                            self.get_configuration(connection, sender_id, extended, config)
+                                .await
+                        }
+                        2u16 => {
+                            let extended = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let config_head = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_manager_v1#{}.get_configuration_head({}, {})",
+                                sender_id,
+                                extended,
+                                config_head
+                            );
+                            self.get_configuration_head(
+                                connection,
+                                sender_id,
+                                extended,
+                                config_head,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_output_manager_v1#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let head = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_manager_v1#{}.set_xwayland_primary({})",
+                                sender_id,
+                                head.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_xwayland_primary(connection, sender_id, head).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -446,6 +658,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = "Properties sent via this interface are applied atomically via the wlr_output_manager.done event."]
     #[doc = "No guarantees are made regarding the order in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_head_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -502,7 +715,10 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputHeadV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputHeadV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_head_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Using this request a client can tell the compositor that it is not interested"]
@@ -588,6 +804,11 @@ pub mod cosmic_output_management_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_output_head_v1#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -598,6 +819,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "Adds additional parameters to be tested/applyed via the original zwlr_output_configuration_v1."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_configuration_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -624,7 +846,10 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputConfigurationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_configuration_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Enable a head mirroring another."]
@@ -682,6 +907,35 @@ pub mod cosmic_output_management_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let head = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let mirroring = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_configuration_v1#{}.mirror_head({}, {}, {})",
+                                sender_id,
+                                id,
+                                head,
+                                mirroring
+                            );
+                            self.mirror_head(connection, sender_id, id, head, mirroring)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_configuration_v1#{}.release()",
+                                sender_id,
+                            );
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -695,9 +949,13 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = "Once the original `zwlr_output_configuration_head_v1` is destroyed this object will"]
     #[doc = "become inert and all requests except `release` will be ignored."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_configuration_head_v1 {
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationHeadV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputConfigurationHeadV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
             const VERSION: u32 = 2u32;
             #[doc = "This request sets the head's scale multiplied by 1000 for additional precision."]
@@ -745,6 +1003,35 @@ pub mod cosmic_output_management_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let scale_1000 = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_configuration_head_v1#{}.set_scale_1000({})",
+                                sender_id,
+                                scale_1000
+                            );
+                            self.set_scale_1000(connection, sender_id, scale_1000).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_configuration_head_v1#{}.release()",
+                                sender_id,
+                            );
+                            self.release(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_configuration_head_v1#{}.set_adaptive_sync_ext({})",
+                                sender_id,
+                                state
+                            );
+                            self.set_adaptive_sync_ext(connection, sender_id, state.try_into()?)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -761,9 +1048,13 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[doc = "You can request a notification object for any of your zwlr_layer_surface_v1"]
     #[doc = "surfaces, which will then emit overlap events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_overlap_notify_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotifyV1<C: waynest::Connection> {
+        pub trait ZcosmicOverlapNotifyV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Requests notifications for toplevels and layer-surfaces entering and leaving the"]
@@ -789,6 +1080,28 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let overlap_notification = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let layer_surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_overlap_notify_v1#{}.notify_on_overlap({}, {})",
+                                sender_id,
+                                overlap_notification,
+                                layer_surface
+                            );
+                            self.notify_on_overlap(
+                                connection,
+                                sender_id,
+                                overlap_notification,
+                                layer_surface,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -796,9 +1109,13 @@ pub mod cosmic_overlap_notify_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_overlap_notification_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotificationV1<C: waynest::Connection> {
+        pub trait ZcosmicOverlapNotificationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request should be called when the client has no interest in overlap"]
@@ -886,6 +1203,14 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_overlap_notification_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -905,6 +1230,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_manager_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -940,7 +1266,10 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyManagerV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopyManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capturing session for an image source."]
@@ -987,6 +1316,64 @@ pub mod cosmic_screencopy_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let options = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_manager_v2#{}.create_session({}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                options
+                            );
+                            self.create_session(
+                                connection,
+                                sender_id,
+                                session,
+                                source,
+                                options.try_into()?,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let source = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let pointer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let options = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session({}, {}, {}, {})",
+                                sender_id,
+                                session,
+                                source,
+                                pointer,
+                                options
+                            );
+                            self.create_pointer_cursor_session(
+                                connection, sender_id, session, source, pointer, options,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_manager_v2#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1010,9 +1397,13 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_session_v2 {
         #[doc = "Trait to implement the zcosmic_screencopy_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopySessionV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopySessionV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capture frame for this session."]
@@ -1129,6 +1520,26 @@ pub mod cosmic_screencopy_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.create_frame({})",
+                                sender_id,
+                                frame
+                            );
+                            self.create_frame(connection, sender_id, frame).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1146,6 +1557,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = ""]
     #[doc = "If the screen capture fails, the compositor will send the failed event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_frame_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1199,7 +1611,10 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_frame_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyFrameV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopyFrameV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_frame_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1271,7 +1686,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                transform: u32,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
                 async move { Ok(()) }
@@ -1352,6 +1767,45 @@ pub mod cosmic_screencopy_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_screencopy_frame_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_frame_v2#{}.attach_buffer({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.attach_buffer(connection, sender_id, buffer).await
+                        }
+                        2u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_frame_v2#{}.damage_buffer({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.damage_buffer(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_screencopy_frame_v2#{}.capture()", sender_id,);
+                            self.capture(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1361,6 +1815,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_cursor_session_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1384,7 +1839,10 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_cursor_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyCursorSessionV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopyCursorSessionV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_cursor_session_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1484,6 +1942,27 @@ pub mod cosmic_screencopy_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.get_screencopy_session({})",
+                                sender_id,
+                                session
+                            );
+                            self.get_screencopy_session(connection, sender_id, session)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1500,9 +1979,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = "It thus extends ext_foreign_toplevel_v1 to provide more information"]
     #[doc = "and actions on foreign toplevels."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_toplevel_info_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelInfoV1<C: waynest::Connection> {
+        pub trait ZcosmicToplevelInfoV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -1589,6 +2072,33 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_info_v1#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let cosmic_toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let foreign_toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_info_v1#{}.get_cosmic_toplevel({}, {})",
+                                sender_id,
+                                cosmic_toplevel,
+                                foreign_toplevel
+                            );
+                            self.get_cosmic_toplevel(
+                                connection,
+                                sender_id,
+                                cosmic_toplevel,
+                                foreign_toplevel,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1601,6 +2111,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = "Each toplevel has a list of outputs it is visible on, exposed to the"]
     #[doc = "client via the output_enter and output_leave events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_toplevel_handle_v1 {
         #[doc = "The different states that a toplevel may have. These have the same"]
         #[doc = "meaning as the states with the same names defined in xdg-toplevel"]
@@ -1638,7 +2149,10 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelHandleV1<C: waynest::Connection> {
+        pub trait ZcosmicToplevelHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request should be called either when the client will no longer"]
@@ -1822,6 +2336,11 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_handle_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1835,6 +2354,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
     #[doc = "to preform typical actions on open toplevels. The compositor is in all"]
     #[doc = "cases free to ignore the request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_toplevel_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1900,7 +2420,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicToplevelManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
             const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client has finished using the"]
@@ -2074,6 +2597,213 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.close({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.close(connection, sender_id, toplevel).await
+                        }
+                        2u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.activate({}, {})",
+                                sender_id,
+                                toplevel,
+                                seat
+                            );
+                            self.activate(connection, sender_id, toplevel, seat).await
+                        }
+                        3u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.set_maximized({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.set_maximized(connection, sender_id, toplevel).await
+                        }
+                        4u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.unset_maximized({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.unset_maximized(connection, sender_id, toplevel).await
+                        }
+                        5u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.set_minimized({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.set_minimized(connection, sender_id, toplevel).await
+                        }
+                        6u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.unset_minimized({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.unset_minimized(connection, sender_id, toplevel).await
+                        }
+                        7u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.set_fullscreen({}, {})",
+                                sender_id,
+                                toplevel,
+                                output
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_fullscreen(connection, sender_id, toplevel, output)
+                                .await
+                        }
+                        8u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.unset_fullscreen({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.unset_fullscreen(connection, sender_id, toplevel).await
+                        }
+                        9u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                surface,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_rectangle(
+                                connection, sender_id, toplevel, surface, x, y, width, height,
+                            )
+                            .await
+                        }
+                        10u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.move_to_workspace({}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                workspace,
+                                output
+                            );
+                            self.move_to_workspace(
+                                connection, sender_id, toplevel, workspace, output,
+                            )
+                            .await
+                        }
+                        11u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.set_sticky({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.set_sticky(connection, sender_id, toplevel).await
+                        }
+                        12u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.unset_sticky({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.unset_sticky(connection, sender_id, toplevel).await
+                        }
+                        13u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.move_to_ext_workspace({}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                workspace,
+                                output
+                            );
+                            self.move_to_ext_workspace(
+                                connection, sender_id, toplevel, workspace, output,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2103,9 +2833,13 @@ pub mod cosmic_workspace_unstable_v1 {
     #[doc = "After a client binds the zcosmic_workspace_manager_v1, each workspace will be"]
     #[doc = "sent via the workspace event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "The client must send this request after it has finished sending other"]
@@ -2186,6 +2920,16 @@ pub mod cosmic_workspace_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_manager_v1#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_manager_v1#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2204,6 +2948,7 @@ pub mod cosmic_workspace_unstable_v1 {
     #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
     #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_group_handle_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2227,7 +2972,10 @@ pub mod cosmic_workspace_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceGroupHandleV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceGroupHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_group_handle_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor create a new workspace with the given name."]
@@ -2338,6 +3086,27 @@ pub mod cosmic_workspace_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let workspace = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.create_workspace(\"{}\")",
+                                sender_id,
+                                workspace
+                            );
+                            self.create_workspace(connection, sender_id, workspace)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2358,6 +3127,7 @@ pub mod cosmic_workspace_unstable_v1 {
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_handle_v1 {
         #[doc = "The different states that a workspace can have."]
         #[repr(u32)]
@@ -2444,7 +3214,10 @@ pub mod cosmic_workspace_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_handle_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroys the zcosmic_workspace_handle_v1 object."]
@@ -2611,6 +3384,52 @@ pub mod cosmic_workspace_unstable_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v1#{}.activate()", sender_id,);
+                            self.activate(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.deactivate()",
+                                sender_id,
+                            );
+                            self.deactivate(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v1#{}.remove()", sender_id,);
+                            self.remove(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.rename(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.rename(connection, sender_id, name).await
+                        }
+                        5u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.set_tiling_state({})",
+                                sender_id,
+                                state
+                            );
+                            self.set_tiling_state(connection, sender_id, state.try_into()?)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2625,6 +3444,7 @@ pub mod cosmic_workspace_unstable_v2 {
     #[doc = "The caller should call `get_cosmic_workspace` whenever a new ext workspace is"]
     #[doc = "created."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_manager_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2648,7 +3468,10 @@ pub mod cosmic_workspace_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV2<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Request a `zcosmic_workspace_handle_v2` extension object for an existing"]
@@ -2680,6 +3503,33 @@ pub mod cosmic_workspace_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let cosmic_workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_manager_v2#{}.get_cosmic_workspace({}, {})",
+                                sender_id,
+                                cosmic_workspace,
+                                workspace
+                            );
+                            self.get_cosmic_workspace(
+                                connection,
+                                sender_id,
+                                cosmic_workspace,
+                                workspace,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_manager_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2700,6 +3550,7 @@ pub mod cosmic_workspace_unstable_v2 {
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_handle_v2 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "rename request is available"] const Rename = 1u32 ; # [doc = "set_tiling_state request is available"] const SetTilingState = 2u32 ; # [doc = "pin and unpin requests are available"] const Pin = 3u32 ; # [doc = "move_before and move_after requests are available"] const Move = 4u32 ; } }
         impl TryFrom<u32> for WorkspaceCapabilities {
@@ -2750,7 +3601,10 @@ pub mod cosmic_workspace_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_handle_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV2<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceHandleV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
             const VERSION: u32 = 2u32;
             #[doc = "This request should be called either when the client will no longer"]
@@ -2882,6 +3736,74 @@ pub mod cosmic_workspace_unstable_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.rename(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.rename(connection, sender_id, name).await
+                        }
+                        2u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.set_tiling_state({})",
+                                sender_id,
+                                state
+                            );
+                            self.set_tiling_state(connection, sender_id, state.try_into()?)
+                                .await
+                        }
+                        3u16 => {
+                            let other_workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let axis = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.move_before({}, {})",
+                                sender_id,
+                                other_workspace,
+                                axis
+                            );
+                            self.move_before(connection, sender_id, other_workspace, axis)
+                                .await
+                        }
+                        4u16 => {
+                            let other_workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let axis = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.move_after({}, {})",
+                                sender_id,
+                                other_workspace,
+                                axis
+                            );
+                            self.move_after(connection, sender_id, other_workspace, axis)
+                                .await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v2#{}.pin()", sender_id,);
+                            self.pin(connection, sender_id).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v2#{}.unpin()", sender_id,);
+                            self.unpin(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

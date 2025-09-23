@@ -8,6 +8,7 @@ pub mod hyprland_ctm_control_v1 {
     #[doc = "If any changes are done, once this object is destroyed, CTMs are reset back to"]
     #[doc = "an identity matrix."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_ctm_control_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -31,7 +32,10 @@ pub mod hyprland_ctm_control_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandCtmControlManagerV1<C: waynest::Connection> {
+        pub trait HyprlandCtmControlManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Set a CTM for a wl_output."]
@@ -107,9 +111,13 @@ pub mod hyprland_ctm_control_v1 {
 pub mod hyprland_focus_grab_v1 {
     #[doc = "This interface allows a client to create surface grab objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_focus_grab_manager_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabManagerV1<C: waynest::Connection> {
+        pub trait HyprlandFocusGrabManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a surface grab object."]
@@ -150,9 +158,13 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "event. The same will happen if another focus grab or similar action"]
     #[doc = "is started at the compositor's discretion."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_focus_grab_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabV1<C: waynest::Connection> {
+        pub trait HyprlandFocusGrabV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_focus_grab_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Add a surface to the whitelist. Destroying the surface is treated the"]
@@ -223,6 +235,7 @@ pub mod hyprland_focus_grab_v1 {
 pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object is a manager which offers requests to create global shortcuts."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_global_shortcuts_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -246,7 +259,10 @@ pub mod hyprland_global_shortcuts_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutsManagerV1<C: waynest::Connection> {
+        pub trait HyprlandGlobalShortcutsManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Register a new global shortcut."]
@@ -283,9 +299,13 @@ pub mod hyprland_global_shortcuts_v1 {
     }
     #[doc = "This object represents a single shortcut."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_global_shortcut_v1 {
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutV1<C: waynest::Connection> {
+        pub trait HyprlandGlobalShortcutV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
@@ -327,9 +347,13 @@ pub mod hyprland_lock_notify_v1 {
     #[doc = "This interface allows clients to monitor whether the wayland session is"]
     #[doc = "locked or unlocked."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_lock_notifier_v1 {
         #[doc = "Trait to implement the hyprland_lock_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandLockNotifierV1<C: waynest::Connection> {
+        pub trait HyprlandLockNotifierV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_lock_notifier_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the manager object. All objects created via this interface"]
@@ -371,9 +395,13 @@ pub mod hyprland_lock_notify_v1 {
     #[doc = "a lock screen frame on every output, which corresponds to the \"locked\""]
     #[doc = "event of ext-session-lock."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_lock_notification_v1 {
         #[doc = "Trait to implement the hyprland_lock_notification_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandLockNotificationV1<C: waynest::Connection> {
+        pub trait HyprlandLockNotificationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_lock_notification_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the notification object."]
@@ -412,6 +440,7 @@ pub mod hyprland_lock_notify_v1 {
 pub mod hyprland_surface_v1 {
     #[doc = "This interface allows a client to create hyprland surface objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_surface_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -435,7 +464,10 @@ pub mod hyprland_surface_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_surface_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceManagerV1<C: waynest::Connection> {
+        pub trait HyprlandSurfaceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_surface_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Create a hyprland surface object for the given wayland surface."]
@@ -469,6 +501,7 @@ pub mod hyprland_surface_v1 {
     #[doc = "Once the wl_surface has been destroyed, the hyprland surface object must be"]
     #[doc = "destroyed as well. All other operations are a protocol error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -495,7 +528,10 @@ pub mod hyprland_surface_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceV1<C: waynest::Connection> {
+        pub trait HyprlandSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_surface_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Sets a multiplier for the overall opacity of the surface."]
@@ -564,9 +600,13 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_export_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportManagerV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelExportManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Capture the next frame of a toplevel. (window)"]
@@ -630,6 +670,7 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_export_frame_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -668,7 +709,10 @@ pub mod hyprland_toplevel_export_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_toplevel_export_frame_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportFrameV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelExportFrameV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_export_frame_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Copy the frame to the supplied buffer. The buffer must have the"]
@@ -707,7 +751,7 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                format: u32,
+                format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
                 stride: u32,
@@ -796,9 +840,13 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[doc = "This object is a manager which offers requests to retrieve a window address"]
     #[doc = "for a toplevel."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_mapping_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_mapping_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelMappingManagerV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelMappingManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_mapping_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Get the window address for a toplevel."]
@@ -841,9 +889,13 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[doc = "associated with the toplevel."]
     #[doc = "Should the mapping fail, the `failed` event will be sent."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_window_mapping_handle_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_window_mapping_handle_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelWindowMappingHandleV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelWindowMappingHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_window_mapping_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the handle. This request can be sent at any time by the client."]

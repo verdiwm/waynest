@@ -3,6 +3,7 @@
 #[allow(clippy::module_inception)]
 pub mod treeland_capture_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_session_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -44,7 +45,10 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureSessionV1<C: waynest::Connection> {
+        pub trait TreelandCaptureSessionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Unreferences the frame. This request must be called as soon as it's no longer valid."]
@@ -130,6 +134,7 @@ pub mod treeland_capture_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_frame_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInverted = 1u32 ; } }
         impl TryFrom<u32> for Flags {
@@ -144,7 +149,10 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureFrameV1<C: waynest::Connection> {
+        pub trait TreelandCaptureFrameV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -171,7 +179,7 @@ pub mod treeland_capture_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                format: u32,
+                format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
                 stride: u32,
@@ -205,6 +213,7 @@ pub mod treeland_capture_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_context_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct SourceType : u32 { # [doc = "output source type"] const Output = 1u32 ; # [doc = "window source type"] const Window = 2u32 ; # [doc = "region source type"] const Region = 4u32 ; } }
         impl TryFrom<u32> for SourceType {
@@ -249,7 +258,10 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureContextV1<C: waynest::Connection> {
+        pub trait TreelandCaptureContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -318,9 +330,13 @@ pub mod treeland_capture_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_capture_manager_v1 {
         #[doc = "Trait to implement the treeland_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureManagerV1<C: waynest::Connection> {
+        pub trait TreelandCaptureManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the treeland_capture_manager_v1 object."]
@@ -353,9 +369,13 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dde_shell_manager_v1 {
         #[doc = "Trait to implement the treeland_dde_shell_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellManagerV1<C: waynest::Connection> {
+        pub trait TreelandDdeShellManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dde_shell_manager_v1";
             const VERSION: u32 = 1u32;
             fn get_window_overlap_checker(
@@ -433,6 +453,7 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_window_overlap_checker {
         bitflags::bitflags! { # [doc = "same layershell"] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
@@ -447,7 +468,10 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_window_overlap_checker interface. See the module level documentation for more info"]
-        pub trait TreelandWindowOverlapChecker<C: waynest::Connection> {
+        pub trait TreelandWindowOverlapChecker<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_window_overlap_checker";
             const VERSION: u32 = 1u32;
             #[doc = "This interface is used to receive the detected surface."]
@@ -507,6 +531,7 @@ pub mod treeland_dde_shell_v1 {
     #[doc = "treeland_dde_shell_surface_v1.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dde_shell_surface_v1 {
         #[doc = "These values indicate which roles a surface can be rendered in, They"]
         #[doc = "are ordered by z depth."]
@@ -536,7 +561,10 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_shell_surface_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection> {
+        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dde_shell_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
@@ -638,6 +666,7 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to monitor special events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dde_active_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -662,7 +691,10 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_active_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeActiveV1<C: waynest::Connection> {
+        pub trait TreelandDdeActiveV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dde_active_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -699,9 +731,13 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to control multitaskview."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_multitaskview_v1 {
         #[doc = "Trait to implement the treeland_multitaskview_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandMultitaskviewV1<C: waynest::Connection> {
+        pub trait TreelandMultitaskviewV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_multitaskview_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -725,9 +761,13 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to pick window and return credentials."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_window_picker_v1 {
         #[doc = "Trait to implement the treeland_window_picker_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowPickerV1<C: waynest::Connection> {
+        pub trait TreelandWindowPickerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_window_picker_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -759,9 +799,13 @@ pub mod treeland_dde_shell_v1 {
     }
     #[doc = "An interface used to operate lockscreen."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_lockscreen_v1 {
         #[doc = "Trait to implement the treeland_lockscreen_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandLockscreenV1<C: waynest::Connection> {
+        pub trait TreelandLockscreenV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_lockscreen_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -807,9 +851,13 @@ pub mod treeland_ddm {
     #[doc = "This object is primarily used for establish connection between"]
     #[doc = "treeland and ddm."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_ddm {
         #[doc = "Trait to implement the treeland_ddm interface. See the module level documentation for more info"]
-        pub trait TreelandDdm<C: waynest::Connection> {
+        pub trait TreelandDdm<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_ddm";
             const VERSION: u32 = 1u32;
             #[doc = "Send treeland to Greeter mode."]
@@ -900,9 +948,13 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_foreign_toplevel_manager_v1 {
         #[doc = "Trait to implement the treeland_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandForeignToplevelManagerV1<C: waynest::Connection> {
+        pub trait TreelandForeignToplevelManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Indicates the client no longer wishes to receive events for new toplevels."]
@@ -960,6 +1012,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_foreign_toplevel_handle_v1 {
         #[doc = "The different states that a toplevel can have. These have the same meaning"]
         #[doc = "as the states with the same names defined in xdg-toplevel"]
@@ -1015,7 +1068,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandForeignToplevelHandleV1<C: waynest::Connection> {
+        pub trait TreelandForeignToplevelHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Requests that the toplevel be maximized. If the maximized state actually"]
@@ -1244,6 +1300,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_dock_preview_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1276,7 +1333,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dock_preview_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDockPreviewContextV1<C: waynest::Connection> {
+        pub trait TreelandDockPreviewContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_dock_preview_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "X and Y are relative to the relative_surface."]
@@ -1343,9 +1403,13 @@ pub mod treeland_output_manager_v1 {
     #[doc = "Protocol for telling which is the primary display among the selection of enabled"]
     #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_output_manager_v1 {
         #[doc = "Trait to implement the treeland_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandOutputManagerV1<C: waynest::Connection> {
+        pub trait TreelandOutputManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_output_manager_v1";
             const VERSION: u32 = 1u32;
             fn set_primary_output(
@@ -1384,9 +1448,13 @@ pub mod treeland_shortcut_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_shortcut_manager_v1 {
         #[doc = "Trait to implement the treeland_shortcut_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutManagerV1<C: waynest::Connection> {
+        pub trait TreelandShortcutManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_shortcut_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
@@ -1412,6 +1480,7 @@ pub mod treeland_shortcut_manager_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_shortcut_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1435,7 +1504,10 @@ pub mod treeland_shortcut_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_shortcut_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutContextV1<C: waynest::Connection> {
+        pub trait TreelandShortcutContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_shortcut_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the context object."]
@@ -1459,9 +1531,13 @@ pub mod treeland_shortcut_manager_v1 {
 pub mod treeland_virtual_output_manager_v1 {
     #[doc = "This interface is a manager that allows the creation of copied output."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_virtual_output_manager_v1 {
         #[doc = "Trait to implement the treeland_virtual_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputManagerV1<C: waynest::Connection> {
+        pub trait TreelandVirtualOutputManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_virtual_output_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create virtual output that can be used when setting screen copy mode for use"]
@@ -1518,6 +1594,7 @@ pub mod treeland_virtual_output_manager_v1 {
     }
     #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_virtual_output_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1547,7 +1624,10 @@ pub mod treeland_virtual_output_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_virtual_output_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputV1<C: waynest::Connection> {
+        pub trait TreelandVirtualOutputV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_virtual_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the output."]
@@ -1591,9 +1671,13 @@ pub mod treeland_virtual_output_manager_v1 {
 #[allow(clippy::module_inception)]
 pub mod treeland_wallpaper_color_v1 {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_wallpaper_color_manager_v1 {
         #[doc = "Trait to implement the treeland_wallpaper_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWallpaperColorManagerV1<C: waynest::Connection> {
+        pub trait TreelandWallpaperColorManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_wallpaper_color_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Monitor the wallpaper color of a given screen."]
@@ -1646,6 +1730,7 @@ pub mod treeland_window_management_v1 {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod treeland_window_management_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1672,7 +1757,10 @@ pub mod treeland_window_management_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_window_management_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowManagementV1<C: waynest::Connection> {
+        pub trait TreelandWindowManagementV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "treeland_window_management_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Tell the compositor to show/hide the desktop."]

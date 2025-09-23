@@ -3,7 +3,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 
 use crate::{
-    parser::{ArgType, Interface, Message, MessageType},
+    parser::{ArgType, Interface, Message},
     utils::make_ident,
 };
 
@@ -20,7 +20,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
         let mut tracing_fmt = Vec::new();
         let mut tracing_args = Vec::new();
 
-        let mut args = vec![quote! { client }, quote! { sender_id }];
+        let mut args = vec![quote! { connection }, quote! { sender_id }];
         let mut setters = Vec::new();
 
         for arg in &request.args {
@@ -28,7 +28,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
             let mut map_display = quote! {};
 
             if !arg.allow_null && arg.is_return_option() {
-                optional = quote! {.ok_or(crate::ProtocolError::MalformedPayload)?};
+                optional = quote! {.ok_or(waynest::ProtocolError::MalformedPayload)?};
             } else if arg.allow_null {
                 map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
             }
@@ -43,9 +43,15 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
 
             let name = make_ident(arg.name.to_snek_case());
 
-            setters.push(quote! {
-               let #name = message.#caller()? #optional;
-            });
+            if matches!(arg.ty, ArgType::Fd) {
+                setters.push(quote! {
+                   let #name = connection.fd()? #optional;
+                });
+            } else {
+                setters.push(quote! {
+                   let #name = message.#caller()? #optional;
+                });
+            }
 
             args.push(quote! {
                 #name #tryinto
@@ -62,7 +68,8 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
                 }
                 ArgType::Fd => {
                     tracing_fmt.push("{}");
-                    tracing_args.push(quote! { #name .as_raw_fd() #map_display });
+                    tracing_args
+                        .push(quote! { std::os::fd::AsRawFd::as_raw_fd(&#name) #map_display });
                 }
                 _ => {
                     tracing_fmt.push("{}");
@@ -79,24 +86,13 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
             request = request.name.to_snek_case()
         );
 
-        let result = if request.ty == Some(MessageType::Destructor) {
-            quote! {
-                let result = self.#name(#(#args),*).await;
-                client.remove(sender_id);
-                result
-            }
-        } else {
-            quote! {
-                self.#name(#(#args),*).await
-            }
-        };
-
         let inner = quote! {
             #opcode => {
                 #(#setters)*
 
+                #[cfg(feature = "tracing")]
                 tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
-                #result
+                self.#name(#(#args),*).await
             }
         };
 

@@ -1,9 +1,13 @@
 #[allow(clippy::module_inception)]
 pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_surface {
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface<C: waynest::Connection> {
+        pub trait IviSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_surface";
             const VERSION: u32 = 1u32;
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
@@ -40,6 +44,7 @@ pub mod ivi_application {
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_application {
         #[repr(u32)]
         #[non_exhaustive]
@@ -66,7 +71,10 @@ pub mod ivi_application {
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication<C: waynest::Connection> {
+        pub trait IviApplication<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_application";
             const VERSION: u32 = 1u32;
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
@@ -109,9 +117,13 @@ pub mod ivi_input {
     #[doc = "This includes handling the existence of seats, seat capabilities,"]
     #[doc = "seat acceptance and input focus."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_input {
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
-        pub trait IviInput<C: waynest::Connection> {
+        pub trait IviInput<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_input";
             const VERSION: u32 = 2u32;
             #[doc = "Set input focus state of surface in ivi compositor. If the surface has input"]
@@ -199,6 +211,7 @@ pub mod ivi_input {
 #[allow(clippy::module_inception)]
 pub mod ivi_wm {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_wm_screen {
         #[repr(u32)]
         #[non_exhaustive]
@@ -228,7 +241,10 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_wm_screen interface. See the module level documentation for more info"]
-        pub trait IviWmScreen<C: waynest::Connection> {
+        pub trait IviWmScreen<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_wm_screen";
             const VERSION: u32 = 2u32;
             #[doc = "Request to destroy the ivi_wm_screen."]
@@ -332,6 +348,7 @@ pub mod ivi_wm {
     #[doc = "The server will destroy this resource after the event has been send,"]
     #[doc = "so the client shall then destroy its proxy too."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_screenshot {
         #[repr(u32)]
         #[non_exhaustive]
@@ -373,7 +390,10 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_screenshot interface. See the module level documentation for more info"]
-        pub trait IviScreenshot<C: waynest::Connection> {
+        pub trait IviScreenshot<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_screenshot";
             const VERSION: u32 = 2u32;
             #[doc = "This event notifies the filling data to buffer is done. The client"]
@@ -395,6 +415,7 @@ pub mod ivi_wm {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_wm {
         #[repr(u32)]
         #[non_exhaustive]
@@ -522,7 +543,10 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_wm interface. See the module level documentation for more info"]
-        pub trait IviWm<C: waynest::Connection> {
+        pub trait IviWm<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_wm";
             const VERSION: u32 = 2u32;
             #[doc = "All requests are not applied directly to scene object, so a controller"]

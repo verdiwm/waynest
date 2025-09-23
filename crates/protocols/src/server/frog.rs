@@ -7,9 +7,13 @@
 pub mod frog_color_management_v1 {
     #[doc = "The color management factory singleton creates color managed surface objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_color_management_factory_v1 {
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
-        pub trait FrogColorManagementFactoryV1<C: waynest::Connection> {
+        pub trait FrogColorManagementFactoryV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_color_management_factory_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -34,6 +38,31 @@ pub mod frog_color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_management_factory_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let callback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})",
+                                sender_id,
+                                surface,
+                                callback
+                            );
+                            self.get_color_managed_surface(connection, sender_id, surface, callback)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -46,6 +75,7 @@ pub mod frog_color_management_v1 {
     #[doc = "of the frog_color_managed_surface interface it exposes."]
     #[doc = "Including all known enums associated with a given version."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_color_managed_surface {
         #[doc = "Extended information on the transfer functions described"]
         #[doc = "here can be found in the Khronos Data Format specification:"]
@@ -137,7 +167,10 @@ pub mod frog_color_management_v1 {
             }
         }
         #[doc = "Trait to implement the frog_color_managed_surface interface. See the module level documentation for more info"]
-        pub trait FrogColorManagedSurface<C: waynest::Connection> {
+        pub trait FrogColorManagedSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_color_managed_surface";
             const VERSION: u32 = 1u32;
             #[doc = "Destroying the color managed surface resets all known color"]
@@ -231,6 +264,100 @@ pub mod frog_color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("frog_color_managed_surface#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let transfer_function = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.set_known_transfer_function({})",
+                                sender_id,
+                                transfer_function
+                            );
+                            self.set_known_transfer_function(
+                                connection,
+                                sender_id,
+                                transfer_function.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let primaries = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.set_known_container_color_volume({})",
+                                sender_id,
+                                primaries
+                            );
+                            self.set_known_container_color_volume(
+                                connection,
+                                sender_id,
+                                primaries.try_into()?,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let render_intent = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.set_render_intent({})",
+                                sender_id,
+                                render_intent
+                            );
+                            self.set_render_intent(connection, sender_id, render_intent.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            let mastering_display_primary_red_x = message.uint()?;
+                            let mastering_display_primary_red_y = message.uint()?;
+                            let mastering_display_primary_green_x = message.uint()?;
+                            let mastering_display_primary_green_y = message.uint()?;
+                            let mastering_display_primary_blue_x = message.uint()?;
+                            let mastering_display_primary_blue_y = message.uint()?;
+                            let mastering_white_point_x = message.uint()?;
+                            let mastering_white_point_y = message.uint()?;
+                            let max_display_mastering_luminance = message.uint()?;
+                            let min_display_mastering_luminance = message.uint()?;
+                            let max_cll = message.uint()?;
+                            let max_fall = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                mastering_display_primary_red_x,
+                                mastering_display_primary_red_y,
+                                mastering_display_primary_green_x,
+                                mastering_display_primary_green_y,
+                                mastering_display_primary_blue_x,
+                                mastering_display_primary_blue_y,
+                                mastering_white_point_x,
+                                mastering_white_point_y,
+                                max_display_mastering_luminance,
+                                min_display_mastering_luminance,
+                                max_cll,
+                                max_fall
+                            );
+                            self.set_hdr_metadata(
+                                connection,
+                                sender_id,
+                                mastering_display_primary_red_x,
+                                mastering_display_primary_red_y,
+                                mastering_display_primary_green_x,
+                                mastering_display_primary_green_y,
+                                mastering_display_primary_blue_x,
+                                mastering_display_primary_blue_y,
+                                mastering_white_point_x,
+                                mastering_white_point_y,
+                                max_display_mastering_luminance,
+                                min_display_mastering_luminance,
+                                max_cll,
+                                max_fall,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -252,6 +379,7 @@ pub mod frog_fifo_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_fifo_manager_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -277,7 +405,10 @@ pub mod frog_fifo_v1 {
             }
         }
         #[doc = "Trait to implement the frog_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoManagerV1<C: waynest::Connection> {
+        pub trait FrogFifoManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_fifo_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -313,6 +444,27 @@ pub mod frog_fifo_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("frog_fifo_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_fifo_manager_v1#{}.get_fifo({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_fifo(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -322,6 +474,7 @@ pub mod frog_fifo_v1 {
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod frog_fifo_surface_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -347,7 +500,10 @@ pub mod frog_fifo_v1 {
             }
         }
         #[doc = "Trait to implement the frog_fifo_surface_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoSurfaceV1<C: waynest::Connection> {
+        pub trait FrogFifoSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "frog_fifo_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
@@ -407,6 +563,21 @@ pub mod frog_fifo_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
+                            self.set_barrier(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("frog_fifo_surface_v1#{}.wait_barrier()", sender_id,);
+                            self.wait_barrier(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("frog_fifo_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

@@ -4,6 +4,7 @@
 pub mod cosmic_a11y_v1 {
     #[doc = "Manager to toggle accessibility features."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod cosmic_a11y_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -87,7 +88,10 @@ pub mod cosmic_a11y_v1 {
             }
         }
         #[doc = "Trait to implement the cosmic_a11y_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicA11yManagerV1<C: waynest::Connection> {
+        pub trait CosmicA11yManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Sets the state of the screen magnifier."]
@@ -201,9 +205,13 @@ pub mod cosmic_a11y_v1 {
 pub mod cosmic_atspi_v1 {
     #[doc = "Manager for adding grabs and monitoring key input."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod cosmic_atspi_manager_v1 {
         #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicAtspiManagerV1<C: waynest::Connection> {
+        pub trait CosmicAtspiManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Any grabs that are still active will be disabled."]
@@ -273,9 +281,13 @@ pub mod cosmic_atspi_v1 {
 pub mod cosmic_image_source_unstable_v1 {
     #[doc = "A manager for creating image source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for a workspaces. Images captured from this source"]
@@ -317,6 +329,7 @@ pub mod cosmic_image_source_unstable_v1 {
 pub mod cosmic_output_management_unstable_v1 {
     #[doc = "This interface provides extension points for wlr-output-management types."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -340,7 +353,10 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Gets an extension object for zwlr_output_head_v1."]
@@ -423,6 +439,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = "Properties sent via this interface are applied atomically via the wlr_output_manager.done event."]
     #[doc = "No guarantees are made regarding the order in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_head_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -479,7 +496,10 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputHeadV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputHeadV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_head_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Using this request a client can tell the compositor that it is not interested"]
@@ -549,6 +569,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = ""]
     #[doc = "Adds additional parameters to be tested/applyed via the original zwlr_output_configuration_v1."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_configuration_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -575,7 +596,10 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputConfigurationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_configuration_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Enable a head mirroring another."]
@@ -635,9 +659,13 @@ pub mod cosmic_output_management_unstable_v1 {
     #[doc = "Once the original `zwlr_output_configuration_head_v1` is destroyed this object will"]
     #[doc = "become inert and all requests except `release` will be ignored."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_output_configuration_head_v1 {
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationHeadV1<C: waynest::Connection> {
+        pub trait ZcosmicOutputConfigurationHeadV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
             const VERSION: u32 = 2u32;
             #[doc = "This request sets the head's scale multiplied by 1000 for additional precision."]
@@ -696,9 +724,13 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[doc = "You can request a notification object for any of your zwlr_layer_surface_v1"]
     #[doc = "surfaces, which will then emit overlap events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_overlap_notify_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotifyV1<C: waynest::Connection> {
+        pub trait ZcosmicOverlapNotifyV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Requests notifications for toplevels and layer-surfaces entering and leaving the"]
@@ -720,9 +752,13 @@ pub mod cosmic_overlap_notify_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_overlap_notification_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotificationV1<C: waynest::Connection> {
+        pub trait ZcosmicOverlapNotificationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request should be called when the client has no interest in overlap"]
@@ -806,6 +842,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_manager_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -841,7 +878,10 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyManagerV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopyManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capturing session for an image source."]
@@ -906,9 +946,13 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_session_v2 {
         #[doc = "Trait to implement the zcosmic_screencopy_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopySessionV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopySessionV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capture frame for this session."]
@@ -1016,6 +1060,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = ""]
     #[doc = "If the screen capture fails, the compositor will send the failed event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_frame_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1069,7 +1114,10 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_frame_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyFrameV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopyFrameV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_frame_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1153,7 +1201,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                transform: u32,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
             #[doc = "times to describe a region."]
@@ -1214,6 +1262,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_screencopy_cursor_session_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1237,7 +1286,10 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_cursor_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyCursorSessionV2<C: waynest::Connection> {
+        pub trait ZcosmicScreencopyCursorSessionV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_screencopy_cursor_session_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1333,9 +1385,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = "It thus extends ext_foreign_toplevel_v1 to provide more information"]
     #[doc = "and actions on foreign toplevels."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_toplevel_info_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelInfoV1<C: waynest::Connection> {
+        pub trait ZcosmicToplevelInfoV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -1417,6 +1473,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[doc = "Each toplevel has a list of outputs it is visible on, exposed to the"]
     #[doc = "client via the output_enter and output_leave events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_toplevel_handle_v1 {
         #[doc = "The different states that a toplevel may have. These have the same"]
         #[doc = "meaning as the states with the same names defined in xdg-toplevel"]
@@ -1454,7 +1511,10 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelHandleV1<C: waynest::Connection> {
+        pub trait ZcosmicToplevelHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request should be called either when the client will no longer"]
@@ -1604,6 +1664,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
     #[doc = "to preform typical actions on open toplevels. The compositor is in all"]
     #[doc = "cases free to ignore the request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_toplevel_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1669,7 +1730,10 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicToplevelManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
             const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client has finished using the"]
@@ -1897,9 +1961,13 @@ pub mod cosmic_workspace_unstable_v1 {
     #[doc = "After a client binds the zcosmic_workspace_manager_v1, each workspace will be"]
     #[doc = "sent via the workspace event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "The client must send this request after it has finished sending other"]
@@ -1981,6 +2049,7 @@ pub mod cosmic_workspace_unstable_v1 {
     #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
     #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_group_handle_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2004,7 +2073,10 @@ pub mod cosmic_workspace_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceGroupHandleV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceGroupHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_group_handle_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor create a new workspace with the given name."]
@@ -2112,6 +2184,7 @@ pub mod cosmic_workspace_unstable_v1 {
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_handle_v1 {
         #[doc = "The different states that a workspace can have."]
         #[repr(u32)]
@@ -2198,7 +2271,10 @@ pub mod cosmic_workspace_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV1<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_handle_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroys the zcosmic_workspace_handle_v1 object."]
@@ -2365,6 +2441,7 @@ pub mod cosmic_workspace_unstable_v2 {
     #[doc = "The caller should call `get_cosmic_workspace` whenever a new ext workspace is"]
     #[doc = "created."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_manager_v2 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2388,7 +2465,10 @@ pub mod cosmic_workspace_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV2<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Request a `zcosmic_workspace_handle_v2` extension object for an existing"]
@@ -2432,6 +2512,7 @@ pub mod cosmic_workspace_unstable_v2 {
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zcosmic_workspace_handle_v2 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct WorkspaceCapabilities : u32 { # [doc = "rename request is available"] const Rename = 1u32 ; # [doc = "set_tiling_state request is available"] const SetTilingState = 2u32 ; # [doc = "pin and unpin requests are available"] const Pin = 3u32 ; # [doc = "move_before and move_after requests are available"] const Move = 4u32 ; } }
         impl TryFrom<u32> for WorkspaceCapabilities {
@@ -2482,7 +2563,10 @@ pub mod cosmic_workspace_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_handle_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV2<C: waynest::Connection> {
+        pub trait ZcosmicWorkspaceHandleV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
             const VERSION: u32 = 2u32;
             #[doc = "This request should be called either when the client will no longer"]

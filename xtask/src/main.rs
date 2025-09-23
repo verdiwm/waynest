@@ -1,10 +1,10 @@
-use std::{ffi::OsStr, fmt::Write as _, fs::OpenOptions, io::Write as _};
+use std::{collections::HashMap, ffi::OsStr, fmt::Write as _, fs::OpenOptions, io::Write as _};
 
 use anyhow::{Context, Result, anyhow, bail};
 use quote::quote;
 use sap::{Argument, Parser};
 use walkdir::WalkDir;
-use waynest_gen::generate_module;
+use waynest_gen::{Protocol, generate_module};
 
 fn main() -> Result<()> {
     let mut parser = Parser::from_env().context("Failed to init sap")?;
@@ -50,14 +50,11 @@ const SKIP: [&str; 3] = [
 ];
 
 fn generate() -> Result<()> {
-    let mut server_rs_content = "pub mod core;".to_string();
-    let mut client_rs_content = "pub mod core;".to_string();
+    let mut protocols = HashMap::new();
+    let mut all_protocols_flat = HashMap::new();
 
     for (module, protocol) in PROTOCOLS {
-        println!("Generating {module} protocols...");
-
-        let mut server_modules = Vec::new();
-        let mut client_modules = Vec::new();
+        let mut protos = Vec::new();
 
         for entry in WalkDir::new(format!("external/protocols/{protocol}")) {
             let entry = entry?;
@@ -67,9 +64,39 @@ fn generate() -> Result<()> {
                 && extension == OsStr::new("xml")
                 && !SKIP.map(OsStr::new).contains(&entry.file_name())
             {
-                server_modules.push(generate_module(module, entry.path(), false, true)?);
-                client_modules.push(generate_module(module, entry.path(), true, false)?);
+                let protocol = Protocol::from_path(entry.path())?;
+                protos.push(protocol.clone());
+                all_protocols_flat.insert(module, protocol);
             }
+        }
+
+        protocols.insert(module, protos);
+    }
+
+    let mut server_rs_content = "pub mod core;".to_string();
+    let mut client_rs_content = "pub mod core;".to_string();
+
+    for (module, protocols) in protocols {
+        println!("Generating {module} protocols...");
+
+        let mut server_modules = Vec::new();
+        let mut client_modules = Vec::new();
+
+        for protocol in &protocols {
+            server_modules.push(generate_module(
+                module,
+                &protocol,
+                &all_protocols_flat,
+                false,
+                true,
+            )?);
+            client_modules.push(generate_module(
+                module,
+                &protocol,
+                &all_protocols_flat,
+                true,
+                false,
+            )?);
         }
 
         let server_module_content = quote! {

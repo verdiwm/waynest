@@ -6,7 +6,7 @@ use futures_sink::Sink;
 use crate::{Message, ProtocolError};
 
 pub trait Connection:
-    Stream<Item = Result<Message, ProtocolError>> + Sink<Message, Error = ProtocolError>
+    Stream<Item = Result<Message, ProtocolError>> + Sink<Message, Error = ProtocolError> + Send + Sync
 {
     type Error: From<crate::ProtocolError>;
 

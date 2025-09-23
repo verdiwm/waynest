@@ -63,9 +63,13 @@ pub mod linux_dmabuf_v1 {
     #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
     #[doc = "mechanism."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_linux_dmabuf_v1 {
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufV1<C: waynest::Connection> {
+        pub trait ZwpLinuxDmabufV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
@@ -172,6 +176,52 @@ pub mod linux_dmabuf_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_linux_dmabuf_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let params_id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_v1#{}.create_params({})",
+                                sender_id,
+                                params_id
+                            );
+                            self.create_params(connection, sender_id, params_id).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_v1#{}.get_default_feedback({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_default_feedback(connection, sender_id, id).await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_v1#{}.get_surface_feedback({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_surface_feedback(connection, sender_id, id, surface)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -195,6 +245,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "calls with a plane index which has already been set will result in a"]
     #[doc = "plane_set error being generated."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_linux_buffer_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -252,7 +303,10 @@ pub mod linux_dmabuf_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection> {
+        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
@@ -431,6 +485,94 @@ pub mod linux_dmabuf_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_linux_buffer_params_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let fd = connection.fd()?;
+                            let plane_idx = message.uint()?;
+                            let offset = message.uint()?;
+                            let stride = message.uint()?;
+                            let modifier_hi = message.uint()?;
+                            let modifier_lo = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_buffer_params_v1#{}.add({}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd),
+                                plane_idx,
+                                offset,
+                                stride,
+                                modifier_hi,
+                                modifier_lo
+                            );
+                            self.add(
+                                connection,
+                                sender_id,
+                                fd,
+                                plane_idx,
+                                offset,
+                                stride,
+                                modifier_hi,
+                                modifier_lo,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let format = message.uint()?;
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_buffer_params_v1#{}.create({}, {}, {}, {})",
+                                sender_id,
+                                width,
+                                height,
+                                format,
+                                flags
+                            );
+                            self.create(
+                                connection,
+                                sender_id,
+                                width,
+                                height,
+                                format,
+                                flags.try_into()?,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let buffer_id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let format = message.uint()?;
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_buffer_params_v1#{}.create_immed({}, {}, {}, {}, {})",
+                                sender_id,
+                                buffer_id,
+                                width,
+                                height,
+                                format,
+                                flags
+                            );
+                            self.create_immed(
+                                connection,
+                                sender_id,
+                                buffer_id,
+                                width,
+                                height,
+                                format,
+                                flags.try_into()?,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -463,6 +605,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -477,7 +620,10 @@ pub mod linux_dmabuf_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection> {
+        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Using this request a client can tell the server that it is not going to"]
@@ -663,6 +809,11 @@ pub mod linux_dmabuf_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -695,6 +846,7 @@ pub mod presentation_time {
     #[doc = "display update time and the update's target time, especially"]
     #[doc = "when the compositor misses its target vertical blanking period."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_presentation {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal presentation requests."]
@@ -723,7 +875,10 @@ pub mod presentation_time {
             }
         }
         #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
-        pub trait WpPresentation<C: waynest::Connection> {
+        pub trait WpPresentation<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_presentation";
             const VERSION: u32 = 2u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -796,6 +951,28 @@ pub mod presentation_time {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_presentation#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let callback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_presentation#{}.feedback({}, {})",
+                                sender_id,
+                                surface,
+                                callback
+                            );
+                            self.feedback(connection, sender_id, surface, callback)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -814,6 +991,7 @@ pub mod presentation_time {
     #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
     #[doc = "or 'discarded' event it is automatically destroyed."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_presentation_feedback {
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
@@ -828,7 +1006,10 @@ pub mod presentation_time {
             }
         }
         #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
-        pub trait WpPresentationFeedback<C: waynest::Connection> {
+        pub trait WpPresentationFeedback<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_presentation_feedback";
             const VERSION: u32 = 2u32;
             #[doc = "As presentation can be synchronized to only one output at a"]
@@ -1015,9 +1196,13 @@ pub mod tablet_v2 {
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_manager_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV2<C: waynest::Connection> {
+        pub trait ZwpTabletManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
@@ -1046,6 +1231,28 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let tablet_seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_manager_v2#{}.get_tablet_seat({}, {})",
+                                sender_id,
+                                tablet_seat,
+                                seat
+                            );
+                            self.get_tablet_seat(connection, sender_id, tablet_seat, seat)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_manager_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1056,9 +1263,13 @@ pub mod tablet_v2 {
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_seat_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV2<C: waynest::Connection> {
+        pub trait ZwpTabletSeatV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
@@ -1123,6 +1334,11 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_seat_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1150,6 +1366,7 @@ pub mod tablet_v2 {
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_tool_v2 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -1289,7 +1506,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV2<C: waynest::Connection> {
+        pub trait ZwpTabletToolV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
@@ -1671,6 +1891,32 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let serial = message.uint()?;
+                            let surface = message.object()?;
+                            let hotspot_x = message.int()?;
+                            let hotspot_y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.set_cursor({}, {}, {}, {})",
+                                sender_id,
+                                serial,
+                                surface
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string()),
+                                hotspot_x,
+                                hotspot_y
+                            );
+                            self.set_cursor(
+                                connection, sender_id, serial, surface, hotspot_x, hotspot_y,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1686,6 +1932,7 @@ pub mod tablet_v2 {
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_v2 {
         #[doc = "Describes the bus types this tablet is connected to."]
         #[repr(u32)]
@@ -1722,7 +1969,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV2<C: waynest::Connection> {
+        pub trait ZwpTabletV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 2u32;
             #[doc = "This destroys the client's resource for this tablet object."]
@@ -1843,6 +2093,11 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -1855,6 +2110,7 @@ pub mod tablet_v2 {
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_ring_v2 {
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -1882,7 +2138,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadRingV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadRingV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor use the provided feedback string"]
@@ -2001,6 +2260,26 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_ring_v2#{}.set_feedback(\"{}\", {})",
+                                sender_id,
+                                description,
+                                serial
+                            );
+                            self.set_feedback(connection, sender_id, description, serial)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_ring_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2013,6 +2292,7 @@ pub mod tablet_v2 {
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_strip_v2 {
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -2040,7 +2320,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadStripV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadStripV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2161,6 +2444,26 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_strip_v2#{}.set_feedback(\"{}\", {})",
+                                sender_id,
+                                description,
+                                serial
+                            );
+                            self.set_feedback(connection, sender_id, description, serial)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_strip_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2189,9 +2492,13 @@ pub mod tablet_v2 {
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_group_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadGroupV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadGroupV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
@@ -2345,6 +2652,11 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_group_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2374,6 +2686,7 @@ pub mod tablet_v2 {
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_v2 {
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -2402,7 +2715,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2563,6 +2879,28 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let button = message.uint()?;
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_v2#{}.set_feedback({}, \"{}\", {})",
+                                sender_id,
+                                button,
+                                description,
+                                serial
+                            );
+                            self.set_feedback(connection, sender_id, button, description, serial)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2574,9 +2912,13 @@ pub mod tablet_v2 {
     #[doc = "Events on a dial are logically grouped by the wl_tablet_pad_dial.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_dial_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_dial_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadDialV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadDialV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_dial_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2660,6 +3002,26 @@ pub mod tablet_v2 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_dial_v2#{}.set_feedback(\"{}\", {})",
+                                sender_id,
+                                description,
+                                serial
+                            );
+                            self.set_feedback(connection, sender_id, description, serial)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_dial_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2676,6 +3038,7 @@ pub mod viewporter {
     #[doc = "disconnecting the direct relationship between the buffer and the"]
     #[doc = "surface size."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_viewporter {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2699,7 +3062,10 @@ pub mod viewporter {
             }
         }
         #[doc = "Trait to implement the wp_viewporter interface. See the module level documentation for more info"]
-        pub trait WpViewporter<C: waynest::Connection> {
+        pub trait WpViewporter<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_viewporter";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this"]
@@ -2731,6 +3097,27 @@ pub mod viewporter {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_viewporter#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_viewporter#{}.get_viewport({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_viewport(connection, sender_id, id, surface).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2792,6 +3179,7 @@ pub mod viewporter {
     #[doc = "state is removed from the wl_surface. The change will be applied"]
     #[doc = "on the next wl_surface.commit."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_viewport {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2824,7 +3212,10 @@ pub mod viewporter {
             }
         }
         #[doc = "Trait to implement the wp_viewport interface. See the module level documentation for more info"]
-        pub trait WpViewport<C: waynest::Connection> {
+        pub trait WpViewport<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_viewport";
             const VERSION: u32 = 1u32;
             #[doc = "The associated wl_surface's crop and scale state is removed."]
@@ -2880,6 +3271,41 @@ pub mod viewporter {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_viewport#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            let width = message.fixed()?;
+                            let height = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_viewport#{}.set_source({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_source(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        2u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_viewport#{}.set_destination({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.set_destination(connection, sender_id, width, height)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2895,6 +3321,7 @@ pub mod xdg_shell {
     #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
     #[doc = "creating transient windows such as popup menus."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_wm_base {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2936,7 +3363,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_wm_base interface. See the module level documentation for more info"]
-        pub trait XdgWmBase<C: waynest::Connection> {
+        pub trait XdgWmBase<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_wm_base";
             const VERSION: u32 = 7u32;
             #[doc = "Destroy this xdg_wm_base object."]
@@ -3019,6 +3449,42 @@ pub mod xdg_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_wm_base#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_wm_base#{}.create_positioner({})", sender_id, id);
+                            self.create_positioner(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_wm_base#{}.get_xdg_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_xdg_surface(connection, sender_id, id, surface)
+                                .await
+                        }
+                        3u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_wm_base#{}.pong({})", sender_id, serial);
+                            self.pong(connection, sender_id, serial).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3045,6 +3511,7 @@ pub mod xdg_shell {
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an invalid_positioner error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_positioner {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3152,7 +3619,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_positioner interface. See the module level documentation for more info"]
-        pub trait XdgPositioner<C: waynest::Connection> {
+        pub trait XdgPositioner<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_positioner";
             const VERSION: u32 = 7u32;
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
@@ -3299,6 +3769,114 @@ pub mod xdg_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_positioner#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.set_size(connection, sender_id, width, height).await
+                        }
+                        2u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_anchor_rect({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_anchor_rect(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        3u16 => {
+                            let anchor = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_positioner#{}.set_anchor({})", sender_id, anchor);
+                            self.set_anchor(connection, sender_id, anchor.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            let gravity = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_gravity({})",
+                                sender_id,
+                                gravity
+                            );
+                            self.set_gravity(connection, sender_id, gravity.try_into()?)
+                                .await
+                        }
+                        5u16 => {
+                            let constraint_adjustment = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_constraint_adjustment({})",
+                                sender_id,
+                                constraint_adjustment
+                            );
+                            self.set_constraint_adjustment(
+                                connection,
+                                sender_id,
+                                constraint_adjustment.try_into()?,
+                            )
+                            .await
+                        }
+                        6u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_offset({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.set_offset(connection, sender_id, x, y).await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_positioner#{}.set_reactive()", sender_id,);
+                            self.set_reactive(connection, sender_id).await
+                        }
+                        8u16 => {
+                            let parent_width = message.int()?;
+                            let parent_height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_parent_size({}, {})",
+                                sender_id,
+                                parent_width,
+                                parent_height
+                            );
+                            self.set_parent_size(connection, sender_id, parent_width, parent_height)
+                                .await
+                        }
+                        9u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_positioner#{}.set_parent_configure({})",
+                                sender_id,
+                                serial
+                            );
+                            self.set_parent_configure(connection, sender_id, serial)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3354,6 +3932,7 @@ pub mod xdg_shell {
     #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
     #[doc = "again before attaching a buffer."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3392,7 +3971,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
-        pub trait XdgSurface<C: waynest::Connection> {
+        pub trait XdgSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 7u32;
             #[doc = "Destroy the xdg_surface object. An xdg_surface must only be destroyed"]
@@ -3549,6 +4131,63 @@ pub mod xdg_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_surface#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_surface#{}.get_toplevel({})", sender_id, id);
+                            self.get_toplevel(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let parent = message.object()?;
+                            let positioner = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_surface#{}.get_popup({}, {}, {})",
+                                sender_id,
+                                id,
+                                parent
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string()),
+                                positioner
+                            );
+                            self.get_popup(connection, sender_id, id, parent, positioner)
+                                .await
+                        }
+                        3u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_surface#{}.set_window_geometry({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_window_geometry(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        4u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_surface#{}.ack_configure({})", sender_id, serial);
+                            self.ack_configure(connection, sender_id, serial).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3577,6 +4216,7 @@ pub mod xdg_shell {
     #[doc = ""]
     #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3729,7 +4369,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel interface. See the module level documentation for more info"]
-        pub trait XdgToplevel<C: waynest::Connection> {
+        pub trait XdgToplevel<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel";
             const VERSION: u32 = 7u32;
             #[doc = "This request destroys the role surface and unmaps the surface;"]
@@ -4194,6 +4837,151 @@ pub mod xdg_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let parent = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.set_parent({})",
+                                sender_id,
+                                parent
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_parent(connection, sender_id, parent).await
+                        }
+                        2u16 => {
+                            let title = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.set_title(\"{}\")", sender_id, title);
+                            self.set_title(connection, sender_id, title).await
+                        }
+                        3u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.set_app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.set_app_id(connection, sender_id, app_id).await
+                        }
+                        4u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.show_window_menu({}, {}, {}, {})",
+                                sender_id,
+                                seat,
+                                serial,
+                                x,
+                                y
+                            );
+                            self.show_window_menu(connection, sender_id, seat, serial, x, y)
+                                .await
+                        }
+                        5u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.move({}, {})",
+                                sender_id,
+                                seat,
+                                serial
+                            );
+                            self.r#move(connection, sender_id, seat, serial).await
+                        }
+                        6u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            let edges = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.resize({}, {}, {})",
+                                sender_id,
+                                seat,
+                                serial,
+                                edges
+                            );
+                            self.resize(connection, sender_id, seat, serial, edges.try_into()?)
+                                .await
+                        }
+                        7u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.set_max_size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.set_max_size(connection, sender_id, width, height)
+                                .await
+                        }
+                        8u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.set_min_size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.set_min_size(connection, sender_id, width, height)
+                                .await
+                        }
+                        9u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.set_maximized()", sender_id,);
+                            self.set_maximized(connection, sender_id).await
+                        }
+                        10u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.unset_maximized()", sender_id,);
+                            self.unset_maximized(connection, sender_id).await
+                        }
+                        11u16 => {
+                            let output = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.set_fullscreen({})",
+                                sender_id,
+                                output
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_fullscreen(connection, sender_id, output).await
+                        }
+                        12u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.unset_fullscreen()", sender_id,);
+                            self.unset_fullscreen(connection, sender_id).await
+                        }
+                        13u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.set_minimized()", sender_id,);
+                            self.set_minimized(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4225,6 +5013,7 @@ pub mod xdg_shell {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_popup {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4248,7 +5037,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
-        pub trait XdgPopup<C: waynest::Connection> {
+        pub trait XdgPopup<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 7u32;
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]
@@ -4404,6 +5196,35 @@ pub mod xdg_shell {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_popup#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_popup#{}.grab({}, {})", sender_id, seat, serial);
+                            self.grab(connection, sender_id, seat, serial).await
+                        }
+                        2u16 => {
+                            let positioner = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let token = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_popup#{}.reposition({}, {})",
+                                sender_id,
+                                positioner,
+                                token
+                            );
+                            self.reposition(connection, sender_id, positioner, token)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

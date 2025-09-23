@@ -1,9 +1,13 @@
 #[allow(clippy::module_inception)]
 pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_surface {
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface<C: waynest::Connection> {
+        pub trait IviSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_surface";
             const VERSION: u32 = 1u32;
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
@@ -44,6 +48,11 @@ pub mod ivi_application {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_surface#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -54,6 +63,7 @@ pub mod ivi_application {
     #[doc = "This interface is implemented by servers that provide IVI-style user interfaces."]
     #[doc = "It allows clients to associate an ivi_surface with wl_surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_application {
         #[repr(u32)]
         #[non_exhaustive]
@@ -80,7 +90,10 @@ pub mod ivi_application {
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication<C: waynest::Connection> {
+        pub trait IviApplication<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_application";
             const VERSION: u32 = 1u32;
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
@@ -122,6 +135,25 @@ pub mod ivi_application {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let ivi_id = message.uint()?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_application#{}.surface_create({}, {}, {})",
+                                sender_id,
+                                ivi_id,
+                                surface,
+                                id
+                            );
+                            self.surface_create(connection, sender_id, ivi_id, surface, id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -134,9 +166,13 @@ pub mod ivi_input {
     #[doc = "This includes handling the existence of seats, seat capabilities,"]
     #[doc = "seat acceptance and input focus."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_input {
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
-        pub trait IviInput<C: waynest::Connection> {
+        pub trait IviInput<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_input";
             const VERSION: u32 = 2u32;
             #[doc = "Set input focus state of surface in ivi compositor. If the surface has input"]
@@ -237,6 +273,40 @@ pub mod ivi_input {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let surface = message.uint()?;
+                            let device = message.uint()?;
+                            let enabled = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_input#{}.set_input_focus({}, {}, {})",
+                                sender_id,
+                                surface,
+                                device,
+                                enabled
+                            );
+                            self.set_input_focus(connection, sender_id, surface, device, enabled)
+                                .await
+                        }
+                        1u16 => {
+                            let surface = message.uint()?;
+                            let seat = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let accepted = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_input#{}.set_input_acceptance({}, \"{}\", {})",
+                                sender_id,
+                                surface,
+                                seat,
+                                accepted
+                            );
+                            self.set_input_acceptance(
+                                connection, sender_id, surface, seat, accepted,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -247,6 +317,7 @@ pub mod ivi_input {
 #[allow(clippy::module_inception)]
 pub mod ivi_wm {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_wm_screen {
         #[repr(u32)]
         #[non_exhaustive]
@@ -276,7 +347,10 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_wm_screen interface. See the module level documentation for more info"]
-        pub trait IviWmScreen<C: waynest::Connection> {
+        pub trait IviWmScreen<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_wm_screen";
             const VERSION: u32 = 2u32;
             #[doc = "Request to destroy the ivi_wm_screen."]
@@ -378,6 +452,55 @@ pub mod ivi_wm {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm_screen#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm_screen#{}.clear()", sender_id,);
+                            self.clear(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm_screen#{}.add_layer({})", sender_id, layer_id);
+                            self.add_layer(connection, sender_id, layer_id).await
+                        }
+                        3u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm_screen#{}.remove_layer({})",
+                                sender_id,
+                                layer_id
+                            );
+                            self.remove_layer(connection, sender_id, layer_id).await
+                        }
+                        4u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let screenshot = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm_screen#{}.screenshot({}, {})",
+                                sender_id,
+                                buffer,
+                                screenshot
+                            );
+                            self.screenshot(connection, sender_id, buffer, screenshot)
+                                .await
+                        }
+                        5u16 => {
+                            let param = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm_screen#{}.get({})", sender_id, param);
+                            self.get(connection, sender_id, param).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -388,6 +511,7 @@ pub mod ivi_wm {
     #[doc = "The server will destroy this resource after the event has been send,"]
     #[doc = "so the client shall then destroy its proxy too."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_screenshot {
         #[repr(u32)]
         #[non_exhaustive]
@@ -429,7 +553,10 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_screenshot interface. See the module level documentation for more info"]
-        pub trait IviScreenshot<C: waynest::Connection> {
+        pub trait IviScreenshot<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_screenshot";
             const VERSION: u32 = 2u32;
             #[doc = "This event notifies the filling data to buffer is done. The client"]
@@ -471,6 +598,7 @@ pub mod ivi_wm {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ivi_wm {
         #[repr(u32)]
         #[non_exhaustive]
@@ -598,7 +726,10 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_wm interface. See the module level documentation for more info"]
-        pub trait IviWm<C: waynest::Connection> {
+        pub trait IviWm<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ivi_wm";
             const VERSION: u32 = 2u32;
             #[doc = "All requests are not applied directly to scene object, so a controller"]
@@ -1056,6 +1187,308 @@ pub mod ivi_wm {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm#{}.commit_changes()", sender_id,);
+                            self.commit_changes(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.create_screen({}, {})",
+                                sender_id,
+                                output,
+                                id
+                            );
+                            self.create_screen(connection, sender_id, output, id).await
+                        }
+                        2u16 => {
+                            let surface_id = message.uint()?;
+                            let visibility = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_surface_visibility({}, {})",
+                                sender_id,
+                                surface_id,
+                                visibility
+                            );
+                            self.set_surface_visibility(
+                                connection, sender_id, surface_id, visibility,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let layer_id = message.uint()?;
+                            let visibility = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_layer_visibility({}, {})",
+                                sender_id,
+                                layer_id,
+                                visibility
+                            );
+                            self.set_layer_visibility(connection, sender_id, layer_id, visibility)
+                                .await
+                        }
+                        4u16 => {
+                            let surface_id = message.uint()?;
+                            let opacity = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_surface_opacity({}, {})",
+                                sender_id,
+                                surface_id,
+                                opacity
+                            );
+                            self.set_surface_opacity(connection, sender_id, surface_id, opacity)
+                                .await
+                        }
+                        5u16 => {
+                            let layer_id = message.uint()?;
+                            let opacity = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_layer_opacity({}, {})",
+                                sender_id,
+                                layer_id,
+                                opacity
+                            );
+                            self.set_layer_opacity(connection, sender_id, layer_id, opacity)
+                                .await
+                        }
+                        6u16 => {
+                            let surface_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_surface_source_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_surface_source_rectangle(
+                                connection, sender_id, surface_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        7u16 => {
+                            let layer_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_layer_source_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                layer_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_layer_source_rectangle(
+                                connection, sender_id, layer_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        8u16 => {
+                            let surface_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_surface_destination_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_surface_destination_rectangle(
+                                connection, sender_id, surface_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        9u16 => {
+                            let layer_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_layer_destination_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                layer_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_layer_destination_rectangle(
+                                connection, sender_id, layer_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        10u16 => {
+                            let surface_id = message.uint()?;
+                            let sync_state = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_sync({}, {})",
+                                sender_id,
+                                surface_id,
+                                sync_state
+                            );
+                            self.surface_sync(connection, sender_id, surface_id, sync_state)
+                                .await
+                        }
+                        11u16 => {
+                            let layer_id = message.uint()?;
+                            let sync_state = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_sync({}, {})",
+                                sender_id,
+                                layer_id,
+                                sync_state
+                            );
+                            self.layer_sync(connection, sender_id, layer_id, sync_state)
+                                .await
+                        }
+                        12u16 => {
+                            let surface_id = message.uint()?;
+                            let param = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_get({}, {})",
+                                sender_id,
+                                surface_id,
+                                param
+                            );
+                            self.surface_get(connection, sender_id, surface_id, param)
+                                .await
+                        }
+                        13u16 => {
+                            let layer_id = message.uint()?;
+                            let param = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_get({}, {})",
+                                sender_id,
+                                layer_id,
+                                param
+                            );
+                            self.layer_get(connection, sender_id, layer_id, param).await
+                        }
+                        14u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let screenshot = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_screenshot({}, {}, {})",
+                                sender_id,
+                                buffer,
+                                screenshot,
+                                surface_id
+                            );
+                            self.surface_screenshot(
+                                connection, sender_id, buffer, screenshot, surface_id,
+                            )
+                            .await
+                        }
+                        15u16 => {
+                            let surface_id = message.uint()?;
+                            let r#type = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.set_surface_type({}, {})",
+                                sender_id,
+                                surface_id,
+                                r#type
+                            );
+                            self.set_surface_type(connection, sender_id, surface_id, r#type)
+                                .await
+                        }
+                        16u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm#{}.layer_clear({})", sender_id, layer_id);
+                            self.layer_clear(connection, sender_id, layer_id).await
+                        }
+                        17u16 => {
+                            let layer_id = message.uint()?;
+                            let surface_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_add_surface({}, {})",
+                                sender_id,
+                                layer_id,
+                                surface_id
+                            );
+                            self.layer_add_surface(connection, sender_id, layer_id, surface_id)
+                                .await
+                        }
+                        18u16 => {
+                            let layer_id = message.uint()?;
+                            let surface_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_remove_surface({}, {})",
+                                sender_id,
+                                layer_id,
+                                surface_id
+                            );
+                            self.layer_remove_surface(connection, sender_id, layer_id, surface_id)
+                                .await
+                        }
+                        19u16 => {
+                            let layer_id = message.uint()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.create_layout_layer({}, {}, {})",
+                                sender_id,
+                                layer_id,
+                                width,
+                                height
+                            );
+                            self.create_layout_layer(connection, sender_id, layer_id, width, height)
+                                .await
+                        }
+                        20u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.destroy_layout_layer({})",
+                                sender_id,
+                                layer_id
+                            );
+                            self.destroy_layout_layer(connection, sender_id, layer_id)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

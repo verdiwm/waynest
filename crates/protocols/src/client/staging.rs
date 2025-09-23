@@ -9,6 +9,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_alpha_modifier_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -32,7 +33,10 @@ pub mod alpha_modifier_v1 {
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierV1<C: waynest::Connection> {
+        pub trait WpAlphaModifierV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
@@ -68,6 +72,7 @@ pub mod alpha_modifier_v1 {
     #[doc = "wl_surface is destroyed, all request on this object will raise the"]
     #[doc = "no_surface error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_alpha_modifier_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -91,7 +96,10 @@ pub mod alpha_modifier_v1 {
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierSurfaceV1<C: waynest::Connection> {
+        pub trait WpAlphaModifierSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
@@ -180,6 +188,7 @@ pub mod color_management_v1 {
     #[doc = ""]
     #[doc = "Compositors should never remove this global."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -384,7 +393,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagerV1<C: waynest::Connection> {
+        pub trait WpColorManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
@@ -581,9 +593,13 @@ pub mod color_management_v1 {
     #[doc = "wl_output object has no impact, but the compositor removing the output"]
     #[doc = "global makes the wp_color_management_output_v1 object inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_management_output_v1 {
         #[doc = "Trait to implement the wp_color_management_output_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementOutputV1<C: waynest::Connection> {
+        pub trait WpColorManagementOutputV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_management_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
@@ -656,6 +672,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with the wp_color_management_surface_v1 is"]
     #[doc = "destroyed, the wp_color_management_surface_v1 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_management_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -685,7 +702,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_management_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceV1<C: waynest::Connection> {
+        pub trait WpColorManagementSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_management_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
@@ -769,6 +789,7 @@ pub mod color_management_v1 {
     #[doc = "If the wl_surface associated with this object is destroyed, the"]
     #[doc = "wp_color_management_surface_feedback_v1 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_management_surface_feedback_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -795,7 +816,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_management_surface_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceFeedbackV1<C: waynest::Connection> {
+        pub trait WpColorManagementSurfaceFeedbackV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
@@ -903,6 +927,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_creator_icc_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -938,7 +963,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_creator_icc_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorIccV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionCreatorIccV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the ICC information"]
@@ -1049,6 +1077,7 @@ pub mod color_management_v1 {
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_creator_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1087,7 +1116,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_creator_params_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorParamsV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionCreatorParamsV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the parameters previously"]
@@ -1438,6 +1470,7 @@ pub mod color_management_v1 {
     #[doc = "wp_image_description_v1 object always refers to one fixed image"]
     #[doc = "description. It cannot change after creation."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1494,7 +1527,10 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
@@ -1601,9 +1637,13 @@ pub mod color_management_v1 {
     #[doc = "Every wp_image_description_info_v1 created from the same"]
     #[doc = "wp_image_description_v1 shall always return the exact same data."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_image_description_info_v1 {
         #[doc = "Trait to implement the wp_image_description_info_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionInfoV1<C: waynest::Connection> {
+        pub trait WpImageDescriptionInfoV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_image_description_info_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Signals the end of information events and destroys the object."]
@@ -1781,6 +1821,7 @@ pub mod color_representation_v1 {
     #[doc = ""]
     #[doc = "Compositors should never remove this global."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_representation_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1804,7 +1845,10 @@ pub mod color_representation_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_representation_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorRepresentationManagerV1<C: waynest::Connection> {
+        pub trait WpColorRepresentationManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_representation_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_representation_manager_v1 object. This does not"]
@@ -1878,6 +1922,7 @@ pub mod color_representation_v1 {
     #[doc = "If the wl_surface associated with the wp_color_representation_surface_v1"]
     #[doc = "is destroyed, the wp_color_representation_surface_v1 object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_color_representation_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2040,7 +2085,10 @@ pub mod color_representation_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_representation_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorRepresentationSurfaceV1<C: waynest::Connection> {
+        pub trait WpColorRepresentationSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_color_representation_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_representation_surface_v1 object."]
@@ -2164,6 +2212,7 @@ pub mod commit_timing_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_commit_timing_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2187,7 +2236,10 @@ pub mod commit_timing_v1 {
             }
         }
         #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimingManagerV1<C: waynest::Connection> {
+        pub trait WpCommitTimingManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -2219,6 +2271,7 @@ pub mod commit_timing_v1 {
     }
     #[doc = "An object to set a time constraint for a content update on a surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_commit_timer_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2248,7 +2301,10 @@ pub mod commit_timing_v1 {
             }
         }
         #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimerV1<C: waynest::Connection> {
+        pub trait WpCommitTimerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_commit_timer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Provide a timing constraint for a surface content update."]
@@ -2301,6 +2357,7 @@ pub mod content_type_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_content_type_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2324,7 +2381,10 @@ pub mod content_type_v1 {
             }
         }
         #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeManagerV1<C: waynest::Connection> {
+        pub trait WpContentTypeManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
@@ -2361,6 +2421,7 @@ pub mod content_type_v1 {
     #[doc = "When the associated surface gets destroyed, this object becomes inert and"]
     #[doc = "the client should destroy it."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_content_type_v1 {
         #[doc = "These values describe the available content types for a surface."]
         #[repr(u32)]
@@ -2390,7 +2451,10 @@ pub mod content_type_v1 {
             }
         }
         #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeV1<C: waynest::Connection> {
+        pub trait WpContentTypeV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_content_type_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Switch back to not specifying the content type of this surface. This is"]
@@ -2435,9 +2499,13 @@ pub mod cursor_shape_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_cursor_shape_manager_v1 {
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeManagerV1<C: waynest::Connection> {
+        pub trait WpCursorShapeManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the cursor shape manager."]
@@ -2481,6 +2549,7 @@ pub mod cursor_shape_v1 {
     }
     #[doc = "This interface allows clients to set the cursor shape."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_cursor_shape_device_v1 {
         #[doc = "This enum describes cursor shapes."]
         #[doc = ""]
@@ -2642,7 +2711,10 @@ pub mod cursor_shape_v1 {
             }
         }
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeDeviceV1<C: waynest::Connection> {
+        pub trait WpCursorShapeDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the cursor shape device."]
@@ -2720,9 +2792,13 @@ pub mod drm_lease_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_device_v1 {
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseDeviceV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a lease request object."]
@@ -2812,9 +2888,13 @@ pub mod drm_lease_v1 {
     #[doc = "event. When the description is updated the compositor will send a"]
     #[doc = "description event followed by a done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_connector_v1 {
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseConnectorV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseConnectorV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client may send this request to indicate that it will not use this"]
@@ -2895,6 +2975,7 @@ pub mod drm_lease_v1 {
     #[doc = "wish to lease, then use wp_drm_lease_request_v1.submit to submit the"]
     #[doc = "request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_request_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2924,7 +3005,10 @@ pub mod drm_lease_v1 {
             }
         }
         #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseRequestV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseRequestV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_request_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Indicates that the client would like to lease the given connector."]
@@ -2973,9 +3057,13 @@ pub mod drm_lease_v1 {
     #[doc = "is denied, the compositor will send a finished event without a lease_fd"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_drm_lease_v1 {
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseV1<C: waynest::Connection> {
+        pub trait WpDrmLeaseV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client should send this to indicate that it no longer wishes to use"]
@@ -3041,6 +3129,7 @@ pub mod ext_background_effect_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_background_effect_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3076,7 +3165,10 @@ pub mod ext_background_effect_v1 {
             }
         }
         #[doc = "Trait to implement the ext_background_effect_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtBackgroundEffectManagerV1<C: waynest::Connection> {
+        pub trait ExtBackgroundEffectManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_background_effect_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this"]
@@ -3120,6 +3212,7 @@ pub mod ext_background_effect_v1 {
     #[doc = "If the wl_surface associated with the ext_background_effect_surface_v1"]
     #[doc = "object has been destroyed, this object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_background_effect_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3143,7 +3236,10 @@ pub mod ext_background_effect_v1 {
             }
         }
         #[doc = "Trait to implement the ext_background_effect_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtBackgroundEffectSurfaceV1<C: waynest::Connection> {
+        pub trait ExtBackgroundEffectSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_background_effect_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this protocol"]
@@ -3198,9 +3294,13 @@ pub mod ext_data_control_v1 {
     #[doc = "This interface is a manager that allows creating per-seat data device"]
     #[doc = "controls."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_manager_v1 {
         #[doc = "Trait to implement the ext_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlManagerV1<C: waynest::Connection> {
+        pub trait ExtDataControlManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new data source."]
@@ -3240,6 +3340,7 @@ pub mod ext_data_control_v1 {
     #[doc = ""]
     #[doc = "When the seat is destroyed, this object becomes inert."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_device_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3263,7 +3364,10 @@ pub mod ext_data_control_v1 {
             }
         }
         #[doc = "Trait to implement the ext_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlDeviceV1<C: waynest::Connection> {
+        pub trait ExtDataControlDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request asks the compositor to set the selection to the data from"]
@@ -3380,6 +3484,7 @@ pub mod ext_data_control_v1 {
     #[doc = "transfer and provides a way to describe the offered data and a way to"]
     #[doc = "respond to requests to transfer the data."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_source_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3403,7 +3508,10 @@ pub mod ext_data_control_v1 {
             }
         }
         #[doc = "Trait to implement the ext_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlSourceV1<C: waynest::Connection> {
+        pub trait ExtDataControlSourceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
@@ -3454,9 +3562,13 @@ pub mod ext_data_control_v1 {
     #[doc = "MIME types that the data can be converted to and provides the mechanism"]
     #[doc = "for transferring the data directly from the source client."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_data_control_offer_v1 {
         #[doc = "Trait to implement the ext_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlOfferV1<C: waynest::Connection> {
+        pub trait ExtDataControlOfferV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_data_control_offer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "To transfer the offered data, the client issues this request and"]
@@ -3538,9 +3650,13 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "event after the global is bound, the compositor must not send any"]
     #[doc = "ext_foreign_toplevel_list_v1.toplevel events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_foreign_toplevel_list_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelListV1<C: waynest::Connection> {
+        pub trait ExtForeignToplevelListV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -3602,9 +3718,13 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
     #[doc = "window. A single app may have multiple mapped toplevels."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_foreign_toplevel_handle_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelHandleV1<C: waynest::Connection> {
+        pub trait ExtForeignToplevelHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request should be used when the client will no longer use the handle"]
@@ -3710,9 +3830,13 @@ pub mod ext_idle_notify_v1 {
     #[doc = "After binding to this global, clients can create ext_idle_notification_v1"]
     #[doc = "objects to get notified when the user is idle for a given amount of time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_idle_notifier_v1 {
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotifierV1<C: waynest::Connection> {
+        pub trait ExtIdleNotifierV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the manager object. All objects created via this interface"]
@@ -3790,9 +3914,13 @@ pub mod ext_idle_notify_v1 {
     #[doc = "user activity starts again, the notification object stops being idle,"]
     #[doc = "a resumed event is sent and the timeout is restarted."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_idle_notification_v1 {
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotificationV1<C: waynest::Connection> {
+        pub trait ExtIdleNotificationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the notification object."]
@@ -3848,9 +3976,13 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "independent factory interfaces, the ext_image_capture_source_v1 interface is"]
     #[doc = "frozen at version 1."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_capture_source_v1 {
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCaptureSourceV1<C: waynest::Connection> {
+        pub trait ExtImageCaptureSourceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_capture_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the image capture source. This request may be sent at any time"]
@@ -3867,9 +3999,13 @@ pub mod ext_image_capture_source_v1 {
     }
     #[doc = "A manager for creating image capture source objects for wl_output objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_output_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtOutputImageCaptureSourceManagerV1<C: waynest::Connection> {
+        pub trait ExtOutputImageCaptureSourceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for an output. Images captured from this source"]
@@ -3902,9 +4038,13 @@ pub mod ext_image_capture_source_v1 {
     #[doc = "A manager for creating image capture source objects for"]
     #[doc = "ext_foreign_toplevel_handle_v1 objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelImageCaptureSourceManagerV1<C: waynest::Connection> {
+        pub trait ExtForeignToplevelImageCaptureSourceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
@@ -3945,6 +4085,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3980,7 +4121,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureManagerV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capturing session for an image capture source."]
@@ -4045,6 +4189,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "attach_buffer request, set the buffer damage using the damage_buffer"]
     #[doc = "request and then send the capture request."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_session_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4068,7 +4213,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureSessionV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureSessionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capture frame for this session."]
@@ -4116,7 +4264,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                format: u32,
+                format: super::super::super::core::wayland::wl_shm::Format,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the device buffers must be allocated on for"]
             #[doc = "dma-buf buffers."]
@@ -4180,6 +4328,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = ""]
     #[doc = "If the capture fails, the compositor must send the failed event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_frame_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4233,7 +4382,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureFrameV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureFrameV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the frame. This request can be sent at any time by the"]
@@ -4319,7 +4471,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                transform: u32,
+                transform: super::super::super::core::wayland::wl_output::Transform,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
             #[doc = "times to describe a region."]
@@ -4380,6 +4532,7 @@ pub mod ext_image_copy_capture_v1 {
     #[doc = "This object represents a cursor capture session. It extends the base"]
     #[doc = "capture session with cursor-specific metadata."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_image_copy_capture_cursor_session_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4403,7 +4556,10 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureCursorSessionV1<C: waynest::Connection> {
+        pub trait ExtImageCopyCaptureCursorSessionV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -4513,9 +4669,13 @@ pub mod ext_image_copy_capture_v1 {
 pub mod ext_session_lock_v1 {
     #[doc = "This interface is used to request that the session be locked."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_session_lock_manager_v1 {
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockManagerV1<C: waynest::Connection> {
+        pub trait ExtSessionLockManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the session lock manager object will"]
@@ -4593,6 +4753,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "for unlocking the session, they may even start a new lock client"]
     #[doc = "instance automatically."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_session_lock_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4628,7 +4789,10 @@ pub mod ext_session_lock_v1 {
             }
         }
         #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockV1<C: waynest::Connection> {
+        pub trait ExtSessionLockV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the lock object will no longer be"]
@@ -4760,6 +4924,7 @@ pub mod ext_session_lock_v1 {
     #[doc = "give the first lock surface created keyboard focus and change keyboard"]
     #[doc = "focus if the user clicks on other surfaces."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_session_lock_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4792,7 +4957,10 @@ pub mod ext_session_lock_v1 {
             }
         }
         #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockSurfaceV1<C: waynest::Connection> {
+        pub trait ExtSessionLockSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_session_lock_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the lock surface object will no"]
@@ -4884,9 +5052,13 @@ pub mod ext_session_lock_v1 {
 pub mod ext_transient_seat_v1 {
     #[doc = "The transient seat manager creates short-lived seats."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_transient_seat_manager_v1 {
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatManagerV1<C: waynest::Connection> {
+        pub trait ExtTransientSeatManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new seat that is removed when the client side transient seat"]
@@ -4920,9 +5092,13 @@ pub mod ext_transient_seat_v1 {
     #[doc = "When the transient seat handle is destroyed, the seat itself will also be"]
     #[doc = "destroyed."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_transient_seat_v1 {
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatV1<C: waynest::Connection> {
+        pub trait ExtTransientSeatV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the transient seat object is destroyed by the client, the"]
@@ -4984,9 +5160,13 @@ pub mod ext_workspace_v1 {
     #[doc = "After a client binds the ext_workspace_manager_v1, each workspace will be"]
     #[doc = "sent via the workspace event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_workspace_manager_v1 {
         #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceManagerV1<C: waynest::Connection> {
+        pub trait ExtWorkspaceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_workspace_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client must send this request after it has finished sending other"]
@@ -5082,6 +5262,7 @@ pub mod ext_workspace_v1 {
     #[doc = "where a workspace spans all outputs may advertise a single workspace group for all"]
     #[doc = "outputs."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_workspace_group_handle_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct GroupCapabilities : u32 { # [doc = "create_workspace request is available"] const CreateWorkspace = 1u32 ; } }
         impl TryFrom<u32> for GroupCapabilities {
@@ -5096,7 +5277,10 @@ pub mod ext_workspace_v1 {
             }
         }
         #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceGroupHandleV1<C: waynest::Connection> {
+        pub trait ExtWorkspaceGroupHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Request that the compositor create a new workspace with the given name"]
@@ -5210,6 +5394,7 @@ pub mod ext_workspace_v1 {
     #[doc = "the same name in different workspace groups, but these workspaces are still"]
     #[doc = "separate (e.g. one of them might be active while the other is not)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod ext_workspace_handle_v1 {
         bitflags::bitflags! { # [doc = "The different states that a workspace can have."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct State : u32 { # [doc = "the workspace is active"] const Active = 1u32 ; # [doc = "the workspace requests attention"] const Urgent = 2u32 ; const Hidden = 4u32 ; } }
         impl TryFrom<u32> for State {
@@ -5236,7 +5421,10 @@ pub mod ext_workspace_v1 {
             }
         }
         #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceHandleV1<C: waynest::Connection> {
+        pub trait ExtWorkspaceHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "ext_workspace_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the ext_workspace_handle_v1 object."]
@@ -5416,6 +5604,7 @@ pub mod fifo_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fifo_manager_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -5441,7 +5630,10 @@ pub mod fifo_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoManagerV1<C: waynest::Connection> {
+        pub trait WpFifoManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fifo_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -5478,6 +5670,7 @@ pub mod fifo_v1 {
     #[doc = "A fifo object for a surface that may be used to add"]
     #[doc = "display refresh constraints to content updates."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fifo_v1 {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal requests."]
@@ -5503,7 +5696,10 @@ pub mod fifo_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoV1<C: waynest::Connection> {
+        pub trait WpFifoV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fifo_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
@@ -5594,6 +5790,7 @@ pub mod fifo_v1 {
 pub mod fractional_scale_v1 {
     #[doc = "A global interface for requesting surfaces to use fractional scales."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fractional_scale_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5617,7 +5814,10 @@ pub mod fractional_scale_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleManagerV1<C: waynest::Connection> {
+        pub trait WpFractionalScaleManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this protocol"]
@@ -5650,9 +5850,13 @@ pub mod fractional_scale_v1 {
     #[doc = "An additional interface to a wl_surface object which allows the compositor"]
     #[doc = "to inform the client of the preferred scale."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_fractional_scale_v1 {
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleV1<C: waynest::Connection> {
+        pub trait WpFractionalScaleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
@@ -5711,6 +5915,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = ""]
     #[doc = "See wp_linux_drm_syncobj_surface_v1 for more information."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_linux_drm_syncobj_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5737,7 +5942,10 @@ pub mod linux_drm_syncobj_v1 {
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjManagerV1<C: waynest::Connection> {
+        pub trait WpLinuxDrmSyncobjManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this explicit synchronization factory object. Other objects"]
@@ -5789,9 +5997,13 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "This object represents an explicit synchronization object timeline"]
     #[doc = "imported by the client to the compositor."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjTimelineV1<C: waynest::Connection> {
+        pub trait WpLinuxDrmSyncobjTimelineV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the synchronization object timeline. Other objects are not"]
@@ -5833,6 +6045,7 @@ pub mod linux_drm_syncobj_v1 {
     #[doc = "release point value, or else the conflicting_points protocol error is"]
     #[doc = "raised."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_linux_drm_syncobj_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -5871,7 +6084,10 @@ pub mod linux_drm_syncobj_v1 {
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjSurfaceV1<C: waynest::Connection> {
+        pub trait WpLinuxDrmSyncobjSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this surface synchronization object."]
@@ -5993,9 +6209,13 @@ pub mod pointer_warp_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_pointer_warp_v1 {
         #[doc = "Trait to implement the wp_pointer_warp_v1 interface. See the module level documentation for more info"]
-        pub trait WpPointerWarpV1<C: waynest::Connection> {
+        pub trait WpPointerWarpV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_pointer_warp_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the pointer warp manager."]
@@ -6055,6 +6275,7 @@ pub mod security_context_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_security_context_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6081,7 +6302,10 @@ pub mod security_context_v1 {
             }
         }
         #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextManagerV1<C: waynest::Connection> {
+        pub trait WpSecurityContextManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
@@ -6133,6 +6357,7 @@ pub mod security_context_v1 {
     #[doc = "When both are set, the combination of the instance ID and the sandbox"]
     #[doc = "engine must uniquely identify a running instance of an application."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_security_context_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6162,7 +6387,10 @@ pub mod security_context_v1 {
             }
         }
         #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextV1<C: waynest::Connection> {
+        pub trait WpSecurityContextV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_security_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the security context object."]
@@ -6269,9 +6497,13 @@ pub mod single_pixel_buffer_v1 {
     #[doc = "The wp_single_pixel_buffer_manager_v1 interface is a factory for"]
     #[doc = "single-pixel buffers."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_single_pixel_buffer_manager_v1 {
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSinglePixelBufferManagerV1<C: waynest::Connection> {
+        pub trait WpSinglePixelBufferManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
@@ -6332,6 +6564,7 @@ pub mod tearing_control_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_tearing_control_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6355,7 +6588,10 @@ pub mod tearing_control_v1 {
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlManagerV1<C: waynest::Connection> {
+        pub trait WpTearingControlManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this tearing control factory object. Other objects, including"]
@@ -6395,6 +6631,7 @@ pub mod tearing_control_v1 {
     #[doc = "If the associated wl_surface is destroyed, this object becomes inert and"]
     #[doc = "should be destroyed."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_tearing_control_v1 {
         #[doc = "This enum provides information for if submitted frames from the client"]
         #[doc = "may be presented with tearing."]
@@ -6421,7 +6658,10 @@ pub mod tearing_control_v1 {
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlV1<C: waynest::Connection> {
+        pub trait WpTearingControlV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_tearing_control_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Set the presentation hint for the associated wl_surface. This state is"]
@@ -6496,9 +6736,13 @@ pub mod xdg_activation_v1 {
     #[doc = "being activated or started, or for applications to request to be"]
     #[doc = "activated."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_activation_v1 {
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationV1<C: waynest::Connection> {
+        pub trait XdgActivationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_activation_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_activation object will no longer be"]
@@ -6557,6 +6801,7 @@ pub mod xdg_activation_v1 {
     #[doc = "done event with the token. In case the request's parameters are invalid,"]
     #[doc = "the compositor will provide an invalid token."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_activation_token_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6580,7 +6825,10 @@ pub mod xdg_activation_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationTokenV1<C: waynest::Connection> {
+        pub trait XdgActivationTokenV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Provides information about the seat and serial event that requested the"]
@@ -6679,6 +6927,7 @@ pub mod xdg_dialog_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_wm_dialog_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6702,7 +6951,10 @@ pub mod xdg_dialog_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgWmDialogV1<C: waynest::Connection> {
+        pub trait XdgWmDialogV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_wm_dialog_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
@@ -6742,9 +6994,13 @@ pub mod xdg_dialog_v1 {
     #[doc = "the purpose of the secondary toplevel. This interface has no effect"]
     #[doc = "on toplevels that are not attached to a parent toplevel."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_dialog_v1 {
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgDialogV1<C: waynest::Connection> {
+        pub trait XdgDialogV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_dialog_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
@@ -6799,9 +7055,13 @@ pub mod xdg_system_bell_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_system_bell_v1 {
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
-        pub trait XdgSystemBellV1<C: waynest::Connection> {
+        pub trait XdgSystemBellV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_system_bell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify that the object will no longer be used."]
@@ -6870,6 +7130,7 @@ pub mod xdg_toplevel_drag_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_drag_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6893,7 +7154,10 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragManagerV1<C: waynest::Connection> {
+        pub trait XdgToplevelDragManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
@@ -6930,6 +7194,7 @@ pub mod xdg_toplevel_drag_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_drag_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6956,7 +7221,10 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragV1<C: waynest::Connection> {
+        pub trait XdgToplevelDragV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
@@ -7020,9 +7288,13 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "This interface allows clients to create toplevel window icons and set"]
     #[doc = "them on toplevel windows to be displayed to the user."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_icon_manager_v1 {
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconManagerV1<C: waynest::Connection> {
+        pub trait XdgToplevelIconManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the toplevel icon manager."]
@@ -7111,6 +7383,7 @@ pub mod xdg_toplevel_icon_v1 {
     #[doc = "It is up to compositor policy whether to prefer using a buffer or loading"]
     #[doc = "an icon via its name. See 'set_name' and 'add_buffer' for details."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_icon_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7140,7 +7413,10 @@ pub mod xdg_toplevel_icon_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconV1<C: waynest::Connection> {
+        pub trait XdgToplevelIconV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
@@ -7229,9 +7505,13 @@ pub mod xdg_toplevel_tag_v1 {
     #[doc = "corresponding interface version bump. Backward incompatible changes can"]
     #[doc = "only be done by creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel_tag_manager_v1 {
         #[doc = "Trait to implement the xdg_toplevel_tag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelTagManagerV1<C: waynest::Connection> {
+        pub trait XdgToplevelTagManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel_tag_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this toplevel tag manager object. This request has no other"]
@@ -7336,6 +7616,7 @@ pub mod xwayland_shell_v1 {
     #[doc = "An Xwayland server that has bound this interface must not"]
     #[doc = "set the `WL_SURFACE_ID` atom on a window."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xwayland_shell_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7359,7 +7640,10 @@ pub mod xwayland_shell_v1 {
             }
         }
         #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandShellV1<C: waynest::Connection> {
+        pub trait XwaylandShellV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xwayland_shell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xwayland_shell_v1 object."]
@@ -7403,6 +7687,7 @@ pub mod xwayland_shell_v1 {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xwayland_surface_v1 state to take effect."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xwayland_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -7429,7 +7714,10 @@ pub mod xwayland_shell_v1 {
             }
         }
         #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandSurfaceV1<C: waynest::Connection> {
+        pub trait XwaylandSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xwayland_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Associates an Xwayland window to a wl_surface."]

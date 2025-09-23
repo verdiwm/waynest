@@ -8,6 +8,7 @@ pub mod hyprland_ctm_control_v1 {
     #[doc = "If any changes are done, once this object is destroyed, CTMs are reset back to"]
     #[doc = "an identity matrix."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_ctm_control_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -31,7 +32,10 @@ pub mod hyprland_ctm_control_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandCtmControlManagerV1<C: waynest::Connection> {
+        pub trait HyprlandCtmControlManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Set a CTM for a wl_output."]
@@ -101,6 +105,56 @@ pub mod hyprland_ctm_control_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let mat0 = message.fixed()?;
+                            let mat1 = message.fixed()?;
+                            let mat2 = message.fixed()?;
+                            let mat3 = message.fixed()?;
+                            let mat4 = message.fixed()?;
+                            let mat5 = message.fixed()?;
+                            let mat6 = message.fixed()?;
+                            let mat7 = message.fixed()?;
+                            let mat8 = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_ctm_control_manager_v1#{}.set_ctm_for_output({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                output,
+                                mat0,
+                                mat1,
+                                mat2,
+                                mat3,
+                                mat4,
+                                mat5,
+                                mat6,
+                                mat7,
+                                mat8
+                            );
+                            self.set_ctm_for_output(
+                                connection, sender_id, output, mat0, mat1, mat2, mat3, mat4, mat5,
+                                mat6, mat7, mat8,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_ctm_control_manager_v1#{}.commit()",
+                                sender_id,
+                            );
+                            self.commit(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_ctm_control_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -115,9 +169,13 @@ pub mod hyprland_ctm_control_v1 {
 pub mod hyprland_focus_grab_v1 {
     #[doc = "This interface allows a client to create surface grab objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_focus_grab_manager_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabManagerV1<C: waynest::Connection> {
+        pub trait HyprlandFocusGrabManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a surface grab object."]
@@ -144,6 +202,26 @@ pub mod hyprland_focus_grab_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let grab = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_focus_grab_manager_v1#{}.create_grab({})",
+                                sender_id,
+                                grab
+                            );
+                            self.create_grab(connection, sender_id, grab).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_focus_grab_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -166,9 +244,13 @@ pub mod hyprland_focus_grab_v1 {
     #[doc = "event. The same will happen if another focus grab or similar action"]
     #[doc = "is started at the compositor's discretion."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_focus_grab_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabV1<C: waynest::Connection> {
+        pub trait HyprlandFocusGrabV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_focus_grab_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Add a surface to the whitelist. Destroying the surface is treated the"]
@@ -231,6 +313,40 @@ pub mod hyprland_focus_grab_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_focus_grab_v1#{}.add_surface({})",
+                                sender_id,
+                                surface
+                            );
+                            self.add_surface(connection, sender_id, surface).await
+                        }
+                        1u16 => {
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_focus_grab_v1#{}.remove_surface({})",
+                                sender_id,
+                                surface
+                            );
+                            self.remove_surface(connection, sender_id, surface).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_focus_grab_v1#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_focus_grab_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -244,6 +360,7 @@ pub mod hyprland_focus_grab_v1 {
 pub mod hyprland_global_shortcuts_v1 {
     #[doc = "This object is a manager which offers requests to create global shortcuts."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_global_shortcuts_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -267,7 +384,10 @@ pub mod hyprland_global_shortcuts_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutsManagerV1<C: waynest::Connection> {
+        pub trait HyprlandGlobalShortcutsManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Register a new global shortcut."]
@@ -304,6 +424,51 @@ pub mod hyprland_global_shortcuts_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let shortcut = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let trigger_description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")",
+                                sender_id,
+                                shortcut,
+                                id,
+                                app_id,
+                                description,
+                                trigger_description
+                            );
+                            self.register_shortcut(
+                                connection,
+                                sender_id,
+                                shortcut,
+                                id,
+                                app_id,
+                                description,
+                                trigger_description,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_global_shortcuts_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -312,9 +477,13 @@ pub mod hyprland_global_shortcuts_v1 {
     }
     #[doc = "This object represents a single shortcut."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_global_shortcut_v1 {
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutV1<C: waynest::Connection> {
+        pub trait HyprlandGlobalShortcutV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
@@ -361,6 +530,11 @@ pub mod hyprland_global_shortcuts_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -373,9 +547,13 @@ pub mod hyprland_lock_notify_v1 {
     #[doc = "This interface allows clients to monitor whether the wayland session is"]
     #[doc = "locked or unlocked."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_lock_notifier_v1 {
         #[doc = "Trait to implement the hyprland_lock_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandLockNotifierV1<C: waynest::Connection> {
+        pub trait HyprlandLockNotifierV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_lock_notifier_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the manager object. All objects created via this interface"]
@@ -405,6 +583,23 @@ pub mod hyprland_lock_notify_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_lock_notifier_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_lock_notifier_v1#{}.get_lock_notification({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_lock_notification(connection, sender_id, id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -425,9 +620,13 @@ pub mod hyprland_lock_notify_v1 {
     #[doc = "a lock screen frame on every output, which corresponds to the \"locked\""]
     #[doc = "event of ext-session-lock."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_lock_notification_v1 {
         #[doc = "Trait to implement the hyprland_lock_notification_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandLockNotificationV1<C: waynest::Connection> {
+        pub trait HyprlandLockNotificationV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_lock_notification_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the notification object."]
@@ -471,6 +670,14 @@ pub mod hyprland_lock_notify_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_lock_notification_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -483,6 +690,7 @@ pub mod hyprland_lock_notify_v1 {
 pub mod hyprland_surface_v1 {
     #[doc = "This interface allows a client to create hyprland surface objects."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_surface_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -506,7 +714,10 @@ pub mod hyprland_surface_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_surface_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceManagerV1<C: waynest::Connection> {
+        pub trait HyprlandSurfaceManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_surface_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Create a hyprland surface object for the given wayland surface."]
@@ -537,6 +748,28 @@ pub mod hyprland_surface_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_surface_manager_v1#{}.get_hyprland_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_hyprland_surface(connection, sender_id, id, surface)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_surface_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -548,6 +781,7 @@ pub mod hyprland_surface_v1 {
     #[doc = "Once the wl_surface has been destroyed, the hyprland surface object must be"]
     #[doc = "destroyed as well. All other operations are a protocol error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_surface_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -574,7 +808,10 @@ pub mod hyprland_surface_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceV1<C: waynest::Connection> {
+        pub trait HyprlandSurfaceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_surface_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Sets a multiplier for the overall opacity of the surface."]
@@ -632,6 +869,33 @@ pub mod hyprland_surface_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let opacity = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_surface_v1#{}.set_opacity({})",
+                                sender_id,
+                                opacity
+                            );
+                            self.set_opacity(connection, sender_id, opacity).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_surface_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let region = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_surface_v1#{}.set_visible_region({})",
+                                sender_id,
+                                region
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.set_visible_region(connection, sender_id, region).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -648,9 +912,13 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "This object is a manager which offers requests to start capturing from a"]
     #[doc = "source."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_export_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportManagerV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelExportManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Capture the next frame of a toplevel. (window)"]
@@ -697,6 +965,62 @@ pub mod hyprland_toplevel_export_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let overlay_cursor = message.int()?;
+                            let handle = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_manager_v1#{}.capture_toplevel({}, {}, {})",
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle
+                            );
+                            self.capture_toplevel(
+                                connection,
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let overlay_cursor = message.int()?;
+                            let handle = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})",
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle
+                            );
+                            self.capture_toplevel_with_wlr_toplevel_handle(
+                                connection,
+                                sender_id,
+                                frame,
+                                overlay_cursor,
+                                handle,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -719,6 +1043,7 @@ pub mod hyprland_toplevel_export_v1 {
     #[doc = "Once either a \"ready\" or a \"failed\" event is received, the client should"]
     #[doc = "destroy the frame."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_export_frame_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -757,7 +1082,10 @@ pub mod hyprland_toplevel_export_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_toplevel_export_frame_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportFrameV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelExportFrameV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_export_frame_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Copy the frame to the supplied buffer. The buffer must have the"]
@@ -790,7 +1118,7 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-                format: u32,
+                format: super::super::super::core::wayland::wl_shm::Format,
                 width: u32,
                 height: u32,
                 stride: u32,
@@ -901,6 +1229,29 @@ pub mod hyprland_toplevel_export_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let ignore_damage = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.copy({}, {})",
+                                sender_id,
+                                buffer,
+                                ignore_damage
+                            );
+                            self.copy(connection, sender_id, buffer, ignore_damage)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -914,9 +1265,13 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[doc = "This object is a manager which offers requests to retrieve a window address"]
     #[doc = "for a toplevel."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_mapping_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_mapping_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelMappingManagerV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelMappingManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_mapping_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Get the window address for a toplevel."]
@@ -952,6 +1307,50 @@ pub mod hyprland_toplevel_mapping_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            let handle = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel({}, {})",
+                                sender_id,
+                                handle,
+                                toplevel
+                            );
+                            self.get_window_for_toplevel(connection, sender_id, handle, toplevel)
+                                .await
+                        }
+                        1u16 => {
+                            let handle = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel_wlr({}, {})",
+                                sender_id,
+                                handle,
+                                toplevel
+                            );
+                            self.get_window_for_toplevel_wlr(
+                                connection, sender_id, handle, toplevel,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_mapping_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -964,9 +1363,13 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[doc = "associated with the toplevel."]
     #[doc = "Should the mapping fail, the `failed` event will be sent."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod hyprland_toplevel_window_mapping_handle_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_window_mapping_handle_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelWindowMappingHandleV1<C: waynest::Connection> {
+        pub trait HyprlandToplevelWindowMappingHandleV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "hyprland_toplevel_window_mapping_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the handle. This request can be sent at any time by the client."]
@@ -1007,6 +1410,14 @@ pub mod hyprland_toplevel_mapping_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_window_mapping_handle_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

@@ -1,27 +1,27 @@
-use std::{fmt::Display, fs, path::Path};
+use std::{collections::HashMap, fmt::Display};
 
 use heck::{ToSnekCase, ToUpperCamelCase};
 use proc_macro2::TokenStream;
 use quote::quote;
 
+mod common;
 mod error;
 mod parser;
-pub mod utils;
+mod utils;
 
-use crate::{
-    error::Error,
-    parser::Protocol,
-    utils::{description_to_docs, make_ident, write_enums},
-};
+use common::write_dispatchers;
+use error::Error;
+use utils::{description_to_docs, make_ident, write_enums};
 
-pub fn generate_module<D: Display, P: AsRef<Path>>(
+pub use parser::Protocol;
+
+pub fn generate_module<D: Display>(
     module: D,
-    path: P,
+    protocol: &Protocol,
+    protocols: &HashMap<&'static str, Protocol>,
     requests_impl: bool,
     events_impl: bool,
 ) -> Result<TokenStream, Error> {
-    let protocol: Protocol = quick_xml::de::from_str(&fs::read_to_string(path)?)?;
-
     let mut inner_modules = Vec::new();
 
     for interface in &protocol.interfaces {
@@ -44,9 +44,10 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
             let mut args = Vec::new();
 
             for arg in &request.args {
-                let mut ty =
-                    // arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
-                    arg.to_rust_type_token(&protocol, &module);
+                let mut ty = arg.to_rust_type_token(
+                    arg.find_protocol(protocols)
+                        .unwrap_or((module.to_string().as_str(), protocol.clone())),
+                );
 
                 if arg.allow_null {
                     ty = quote! {Option<#ty>};
@@ -86,9 +87,10 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
             let mut args = Vec::new();
 
             for arg in &event.args {
-                let mut ty =
-                    // arg.to_rust_type_token(arg.find_protocol(pairs).as_ref().unwrap_or(pair));
-                    arg.to_rust_type_token(&protocol, &module);
+                let mut ty = arg.to_rust_type_token(
+                    arg.find_protocol(protocols)
+                        .unwrap_or((module.to_string().as_str(), protocol.clone())),
+                );
 
                 if arg.allow_null {
                     ty = quote! {Option<#ty>};
@@ -123,6 +125,8 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
         );
 
         let request_handler = if events_impl {
+            let dispatchers = write_dispatchers(interface, interface.requests.clone().into_iter());
+
             quote! {
                 fn handle_request(
                     &self,
@@ -133,6 +137,7 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                     async move {
                         #[allow(clippy::match_single_binding)]
                         match message.opcode() {
+                            #(#dispatchers),*
                             opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                         }
                     }
@@ -145,11 +150,12 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
         inner_modules.push(quote! {
             #(#docs)*
             #[allow(clippy::too_many_arguments)]
+            #[allow(unused)]
             pub mod #module_name {
                 #(#enums)*
 
                 #[doc = #trait_docs]
-                pub trait #trait_name<C: waynest::Connection> {
+                pub trait #trait_name<C: waynest::Connection> where Self: std::marker::Sync {
                     const INTERFACE: &'static str = #name;
                     const VERSION: u32 = #version;
 
@@ -162,7 +168,7 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
         });
     }
 
-    let ident = make_ident(protocol.name);
+    let ident = make_ident(&protocol.name);
     let docs = description_to_docs(protocol.description.as_ref());
 
     Ok(quote! {

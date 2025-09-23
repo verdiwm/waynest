@@ -63,9 +63,13 @@ pub mod linux_dmabuf_v1 {
     #[doc = "wait and signal fences implicitly passed via the DMA-BUF's reservation"]
     #[doc = "mechanism."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_linux_dmabuf_v1 {
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufV1<C: waynest::Connection> {
+        pub trait ZwpLinuxDmabufV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
@@ -187,6 +191,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "calls with a plane index which has already been set will result in a"]
     #[doc = "plane_set error being generated."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_linux_buffer_params_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -244,7 +249,10 @@ pub mod linux_dmabuf_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection> {
+        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
@@ -447,6 +455,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
         impl TryFrom<u32> for TrancheFlags {
@@ -461,7 +470,10 @@ pub mod linux_dmabuf_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection> {
+        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Using this request a client can tell the server that it is not going to"]
@@ -647,6 +659,7 @@ pub mod presentation_time {
     #[doc = "display update time and the update's target time, especially"]
     #[doc = "when the compositor misses its target vertical blanking period."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_presentation {
         #[doc = "These fatal protocol errors may be emitted in response to"]
         #[doc = "illegal presentation requests."]
@@ -675,7 +688,10 @@ pub mod presentation_time {
             }
         }
         #[doc = "Trait to implement the wp_presentation interface. See the module level documentation for more info"]
-        pub trait WpPresentation<C: waynest::Connection> {
+        pub trait WpPresentation<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_presentation";
             const VERSION: u32 = 2u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -755,6 +771,7 @@ pub mod presentation_time {
     #[doc = "Once a presentation_feedback object has delivered a 'presented'"]
     #[doc = "or 'discarded' event it is automatically destroyed."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_presentation_feedback {
         bitflags::bitflags! { # [doc = "These flags provide information about how the presentation of"] # [doc = "the related content update was done. The intent is to help"] # [doc = "clients assess the reliability of the feedback and the visual"] # [doc = "quality with respect to possible tearing and timings."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Kind : u32 { const Vsync = 1u32 ; const HwClock = 2u32 ; const HwCompletion = 4u32 ; const ZeroCopy = 8u32 ; } }
         impl TryFrom<u32> for Kind {
@@ -769,7 +786,10 @@ pub mod presentation_time {
             }
         }
         #[doc = "Trait to implement the wp_presentation_feedback interface. See the module level documentation for more info"]
-        pub trait WpPresentationFeedback<C: waynest::Connection> {
+        pub trait WpPresentationFeedback<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_presentation_feedback";
             const VERSION: u32 = 2u32;
             #[doc = "As presentation can be synchronized to only one output at a"]
@@ -933,9 +953,13 @@ pub mod tablet_v2 {
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
     #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_manager_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV2<C: waynest::Connection> {
+        pub trait ZwpTabletManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
@@ -966,9 +990,13 @@ pub mod tablet_v2 {
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
     #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_seat_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV2<C: waynest::Connection> {
+        pub trait ZwpTabletSeatV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
@@ -1040,6 +1068,7 @@ pub mod tablet_v2 {
     #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_tool_v2 {
         #[doc = "Describes the physical type of a tool. The physical type of a tool"]
         #[doc = "generally defines its base usage."]
@@ -1179,7 +1208,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV2<C: waynest::Connection> {
+        pub trait ZwpTabletToolV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
@@ -1511,6 +1543,7 @@ pub mod tablet_v2 {
     #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
     #[doc = "terminated by a wp_tablet.done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_v2 {
         #[doc = "Describes the bus types this tablet is connected to."]
         #[repr(u32)]
@@ -1547,7 +1580,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV2<C: waynest::Connection> {
+        pub trait ZwpTabletV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 2u32;
             #[doc = "This destroys the client's resource for this tablet object."]
@@ -1651,6 +1687,7 @@ pub mod tablet_v2 {
     #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_ring_v2 {
         #[doc = "Describes the source types for ring events. This indicates to the"]
         #[doc = "client how a ring event was physically generated; a client may"]
@@ -1678,7 +1715,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadRingV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadRingV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor use the provided feedback string"]
@@ -1789,6 +1829,7 @@ pub mod tablet_v2 {
     #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_strip_v2 {
         #[doc = "Describes the source types for strip events. This indicates to the"]
         #[doc = "client how a strip event was physically generated; a client may"]
@@ -1816,7 +1857,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadStripV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadStripV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -1945,9 +1989,13 @@ pub mod tablet_v2 {
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
     #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_group_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadGroupV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadGroupV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
@@ -2098,6 +2146,7 @@ pub mod tablet_v2 {
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
     #[doc = "although different groups may have different active modes."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_v2 {
         #[doc = "Describes the physical state of a button that caused the button"]
         #[doc = "event."]
@@ -2126,7 +2175,10 @@ pub mod tablet_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2266,9 +2318,13 @@ pub mod tablet_v2 {
     #[doc = "Events on a dial are logically grouped by the wl_tablet_pad_dial.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_tablet_pad_dial_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_dial_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadDialV2<C: waynest::Connection> {
+        pub trait ZwpTabletPadDialV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_tablet_pad_dial_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -2354,6 +2410,7 @@ pub mod viewporter {
     #[doc = "disconnecting the direct relationship between the buffer and the"]
     #[doc = "surface size."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_viewporter {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2377,7 +2434,10 @@ pub mod viewporter {
             }
         }
         #[doc = "Trait to implement the wp_viewporter interface. See the module level documentation for more info"]
-        pub trait WpViewporter<C: waynest::Connection> {
+        pub trait WpViewporter<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_viewporter";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this"]
@@ -2462,6 +2522,7 @@ pub mod viewporter {
     #[doc = "state is removed from the wl_surface. The change will be applied"]
     #[doc = "on the next wl_surface.commit."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wp_viewport {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2494,7 +2555,10 @@ pub mod viewporter {
             }
         }
         #[doc = "Trait to implement the wp_viewport interface. See the module level documentation for more info"]
-        pub trait WpViewport<C: waynest::Connection> {
+        pub trait WpViewport<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wp_viewport";
             const VERSION: u32 = 1u32;
             #[doc = "The associated wl_surface's crop and scale state is removed."]
@@ -2560,6 +2624,7 @@ pub mod xdg_shell {
     #[doc = "create windows that can be dragged, resized, maximized, etc, as well as"]
     #[doc = "creating transient windows such as popup menus."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_wm_base {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2601,7 +2666,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_wm_base interface. See the module level documentation for more info"]
-        pub trait XdgWmBase<C: waynest::Connection> {
+        pub trait XdgWmBase<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_wm_base";
             const VERSION: u32 = 7u32;
             #[doc = "Destroy this xdg_wm_base object."]
@@ -2705,6 +2773,7 @@ pub mod xdg_shell {
     #[doc = "set_anchor_rect. Passing an incomplete xdg_positioner object when"]
     #[doc = "positioning a surface raises an invalid_positioner error."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_positioner {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2812,7 +2881,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_positioner interface. See the module level documentation for more info"]
-        pub trait XdgPositioner<C: waynest::Connection> {
+        pub trait XdgPositioner<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_positioner";
             const VERSION: u32 = 7u32;
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
@@ -3030,6 +3102,7 @@ pub mod xdg_shell {
     #[doc = "has not been destroyed, i.e. the client must perform the initial commit"]
     #[doc = "again before attaching a buffer."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3068,7 +3141,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
-        pub trait XdgSurface<C: waynest::Connection> {
+        pub trait XdgSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 7u32;
             #[doc = "Destroy the xdg_surface object. An xdg_surface must only be destroyed"]
@@ -3251,6 +3327,7 @@ pub mod xdg_shell {
     #[doc = ""]
     #[doc = "Attaching a null buffer to a toplevel unmaps the surface."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_toplevel {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3403,7 +3480,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel interface. See the module level documentation for more info"]
-        pub trait XdgToplevel<C: waynest::Connection> {
+        pub trait XdgToplevel<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_toplevel";
             const VERSION: u32 = 7u32;
             #[doc = "This request destroys the role surface and unmaps the surface;"]
@@ -3915,6 +3995,7 @@ pub mod xdg_shell {
     #[doc = "The client must call wl_surface.commit on the corresponding wl_surface"]
     #[doc = "for the xdg_popup state to take effect."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod xdg_popup {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3938,7 +4019,10 @@ pub mod xdg_shell {
             }
         }
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
-        pub trait XdgPopup<C: waynest::Connection> {
+        pub trait XdgPopup<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 7u32;
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]

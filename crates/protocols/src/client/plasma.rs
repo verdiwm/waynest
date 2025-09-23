@@ -3,9 +3,13 @@ pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
     #[doc = "interface registered on DBus."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_appmenu_manager {
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -32,9 +36,13 @@ pub mod appmenu {
     #[doc = "The object should be registered on the session bus before sending this request."]
     #[doc = "If not applicable, clients should remove this object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_appmenu {
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenu<C: waynest::Connection> {
+        pub trait OrgKdeKwinAppmenu<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu";
             const VERSION: u32 = 2u32;
             #[doc = "Set or update the service name and object path."]
@@ -63,9 +71,13 @@ pub mod appmenu {
 #[allow(clippy::module_inception)]
 pub mod blur {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_blur_manager {
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlurManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinBlurManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -90,9 +102,13 @@ pub mod blur {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_blur {
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlur<C: waynest::Connection> {
+        pub trait OrgKdeKwinBlur<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_blur";
             const VERSION: u32 = 1u32;
             fn commit(
@@ -126,9 +142,13 @@ pub mod blur {
 #[allow(clippy::module_inception)]
 pub mod contrast {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_contrast_manager {
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrastManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinContrastManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -153,9 +173,13 @@ pub mod contrast {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_contrast {
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrast<C: waynest::Connection> {
+        pub trait OrgKdeKwinContrast<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_contrast";
             const VERSION: u32 = 2u32;
             fn commit(
@@ -254,9 +278,13 @@ pub mod dpms {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_dpms_manager {
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
@@ -280,6 +308,7 @@ pub mod dpms {
     #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_dpms {
         #[repr(u32)]
         #[non_exhaustive]
@@ -308,7 +337,10 @@ pub mod dpms {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpms<C: waynest::Connection> {
+        pub trait OrgKdeKwinDpms<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_dpms";
             const VERSION: u32 = 1u32;
             #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
@@ -381,9 +413,13 @@ pub mod fake_input {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_fake_input {
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinFakeInput<C: waynest::Connection> {
+        pub trait OrgKdeKwinFakeInput<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_fake_input";
             const VERSION: u32 = 6u32;
             #[doc = "A client should use this request to tell the compositor why it wants to"]
@@ -553,6 +589,7 @@ pub mod fullscreen_shell {
     #[doc = "output.  This way, the client can update the output's contents by"]
     #[doc = "simply attaching a new buffer."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod _wl_fullscreen_shell {
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -658,7 +695,10 @@ pub mod fullscreen_shell {
             }
         }
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShell<C: waynest::Connection> {
+        pub trait WlFullscreenShell<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "_wl_fullscreen_shell";
             const VERSION: u32 = 1u32;
             #[doc = "Release the binding from the wl_fullscreen_shell interface"]
@@ -768,9 +808,13 @@ pub mod fullscreen_shell {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShellModeFeedback<C: waynest::Connection> {
+        pub trait WlFullscreenShellModeFeedback<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -819,9 +863,13 @@ pub mod idle {
     #[doc = "interacting with the system, e.g. chat applications setting the user as away, power"]
     #[doc = "management features to dim screen, etc.."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_idle {
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdle<C: waynest::Connection> {
+        pub trait OrgKdeKwinIdle<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_idle";
             const VERSION: u32 = 1u32;
             fn get_idle_timeout(
@@ -838,9 +886,13 @@ pub mod idle {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_idle_timeout {
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection> {
+        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
             const VERSION: u32 = 1u32;
             fn release(
@@ -879,9 +931,13 @@ pub mod kde_external_brightness_v1 {
     #[doc = "This protocol is for outsourcing the actual brightness-setting to a"]
     #[doc = "process outside of the compositor."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessV1<C: waynest::Connection> {
+        pub trait KdeExternalBrightnessV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_external_brightness_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
@@ -908,9 +964,13 @@ pub mod kde_external_brightness_v1 {
     #[doc = "and finish the sequence with commit."]
     #[doc = "Afterwards, for each change in values, the client must call commit again."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_external_brightness_device_v1 {
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessDeviceV1<C: waynest::Connection> {
+        pub trait KdeExternalBrightnessDeviceV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
@@ -1005,6 +1065,7 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_lockscreen_overlay_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1028,7 +1089,10 @@ pub mod kde_lockscreen_overlay_v1 {
             }
         }
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
-        pub trait KdeLockscreenOverlayV1<C: waynest::Connection> {
+        pub trait KdeLockscreenOverlayV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
@@ -1077,6 +1141,7 @@ pub mod kde_output_device_v2 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_device_v2 {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -1315,7 +1380,10 @@ pub mod kde_output_device_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2<C: waynest::Connection> {
+        pub trait KdeOutputDeviceV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_device_v2";
             const VERSION: u32 = 17u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -1643,9 +1711,13 @@ pub mod kde_output_device_v2 {
     #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_device_mode_v2 {
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2<C: waynest::Connection> {
+        pub trait KdeOutputDeviceModeV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
             const VERSION: u32 = 1u32;
             #[doc = "This event describes the mode size. The size is given in physical"]
@@ -1729,9 +1801,13 @@ pub mod kde_output_management_v2 {
     #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
     #[doc = "changes may be added without bumping the major version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2<C: waynest::Connection> {
+        pub trait KdeOutputManagementV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_management_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
@@ -1760,6 +1836,7 @@ pub mod kde_output_management_v2 {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_configuration_v2 {
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
@@ -1932,7 +2009,10 @@ pub mod kde_output_management_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2<C: waynest::Connection> {
+        pub trait KdeOutputConfigurationV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_configuration_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Mark the output as enabled or disabled."]
@@ -2303,9 +2383,13 @@ pub mod kde_output_order_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_output_order_v1 {
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
-        pub trait KdeOutputOrderV1<C: waynest::Connection> {
+        pub trait KdeOutputOrderV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_output_order_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -2342,9 +2426,13 @@ pub mod kde_primary_output_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_primary_output_v1 {
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
-        pub trait KdePrimaryOutputV1<C: waynest::Connection> {
+        pub trait KdePrimaryOutputV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_primary_output_v1";
             const VERSION: u32 = 2u32;
             fn destroy(
@@ -2380,6 +2468,7 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_screen_edge_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2440,7 +2529,10 @@ pub mod kde_screen_edge_v1 {
             }
         }
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
-        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection> {
+        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
@@ -2493,9 +2585,13 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
     #[doc = "client to activate the screen edge."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod kde_auto_hide_screen_edge_v1 {
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
-        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection> {
+        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
@@ -2534,6 +2630,7 @@ pub mod kde_screen_edge_v1 {
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_keystate {
         #[repr(u32)]
         #[non_exhaustive]
@@ -2596,7 +2693,10 @@ pub mod keystate {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinKeystate<C: waynest::Connection> {
+        pub trait OrgKdeKwinKeystate<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_keystate";
             const VERSION: u32 = 5u32;
             fn fetch_states(
@@ -2628,9 +2728,13 @@ pub mod keystate {
 #[allow(clippy::module_inception)]
 pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_virtual_desktop_management {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktopManagement<C: waynest::Connection> {
+        pub trait OrgKdePlasmaVirtualDesktopManagement<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
             const VERSION: u32 = 3u32;
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
@@ -2705,9 +2809,13 @@ pub mod org_kde_plasma_virtual_desktop {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_virtual_desktop {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktop<C: waynest::Connection> {
+        pub trait OrgKdePlasmaVirtualDesktop<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
             const VERSION: u32 = 3u32;
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
@@ -2816,9 +2924,13 @@ pub mod outputmanagement {
     #[doc = "internally supported by the server."]
     #[doc = ""]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_outputmanagement {
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputmanagement<C: waynest::Connection> {
+        pub trait OrgKdeKwinOutputmanagement<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
             const VERSION: u32 = 4u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
@@ -2847,6 +2959,7 @@ pub mod outputmanagement {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_outputconfiguration {
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
@@ -2874,7 +2987,10 @@ pub mod outputmanagement {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputconfiguration<C: waynest::Connection> {
+        pub trait OrgKdeKwinOutputconfiguration<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
             const VERSION: u32 = 4u32;
             #[doc = "Mark the output as enabled or disabled."]
@@ -3044,6 +3160,7 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_outputdevice {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -3210,7 +3327,10 @@ pub mod org_kde_kwin_outputdevice {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection> {
+        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
             const VERSION: u32 = 4u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -3419,9 +3539,13 @@ pub mod plasma_shell {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_shell {
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaShell<C: waynest::Connection> {
+        pub trait OrgKdePlasmaShell<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_shell";
             const VERSION: u32 = 8u32;
             #[doc = "Create a shell surface for an existing surface."]
@@ -3451,6 +3575,7 @@ pub mod plasma_shell {
     #[doc = "org_kde_plasma_surface.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3534,7 +3659,10 @@ pub mod plasma_shell {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaSurface<C: waynest::Connection> {
+        pub trait OrgKdePlasmaSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_surface";
             const VERSION: u32 = 8u32;
             #[doc = "The org_kde_plasma_surface interface is removed from the"]
@@ -3794,6 +3922,7 @@ pub mod plasma_window_management {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_window_management {
         #[repr(u32)]
         #[non_exhaustive]
@@ -3878,7 +4007,10 @@ pub mod plasma_window_management {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement<C: waynest::Connection> {
+        pub trait OrgKdePlasmaWindowManagement<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
             const VERSION: u32 = 19u32;
             #[doc = "Tell the compositor to show/hide the desktop."]
@@ -3976,9 +4108,13 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_window {
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow<C: waynest::Connection> {
+        pub trait OrgKdePlasmaWindow<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_window";
             const VERSION: u32 = 18u32;
             #[doc = "Set window state."]
@@ -4303,9 +4439,13 @@ pub mod plasma_window_management {
     #[doc = "The activation manager interface provides a way to get notified"]
     #[doc = "when an application is about to be activated."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_activation_feedback {
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback<C: waynest::Connection> {
+        pub trait OrgKdePlasmaActivationFeedback<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the activation manager object. The activation objects introduced"]
@@ -4330,9 +4470,13 @@ pub mod plasma_window_management {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_activation {
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation<C: waynest::Connection> {
+        pub trait OrgKdePlasmaActivation<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_activation";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
@@ -4362,9 +4506,13 @@ pub mod plasma_window_management {
     #[doc = "each window in the stacking order, and afterwards sends the done event"]
     #[doc = "and destroys this object."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_plasma_stacking_order {
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection> {
+        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
             const VERSION: u32 = 17u32;
             fn window(
@@ -4384,9 +4532,13 @@ pub mod plasma_window_management {
 #[allow(clippy::module_inception)]
 pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_remote_access_manager {
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteAccessManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinRemoteAccessManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
             const VERSION: u32 = 1u32;
             fn get_buffer(
@@ -4417,9 +4569,13 @@ pub mod remote_access {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_remote_buffer {
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection> {
+        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
             const VERSION: u32 = 1u32;
             fn release(
@@ -4447,9 +4603,13 @@ pub mod remote_access {
 pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPaletteManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecorationPaletteManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -4466,9 +4626,13 @@ pub mod server_decoration_palette {
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPalette<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecorationPalette<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
             const VERSION: u32 = 1u32;
             #[doc = "Color scheme that should be applied to the window decoration."]
@@ -4504,6 +4668,7 @@ pub mod server_decoration {
     #[doc = ""]
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_manager {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4533,7 +4698,10 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecorationManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
             const VERSION: u32 = 1u32;
             #[doc = "When a client creates a server-side decoration object it indicates"]
@@ -4571,6 +4739,7 @@ pub mod server_decoration {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4600,7 +4769,10 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecoration<C: waynest::Connection> {
+        pub trait OrgKdeKwinServerDecoration<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration";
             const VERSION: u32 = 1u32;
             fn release(
@@ -4645,9 +4817,13 @@ pub mod server_decoration {
 #[allow(clippy::module_inception)]
 pub mod shadow {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_shadow_manager {
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadowManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinShadowManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -4681,9 +4857,13 @@ pub mod shadow {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_shadow {
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadow<C: waynest::Connection> {
+        pub trait OrgKdeKwinShadow<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_shadow";
             const VERSION: u32 = 2u32;
             fn commit(
@@ -4820,9 +5000,13 @@ pub mod shadow {
 #[allow(clippy::module_inception)]
 pub mod slide {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_slide_manager {
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlideManager<C: waynest::Connection> {
+        pub trait OrgKdeKwinSlideManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -4852,6 +5036,7 @@ pub mod slide {
     #[doc = "The from argument provides a clue about where the slide animation"]
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod org_kde_kwin_slide {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4880,7 +5065,10 @@ pub mod slide {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlide<C: waynest::Connection> {
+        pub trait OrgKdeKwinSlide<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "org_kde_kwin_slide";
             const VERSION: u32 = 1u32;
             fn commit(
@@ -4923,9 +5111,13 @@ pub mod slide {
 #[allow(clippy::module_inception)]
 pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod qt_surface_extension {
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
-        pub trait QtSurfaceExtension<C: waynest::Connection> {
+        pub trait QtSurfaceExtension<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "qt_surface_extension";
             const VERSION: u32 = 1u32;
             fn get_extended_surface(
@@ -4941,6 +5133,7 @@ pub mod surface_extension {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod qt_extended_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4995,7 +5188,10 @@ pub mod surface_extension {
             }
         }
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
-        pub trait QtExtendedSurface<C: waynest::Connection> {
+        pub trait QtExtendedSurface<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "qt_extended_surface";
             const VERSION: u32 = 1u32;
             fn update_generic_property(
@@ -5088,6 +5284,7 @@ pub mod text_input_unstable_v2 {
     #[doc = "client. A reset or entering a new widget on client side also"]
     #[doc = "invalidates all current state information."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_text_input_v2 {
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
         impl TryFrom<u32> for ContentHint {
@@ -5288,7 +5485,10 @@ pub mod text_input_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV2<C: waynest::Connection> {
+        pub trait ZwpTextInputV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_text_input_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
@@ -5652,9 +5852,13 @@ pub mod text_input_unstable_v2 {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zwp_text_input_manager_v2 {
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV2<C: waynest::Connection> {
+        pub trait ZwpTextInputManagerV2<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zwp_text_input_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input_manager object."]
@@ -5702,6 +5906,7 @@ pub mod text {
     #[doc = "and keysym. The text input can then ignore events from the input method"]
     #[doc = "which are based on an outdated state (for example after a reset)."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_text_input {
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
@@ -5888,7 +6093,10 @@ pub mod text {
             }
         }
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
-        pub trait WlTextInput<C: waynest::Connection> {
+        pub trait WlTextInput<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_text_input";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the text-input object to be activated (typically when the"]
@@ -6184,9 +6392,13 @@ pub mod text {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_text_input_manager {
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
-        pub trait WlTextInputManager<C: waynest::Connection> {
+        pub trait WlTextInputManager<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_text_input_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a new text-input object."]
@@ -6205,6 +6417,7 @@ pub mod text {
 #[allow(clippy::module_inception)]
 pub mod wl_eglstream_controller {
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod wl_eglstream_controller {
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
@@ -6271,7 +6484,10 @@ pub mod wl_eglstream_controller {
             }
         }
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
-        pub trait WlEglstreamController<C: waynest::Connection> {
+        pub trait WlEglstreamController<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "wl_eglstream_controller";
             const VERSION: u32 = 2u32;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
@@ -6309,6 +6525,7 @@ pub mod zkde_screencast_unstable_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zkde_screencast_unstable_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6338,7 +6555,10 @@ pub mod zkde_screencast_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection> {
+        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
             const VERSION: u32 = 5u32;
             fn stream_output(
@@ -6421,9 +6641,13 @@ pub mod zkde_screencast_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
+    #[allow(unused)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastStreamUnstableV1<C: waynest::Connection> {
+        pub trait ZkdeScreencastStreamUnstableV1<C: waynest::Connection>
+        where
+            Self: std::marker::Sync,
+        {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
             const VERSION: u32 = 5u32;
             fn close(
