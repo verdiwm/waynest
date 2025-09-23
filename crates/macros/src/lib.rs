@@ -2,24 +2,25 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{DeriveInput, parse_macro_input};
 
-#[proc_macro_derive(Dispatcher)]
+#[proc_macro_derive(RequestDispatcher)]
 pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let ident = input.ident;
 
     quote! {
-        #[waynest::async_trait::async_trait]
-        impl waynest::server::Dispatcher for #ident {
+        #[waynest_server::async_trait::async_trait]
+        impl waynest_server::RequestDispatcher for #ident {
             fn as_any(self: std::sync::Arc<Self>) -> std::sync::Arc<dyn std::any::Any + Send + Sync + 'static> {
                 self
             }
-            async fn dispatch(
+
+            async fn dispatch_request(
                 &self,
-                client: &mut waynest::server::Client,
+                connection: &mut waynest_server::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> Result<()> {
-                self.handle_request(client, sender_id, message).await
+            ) -> Result<(), waynest::ProtocolError> {
+                self.handle_request(connection, sender_id, message).await
             }
         }
     }

@@ -14,3 +14,4 @@ pin-project-lite = "0.2.16"
 tokio = { version = "1.47.1", features = ["net"] }
 tokio-stream = "0.1.17"
 waynest = { version = "0.1.0", path = "../core" }
+waynest-macros = { version = "0.1.0", path = "../macros" }

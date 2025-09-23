@@ -19,7 +19,7 @@ use rustix::net::{
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf, unix::AsyncFd};
 use tokio_util::codec::{Decoder, Encoder, Framed};
 
-use crate::{Connection, DecodeError, Message};
+use crate::{Connection, Message, ProtocolError};
 
 pin_project! {
     pub struct Socket {
@@ -40,16 +40,16 @@ impl Socket {
 }
 
 impl Connection for Socket {
-    fn fd(&mut self) -> Result<std::os::unix::prelude::OwnedFd, DecodeError> {
+    fn fd(&mut self) -> Result<std::os::unix::prelude::OwnedFd, ProtocolError> {
         self.decode_fds
             .pop_front()
             .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
-            .ok_or(DecodeError::MalformedPayload)
+            .ok_or(ProtocolError::MalformedPayload)
     }
 }
 
 impl Stream for Socket {
-    type Item = Result<Message, DecodeError>;
+    type Item = Result<Message, ProtocolError>;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
@@ -71,7 +71,7 @@ impl Stream for Socket {
 }
 
 impl Sink<Message> for Socket {
-    type Error = DecodeError;
+    type Error = ProtocolError;
 
     fn poll_ready(
         self: std::pin::Pin<&mut Self>,
@@ -230,7 +230,7 @@ impl MessageCodec {
 impl Decoder for MessageCodec {
     type Item = Message;
 
-    type Error = DecodeError;
+    type Error = ProtocolError;
 
     fn decode(&mut self, src: &mut bytes::BytesMut) -> Result<Option<Self::Item>, Self::Error> {
         Message::decode(src)
@@ -238,7 +238,7 @@ impl Decoder for MessageCodec {
 }
 
 impl Encoder<Message> for MessageCodec {
-    type Error = DecodeError;
+    type Error = ProtocolError;
 
     fn encode(&mut self, msg: Message, dst: &mut bytes::BytesMut) -> Result<(), Self::Error> {
         msg.encode(dst);

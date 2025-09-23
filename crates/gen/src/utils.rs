@@ -103,12 +103,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 }
 
                 impl TryFrom<u32> for #name {
-                    type Error = waynest::DecodeError;
+                    type Error = waynest::ProtocolError;
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
                         match v {
                             #(#match_variants),*
-                            _ => Err(waynest::DecodeError::MalformedPayload)
+                            _ => Err(waynest::ProtocolError::MalformedPayload)
                         }
                     }
                 }
@@ -145,10 +145,10 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 }
 
                 impl TryFrom<u32> for #name {
-                    type Error = waynest::DecodeError;
+                    type Error = waynest::ProtocolError;
 
                     fn try_from(v: u32) -> Result<Self, Self::Error> {
-                       Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                       Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
                     }
                 }
 

@@ -50,12 +50,14 @@ const SKIP: [&str; 3] = [
 ];
 
 fn generate() -> Result<()> {
-    let mut lib_rs_contents = "pub mod core;".to_string();
+    let mut server_rs_content = "pub mod core;".to_string();
+    let mut client_rs_content = "pub mod core;".to_string();
 
     for (module, protocol) in PROTOCOLS {
-        println!("Genearting {module}");
+        println!("Generating {module} protocols...");
 
-        let mut modules = Vec::new();
+        let mut server_modules = Vec::new();
+        let mut client_modules = Vec::new();
 
         for entry in WalkDir::new(format!("external/protocols/{protocol}")) {
             let entry = entry?;
@@ -65,25 +67,44 @@ fn generate() -> Result<()> {
                 && extension == OsStr::new("xml")
                 && !SKIP.map(OsStr::new).contains(&entry.file_name())
             {
-                modules.push(generate_module(module, entry.path())?);
+                server_modules.push(generate_module(module, entry.path(), false, true)?);
+                client_modules.push(generate_module(module, entry.path(), true, false)?);
             }
         }
 
-        let module_content = quote! {
-            #(#modules)*
+        let server_module_content = quote! {
+            #(#server_modules)*
         };
 
-        let mut module_file = OpenOptions::new()
+        let client_module_content = quote! {
+            #(#client_modules)*
+        };
+
+        let mut server_module_file = OpenOptions::new()
             .truncate(true)
             .write(true)
             .create(true)
-            .open(format!("crates/protocols/src/{module}.rs"))?;
+            .open(format!("crates/protocols/src/server/{module}.rs"))?;
 
-        write!(&mut module_file, "{module_content}",)?;
+        let mut client_module_file = OpenOptions::new()
+            .truncate(true)
+            .write(true)
+            .create(true)
+            .open(format!("crates/protocols/src/client/{module}.rs"))?;
+
+        write!(&mut server_module_file, "{server_module_content}",)?;
+        write!(&mut client_module_file, "{client_module_content}",)?;
 
         if module != "core" {
             writeln!(
-                &mut lib_rs_contents,
+                &mut server_rs_content,
+                r#"#[cfg(feature = "{module}")]
+        #[cfg_attr(docsrs, doc(cfg(feature = "{module}")))]
+        pub mod {module};"#
+            )?;
+
+            writeln!(
+                &mut client_rs_content,
                 r#"#[cfg(feature = "{module}")]
         #[cfg_attr(docsrs, doc(cfg(feature = "{module}")))]
         pub mod {module};"#
@@ -91,13 +112,20 @@ fn generate() -> Result<()> {
         }
     }
 
-    let mut lib_rs = OpenOptions::new()
+    let mut server_rs = OpenOptions::new()
         .truncate(true)
         .write(true)
         .create(true)
-        .open("crates/protocols/src/lib.rs")?;
+        .open("crates/protocols/src/server.rs")?;
 
-    write!(&mut lib_rs, "{lib_rs_contents}")?;
+    let mut client_rs = OpenOptions::new()
+        .truncate(true)
+        .write(true)
+        .create(true)
+        .open("crates/protocols/src/client.rs")?;
+
+    write!(&mut server_rs, "{server_rs_content}")?;
+    write!(&mut client_rs, "{client_rs_content}")?;
 
     Ok(())
 }

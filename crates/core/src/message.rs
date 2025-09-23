@@ -2,7 +2,7 @@ use std::{collections::VecDeque, os::fd::RawFd};
 
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
-use super::{DecodeError, Fixed, NewId, ObjectId};
+use super::{Fixed, NewId, ObjectId, ProtocolError};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Message {
@@ -58,12 +58,12 @@ impl Message {
         buf.put_slice(&self.payload);
     }
 
-    pub fn decode(bytes: &mut BytesMut) -> Result<Option<Self>, DecodeError> {
+    pub fn decode(bytes: &mut BytesMut) -> Result<Option<Self>, ProtocolError> {
         let object_id = match bytes.chunk().get(..4) {
             Some(peek) => ObjectId::new(u32::from_ne_bytes(unsafe {
                 *(peek as *const _ as *const [u8; 4])
             }))
-            .ok_or(DecodeError::InvalidSenderId)?,
+            .ok_or(ProtocolError::InvalidSenderId)?,
             None => return Ok(None),
         };
 
@@ -76,7 +76,7 @@ impl Message {
         let opcode = (second & 65535) as u16;
 
         if len < 8 {
-            return Err(DecodeError::InvalidLength(len));
+            return Err(ProtocolError::InvalidLength(len));
         }
 
         if bytes.remaining() < len {
@@ -95,23 +95,23 @@ impl Message {
         }))
     }
 
-    pub fn int(&mut self) -> Result<i32, DecodeError> {
+    pub fn int(&mut self) -> Result<i32, ProtocolError> {
         self.payload
             .try_get_i32_ne()
-            .map_err(|_| DecodeError::MalformedPayload)
+            .map_err(|_| ProtocolError::MalformedPayload)
     }
 
-    pub fn uint(&mut self) -> Result<u32, DecodeError> {
+    pub fn uint(&mut self) -> Result<u32, ProtocolError> {
         self.payload
             .try_get_u32_ne()
-            .map_err(|_| DecodeError::MalformedPayload)
+            .map_err(|_| ProtocolError::MalformedPayload)
     }
 
-    pub fn fixed(&mut self) -> Result<Fixed, DecodeError> {
+    pub fn fixed(&mut self) -> Result<Fixed, ProtocolError> {
         self.uint().map(|raw| unsafe { Fixed::from_raw(raw) })
     }
 
-    pub fn string(&mut self) -> Result<Option<String>, DecodeError> {
+    pub fn string(&mut self) -> Result<Option<String>, ProtocolError> {
         let mut array = self.array()?;
 
         if array.is_empty() {
@@ -120,21 +120,21 @@ impl Message {
 
         if let Some(b'\0') = array.pop() {
             return String::from_utf8(array)
-                .map_err(|_| DecodeError::MalformedPayload)
+                .map_err(|_| ProtocolError::MalformedPayload)
                 .map(Some);
         }
 
-        Err(DecodeError::MalformedPayload)
+        Err(ProtocolError::MalformedPayload)
     }
 
-    pub fn object(&mut self) -> Result<Option<ObjectId>, DecodeError> {
+    pub fn object(&mut self) -> Result<Option<ObjectId>, ProtocolError> {
         self.uint().map(ObjectId::new)
     }
 
-    pub fn new_id(&mut self) -> Result<NewId, DecodeError> {
-        let interface = self.string()?.ok_or(DecodeError::MalformedPayload)?;
+    pub fn new_id(&mut self) -> Result<NewId, ProtocolError> {
+        let interface = self.string()?.ok_or(ProtocolError::MalformedPayload)?;
         let version = self.uint()?;
-        let object_id = self.object()?.ok_or(DecodeError::MalformedPayload)?;
+        let object_id = self.object()?.ok_or(ProtocolError::MalformedPayload)?;
 
         Ok(NewId {
             interface,
@@ -143,7 +143,7 @@ impl Message {
         })
     }
 
-    pub fn array(&mut self) -> Result<Vec<u8>, DecodeError> {
+    pub fn array(&mut self) -> Result<Vec<u8>, ProtocolError> {
         let len = self.uint()? as usize;
 
         if len == 0 {
@@ -151,7 +151,7 @@ impl Message {
         }
 
         if self.payload.remaining() < len {
-            return Err(DecodeError::MalformedPayload);
+            return Err(ProtocolError::MalformedPayload);
         }
 
         let array = self.payload.copy_to_bytes(len).to_vec();

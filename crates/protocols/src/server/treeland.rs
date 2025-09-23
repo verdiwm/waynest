@@ -16,13 +16,13 @@ pub mod treeland_capture_unstable_v1 {
             Resizing = 2u32,
         }
         impl TryFrom<u32> for CancelReason {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Temporary),
                     1u32 => Ok(Self::Permanent),
                     2u32 => Ok(Self::Resizing),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -33,9 +33,9 @@ pub mod treeland_capture_unstable_v1 {
         }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "clients should copy frame before processing"] const Transient = 1u32 ; } }
         impl TryFrom<u32> for Flags {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Flags {
@@ -44,7 +44,8 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureSessionV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandCaptureSessionV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Unreferences the frame. This request must be called as soon as it's no longer valid."]
@@ -88,7 +89,9 @@ pub mod treeland_capture_unstable_v1 {
                 mod_high: u32,
                 mod_low: u32,
                 num_objects: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn object(
                 &self,
                 connection: &mut C,
@@ -99,7 +102,9 @@ pub mod treeland_capture_unstable_v1 {
                 offset: u32,
                 stride: u32,
                 plane_index: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent as soon as the frame is presented, indicating it is available for reading. This event"]
             #[doc = "includes the time at which presentation happened at."]
             fn ready(
@@ -109,7 +114,9 @@ pub mod treeland_capture_unstable_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "If the capture failed or if the frame is no longer valid after the \"frame\" event has been emitted, this"]
             #[doc = "event will be used to inform the client to scrap the frame."]
             fn cancel(
@@ -117,16 +124,31 @@ pub mod treeland_capture_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_capture_unstable_v1 :: treeland_capture_session_v1 :: CancelReason,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_capture_frame_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInverted = 1u32 ; } }
         impl TryFrom<u32> for Flags {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Flags {
@@ -135,7 +157,7 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureFrameV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandCaptureFrameV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -160,13 +182,17 @@ pub mod treeland_capture_unstable_v1 {
                 width: u32,
                 height: u32,
                 stride: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Inform client that all buffer formats supported are emitted."]
             fn buffer_done(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Provides flags about the frame. This event is sent once before the"]
             #[doc = "\"ready\" event."]
             fn flags(
@@ -174,28 +200,47 @@ pub mod treeland_capture_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Inform that buffer is ready for reading"]
             fn ready(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Inform that frame copy fails."]
             fn failed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_capture_context_v1 {
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct SourceType : u32 { # [doc = "output source type"] const Output = 1u32 ; # [doc = "window source type"] const Window = 2u32 ; # [doc = "region source type"] const Region = 4u32 ; } }
         impl TryFrom<u32> for SourceType {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
         impl std::fmt::Display for SourceType {
@@ -217,14 +262,14 @@ pub mod treeland_capture_unstable_v1 {
             Other = 4u32,
         }
         impl TryFrom<u32> for SourceFailure {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::SelectorBusy),
                     2u32 => Ok(Self::UserCancel),
                     3u32 => Ok(Self::SourceDestroyed),
                     4u32 => Ok(Self::Other),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -234,7 +279,8 @@ pub mod treeland_capture_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_capture_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureContextV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandCaptureContextV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_capture_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the context. This request can be sent at any time by the client."]
@@ -280,20 +326,38 @@ pub mod treeland_capture_unstable_v1 {
                 region_width: u32,
                 region_height: u32,
                 source_type: SourceType,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "There could a lot of reasons but the most common one is that selector is busy"]
             fn source_failed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason: SourceFailure,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_capture_manager_v1 {
         #[doc = "Trait to implement the treeland_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandCaptureManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandCaptureManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the treeland_capture_manager_v1 object."]
@@ -308,6 +372,19 @@ pub mod treeland_capture_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 context: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), E>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -322,7 +399,8 @@ pub mod treeland_dde_shell_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_dde_shell_manager_v1 {
         #[doc = "Trait to implement the treeland_dde_shell_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandDdeShellManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_dde_shell_manager_v1";
             const VERSION: u32 = 1u32;
             fn get_window_overlap_checker(
@@ -372,6 +450,19 @@ pub mod treeland_dde_shell_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), E>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "A treeland_dde_shell_handle_v1 object represents an opened toplevel window. Each"]
@@ -385,9 +476,9 @@ pub mod treeland_dde_shell_v1 {
     pub mod treeland_window_overlap_checker {
         bitflags::bitflags! { # [doc = "same layershell"] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Anchor {
@@ -398,7 +489,7 @@ pub mod treeland_dde_shell_v1 {
         #[doc = "Trait to implement the treeland_window_overlap_checker interface. See the module level documentation for more info"]
         pub trait TreelandWindowOverlapChecker<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "treeland_window_overlap_checker";
@@ -433,14 +524,31 @@ pub mod treeland_dde_shell_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent when windows not overlapped."]
             #[doc = "This event is sent only once."]
             fn leave(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -469,11 +577,11 @@ pub mod treeland_dde_shell_v1 {
             Overlay = 1u32,
         }
         impl TryFrom<u32> for Role {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::Overlay),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -483,7 +591,8 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_shell_surface_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandDdeShellSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_dde_shell_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
@@ -557,6 +666,19 @@ pub mod treeland_dde_shell_v1 {
                 sender_id: waynest::ObjectId,
                 accept: u32,
             ) -> impl Future<Output = Result<(), E>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "An interface used to monitor special events."]
@@ -570,12 +692,12 @@ pub mod treeland_dde_shell_v1 {
             Wheel = 1u32,
         }
         impl TryFrom<u32> for Reason {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Mouse),
                     1u32 => Ok(Self::Wheel),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -585,7 +707,7 @@ pub mod treeland_dde_shell_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_dde_active_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeActiveV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandDdeActiveV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_dde_active_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -598,30 +720,51 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn active_out(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn start_drag(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn drop(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "An interface used to control multitaskview."]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_multitaskview_v1 {
         #[doc = "Trait to implement the treeland_multitaskview_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandMultitaskviewV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandMultitaskviewV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_multitaskview_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -635,13 +778,26 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), E>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "An interface used to pick window and return credentials."]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_window_picker_v1 {
         #[doc = "Trait to implement the treeland_window_picker_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowPickerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandWindowPickerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_window_picker_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -662,14 +818,29 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pid: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "An interface used to operate lockscreen."]
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_lockscreen_v1 {
         #[doc = "Trait to implement the treeland_lockscreen_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandLockscreenV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandLockscreenV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_lockscreen_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
@@ -695,6 +866,19 @@ pub mod treeland_dde_shell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), E>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -705,7 +889,7 @@ pub mod treeland_ddm {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_ddm {
         #[doc = "Trait to implement the treeland_ddm interface. See the module level documentation for more info"]
-        pub trait TreelandDdm<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandDdm<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_ddm";
             const VERSION: u32 = 1u32;
             #[doc = "Send treeland to Greeter mode."]
@@ -757,7 +941,9 @@ pub mod treeland_ddm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 vtnr: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Call ddm to acquire control of VT at vtnr. ddm should call"]
             #[doc = "VT_SETMODE respectively."]
             fn acquire_vt(
@@ -765,7 +951,22 @@ pub mod treeland_ddm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 vtnr: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -782,7 +983,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
         #[doc = "Trait to implement the treeland_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait TreelandForeignToplevelManagerV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_manager_v1";
@@ -816,7 +1017,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "treeland_foreign_toplevel_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request, so it will become invalid and"]
@@ -825,7 +1028,22 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "A treeland_foreign_toplevel_handle_v1 object represents an opened toplevel window. Each"]
@@ -853,14 +1071,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             Fullscreen = 3u32,
         }
         impl TryFrom<u32> for State {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Maximized),
                     1u32 => Ok(Self::Minimized),
                     2u32 => Ok(Self::Activated),
                     3u32 => Ok(Self::Fullscreen),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -877,11 +1095,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             InvalidRectangle = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidRectangle),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -893,7 +1111,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
         #[doc = "Trait to implement the treeland_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
         pub trait TreelandForeignToplevelHandleV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "treeland_foreign_toplevel_handle_v1";
@@ -1004,21 +1222,27 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             fn title(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever the app-id of the toplevel changes."]
             fn app_id(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The identifier of each top level and its handle must be unique."]
             #[doc = "Two different top layers cannot have the same identifier."]
             #[doc = "This identifier is only valid as long as the top level is mapped."]
@@ -1030,7 +1254,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identifier: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever the toplevel becomes visible on"]
             #[doc = "the given output. A toplevel may be visible on multiple outputs."]
             fn output_enter(
@@ -1038,7 +1264,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever the toplevel stops being visible on"]
             #[doc = "the given output. It is guaranteed that an entered-output event"]
             #[doc = "with the same output has been emitted before this event."]
@@ -1047,7 +1275,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted immediately after the treeland_foreign_toplevel_handle_v1"]
             #[doc = "is created and each time the toplevel state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -1056,7 +1286,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent after all changes in the toplevel state have been"]
             #[doc = "sent."]
             #[doc = ""]
@@ -1066,7 +1298,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event means the toplevel has been destroyed. It is guaranteed there"]
             #[doc = "won't be any more events for this treeland_foreign_toplevel_handle_v1. The"]
             #[doc = "toplevel itself becomes inert so any requests will be ignored except the"]
@@ -1075,7 +1309,9 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever the parent of the toplevel changes."]
             #[doc = ""]
             #[doc = "No event is emitted when the parent handle is destroyed by the client."]
@@ -1084,7 +1320,22 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface allows dock set windows preview."]
@@ -1109,14 +1360,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             Left = 3u32,
         }
         impl TryFrom<u32> for Direction {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Top),
                     1u32 => Ok(Self::Right),
                     2u32 => Ok(Self::Bottom),
                     3u32 => Ok(Self::Left),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1128,7 +1379,7 @@ pub mod treeland_foreign_toplevel_manager_v1 {
         #[doc = "Trait to implement the treeland_dock_preview_context_v1 interface. See the module level documentation for more info"]
         pub trait TreelandDockPreviewContextV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "treeland_dock_preview_context_v1";
@@ -1170,13 +1421,30 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is sent after mouse leave preview box."]
             fn leave(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -1187,7 +1455,7 @@ pub mod treeland_output_manager_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_output_manager_v1 {
         #[doc = "Trait to implement the treeland_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandOutputManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandOutputManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_output_manager_v1";
             const VERSION: u32 = 1u32;
             fn set_primary_output(
@@ -1207,7 +1475,22 @@ pub mod treeland_output_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -1222,7 +1505,8 @@ pub mod treeland_shortcut_manager_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod treeland_shortcut_manager_v1 {
         #[doc = "Trait to implement the treeland_shortcut_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandShortcutManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_shortcut_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
@@ -1236,6 +1520,19 @@ pub mod treeland_shortcut_manager_v1 {
                 key: String,
                 id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), E>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface allows a client to listen a shortcut action."]
@@ -1254,11 +1551,11 @@ pub mod treeland_shortcut_manager_v1 {
             RegisterFailed = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::RegisterFailed),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1268,7 +1565,8 @@ pub mod treeland_shortcut_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_shortcut_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutContextV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandShortcutContextV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "treeland_shortcut_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the context object."]
@@ -1281,7 +1579,22 @@ pub mod treeland_shortcut_manager_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -1293,7 +1606,7 @@ pub mod treeland_virtual_output_manager_v1 {
         #[doc = "Trait to implement the treeland_virtual_output_manager_v1 interface. See the module level documentation for more info"]
         pub trait TreelandVirtualOutputManagerV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "treeland_virtual_output_manager_v1";
@@ -1338,7 +1651,22 @@ pub mod treeland_virtual_output_manager_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 names: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
     #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
@@ -1356,13 +1684,13 @@ pub mod treeland_virtual_output_manager_v1 {
             InvalidOutput = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidGroupName),
                     1u32 => Ok(Self::InvalidScreenNumber),
                     2u32 => Ok(Self::InvalidOutput),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1372,7 +1700,7 @@ pub mod treeland_virtual_output_manager_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_virtual_output_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait TreelandVirtualOutputV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "treeland_virtual_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the output."]
@@ -1397,7 +1725,9 @@ pub mod treeland_virtual_output_manager_v1 {
                 sender_id: waynest::ObjectId,
                 name: String,
                 outputs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "When an error occurs, an error event is emitted, terminating the replication"]
             #[doc = "mode request issued by the client."]
             fn error(
@@ -1406,7 +1736,22 @@ pub mod treeland_virtual_output_manager_v1 {
                 sender_id: waynest::ObjectId,
                 code: u32,
                 message: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -1417,7 +1762,7 @@ pub mod treeland_wallpaper_color_v1 {
         #[doc = "Trait to implement the treeland_wallpaper_color_manager_v1 interface. See the module level documentation for more info"]
         pub trait TreelandWallpaperColorManagerV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "treeland_wallpaper_color_manager_v1";
@@ -1450,7 +1795,22 @@ pub mod treeland_wallpaper_color_v1 {
                 sender_id: waynest::ObjectId,
                 output: String,
                 isdark: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
@@ -1473,13 +1833,13 @@ pub mod treeland_window_management_v1 {
             PreviewShow = 2u32,
         }
         impl TryFrom<u32> for DesktopState {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Normal),
                     1u32 => Ok(Self::Show),
                     2u32 => Ok(Self::PreviewShow),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1489,7 +1849,10 @@ pub mod treeland_window_management_v1 {
             }
         }
         #[doc = "Trait to implement the treeland_window_management_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowManagementV1<C: waynest::Connection, E: From<waynest::DecodeError>>
+        pub trait TreelandWindowManagementV1<
+            C: waynest::Connection,
+            E: From<waynest::ProtocolError>,
+        >
         {
             const INTERFACE: &'static str = "treeland_window_management_v1";
             const VERSION: u32 = 1u32;
@@ -1515,7 +1878,22 @@ pub mod treeland_window_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }

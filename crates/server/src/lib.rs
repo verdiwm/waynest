@@ -1,20 +1,21 @@
 use std::{any::Any, collections::HashMap, sync::Arc};
 
-use async_trait::async_trait;
+pub use async_trait;
+
 use core::fmt;
 use futures_core::Stream;
 use futures_sink::Sink;
 use pin_project_lite::pin_project;
 use tokio::net::UnixStream;
 
-use waynest::{DecodeError, Message, ObjectId, Socket};
-// pub use waynest_macros::Dispatcher;
+use waynest::{Message, ObjectId, ProtocolError, Socket};
 
 mod error;
 mod listener;
 
 pub use error::{Error, Result};
 pub use listener::Listener;
+pub use waynest_macros::RequestDispatcher;
 
 pin_project! {
     pub struct Connection {
@@ -33,7 +34,7 @@ impl fmt::Debug for Connection {
 }
 
 impl waynest::Connection for Connection {
-    fn fd(&mut self) -> std::result::Result<std::os::unix::prelude::OwnedFd, DecodeError> {
+    fn fd(&mut self) -> std::result::Result<std::os::unix::prelude::OwnedFd, ProtocolError> {
         self.socket.fd()
     }
 }
@@ -82,12 +83,14 @@ impl Connection {
 
         object
             .dispatch_request(self, message.object_id(), message)
-            .await
+            .await?;
+
+        Ok(())
     }
 }
 
 impl Stream for Connection {
-    type Item = Result<Message, DecodeError>;
+    type Item = Result<Message, ProtocolError>;
 
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
@@ -98,7 +101,7 @@ impl Stream for Connection {
 }
 
 impl Sink<Message> for Connection {
-    type Error = DecodeError;
+    type Error = ProtocolError;
 
     fn poll_ready(
         self: std::pin::Pin<&mut Self>,
@@ -153,14 +156,14 @@ impl Store {
     }
 }
 
-#[async_trait]
+#[async_trait::async_trait]
 pub trait RequestDispatcher: Any + Send + Sync + 'static {
     fn as_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync + 'static>;
 
     async fn dispatch_request(
         &self,
-        client: &mut Connection,
+        connection: &mut Connection,
         sender_id: ObjectId,
         message: &mut Message,
-    ) -> Result<()>;
+    ) -> Result<(), ProtocolError>;
 }

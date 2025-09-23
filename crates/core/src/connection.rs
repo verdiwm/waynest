@@ -3,10 +3,10 @@ use std::os::fd::OwnedFd;
 use futures_core::Stream;
 use futures_sink::Sink;
 
-use crate::{DecodeError, Message};
+use crate::{Message, ProtocolError};
 
 pub trait Connection:
-    Stream<Item = Result<Message, DecodeError>> + Sink<Message, Error = DecodeError>
+    Stream<Item = Result<Message, ProtocolError>> + Sink<Message, Error = ProtocolError>
 {
-    fn fd(&mut self) -> Result<OwnedFd, DecodeError>;
+    fn fd(&mut self) -> Result<OwnedFd, ProtocolError>;
 }

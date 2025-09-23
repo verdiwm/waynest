@@ -28,7 +28,7 @@ pub fn write_dispatchers<I: Iterator<Item = Message>>(
             let mut map_display = quote! {};
 
             if !arg.allow_null && arg.is_return_option() {
-                optional = quote! {.ok_or(crate::DecodeError::MalformedPayload)?};
+                optional = quote! {.ok_or(crate::ProtocolError::MalformedPayload)?};
             } else if arg.allow_null {
                 map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
             }

@@ -20,7 +20,8 @@ pub mod wlr_data_control_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_manager_v1 {
         #[doc = "Trait to implement the zwlr_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrDataControlManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "zwlr_data_control_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Create a new data source."]
@@ -29,7 +30,9 @@ pub mod wlr_data_control_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Create a data device that can be used to manage a seat's selection."]
             fn get_data_device(
                 &self,
@@ -37,14 +40,18 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
@@ -60,11 +67,11 @@ pub mod wlr_data_control_unstable_v1 {
             UsedSource = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::UsedSource),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -74,7 +81,7 @@ pub mod wlr_data_control_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlDeviceV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrDataControlDeviceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_data_control_device_v1";
             const VERSION: u32 = 2u32;
             #[doc = "This request asks the compositor to set the selection to the data from"]
@@ -90,13 +97,17 @@ pub mod wlr_data_control_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the data device object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request asks the compositor to set the primary selection to the"]
             #[doc = "data from the source on behalf of the client."]
             #[doc = ""]
@@ -113,7 +124,9 @@ pub mod wlr_data_control_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The data_offer event introduces a new wlr_data_control_offer object,"]
             #[doc = "which will subsequently be used in either the"]
             #[doc = "wlr_data_control_device.selection event (for the regular clipboard"]
@@ -188,11 +201,11 @@ pub mod wlr_data_control_unstable_v1 {
             InvalidOffer = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::InvalidOffer),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -202,7 +215,7 @@ pub mod wlr_data_control_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlSourceV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrDataControlSourceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_data_control_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
@@ -215,13 +228,17 @@ pub mod wlr_data_control_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the data source object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
             #[doc = "type over the passed file descriptor, then close it."]
             fn send(
@@ -249,7 +266,7 @@ pub mod wlr_data_control_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_data_control_offer_v1 {
         #[doc = "Trait to implement the zwlr_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrDataControlOfferV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrDataControlOfferV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_data_control_offer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "To transfer the offered data, the client issues this request and"]
@@ -268,13 +285,17 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the data offer object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent immediately after creating the wlr_data_control_offer object."]
             #[doc = "One event per offered MIME type."]
             fn offer(
@@ -302,7 +323,8 @@ pub mod wlr_export_dmabuf_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_export_dmabuf_manager_v1 {
         #[doc = "Trait to implement the zwlr_export_dmabuf_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrExportDmabufManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrExportDmabufManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Capture the next frame of an entire output."]
@@ -313,14 +335,18 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 frame: waynest::ObjectId,
                 overlay_cursor: i32,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object represents a single DMA-BUF frame."]
@@ -348,11 +374,11 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             Transient = 1u32,
         }
         impl TryFrom<u32> for Flags {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::Transient),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -374,13 +400,13 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             Resizing = 2u32,
         }
         impl TryFrom<u32> for CancelReason {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Temporary),
                     1u32 => Ok(Self::Permanent),
                     2u32 => Ok(Self::Resizing),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -390,7 +416,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_export_dmabuf_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrExportDmabufFrameV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrExportDmabufFrameV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Unreferences the frame. This request must be called as soon as its no"]
@@ -402,7 +428,9 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Main event supplying the client with information about the frame. If the"]
             #[doc = "capture didn't fail, this event is always emitted first before any other"]
             #[doc = "events."]
@@ -491,7 +519,7 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
         #[doc = "Trait to implement the zwlr_foreign_toplevel_manager_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrForeignToplevelManagerV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_manager_v1";
@@ -505,7 +533,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever a new toplevel window is created. It"]
             #[doc = "is emitted for all toplevels, regardless of the app that has created"]
             #[doc = "them."]
@@ -553,14 +583,14 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             Fullscreen = 3u32,
         }
         impl TryFrom<u32> for State {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Maximized),
                     1u32 => Ok(Self::Minimized),
                     2u32 => Ok(Self::Activated),
                     3u32 => Ok(Self::Fullscreen),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -577,11 +607,11 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             InvalidRectangle = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidRectangle),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -591,7 +621,10 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrForeignToplevelHandleV1<C: waynest::Connection, E: From<waynest::DecodeError>>
+        pub trait ZwlrForeignToplevelHandleV1<
+            C: waynest::Connection,
+            E: From<waynest::ProtocolError>,
+        >
         {
             const INTERFACE: &'static str = "zwlr_foreign_toplevel_handle_v1";
             const VERSION: u32 = 3u32;
@@ -601,28 +634,36 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the toplevel be unmaximized. If the maximized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn unset_maximized(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the toplevel be minimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn set_minimized(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the toplevel be unminimized. If the minimized state actually"]
             #[doc = "changes, this will be indicated by the state event."]
             fn unset_minimized(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Request that this toplevel be activated on the given seat."]
             #[doc = "There is no guarantee the toplevel will be actually activated."]
             fn activate(
@@ -630,7 +671,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Send a request to the toplevel to close itself. The compositor would"]
             #[doc = "typically use a shell-specific method to carry out this request, for"]
             #[doc = "example by sending the xdg_toplevel.close event. However, this gives"]
@@ -641,7 +684,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The rectangle of the surface specified in this request corresponds to"]
             #[doc = "the place where the app using this protocol represents the given toplevel."]
             #[doc = "It can be used by the compositor as a hint for some operations, e.g"]
@@ -662,7 +707,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the zwlr_foreign_toplevel_handle_v1 object."]
             #[doc = ""]
             #[doc = "This request should be called either when the client does not want to"]
@@ -672,7 +719,9 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the toplevel be fullscreened on the given output. If the"]
             #[doc = "fullscreen state and/or the outputs the toplevel is visible on actually"]
             #[doc = "change, this will be indicated by the state and output_enter/leave"]
@@ -686,14 +735,18 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the toplevel be unfullscreened. If the fullscreen state"]
             #[doc = "actually changes, this will be indicated by the state event."]
             fn unset_fullscreen(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             fn title(
                 &self,
@@ -783,7 +836,8 @@ pub mod wlr_gamma_control_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_gamma_control_manager_v1 {
         #[doc = "Trait to implement the zwlr_gamma_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrGammaControlManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrGammaControlManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "zwlr_gamma_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a gamma control that can be used to adjust gamma tables for the"]
@@ -794,14 +848,18 @@ pub mod wlr_gamma_control_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This interface allows a client to adjust gamma tables for a particular"]
@@ -824,11 +882,11 @@ pub mod wlr_gamma_control_unstable_v1 {
             InvalidGamma = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::InvalidGamma),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -838,7 +896,7 @@ pub mod wlr_gamma_control_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_gamma_control_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrGammaControlV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrGammaControlV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_gamma_control_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Set the gamma table. The file descriptor can be memory-mapped to provide"]
@@ -853,14 +911,18 @@ pub mod wlr_gamma_control_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the gamma control object. If the object is still valid, this"]
             #[doc = "restores the original gamma tables."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Advertise the size of each gamma ramp."]
             #[doc = ""]
             #[doc = "This event is sent immediately when the gamma control object is created."]
@@ -905,11 +967,11 @@ pub mod wlr_input_inhibit_unstable_v1 {
             AlreadyInhibited = 0u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AlreadyInhibited),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -919,7 +981,8 @@ pub mod wlr_input_inhibit_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_input_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrInputInhibitManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrInputInhibitManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "zwlr_input_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Activates the input inhibitor. As long as the inhibitor is active, the"]
@@ -929,7 +992,9 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "While this resource exists, input to clients other than the owner of the"]
@@ -944,7 +1009,7 @@ pub mod wlr_input_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_input_inhibitor_v1 {
         #[doc = "Trait to implement the zwlr_input_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrInputInhibitorV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrInputInhibitorV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_input_inhibitor_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the inhibitor and allow other clients to receive input."]
@@ -952,7 +1017,9 @@ pub mod wlr_input_inhibit_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -979,13 +1046,13 @@ pub mod wlr_layer_shell_unstable_v1 {
             AlreadyConstructed = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Role),
                     1u32 => Ok(Self::InvalidLayer),
                     2u32 => Ok(Self::AlreadyConstructed),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1010,14 +1077,14 @@ pub mod wlr_layer_shell_unstable_v1 {
             Overlay = 3u32,
         }
         impl TryFrom<u32> for Layer {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Background),
                     1u32 => Ok(Self::Bottom),
                     2u32 => Ok(Self::Top),
                     3u32 => Ok(Self::Overlay),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1027,7 +1094,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_layer_shell_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrLayerShellV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrLayerShellV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_layer_shell_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Create a layer surface for an existing surface. This assigns the role of"]
@@ -1060,7 +1127,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 output: Option<waynest::ObjectId>,
                 layer: Layer,
                 namespace: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request indicates that the client will not use the layer_shell"]
             #[doc = "object any more. Objects that have been created through this instance"]
             #[doc = "are not affected."]
@@ -1068,7 +1137,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for surfaces that"]
@@ -1102,13 +1173,13 @@ pub mod wlr_layer_shell_unstable_v1 {
             OnDemand = 2u32,
         }
         impl TryFrom<u32> for KeyboardInteractivity {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::None),
                     1u32 => Ok(Self::Exclusive),
                     2u32 => Ok(Self::OnDemand),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1133,7 +1204,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             InvalidExclusiveEdge = 4u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidSurfaceState),
@@ -1141,7 +1212,7 @@ pub mod wlr_layer_shell_unstable_v1 {
                     2u32 => Ok(Self::InvalidAnchor),
                     3u32 => Ok(Self::InvalidKeyboardInteractivity),
                     4u32 => Ok(Self::InvalidExclusiveEdge),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1152,9 +1223,9 @@ pub mod wlr_layer_shell_unstable_v1 {
         }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
         impl TryFrom<u32> for Anchor {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Anchor {
@@ -1163,7 +1234,7 @@ pub mod wlr_layer_shell_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_layer_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrLayerSurfaceV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrLayerSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_layer_surface_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Sets the size of the surface in surface-local coordinates. The"]
@@ -1182,7 +1253,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the compositor anchor the surface to the specified edges"]
             #[doc = "and corners. If two orthogonal edges are specified (e.g. 'top' and"]
             #[doc = "'left'), then the anchor point will be the intersection of the edges"]
@@ -1195,7 +1268,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 anchor: Anchor,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the compositor avoids occluding an area with other"]
             #[doc = "surfaces. The compositor's use of this information is"]
             #[doc = "implementation-dependent - do not assume that this region will not"]
@@ -1233,7 +1308,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 zone: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests that the surface be placed some distance away from the anchor"]
             #[doc = "point on the output, in surface-local coordinates. Setting this value"]
             #[doc = "for edges you are not anchored to has no effect."]
@@ -1249,7 +1326,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 right: i32,
                 bottom: i32,
                 left: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Set how keyboard events are delivered to this surface. By default,"]
             #[doc = "layer shell surfaces do not receive keyboard events; this request can"]
             #[doc = "be used to change this."]
@@ -1267,7 +1346,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 keyboard_interactivity: KeyboardInteractivity,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This assigns an xdg_popup's parent to this layer_surface.  This popup"]
             #[doc = "should have been created via xdg_surface::get_popup with the parent set"]
             #[doc = "to NULL, and this request must be invoked before committing the popup's"]
@@ -1280,7 +1361,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 popup: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "When a configure event is received, if a client commits the"]
             #[doc = "surface in response to the configure event, then the client"]
             #[doc = "must make an ack_configure request sometime before the commit"]
@@ -1301,13 +1384,17 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request destroys the layer surface."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Change the layer that the surface is rendered on."]
             #[doc = ""]
             #[doc = "Layer is double-buffered, see wl_surface.commit."]
@@ -1316,7 +1403,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer : super :: super :: super :: wlr :: wlr_layer_shell_unstable_v1 :: zwlr_layer_shell_v1 :: Layer,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Requests an edge for the exclusive zone to apply. The exclusive"]
             #[doc = "edge will be automatically deduced from anchor points when possible,"]
             #[doc = "but when the surface is anchored to a corner, it will be necessary"]
@@ -1330,7 +1419,9 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 edge: Anchor,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "Clients should arrange their surface for the new states, and then send"]
@@ -1415,7 +1506,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_manager_v1 {
         #[doc = "Trait to implement the zwlr_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrOutputManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_output_manager_v1";
             const VERSION: u32 = 4u32;
             #[doc = "Create a new output configuration object. This allows to update head"]
@@ -1426,7 +1517,9 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Indicates the client no longer wishes to receive events for output"]
             #[doc = "configuration changes. However the compositor may emit further events,"]
             #[doc = "until the finished event is emitted."]
@@ -1436,7 +1529,9 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event introduces a new head. This happens whenever a new head"]
             #[doc = "appears (e.g. a monitor is plugged in) or after the output manager is"]
             #[doc = "bound."]
@@ -1499,12 +1594,12 @@ pub mod wlr_output_management_unstable_v1 {
             Enabled = 1u32,
         }
         impl TryFrom<u32> for AdaptiveSyncState {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Disabled),
                     1u32 => Ok(Self::Enabled),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1514,7 +1609,7 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputHeadV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrOutputHeadV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_output_head_v1";
             const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use this head"]
@@ -1523,7 +1618,9 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event describes the head name."]
             #[doc = ""]
             #[doc = "The naming convention is compositor defined, but limited to alphanumeric"]
@@ -1740,7 +1837,7 @@ pub mod wlr_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_mode_v1 {
         #[doc = "Trait to implement the zwlr_output_mode_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputModeV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrOutputModeV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_output_mode_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client will no longer use this mode"]
@@ -1749,7 +1846,9 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This event describes the mode size. The size is given in physical"]
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
             #[doc = "the output size in the global compositor space. For instance, the output"]
@@ -1809,13 +1908,13 @@ pub mod wlr_output_management_unstable_v1 {
             AlreadyUsed = 3u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::AlreadyConfiguredHead),
                     2u32 => Ok(Self::UnconfiguredHead),
                     3u32 => Ok(Self::AlreadyUsed),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1825,7 +1924,8 @@ pub mod wlr_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputConfigurationV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrOutputConfigurationV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "zwlr_output_configuration_v1";
             const VERSION: u32 = 4u32;
             #[doc = "Enable a head. This request creates a head configuration object that can"]
@@ -1836,14 +1936,18 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 head: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Disable a head."]
             fn disable_head(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 head: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Apply the new output configuration."]
             #[doc = ""]
             #[doc = "In case the configuration is successfully applied, there is no guarantee"]
@@ -1858,7 +1962,9 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Test the new output configuration. The configuration won't be applied,"]
             #[doc = "but will only be validated."]
             #[doc = ""]
@@ -1872,7 +1978,9 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Using this request a client can tell the compositor that it is not going"]
             #[doc = "to use the configuration object anymore. Any changes to the outputs"]
             #[doc = "that have not been applied will be discarded."]
@@ -1883,7 +1991,9 @@ pub mod wlr_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Sent after the compositor has successfully applied the changes or"]
             #[doc = "tested them."]
             #[doc = ""]
@@ -1944,7 +2054,7 @@ pub mod wlr_output_management_unstable_v1 {
             InvalidAdaptiveSyncState = 6u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::AlreadySet),
@@ -1953,7 +2063,7 @@ pub mod wlr_output_management_unstable_v1 {
                     4u32 => Ok(Self::InvalidTransform),
                     5u32 => Ok(Self::InvalidScale),
                     6u32 => Ok(Self::InvalidAdaptiveSyncState),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -1965,7 +2075,7 @@ pub mod wlr_output_management_unstable_v1 {
         #[doc = "Trait to implement the zwlr_output_configuration_head_v1 interface. See the module level documentation for more info"]
         pub trait ZwlrOutputConfigurationHeadV1<
             C: waynest::Connection,
-            E: From<waynest::DecodeError>,
+            E: From<waynest::ProtocolError>,
         >
         {
             const INTERFACE: &'static str = "zwlr_output_configuration_head_v1";
@@ -1976,7 +2086,9 @@ pub mod wlr_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request assigns a custom mode to the head. The size is given in"]
             #[doc = "physical hardware units of the output device. If set to zero, the"]
             #[doc = "refresh rate is unspecified."]
@@ -1989,7 +2101,9 @@ pub mod wlr_output_management_unstable_v1 {
                 width: i32,
                 height: i32,
                 refresh: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request sets the head's position in the global compositor space."]
             fn set_position(
                 &self,
@@ -1997,21 +2111,27 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request sets the head's transform."]
             fn set_transform(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request sets the head's scale."]
             fn set_scale(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 scale: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "This request enables/disables adaptive sync. Adaptive sync is also"]
             #[doc = "known as Variable Refresh Rate or VRR."]
             fn set_adaptive_sync(
@@ -2019,7 +2139,9 @@ pub mod wlr_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state : super :: super :: super :: wlr :: wlr_output_management_unstable_v1 :: zwlr_output_head_v1 :: AdaptiveSyncState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }
@@ -2046,7 +2168,8 @@ pub mod wlr_output_power_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_output_power_manager_v1 {
         #[doc = "Trait to implement the zwlr_output_power_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputPowerManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrOutputPowerManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
+        {
             const INTERFACE: &'static str = "zwlr_output_power_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an output power management mode control that can be used to"]
@@ -2057,14 +2180,18 @@ pub mod wlr_output_power_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object offers requests to set the power management mode of"]
@@ -2081,12 +2208,12 @@ pub mod wlr_output_power_management_unstable_v1 {
             On = 1u32,
         }
         impl TryFrom<u32> for Mode {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::Off),
                     1u32 => Ok(Self::On),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -2103,11 +2230,11 @@ pub mod wlr_output_power_management_unstable_v1 {
             InvalidMode = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::InvalidMode),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -2117,7 +2244,7 @@ pub mod wlr_output_power_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_output_power_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrOutputPowerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrOutputPowerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_output_power_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Set an output's power save mode to the given mode. The mode change"]
@@ -2128,13 +2255,17 @@ pub mod wlr_output_power_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: Mode,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the output power management mode control object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Report the power management mode change of an output."]
             #[doc = ""]
             #[doc = "The mode event is sent after an output changed its power"]
@@ -2186,7 +2317,7 @@ pub mod wlr_screencopy_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_screencopy_manager_v1 {
         #[doc = "Trait to implement the zwlr_screencopy_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrScreencopyManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrScreencopyManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_screencopy_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Capture the next frame of an entire output."]
@@ -2197,7 +2328,9 @@ pub mod wlr_screencopy_unstable_v1 {
                 frame: waynest::ObjectId,
                 overlay_cursor: i32,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Capture the next frame of an output's region."]
             #[doc = ""]
             #[doc = "The region is given in output logical coordinates, see"]
@@ -2214,14 +2347,18 @@ pub mod wlr_screencopy_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "All objects created by the manager will still remain valid, until their"]
             #[doc = "appropriate destroy request has been called."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object represents a single frame."]
@@ -2252,12 +2389,12 @@ pub mod wlr_screencopy_unstable_v1 {
             InvalidBuffer = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AlreadyUsed),
                     1u32 => Ok(Self::InvalidBuffer),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -2268,9 +2405,9 @@ pub mod wlr_screencopy_unstable_v1 {
         }
         bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInvert = 1u32 ; } }
         impl TryFrom<u32> for Flags {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::DecodeError::MalformedPayload)
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
         impl std::fmt::Display for Flags {
@@ -2279,7 +2416,7 @@ pub mod wlr_screencopy_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_screencopy_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrScreencopyFrameV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrScreencopyFrameV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_screencopy_frame_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Copy the frame to the supplied buffer. The buffer must have the"]
@@ -2294,20 +2431,26 @@ pub mod wlr_screencopy_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Same as copy, except it waits until there is damage to copy."]
             fn copy_with_damage(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
             #[doc = "used for this frame. This event is sent once after the frame is created"]
             #[doc = "if wl_shm buffers are supported."]
@@ -2413,12 +2556,12 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             InvalidAxisSource = 1u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::InvalidAxis),
                     1u32 => Ok(Self::InvalidAxisSource),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -2428,7 +2571,7 @@ pub mod wlr_virtual_pointer_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwlr_virtual_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrVirtualPointerV1<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait ZwlrVirtualPointerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_v1";
             const VERSION: u32 = 2u32;
             #[doc = "The pointer has moved by a relative amount to the previous request."]
@@ -2441,7 +2584,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 time: u32,
                 dx: waynest::Fixed,
                 dy: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "The pointer has moved in an absolute coordinate frame."]
             #[doc = ""]
             #[doc = "Value of x can range from 0 to x_extent, value of y can range from 0"]
@@ -2455,7 +2600,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 y: u32,
                 x_extent: u32,
                 y_extent: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "A button was pressed or released."]
             fn button(
                 &self,
@@ -2464,7 +2611,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 time: u32,
                 button: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Scroll and other axis requests."]
             fn axis(
                 &self,
@@ -2473,20 +2622,26 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 time: u32,
                 axis: u32,
                 value: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Indicates the set of events that logically belong together."]
             fn frame(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Source information for scroll and other axis."]
             fn axis_source(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 axis_source: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Stop notification for scroll and other axes."]
             fn axis_stop(
                 &self,
@@ -2494,7 +2649,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 time: u32,
                 axis: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Discrete step information for scroll and other axes."]
             #[doc = ""]
             #[doc = "This event allows the client to extend data normally sent using the axis"]
@@ -2507,19 +2664,26 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 axis: u32,
                 value: waynest::Fixed,
                 discrete: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwlr_virtual_pointer_manager_v1 {
         #[doc = "Trait to implement the zwlr_virtual_pointer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwlrVirtualPointerManagerV1<C: waynest::Connection, E: From<waynest::DecodeError>>
+        pub trait ZwlrVirtualPointerManagerV1<
+            C: waynest::Connection,
+            E: From<waynest::ProtocolError>,
+        >
         {
             const INTERFACE: &'static str = "zwlr_virtual_pointer_manager_v1";
             const VERSION: u32 = 2u32;
@@ -2531,12 +2695,16 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 seat: Option<waynest::ObjectId>,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             #[doc = "Creates a new virtual pointer. The seat and the output arguments are"]
             #[doc = "optional. If the seat argument is set, the compositor should assign the"]
             #[doc = "input device to the requested seat. If the output argument is set, the"]
@@ -2548,7 +2716,9 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                 seat: Option<waynest::ObjectId>,
                 output: Option<waynest::ObjectId>,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
         }
     }
 }

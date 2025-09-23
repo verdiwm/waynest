@@ -17,6 +17,8 @@ use crate::{
 pub fn generate_module<D: Display, P: AsRef<Path>>(
     module: D,
     path: P,
+    requests_impl: bool,
+    events_impl: bool,
 ) -> Result<TokenStream, Error> {
     let protocol: Protocol = quick_xml::de::from_str(&fs::read_to_string(path)?)?;
 
@@ -55,9 +57,21 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                 args.push(quote! {#name: #ty})
             }
 
+            let request_impl = if requests_impl {
+                quote! {
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), E>> + Send {
+                        async move { Ok(()) }
+                    }
+                }
+            } else {
+                quote! {
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), E>> + Send;
+                }
+            };
+
             requests.push(quote! {
                 #(#docs)*
-                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), E>> + Send;
+                #request_impl
             });
         }
 
@@ -85,9 +99,21 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                 args.push(quote! {#name: #ty})
             }
 
+            let event_impl = if events_impl {
+                quote! {
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), E>> + Send {
+                        async move { Ok(()) }
+                    }
+                }
+            } else {
+                quote! {
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), E>> + Send;
+                }
+            };
+
             events.push(quote! {
                 #(#docs)*
-                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), E>> + Send;
+                #event_impl
             });
         }
 
@@ -96,6 +122,26 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
             interface.name
         );
 
+        let request_handler = if events_impl {
+            quote! {
+                fn handle_request(
+                    &self,
+                    connection: &mut C,
+                    sender_id: waynest::ObjectId,
+                    message: &mut waynest::Message,
+                ) -> impl Future<Output = Result<(), E>> + Send {
+                    async move {
+                        #[allow(clippy::match_single_binding)]
+                        match message.opcode() {
+                            opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        }
+                    }
+                }
+            }
+        } else {
+            quote! {}
+        };
+
         inner_modules.push(quote! {
             #(#docs)*
             #[allow(clippy::too_many_arguments)]
@@ -103,12 +149,14 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                 #(#enums)*
 
                 #[doc = #trait_docs]
-                pub trait #trait_name<C: waynest::Connection, E: From<waynest::DecodeError>> {
+                pub trait #trait_name<C: waynest::Connection, E: From<waynest::ProtocolError>> {
                     const INTERFACE: &'static str = #name;
                     const VERSION: u32 = #version;
 
                     #(#requests)*
                     #(#events)*
+
+                    #request_handler
                 }
             }
         });

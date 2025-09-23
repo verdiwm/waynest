@@ -13,6 +13,9 @@ futures-sink = "0.3.31"
 waynest = { version = "0.1", path = "../core" }
 
 [features]
+server = []
+client = []
+
 stable = []
 staging = []
 unstable = []

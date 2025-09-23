@@ -11,13 +11,13 @@ pub mod drm {
             InvalidName = 2u32,
         }
         impl TryFrom<u32> for Error {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     0u32 => Ok(Self::AuthenticateFail),
                     1u32 => Ok(Self::InvalidFormat),
                     2u32 => Ok(Self::InvalidName),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -93,7 +93,7 @@ pub mod drm {
             Xbgr16f = 1211384408u32,
         }
         impl TryFrom<u32> for Format {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     538982467u32 => Ok(Self::C8),
@@ -157,7 +157,7 @@ pub mod drm {
                     875714137u32 => Ok(Self::Yvu444),
                     1211384385u32 => Ok(Self::Abgr16f),
                     1211384408u32 => Ok(Self::Xbgr16f),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -175,11 +175,11 @@ pub mod drm {
             Prime = 1u32,
         }
         impl TryFrom<u32> for Capability {
-            type Error = waynest::DecodeError;
+            type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
                 match v {
                     1u32 => Ok(Self::Prime),
-                    _ => Err(waynest::DecodeError::MalformedPayload),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
         }
@@ -189,7 +189,7 @@ pub mod drm {
             }
         }
         #[doc = "Trait to implement the wl_drm interface. See the module level documentation for more info"]
-        pub trait WlDrm<C: waynest::Connection, E: From<waynest::DecodeError>> {
+        pub trait WlDrm<C: waynest::Connection, E: From<waynest::ProtocolError>> {
             const INTERFACE: &'static str = "wl_drm";
             const VERSION: u32 = 2u32;
             fn authenticate(
@@ -246,24 +246,45 @@ pub mod drm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn format(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn authenticated(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
             fn capabilities(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move { Ok(()) }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut C,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), E>> + Send {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                    }
+                }
+            }
         }
     }
 }
