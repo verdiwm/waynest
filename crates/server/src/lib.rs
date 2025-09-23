@@ -34,6 +34,8 @@ impl fmt::Debug for Connection {
 }
 
 impl waynest::Connection for Connection {
+    type Error = Error;
+
     fn fd(&mut self) -> std::result::Result<std::os::unix::prelude::OwnedFd, ProtocolError> {
         self.socket.fd()
     }
@@ -83,9 +85,7 @@ impl Connection {
 
         object
             .dispatch_request(self, message.object_id(), message)
-            .await?;
-
-        Ok(())
+            .await
     }
 }
 
@@ -165,5 +165,5 @@ pub trait RequestDispatcher: Any + Send + Sync + 'static {
         connection: &mut Connection,
         sender_id: ObjectId,
         message: &mut Message,
-    ) -> Result<(), ProtocolError>;
+    ) -> Result<()>;
 }

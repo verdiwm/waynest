@@ -40,6 +40,8 @@ impl Socket {
 }
 
 impl Connection for Socket {
+    type Error = ProtocolError;
+
     fn fd(&mut self) -> Result<std::os::unix::prelude::OwnedFd, ProtocolError> {
         self.decode_fds
             .pop_front()

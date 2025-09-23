@@ -142,7 +142,7 @@ pub mod fullscreen_shell_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_fullscreen_shell_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpFullscreenShellV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpFullscreenShellV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_fullscreen_shell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Release the binding from the wl_fullscreen_shell interface."]
@@ -154,7 +154,8 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Present a surface on the given output."]
@@ -185,7 +186,8 @@ pub mod fullscreen_shell_unstable_v1 {
                 surface: Option<waynest::ObjectId>,
                 method: PresentMethod,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Presents a surface on the given output for a particular mode."]
@@ -237,7 +239,8 @@ pub mod fullscreen_shell_unstable_v1 {
                 output: waynest::ObjectId,
                 framerate: i32,
                 feedback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Advertises a single capability of the compositor."]
@@ -253,17 +256,13 @@ pub mod fullscreen_shell_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capability: Capability,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_fullscreen_shell_mode_feedback_v1 {
         #[doc = "Trait to implement the zwp_fullscreen_shell_mode_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpFullscreenShellModeFeedbackV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpFullscreenShellModeFeedbackV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_fullscreen_shell_mode_feedback_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -276,7 +275,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted mode switch operation"]
             #[doc = "failed.  This may be because the requested output mode is not"]
             #[doc = "possible or it may mean that the compositor does not want to allow it."]
@@ -287,7 +286,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted mode switch operation was"]
             #[doc = "cancelled.  Most likely this is because the client requested a"]
             #[doc = "second mode switch before the first one completed."]
@@ -298,7 +297,7 @@ pub mod fullscreen_shell_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -319,7 +318,7 @@ pub mod idle_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_idle_inhibit_manager_v1 {
         #[doc = "Trait to implement the zwp_idle_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpIdleInhibitManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpIdleInhibitManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_idle_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the inhibit manager."]
@@ -327,7 +326,8 @@ pub mod idle_inhibit_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new inhibitor object associated with the given surface."]
@@ -337,7 +337,8 @@ pub mod idle_inhibit_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -357,7 +358,7 @@ pub mod idle_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_idle_inhibitor_v1 {
         #[doc = "Trait to implement the zwp_idle_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpIdleInhibitorV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpIdleInhibitorV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_idle_inhibitor_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Remove the inhibitor effect from the associated wl_surface."]
@@ -365,7 +366,8 @@ pub mod idle_inhibit_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -399,14 +401,15 @@ pub mod input_method_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_method_context_v1 {
         #[doc = "Trait to implement the zwp_input_method_context_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputMethodContextV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpInputMethodContextV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_input_method_context_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Send the commit string text for insertion to the application."]
@@ -424,7 +427,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 text: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Send the pre-edit string text to the application text input."]
@@ -441,7 +445,8 @@ pub mod input_method_unstable_v1 {
                 serial: u32,
                 text: String,
                 commit: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the styling information on composing text. The style is applied for"]
@@ -457,7 +462,8 @@ pub mod input_method_unstable_v1 {
                 index: u32,
                 length: u32,
                 style: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the cursor position inside the composing text (as byte offset)"]
@@ -471,7 +477,8 @@ pub mod input_method_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 index: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Remove the surrounding text."]
@@ -484,7 +491,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the cursor and anchor to a new position. Index is the new cursor"]
@@ -503,7 +511,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn modifiers_map(
@@ -511,7 +520,8 @@ pub mod input_method_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 map: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used for"]
@@ -527,7 +537,8 @@ pub mod input_method_unstable_v1 {
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Allow an input method to receive hardware keyboard input and process"]
@@ -539,7 +550,8 @@ pub mod input_method_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 keyboard: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Forward a wl_keyboard::key event to the client that was not processed"]
@@ -556,7 +568,8 @@ pub mod input_method_unstable_v1 {
                 time: u32,
                 key: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Forward a wl_keyboard::modifiers event to the client that was not"]
@@ -572,7 +585,8 @@ pub mod input_method_unstable_v1 {
                 mods_latched: u32,
                 mods_locked: u32,
                 group: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn language(
@@ -581,7 +595,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn text_direction(
@@ -590,7 +605,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 direction: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The plain surrounding text around the input position. Cursor is the"]
@@ -605,38 +621,38 @@ pub mod input_method_unstable_v1 {
                 text: String,
                 cursor: u32,
                 anchor: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn reset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn content_type(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 hint: u32,
                 purpose: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn invoke_action(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 index: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn commit_state(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn preferred_language(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An input method object is responsible for composing text in response to"]
@@ -646,7 +662,7 @@ pub mod input_method_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_method_v1 {
         #[doc = "Trait to implement the zwp_input_method_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputMethodV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpInputMethodV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_input_method_v1";
             const VERSION: u32 = 1u32;
             #[doc = "A text input was activated. Creates an input method context object"]
@@ -656,7 +672,7 @@ pub mod input_method_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The text input corresponding to the context argument was deactivated."]
             #[doc = "The input method context should be destroyed after deactivation is"]
             #[doc = "handled."]
@@ -665,14 +681,14 @@ pub mod input_method_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 context: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_panel_v1 {
         #[doc = "Trait to implement the zwp_input_panel_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputPanelV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpInputPanelV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_input_panel_v1";
             const VERSION: u32 = 1u32;
             fn get_input_panel_surface(
@@ -681,7 +697,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -709,7 +726,7 @@ pub mod input_method_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_input_panel_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputPanelSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpInputPanelSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_input_panel_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Set the input_panel_surface type to keyboard."]
@@ -721,7 +738,8 @@ pub mod input_method_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
                 position: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the input_panel_surface to be an overlay panel."]
@@ -732,7 +750,8 @@ pub mod input_method_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -756,11 +775,7 @@ pub mod input_timestamps_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_timestamps_manager_v1 {
         #[doc = "Trait to implement the zwp_input_timestamps_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputTimestampsManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpInputTimestampsManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_input_timestamps_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this"]
@@ -770,7 +785,8 @@ pub mod input_timestamps_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a new input timestamps object that represents a subscription"]
@@ -787,7 +803,8 @@ pub mod input_timestamps_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 keyboard: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a new input timestamps object that represents a subscription"]
@@ -804,7 +821,8 @@ pub mod input_timestamps_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a new input timestamps object that represents a subscription"]
@@ -821,7 +839,8 @@ pub mod input_timestamps_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 touch: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -832,7 +851,7 @@ pub mod input_timestamps_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_input_timestamps_v1 {
         #[doc = "Trait to implement the zwp_input_timestamps_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpInputTimestampsV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpInputTimestampsV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_input_timestamps_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this"]
@@ -842,7 +861,8 @@ pub mod input_timestamps_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The timestamp event is associated with the first subsequent input event"]
@@ -866,7 +886,7 @@ pub mod input_timestamps_unstable_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -911,11 +931,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibit_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpKeyboardShortcutsInhibitManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpKeyboardShortcutsInhibitManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibit_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the keyboard shortcuts inhibitor manager."]
@@ -923,7 +939,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new keyboard shortcuts inhibitor object associated with"]
@@ -938,7 +955,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -979,11 +997,7 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_keyboard_shortcuts_inhibitor_v1 {
         #[doc = "Trait to implement the zwp_keyboard_shortcuts_inhibitor_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpKeyboardShortcutsInhibitorV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpKeyboardShortcutsInhibitorV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_keyboard_shortcuts_inhibitor_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Remove the keyboard shortcuts inhibitor from the associated wl_surface."]
@@ -991,7 +1005,8 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event indicates that the shortcut inhibitor is active."]
@@ -1009,14 +1024,14 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the shortcuts inhibitor is inactive,"]
             #[doc = "normal shortcuts processing is restored by the compositor."]
             fn inactive(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -1093,7 +1108,7 @@ pub mod linux_dmabuf_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_v1 {
         #[doc = "Trait to implement the zwp_linux_dmabuf_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpLinuxDmabufV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
@@ -1102,7 +1117,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This temporary object is used to collect multiple dmabuf handles into"]
@@ -1114,7 +1130,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 params_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
@@ -1126,7 +1143,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
@@ -1141,7 +1159,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises one buffer format that the server supports."]
@@ -1160,7 +1179,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the formats that the server supports, along with"]
             #[doc = "the modifiers supported for each format. All the supported modifiers"]
             #[doc = "for all the supported formats are advertised once when the client"]
@@ -1191,7 +1210,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 format: u32,
                 modifier_hi: u32,
                 modifier_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This temporary object is a collection of dmabufs and other"]
@@ -1266,7 +1285,7 @@ pub mod linux_dmabuf_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_buffer_params_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpLinuxBufferParamsV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
@@ -1275,7 +1294,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request adds one dmabuf to the set in this"]
@@ -1307,7 +1327,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 stride: u32,
                 modifier_hi: u32,
                 modifier_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This asks for creation of a wl_buffer from the added dmabuf"]
@@ -1377,7 +1398,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 height: i32,
                 format: u32,
                 flags: Flags,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This asks for immediate creation of a wl_buffer by importing the"]
@@ -1412,7 +1434,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 height: i32,
                 format: u32,
                 flags: Flags,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event indicates that the attempted buffer creation was"]
@@ -1425,7 +1448,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted buffer creation has"]
             #[doc = "failed. It usually means that one of the dmabuf constraints"]
             #[doc = "has not been fulfilled."]
@@ -1436,7 +1459,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
@@ -1479,8 +1502,7 @@ pub mod linux_dmabuf_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_dmabuf_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZwpLinuxDmabufFeedbackV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
             const VERSION: u32 = 5u32;
             #[doc = "Using this request a client can tell the server that it is not going to"]
@@ -1489,7 +1511,8 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
@@ -1501,7 +1524,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event provides a file descriptor which can be memory-mapped to"]
             #[doc = "access the format and modifier table."]
             #[doc = ""]
@@ -1522,7 +1545,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
                 size: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the main device that the server prefers to use"]
             #[doc = "when direct scan-out to the target device isn't possible. The"]
             #[doc = "advertised main device may be different for each"]
@@ -1551,7 +1574,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event splits tranche_target_device and tranche_formats events in"]
             #[doc = "preference tranches. It is sent after a set of tranche_target_device"]
             #[doc = "and tranche_formats events; it represents the end of a tranche. The"]
@@ -1560,7 +1583,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the target device that the server prefers to use"]
             #[doc = "for a buffer created given this tranche. The advertised target device"]
             #[doc = "may be different for each preference tranche, and may change over time."]
@@ -1592,7 +1615,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the format + modifier combinations that the"]
             #[doc = "compositor supports."]
             #[doc = ""]
@@ -1622,7 +1645,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 indices: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event sets tranche-specific flags."]
             #[doc = ""]
             #[doc = "The scanout flag is a hint that direct scan-out may be attempted by the"]
@@ -1636,7 +1659,7 @@ pub mod linux_dmabuf_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: TrancheFlags,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -1684,11 +1707,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_explicit_synchronization_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxExplicitSynchronizationV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpLinuxExplicitSynchronizationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_linux_explicit_synchronization_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy this explicit synchronization factory object. Other objects,"]
@@ -1698,7 +1717,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
@@ -1718,7 +1738,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -1792,11 +1813,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_linux_surface_synchronization_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxSurfaceSynchronizationV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpLinuxSurfaceSynchronizationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_linux_surface_synchronization_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy this explicit synchronization object."]
@@ -1811,7 +1828,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the acquire fence that must be signaled before the compositor"]
@@ -1842,7 +1860,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a listener for the release of the buffer attached by the"]
@@ -1867,7 +1886,8 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 release: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -1892,7 +1912,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_buffer_release_v1 {
         #[doc = "Trait to implement the zwp_linux_buffer_release_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLinuxBufferReleaseV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpLinuxBufferReleaseV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_linux_buffer_release_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Sent when the compositor has finalised its usage of the associated"]
@@ -1911,7 +1931,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 fence: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent when the compositor has finalised its usage of the associated"]
             #[doc = "buffer for the relevant commit, and either performed no operations"]
             #[doc = "using it, or has a guarantee that all its operations on that buffer for"]
@@ -1927,7 +1947,7 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -2015,7 +2035,7 @@ pub mod pointer_constraints_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_pointer_constraints_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerConstraintsV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpPointerConstraintsV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_pointer_constraints_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Used by the client to notify the server that it will no longer use this"]
@@ -2024,7 +2044,8 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The lock_pointer request lets the client request to disable movements of"]
@@ -2070,7 +2091,8 @@ pub mod pointer_constraints_unstable_v1 {
                 pointer: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
                 lifetime: Lifetime,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The confine_pointer request lets the client request to confine the"]
@@ -2099,7 +2121,8 @@ pub mod pointer_constraints_unstable_v1 {
                 pointer: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
                 lifetime: Lifetime,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2130,7 +2153,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_locked_pointer_v1 {
         #[doc = "Trait to implement the zwp_locked_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpLockedPointerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpLockedPointerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_locked_pointer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the locked pointer object. If applicable, the compositor will"]
@@ -2139,7 +2162,8 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the cursor position hint relative to the top left corner of the"]
@@ -2158,7 +2182,8 @@ pub mod pointer_constraints_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 surface_x: waynest::Fixed,
                 surface_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a new region used to lock the pointer."]
@@ -2171,7 +2196,8 @@ pub mod pointer_constraints_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notification that the pointer lock of the seat's pointer is activated."]
@@ -2179,7 +2205,7 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that the pointer lock of the seat's pointer is no longer"]
             #[doc = "active. If this is a oneshot pointer lock (see"]
             #[doc = "wp_pointer_constraints.lifetime) this object is now defunct and should"]
@@ -2190,7 +2216,7 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The wp_confined_pointer interface represents a confined pointer state."]
@@ -2212,7 +2238,7 @@ pub mod pointer_constraints_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_confined_pointer_v1 {
         #[doc = "Trait to implement the zwp_confined_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpConfinedPointerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpConfinedPointerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_confined_pointer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the confined pointer object. If applicable, the compositor will"]
@@ -2221,7 +2247,8 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a new region used to confine the pointer."]
@@ -2243,7 +2270,8 @@ pub mod pointer_constraints_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notification that the pointer confinement of the seat's pointer is"]
@@ -2252,7 +2280,7 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that the pointer confinement of the seat's pointer is no"]
             #[doc = "longer active. If this is a oneshot pointer confinement (see"]
             #[doc = "wp_pointer_constraints.lifetime) this object is now defunct and should"]
@@ -2263,7 +2291,7 @@ pub mod pointer_constraints_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -2288,7 +2316,7 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gestures_v1 {
         #[doc = "Trait to implement the zwp_pointer_gestures_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGesturesV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpPointerGesturesV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_pointer_gestures_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Create a swipe gesture object. See the"]
@@ -2299,7 +2327,8 @@ pub mod pointer_gestures_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a pinch gesture object. See the"]
@@ -2310,7 +2339,8 @@ pub mod pointer_gestures_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the pointer gesture object. Swipe, pinch and hold objects"]
@@ -2319,7 +2349,8 @@ pub mod pointer_gestures_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a hold gesture object. See the"]
@@ -2330,7 +2361,8 @@ pub mod pointer_gestures_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2353,15 +2385,15 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_swipe_v1 {
         #[doc = "Trait to implement the zwp_pointer_gesture_swipe_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGestureSwipeV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZwpPointerGestureSwipeV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_pointer_gesture_swipe_v1";
             const VERSION: u32 = 2u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent when a multi-finger swipe gesture is detected"]
@@ -2374,7 +2406,7 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 surface: waynest::ObjectId,
                 fingers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when a multi-finger swipe gesture changes the"]
             #[doc = "position of the logical center."]
             #[doc = ""]
@@ -2387,7 +2419,7 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 dx: waynest::Fixed,
                 dy: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when a multi-finger swipe gesture ceases to"]
             #[doc = "be valid. This may happen when one or more fingers are lifted or"]
             #[doc = "the gesture is cancelled."]
@@ -2402,7 +2434,7 @@ pub mod pointer_gestures_unstable_v1 {
                 serial: u32,
                 time: u32,
                 cancelled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A pinch gesture object notifies a client about a multi-finger pinch"]
@@ -2423,15 +2455,15 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_pinch_v1 {
         #[doc = "Trait to implement the zwp_pointer_gesture_pinch_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGesturePinchV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZwpPointerGesturePinchV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_pointer_gesture_pinch_v1";
             const VERSION: u32 = 2u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent when a multi-finger pinch gesture is detected"]
@@ -2444,7 +2476,7 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 surface: waynest::ObjectId,
                 fingers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when a multi-finger pinch gesture changes the"]
             #[doc = "position of the logical center, the rotation or the relative scale."]
             #[doc = ""]
@@ -2466,7 +2498,7 @@ pub mod pointer_gestures_unstable_v1 {
                 dy: waynest::Fixed,
                 scale: waynest::Fixed,
                 rotation: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when a multi-finger pinch gesture ceases to"]
             #[doc = "be valid. This may happen when one or more fingers are lifted or"]
             #[doc = "the gesture is cancelled."]
@@ -2481,7 +2513,7 @@ pub mod pointer_gestures_unstable_v1 {
                 serial: u32,
                 time: u32,
                 cancelled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A hold gesture object notifies a client about a single- or"]
@@ -2504,14 +2536,15 @@ pub mod pointer_gestures_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_pointer_gesture_hold_v1 {
         #[doc = "Trait to implement the zwp_pointer_gesture_hold_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPointerGestureHoldV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpPointerGestureHoldV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_pointer_gesture_hold_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent when a hold gesture is detected on the device."]
@@ -2523,7 +2556,7 @@ pub mod pointer_gestures_unstable_v1 {
                 time: u32,
                 surface: waynest::ObjectId,
                 fingers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when a hold gesture ceases to"]
             #[doc = "be valid. This may happen when the holding fingers are lifted or"]
             #[doc = "the gesture is cancelled, for example if the fingers move past an"]
@@ -2540,7 +2573,7 @@ pub mod pointer_gestures_unstable_v1 {
                 serial: u32,
                 time: u32,
                 cancelled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -2594,11 +2627,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_manager_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_device_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionDeviceManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpPrimarySelectionDeviceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_primary_selection_device_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new primary selection source."]
@@ -2607,7 +2636,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new data device for a given seat."]
@@ -2617,7 +2647,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the primary selection device manager."]
@@ -2625,7 +2656,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2633,11 +2665,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_device_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_device_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionDeviceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpPrimarySelectionDeviceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_primary_selection_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Replaces the current selection. The previous owner of the primary"]
@@ -2650,7 +2678,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 source: Option<waynest::ObjectId>,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the primary selection device."]
@@ -2658,7 +2687,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Introduces a new wp_primary_selection_offer object that may be used"]
@@ -2671,7 +2701,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 offer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The wp_primary_selection_device.selection event is sent to notify the"]
             #[doc = "client of a new primary selection. This event is sent after the"]
             #[doc = "wp_primary_selection.data_offer event introducing this object, and after"]
@@ -2686,7 +2716,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A wp_primary_selection_offer represents an offer to transfer the contents"]
@@ -2697,11 +2727,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_offer_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionOfferV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpPrimarySelectionOfferV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_primary_selection_offer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "To transfer the contents of the primary selection clipboard, the client"]
@@ -2719,7 +2745,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the primary selection offer."]
@@ -2727,7 +2754,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent immediately after creating announcing the"]
@@ -2739,7 +2767,7 @@ pub mod wp_primary_selection_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The source side of a wp_primary_selection_offer, it provides a way to"]
@@ -2748,11 +2776,7 @@ pub mod wp_primary_selection_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_primary_selection_source_v1 {
         #[doc = "Trait to implement the zwp_primary_selection_source_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpPrimarySelectionSourceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpPrimarySelectionSourceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_primary_selection_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request adds a mime type to the set of mime types advertised to"]
@@ -2762,7 +2786,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the primary selection source."]
@@ -2770,7 +2795,8 @@ pub mod wp_primary_selection_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request for the current primary selection contents from the client."]
@@ -2782,14 +2808,14 @@ pub mod wp_primary_selection_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This primary selection source is no longer valid. The client should"]
             #[doc = "clean up and destroy this primary selection source."]
             fn cancelled(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -2822,11 +2848,7 @@ pub mod relative_pointer_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_relative_pointer_manager_v1 {
         #[doc = "Trait to implement the zwp_relative_pointer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpRelativePointerManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpRelativePointerManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_relative_pointer_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Used by the client to notify the server that it will no longer use this"]
@@ -2835,7 +2857,8 @@ pub mod relative_pointer_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a relative pointer interface given a wl_pointer object. See the"]
@@ -2846,7 +2869,8 @@ pub mod relative_pointer_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2858,14 +2882,15 @@ pub mod relative_pointer_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_relative_pointer_v1 {
         #[doc = "Trait to implement the zwp_relative_pointer_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpRelativePointerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpRelativePointerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_relative_pointer_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Relative x/y pointer motion from the pointer of the seat associated with"]
@@ -2908,7 +2933,7 @@ pub mod relative_pointer_unstable_v1 {
                 dy: waynest::Fixed,
                 dx_unaccel: waynest::Fixed,
                 dy_unaccel: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -3005,7 +3030,7 @@ pub mod tablet_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v1 {
         #[doc = "Trait to implement the zwp_tablet_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
@@ -3016,7 +3041,8 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 tablet_seat: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
@@ -3025,7 +3051,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3036,7 +3063,7 @@ pub mod tablet_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v1 {
         #[doc = "Trait to implement the zwp_tablet_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletSeatV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_seat_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
@@ -3045,7 +3072,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
@@ -3057,7 +3085,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent whenever a tool that has not previously been used"]
             #[doc = "with a tablet comes into use. This event only provides the object id"]
             #[doc = "of the tool; any static information about the tool (capabilities,"]
@@ -3067,7 +3095,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
@@ -3230,7 +3258,7 @@ pub mod tablet_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletToolV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_tool_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
@@ -3273,7 +3301,8 @@ pub mod tablet_unstable_v1 {
                 surface: Option<waynest::ObjectId>,
                 hotspot_x: i32,
                 hotspot_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This destroys the client's resource for this tool object."]
@@ -3281,7 +3310,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
@@ -3294,7 +3324,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tool_type: Type,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
             #[doc = "number, this event notifies the client of this serial number."]
             #[doc = ""]
@@ -3316,7 +3346,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event notifies the client of a hardware id available on this tool."]
             #[doc = ""]
             #[doc = "The hardware id is a device-specific 64-bit id that provides extra"]
@@ -3333,7 +3363,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event notifies the client of any capabilities of this tool,"]
             #[doc = "beyond the main set of x/y axes and tip up/down detection."]
             #[doc = ""]
@@ -3346,7 +3376,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capability: Capability,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event signals the end of the initial burst of descriptive"]
             #[doc = "events. A client may consider the static description of the tool to"]
             #[doc = "be complete and finalize initialization of the tool."]
@@ -3354,7 +3384,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when the tool is removed from the system and will"]
             #[doc = "send no further events. Should the physical tool come back into"]
             #[doc = "proximity later, a new wp_tablet_tool object will be created."]
@@ -3373,7 +3403,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this tool is focused on a certain surface."]
             #[doc = ""]
             #[doc = "This event can be received when the tool has moved from one surface to"]
@@ -3390,7 +3420,7 @@ pub mod tablet_unstable_v1 {
                 serial: u32,
                 tablet: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this tool has either left proximity, or is no"]
             #[doc = "longer focused on a certain surface."]
             #[doc = ""]
@@ -3407,7 +3437,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
             #[doc = "tablet."]
             #[doc = ""]
@@ -3425,7 +3455,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
             #[doc = "the tablet, or when the tablet tool moves out of the input region"]
             #[doc = "and the compositor grab (if any) is dismissed."]
@@ -3446,7 +3476,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever a tablet tool moves."]
             fn motion(
                 &self,
@@ -3454,7 +3484,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
             #[doc = "event is normalized to a value between 0 and 65535."]
             #[doc = ""]
@@ -3465,7 +3495,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pressure: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
             #[doc = "event is normalized to a value between 0 and 65535."]
             #[doc = ""]
@@ -3476,7 +3506,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 distance: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
             #[doc = "value is in 0.01 of a degree, relative to the z-axis of the tablet."]
             #[doc = "The angle is positive when the top of a tool tilts along the"]
@@ -3487,7 +3517,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 tilt_x: i32,
                 tilt_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
             #[doc = "rotation value is in 0.01 of a degree clockwise from the tool's"]
             #[doc = "logical neutral position."]
@@ -3496,7 +3526,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 degrees: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the slider position on the tool changes. The"]
             #[doc = "value is normalized between -65535 and 65535, with 0 as the logical"]
             #[doc = "neutral position of the slider."]
@@ -3507,7 +3537,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 position: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
             #[doc = "contains two values for the same axis change. The degrees value is"]
             #[doc = "in 0.01 of a degree in the same orientation as the"]
@@ -3526,7 +3556,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 degrees: i32,
                 clicks: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever a button on the tool is pressed or released."]
             #[doc = ""]
             #[doc = "If a button is held down when the tool moves in or out of proximity,"]
@@ -3540,7 +3570,7 @@ pub mod tablet_unstable_v1 {
                 serial: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Marks the end of a series of axis and/or button updates from the"]
             #[doc = "tablet. The Wayland protocol requires axis updates to be sent"]
             #[doc = "sequentially, however all events within a frame should be considered"]
@@ -3550,7 +3580,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
@@ -3564,7 +3594,7 @@ pub mod tablet_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v1 {
         #[doc = "Trait to implement the zwp_tablet_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the client's resource for this tablet object."]
@@ -3572,7 +3602,8 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent in the initial burst of events before the"]
@@ -3582,7 +3613,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent in the initial burst of events before the"]
             #[doc = "wp_tablet.done event."]
             fn id(
@@ -3591,7 +3622,7 @@ pub mod tablet_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 vid: u32,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
             #[doc = "this wp_tablet. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
@@ -3611,7 +3642,7 @@ pub mod tablet_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent immediately to signal the end of the initial"]
             #[doc = "burst of descriptive events. A client may consider the static"]
             #[doc = "description of the tablet to be complete and finalize initialization"]
@@ -3620,7 +3651,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
             #[doc = "is removed, some tools may be removed."]
             #[doc = ""]
@@ -3630,7 +3661,7 @@ pub mod tablet_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -3722,7 +3753,7 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletManagerV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletManagerV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
@@ -3733,7 +3764,8 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 tablet_seat: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
@@ -3742,7 +3774,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3753,7 +3786,7 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletSeatV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletSeatV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
@@ -3762,7 +3795,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
@@ -3774,7 +3808,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent whenever a tool that has not previously been used"]
             #[doc = "with a tablet comes into use. This event only provides the object id"]
             #[doc = "of the tool; any static information about the tool (capabilities,"]
@@ -3784,7 +3818,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent whenever a new pad is known to the system. Typically,"]
             #[doc = "pads are physically attached to tablets and a pad_added event is"]
             #[doc = "sent immediately after the wp_tablet_seat.tablet_added."]
@@ -3800,7 +3834,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
@@ -3963,7 +3997,7 @@ pub mod tablet_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_tool_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletToolV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletToolV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_tool_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Sets the surface of the cursor used for this tool on the given"]
@@ -4004,7 +4038,8 @@ pub mod tablet_unstable_v2 {
                 surface: Option<waynest::ObjectId>,
                 hotspot_x: i32,
                 hotspot_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This destroys the client's resource for this tool object."]
@@ -4012,7 +4047,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The tool type is the high-level type of the tool and usually decides"]
@@ -4025,7 +4061,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tool_type: Type,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "If the physical tool can be identified by a unique 64-bit serial"]
             #[doc = "number, this event notifies the client of this serial number."]
             #[doc = ""]
@@ -4047,7 +4083,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 hardware_serial_hi: u32,
                 hardware_serial_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event notifies the client of a hardware id available on this tool."]
             #[doc = ""]
             #[doc = "The hardware id is a device-specific 64-bit id that provides extra"]
@@ -4064,7 +4100,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 hardware_id_hi: u32,
                 hardware_id_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event notifies the client of any capabilities of this tool,"]
             #[doc = "beyond the main set of x/y axes and tip up/down detection."]
             #[doc = ""]
@@ -4077,7 +4113,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capability: Capability,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event signals the end of the initial burst of descriptive"]
             #[doc = "events. A client may consider the static description of the tool to"]
             #[doc = "be complete and finalize initialization of the tool."]
@@ -4085,7 +4121,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when the tool is removed from the system and will"]
             #[doc = "send no further events. Should the physical tool come back into"]
             #[doc = "proximity later, a new wp_tablet_tool object will be created."]
@@ -4104,7 +4140,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this tool is focused on a certain surface."]
             #[doc = ""]
             #[doc = "This event can be received when the tool has moved from one surface to"]
@@ -4121,7 +4157,7 @@ pub mod tablet_unstable_v2 {
                 serial: u32,
                 tablet: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this tool has either left proximity, or is no"]
             #[doc = "longer focused on a certain surface."]
             #[doc = ""]
@@ -4138,7 +4174,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the tablet tool comes in contact with the surface of the"]
             #[doc = "tablet."]
             #[doc = ""]
@@ -4156,7 +4192,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the tablet tool stops making contact with the surface of"]
             #[doc = "the tablet, or when the tablet tool moves out of the input region"]
             #[doc = "and the compositor grab (if any) is dismissed."]
@@ -4177,7 +4213,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever a tablet tool moves."]
             fn motion(
                 &self,
@@ -4185,7 +4221,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the pressure axis on a tool changes. The value of this"]
             #[doc = "event is normalized to a value between 0 and 65535."]
             #[doc = ""]
@@ -4196,7 +4232,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pressure: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the distance axis on a tool changes. The value of this"]
             #[doc = "event is normalized to a value between 0 and 65535."]
             #[doc = ""]
@@ -4207,7 +4243,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 distance: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever one or both of the tilt axes on a tool change. Each tilt"]
             #[doc = "value is in degrees, relative to the z-axis of the tablet."]
             #[doc = "The angle is positive when the top of a tool tilts along the"]
@@ -4218,7 +4254,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 tilt_x: waynest::Fixed,
                 tilt_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the z-rotation axis on the tool changes. The"]
             #[doc = "rotation value is in degrees clockwise from the tool's"]
             #[doc = "logical neutral position."]
@@ -4227,7 +4263,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 degrees: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the slider position on the tool changes. The"]
             #[doc = "value is normalized between -65535 and 65535, with 0 as the logical"]
             #[doc = "neutral position of the slider."]
@@ -4238,7 +4274,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 position: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the wheel on the tool emits an event. This event"]
             #[doc = "contains two values for the same axis change. The degrees value is"]
             #[doc = "in the same orientation as the wl_pointer.vertical_scroll axis. The"]
@@ -4257,7 +4293,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 degrees: waynest::Fixed,
                 clicks: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever a button on the tool is pressed or released."]
             #[doc = ""]
             #[doc = "If a button is held down when the tool moves in or out of proximity,"]
@@ -4271,7 +4307,7 @@ pub mod tablet_unstable_v2 {
                 serial: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Marks the end of a series of axis and/or button updates from the"]
             #[doc = "tablet. The Wayland protocol requires axis updates to be sent"]
             #[doc = "sequentially, however all events within a frame should be considered"]
@@ -4281,7 +4317,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
@@ -4295,7 +4331,7 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v2 {
         #[doc = "Trait to implement the zwp_tablet_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_v2";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the client's resource for this tablet object."]
@@ -4303,7 +4339,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A descriptive name for the tablet device."]
@@ -4317,7 +4354,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The USB vendor and product IDs for the tablet device."]
             #[doc = ""]
             #[doc = "If the device has no USB vendor/product ID, this event is not sent."]
@@ -4331,7 +4368,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 vid: u32,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
             #[doc = "this wp_tablet. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
@@ -4351,7 +4388,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent immediately to signal the end of the initial"]
             #[doc = "burst of descriptive events. A client may consider the static"]
             #[doc = "description of the tablet to be complete and finalize initialization"]
@@ -4360,7 +4397,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
             #[doc = "is removed, some tools may be removed."]
             #[doc = ""]
@@ -4370,7 +4407,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
@@ -4406,7 +4443,7 @@ pub mod tablet_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_ring_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadRingV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletPadRingV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_pad_ring_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Request that the compositor use the provided feedback string"]
@@ -4434,7 +4471,8 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This destroys the client's resource for this ring object."]
@@ -4442,7 +4480,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Source information for ring events."]
@@ -4462,7 +4501,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Source,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the angle on a ring changes."]
             #[doc = ""]
             #[doc = "The angle is provided in degrees clockwise from the logical"]
@@ -4472,7 +4511,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 degrees: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Stop notification for ring events."]
             #[doc = ""]
             #[doc = "For some wp_tablet_pad_ring.source types, a wp_tablet_pad_ring.stop"]
@@ -4487,7 +4526,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Indicates the end of a set of ring events that logically belong"]
             #[doc = "together. A client is expected to accumulate the data in all events"]
             #[doc = "within the frame before proceeding."]
@@ -4506,7 +4545,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
@@ -4542,7 +4581,7 @@ pub mod tablet_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_strip_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadStripV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletPadStripV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_pad_strip_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -4570,7 +4609,8 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This destroys the client's resource for this strip object."]
@@ -4578,7 +4618,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Source information for strip events."]
@@ -4598,7 +4639,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Source,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the position on a strip changes."]
             #[doc = ""]
             #[doc = "The position is normalized to a range of [0, 65535], the 0-value"]
@@ -4609,7 +4650,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 position: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Stop notification for strip events."]
             #[doc = ""]
             #[doc = "For some wp_tablet_pad_strip.source types, a wp_tablet_pad_strip.stop"]
@@ -4624,7 +4665,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Indicates the end of a set of events that represent one logical"]
             #[doc = "hardware strip event. A client is expected to accumulate the data"]
             #[doc = "in all events within the frame before proceeding."]
@@ -4644,7 +4685,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 time: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
@@ -4671,7 +4712,7 @@ pub mod tablet_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadGroupV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletPadGroupV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
@@ -4680,7 +4721,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
@@ -4700,7 +4742,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buttons: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent on wp_tablet_pad_group initialization to announce available rings."]
             #[doc = "One event is sent for each ring available on this pad group."]
             #[doc = ""]
@@ -4711,7 +4753,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 ring: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce available strips."]
             #[doc = "One event is sent for each strip available on this pad group."]
             #[doc = ""]
@@ -4722,7 +4764,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 strip: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent on wp_tablet_pad_group initialization to announce that the pad"]
             #[doc = "group may switch between modes. A client may use a mode to store a"]
             #[doc = "specific configuration for buttons, rings and strips and use the"]
@@ -4740,7 +4782,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 modes: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent immediately to signal the end of the initial"]
             #[doc = "burst of descriptive events. A client may consider the static"]
             #[doc = "description of the tablet to be complete and finalize initialization"]
@@ -4749,7 +4791,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that the mode was switched."]
             #[doc = ""]
             #[doc = "A mode applies to all buttons, rings and strips in a group"]
@@ -4784,7 +4826,7 @@ pub mod tablet_unstable_v2 {
                 time: u32,
                 serial: u32,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A pad device is a set of buttons, rings and strips"]
@@ -4838,7 +4880,7 @@ pub mod tablet_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_tablet_pad_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTabletPadV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTabletPadV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_tablet_pad_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
@@ -4872,7 +4914,8 @@ pub mod tablet_unstable_v2 {
                 button: u32,
                 description: String,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the wp_tablet_pad object. Objects created from this object"]
@@ -4881,7 +4924,8 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
@@ -4894,7 +4938,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pad_group: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
             #[doc = "this wp_tablet_pad. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
@@ -4910,7 +4954,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent on wp_tablet_pad initialization to announce the available"]
             #[doc = "buttons."]
             #[doc = ""]
@@ -4922,7 +4966,7 @@ pub mod tablet_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buttons: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event signals the end of the initial burst of descriptive"]
             #[doc = "events. A client may consider the static description of the pad to"]
             #[doc = "be complete and finalize initialization of the pad."]
@@ -4930,7 +4974,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent whenever the physical state of a button changes."]
             fn button(
                 &self,
@@ -4939,7 +4983,7 @@ pub mod tablet_unstable_v2 {
                 time: u32,
                 button: u32,
                 state: ButtonState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this pad is focused on the specified surface."]
             fn enter(
                 &self,
@@ -4948,7 +4992,7 @@ pub mod tablet_unstable_v2 {
                 serial: u32,
                 tablet: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this pad is no longer focused on the specified"]
             #[doc = "surface."]
             fn leave(
@@ -4957,7 +5001,7 @@ pub mod tablet_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent when the pad has been removed from the system. When a tablet"]
             #[doc = "is removed its pad(s) will be removed too."]
             #[doc = ""]
@@ -4968,7 +5012,7 @@ pub mod tablet_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -5143,7 +5187,7 @@ pub mod text_input_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTextInputV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_text_input_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the text_input object to be activated (typically when the"]
@@ -5159,7 +5203,8 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests the text_input object to be deactivated (typically when the"]
@@ -5170,7 +5215,8 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests input panels (virtual keyboard) to show."]
@@ -5178,7 +5224,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests input panels (virtual keyboard) to hide."]
@@ -5186,7 +5233,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Should be called by an editor widget when the input state should be"]
@@ -5196,7 +5244,8 @@ pub mod text_input_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
@@ -5211,7 +5260,8 @@ pub mod text_input_unstable_v1 {
                 text: String,
                 cursor: u32,
                 anchor: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
@@ -5227,7 +5277,8 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn set_cursor_rectangle(
@@ -5238,7 +5289,8 @@ pub mod text_input_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
@@ -5253,7 +5305,8 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn commit_state(
@@ -5261,7 +5314,8 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn invoke_action(
@@ -5270,7 +5324,8 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 button: u32,
                 index: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify the text_input object when it received focus. Typically in"]
@@ -5280,7 +5335,7 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify the text_input object when it lost focus. Either in response"]
             #[doc = "to a deactivate request or when the assigned surface lost focus or was"]
             #[doc = "destroyed."]
@@ -5288,7 +5343,7 @@ pub mod text_input_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Transfer an array of 0-terminated modifier names. The position in"]
             #[doc = "the array is the index of the modifier as used in the modifiers"]
             #[doc = "bitmask in the keysym event."]
@@ -5297,14 +5352,14 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 map: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when the visibility state of the input panel changed."]
             fn input_panel_state(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
             #[doc = "current cursor position. Any previously set composing text should"]
             #[doc = "be removed."]
@@ -5321,7 +5376,7 @@ pub mod text_input_unstable_v1 {
                 serial: u32,
                 text: String,
                 commit: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets styling information on composing text. The style is applied for"]
             #[doc = "length bytes from index relative to the beginning of the composing"]
             #[doc = "text (as byte offset). Multiple styles can"]
@@ -5336,7 +5391,7 @@ pub mod text_input_unstable_v1 {
                 index: u32,
                 length: u32,
                 style: PreeditStyle,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the cursor position inside the composing text (as byte"]
             #[doc = "offset) relative to the start of the composing text. When index is a"]
             #[doc = "negative number no cursor is shown."]
@@ -5347,7 +5402,7 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 index: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
             #[doc = "commit could be either just a single character after a key press or the"]
             #[doc = "result of some composing (pre-edit). It could also be an empty text"]
@@ -5361,7 +5416,7 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 text: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when the cursor or anchor position should be modified."]
             #[doc = ""]
             #[doc = "This event should be handled as part of a following commit_string"]
@@ -5372,7 +5427,7 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when the text around the current cursor position should be"]
             #[doc = "deleted."]
             #[doc = ""]
@@ -5387,7 +5442,7 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when a key event was sent. Key events should not be used"]
             #[doc = "for normal text input operations, which should be done with"]
             #[doc = "commit_string, delete_surrounding_text, etc. The key event follows"]
@@ -5403,7 +5458,7 @@ pub mod text_input_unstable_v1 {
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the language of the input text. The \"language\" argument is an"]
             #[doc = "RFC-3066 format language tag."]
             fn language(
@@ -5412,7 +5467,7 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the text direction of input text."]
             #[doc = ""]
             #[doc = "It is mainly needed for showing an input cursor on the correct side of"]
@@ -5424,14 +5479,14 @@ pub mod text_input_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 direction: TextDirection,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A factory for text_input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v1 {
         #[doc = "Trait to implement the zwp_text_input_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTextInputManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_text_input_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a new text_input object."]
@@ -5440,7 +5495,8 @@ pub mod text_input_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5594,7 +5650,7 @@ pub mod text_input_unstable_v3 {
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v3 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV3<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTextInputV3<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_text_input_v3";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
@@ -5603,7 +5659,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests text input on the surface previously obtained from the enter"]
@@ -5638,7 +5695,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Explicitly disable text input on the current surface (typically when"]
@@ -5650,7 +5708,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the surrounding plain text around the input, excluding the preedit"]
@@ -5691,7 +5750,8 @@ pub mod text_input_unstable_v3 {
                 text: String,
                 cursor: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Tells the compositor why the text surrounding the cursor changed."]
@@ -5713,7 +5773,8 @@ pub mod text_input_unstable_v3 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 cause: ChangeCause,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
@@ -5733,7 +5794,8 @@ pub mod text_input_unstable_v3 {
                 sender_id: waynest::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Marks an area around the cursor as a x, y, width, height rectangle in"]
@@ -5761,7 +5823,8 @@ pub mod text_input_unstable_v3 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Atomically applies state changes recently sent to the compositor."]
@@ -5791,7 +5854,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
@@ -5807,7 +5871,7 @@ pub mod text_input_unstable_v3 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this seat's text-input focus is no longer on a"]
             #[doc = "certain surface. The client should reset any preedit string previously"]
             #[doc = "set."]
@@ -5824,7 +5888,7 @@ pub mod text_input_unstable_v3 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when a new composing text (pre-edit) should be set at the"]
             #[doc = "current cursor position. Any previously set composing text must be"]
             #[doc = "removed. Any previously existing selected text must be removed."]
@@ -5850,7 +5914,7 @@ pub mod text_input_unstable_v3 {
                 text: Option<String>,
                 cursor_begin: i32,
                 cursor_end: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
             #[doc = "commit could be either just a single character after a key press or the"]
             #[doc = "result of some composing (pre-edit)."]
@@ -5864,7 +5928,7 @@ pub mod text_input_unstable_v3 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 text: Option<String>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify when the text around the current cursor position should be"]
             #[doc = "deleted."]
             #[doc = ""]
@@ -5885,7 +5949,7 @@ pub mod text_input_unstable_v3 {
                 sender_id: waynest::ObjectId,
                 before_length: u32,
                 after_length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Instruct the application to apply changes to state requested by the"]
             #[doc = "preedit_string, commit_string and delete_surrounding_text events. The"]
             #[doc = "state relating to these events is double-buffered, and each one"]
@@ -5918,14 +5982,14 @@ pub mod text_input_unstable_v3 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v3 {
         #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV3<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTextInputManagerV3<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_text_input_manager_v3";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input_manager object."]
@@ -5933,7 +5997,8 @@ pub mod text_input_unstable_v3 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a new text-input object for a given seat."]
@@ -5943,7 +6008,8 @@ pub mod text_input_unstable_v3 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5976,7 +6042,7 @@ pub mod xdg_decoration_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_decoration_manager_v1 {
         #[doc = "Trait to implement the zxdg_decoration_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgDecorationManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgDecorationManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_decoration_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the decoration manager. This doesn't destroy objects created"]
@@ -5985,7 +6051,8 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new decoration object associated with the given toplevel."]
@@ -6001,7 +6068,8 @@ pub mod xdg_decoration_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6070,8 +6138,7 @@ pub mod xdg_decoration_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zxdg_toplevel_decoration_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgToplevelDecorationV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZxdgToplevelDecorationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_toplevel_decoration_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Switch back to a mode without any server-side decorations at the next"]
@@ -6080,7 +6147,8 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the toplevel surface decoration mode. This informs the compositor"]
@@ -6109,7 +6177,8 @@ pub mod xdg_decoration_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: Mode,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Unset the toplevel surface decoration mode. This informs the compositor"]
@@ -6120,7 +6189,8 @@ pub mod xdg_decoration_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The configure event configures the effective decoration mode. The"]
@@ -6135,7 +6205,7 @@ pub mod xdg_decoration_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: Mode,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -6175,7 +6245,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exporter_v1 {
         #[doc = "Trait to implement the zxdg_exporter_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgExporterV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgExporterV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_exporter_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_exporter object will no longer be"]
@@ -6184,7 +6254,8 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The export request exports the passed surface so that it can later be"]
@@ -6201,7 +6272,8 @@ pub mod xdg_foreign_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6212,7 +6284,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_importer_v1 {
         #[doc = "Trait to implement the zxdg_importer_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgImporterV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgImporterV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_importer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_importer object will no longer be"]
@@ -6221,7 +6293,8 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The import request imports a surface from any client given a handle"]
@@ -6235,7 +6308,8 @@ pub mod xdg_foreign_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 handle: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6247,7 +6321,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exported_v1 {
         #[doc = "Trait to implement the zxdg_exported_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgExportedV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgExportedV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_exported_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Revoke the previously exported surface. This invalidates any"]
@@ -6257,7 +6331,8 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The handle event contains the unique handle of this exported surface"]
@@ -6269,7 +6344,7 @@ pub mod xdg_foreign_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 handle: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An xdg_imported object represents an imported reference to surface exported"]
@@ -6278,7 +6353,7 @@ pub mod xdg_foreign_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_imported_v1 {
         #[doc = "Trait to implement the zxdg_imported_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgImportedV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgImportedV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_imported_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that it will no longer use the xdg_imported"]
@@ -6288,7 +6363,8 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the imported surface as the parent of some surface of the client."]
@@ -6300,7 +6376,8 @@ pub mod xdg_foreign_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The imported surface handle has been destroyed and any relationship set"]
@@ -6311,7 +6388,7 @@ pub mod xdg_foreign_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -6374,7 +6451,7 @@ pub mod xdg_foreign_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zxdg_exporter_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgExporterV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgExporterV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_exporter_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_exporter object will no longer be"]
@@ -6383,7 +6460,8 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The export_toplevel request exports the passed surface so that it can later be"]
@@ -6401,7 +6479,8 @@ pub mod xdg_foreign_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6412,7 +6491,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_importer_v2 {
         #[doc = "Trait to implement the zxdg_importer_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgImporterV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgImporterV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_importer_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_importer object will no longer be"]
@@ -6421,7 +6500,8 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The import_toplevel request imports a surface from any client given a handle"]
@@ -6435,7 +6515,8 @@ pub mod xdg_foreign_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 handle: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6447,7 +6528,7 @@ pub mod xdg_foreign_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_exported_v2 {
         #[doc = "Trait to implement the zxdg_exported_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgExportedV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgExportedV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_exported_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Revoke the previously exported surface. This invalidates any"]
@@ -6457,7 +6538,8 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The handle event contains the unique handle of this exported surface"]
@@ -6469,7 +6551,7 @@ pub mod xdg_foreign_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 handle: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An xdg_imported object represents an imported reference to surface exported"]
@@ -6501,7 +6583,7 @@ pub mod xdg_foreign_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zxdg_imported_v2 interface. See the module level documentation for more info"]
-        pub trait ZxdgImportedV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgImportedV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_imported_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that it will no longer use the xdg_imported"]
@@ -6511,7 +6593,8 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the imported surface as the parent of some surface of the client."]
@@ -6524,7 +6607,8 @@ pub mod xdg_foreign_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The imported surface handle has been destroyed and any relationship set"]
@@ -6535,7 +6619,7 @@ pub mod xdg_foreign_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -6572,7 +6656,7 @@ pub mod xdg_output_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_output_manager_v1 {
         #[doc = "Trait to implement the zxdg_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgOutputManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgOutputManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_output_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Using this request a client can tell the server that it is not"]
@@ -6583,7 +6667,8 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates a new xdg_output object for the given wl_output."]
@@ -6593,7 +6678,8 @@ pub mod xdg_output_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6610,7 +6696,7 @@ pub mod xdg_output_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zxdg_output_v1 {
         #[doc = "Trait to implement the zxdg_output_v1 interface. See the module level documentation for more info"]
-        pub trait ZxdgOutputV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgOutputV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_output_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Using this request a client can tell the server that it is not"]
@@ -6619,7 +6705,8 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The position event describes the location of the wl_output within"]
@@ -6634,7 +6721,7 @@ pub mod xdg_output_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The logical_size event describes the size of the output in the"]
             #[doc = "global compositor space."]
             #[doc = ""]
@@ -6671,7 +6758,7 @@ pub mod xdg_output_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all other properties of an xdg_output"]
             #[doc = "have been sent."]
             #[doc = ""]
@@ -6685,7 +6772,7 @@ pub mod xdg_output_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Many compositors will assign names to their outputs, show them to the"]
             #[doc = "user, allow them to be configured by name, etc. The client may wish to"]
             #[doc = "know this name as well to offer the user similar behaviors."]
@@ -6712,7 +6799,7 @@ pub mod xdg_output_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Many compositors can produce human-readable descriptions of their"]
             #[doc = "outputs.  The client may wish to know this description as well, to"]
             #[doc = "communicate the user for various purposes."]
@@ -6736,7 +6823,7 @@ pub mod xdg_output_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 description: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -6804,7 +6891,7 @@ pub mod xdg_shell_unstable_v5 {
             }
         }
         #[doc = "Trait to implement the xdg_shell interface. See the module level documentation for more info"]
-        pub trait XdgShell<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgShell<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_shell";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_shell object."]
@@ -6816,7 +6903,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Negotiate the unstable version of the interface.  This"]
@@ -6829,7 +6917,8 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 version: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates an xdg_surface for the given surface and gives it the"]
@@ -6846,7 +6935,8 @@ pub mod xdg_shell_unstable_v5 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates an xdg_popup for the given surface and gives it the"]
@@ -6871,7 +6961,8 @@ pub mod xdg_shell_unstable_v5 {
                 serial: u32,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A client must respond to a ping event with a pong request or"]
@@ -6881,7 +6972,8 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
@@ -6900,7 +6992,7 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -7011,7 +7103,7 @@ pub mod xdg_shell_unstable_v5 {
             }
         }
         #[doc = "Trait to implement the xdg_surface interface. See the module level documentation for more info"]
-        pub trait XdgSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_surface";
             const VERSION: u32 = 1u32;
             #[doc = "Unmap and destroy the window. The window will be effectively"]
@@ -7021,7 +7113,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the \"parent\" of this surface. This window should be stacked"]
@@ -7036,7 +7129,8 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a short title for the surface."]
@@ -7051,7 +7145,8 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set an application identifier for the surface."]
@@ -7079,7 +7174,8 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Clients implementing client-side decorations might want to show"]
@@ -7101,7 +7197,8 @@ pub mod xdg_shell_unstable_v5 {
                 serial: u32,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Start an interactive, user-driven move of the surface."]
@@ -7126,7 +7223,8 @@ pub mod xdg_shell_unstable_v5 {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Start a user-driven, interactive resize of the surface."]
@@ -7166,7 +7264,8 @@ pub mod xdg_shell_unstable_v5 {
                 seat: waynest::ObjectId,
                 serial: u32,
                 edges: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When a configure event is received, if a client commits the"]
@@ -7193,7 +7292,8 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The window geometry of a window is its \"visible bounds\" from the"]
@@ -7228,7 +7328,8 @@ pub mod xdg_shell_unstable_v5 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Maximize the surface."]
@@ -7256,7 +7357,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Unmaximize the surface."]
@@ -7285,7 +7387,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Make the surface fullscreen."]
@@ -7302,14 +7405,16 @@ pub mod xdg_shell_unstable_v5 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn unset_fullscreen(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that the compositor minimize your surface. There is no"]
@@ -7324,7 +7429,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The configure event asks the client to resize its surface or to"]
@@ -7359,7 +7465,7 @@ pub mod xdg_shell_unstable_v5 {
                 height: i32,
                 states: Vec<u8>,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The close event is sent by the compositor when the user"]
             #[doc = "wants the surface to be closed. This should be equivalent to"]
             #[doc = "the user clicking the close button in client-side decorations,"]
@@ -7372,7 +7478,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A popup surface is a short-lived, temporary surface that can be"]
@@ -7429,7 +7535,7 @@ pub mod xdg_shell_unstable_v5 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_popup {
         #[doc = "Trait to implement the xdg_popup interface. See the module level documentation for more info"]
-        pub trait XdgPopup<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgPopup<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_popup";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]
@@ -7441,7 +7547,8 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
@@ -7451,7 +7558,7 @@ pub mod xdg_shell_unstable_v5 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -7500,7 +7607,7 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
         #[doc = "Trait to implement the zxdg_shell_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgShellV6<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgShellV6<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_shell_v6";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_shell object."]
@@ -7512,7 +7619,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a positioner object. A positioner object is used to position"]
@@ -7523,7 +7631,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates an xdg_surface for the given surface. While xdg_surface"]
@@ -7543,7 +7652,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A client must respond to a ping event with a pong request or"]
@@ -7553,7 +7663,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The ping event asks the client if it's still alive. Pass the"]
@@ -7572,7 +7683,7 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
@@ -7654,7 +7765,7 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
         #[doc = "Trait to implement the zxdg_positioner_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgPositionerV6<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgPositionerV6<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_positioner_v6";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_positioner will no longer be used."]
@@ -7662,7 +7773,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the size of the surface that is to be positioned with the positioner"]
@@ -7676,7 +7788,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Specify the anchor rectangle within the parent surface that the child"]
@@ -7697,7 +7810,8 @@ pub mod xdg_shell_unstable_v6 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Defines a set of edges for the anchor rectangle. These are used to"]
@@ -7715,7 +7829,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 anchor: Anchor,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Defines in what direction a surface should be positioned, relative to"]
@@ -7732,7 +7847,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 gravity: Gravity,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Specify how the window should be positioned if the originally intended"]
@@ -7753,7 +7869,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 constraint_adjustment: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Specify the surface position offset relative to the position of the"]
@@ -7773,7 +7890,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -7835,7 +7953,7 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
         #[doc = "Trait to implement the zxdg_surface_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgSurfaceV6<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgSurfaceV6<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_surface_v6";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xdg_surface object. An xdg_surface must only be destroyed"]
@@ -7846,7 +7964,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates an xdg_toplevel object for the given xdg_surface and gives"]
@@ -7860,7 +7979,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates an xdg_popup object for the given xdg_surface and gives the"]
@@ -7876,7 +7996,8 @@ pub mod xdg_shell_unstable_v6 {
                 id: waynest::ObjectId,
                 parent: waynest::ObjectId,
                 positioner: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The window geometry of a surface is its \"visible bounds\" from the"]
@@ -7910,7 +8031,8 @@ pub mod xdg_shell_unstable_v6 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When a configure event is received, if a client commits the"]
@@ -7940,7 +8062,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The configure event marks the end of a configure sequence. A configure"]
@@ -7964,7 +8087,7 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
@@ -8049,7 +8172,7 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
         #[doc = "Trait to implement the zxdg_toplevel_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgToplevelV6<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgToplevelV6<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_toplevel_v6";
             const VERSION: u32 = 1u32;
             #[doc = "Unmap and destroy the window. The window will be effectively"]
@@ -8059,7 +8182,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the \"parent\" of this surface. This window should be stacked"]
@@ -8074,7 +8198,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a short title for the surface."]
@@ -8089,7 +8214,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set an application identifier for the surface."]
@@ -8117,7 +8243,8 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Clients implementing client-side decorations might want to show"]
@@ -8139,7 +8266,8 @@ pub mod xdg_shell_unstable_v6 {
                 serial: u32,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Start an interactive, user-driven move of the surface."]
@@ -8164,7 +8292,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Start a user-driven, interactive resize of the surface."]
@@ -8204,7 +8333,8 @@ pub mod xdg_shell_unstable_v6 {
                 seat: waynest::ObjectId,
                 serial: u32,
                 edges: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a maximum size for the window."]
@@ -8246,7 +8376,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a minimum size for the window."]
@@ -8288,7 +8419,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Maximize the surface."]
@@ -8316,7 +8448,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Unmaximize the surface."]
@@ -8345,7 +8478,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Make the surface fullscreen."]
@@ -8362,14 +8496,16 @@ pub mod xdg_shell_unstable_v6 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn unset_fullscreen(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that the compositor minimize your surface. There is no"]
@@ -8384,7 +8520,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This configure event asks the client to resize its toplevel surface or"]
@@ -8413,7 +8550,7 @@ pub mod xdg_shell_unstable_v6 {
                 width: i32,
                 height: i32,
                 states: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The close event is sent by the compositor when the user"]
             #[doc = "wants the surface to be closed. This should be equivalent to"]
             #[doc = "the user clicking the close button in client-side decorations,"]
@@ -8426,7 +8563,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
@@ -8486,7 +8623,7 @@ pub mod xdg_shell_unstable_v6 {
             }
         }
         #[doc = "Trait to implement the zxdg_popup_v6 interface. See the module level documentation for more info"]
-        pub trait ZxdgPopupV6<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZxdgPopupV6<C: waynest::Connection> {
             const INTERFACE: &'static str = "zxdg_popup_v6";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the popup. Explicitly destroying the xdg_popup"]
@@ -8498,7 +8635,8 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request makes the created popup take an explicit grab. An explicit"]
@@ -8548,7 +8686,8 @@ pub mod xdg_shell_unstable_v6 {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event asks the popup surface to configure itself given the"]
@@ -8566,7 +8705,7 @@ pub mod xdg_shell_unstable_v6 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The popup_done event is sent out when a popup is dismissed by the"]
             #[doc = "compositor. The client should destroy the xdg_popup object at this"]
             #[doc = "point."]
@@ -8574,7 +8713,7 @@ pub mod xdg_shell_unstable_v6 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -8621,11 +8760,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_manager_v1 {
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpXwaylandKeyboardGrabManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZwpXwaylandKeyboardGrabManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the keyboard grab manager."]
@@ -8633,7 +8768,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The grab_keyboard request asks for a grab of the keyboard, forcing"]
@@ -8662,7 +8798,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -8671,8 +8808,7 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_xwayland_keyboard_grab_v1 {
         #[doc = "Trait to implement the zwp_xwayland_keyboard_grab_v1 interface. See the module level documentation for more info"]
-        pub trait ZwpXwaylandKeyboardGrabV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZwpXwaylandKeyboardGrabV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_xwayland_keyboard_grab_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the grabbed keyboard object. If applicable, the compositor"]
@@ -8681,7 +8817,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }

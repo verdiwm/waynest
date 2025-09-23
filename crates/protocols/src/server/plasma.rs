@@ -5,8 +5,7 @@ pub mod appmenu {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu_manager {
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -15,22 +14,23 @@ pub mod appmenu {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -42,7 +42,7 @@ pub mod appmenu {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_appmenu {
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenu<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinAppmenu<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_appmenu";
             const VERSION: u32 = 2u32;
             #[doc = "Set or update the service name and object path."]
@@ -53,22 +53,23 @@ pub mod appmenu {
                 sender_id: waynest::ObjectId,
                 service_name: String,
                 object_path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -80,7 +81,7 @@ pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur_manager {
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlurManager<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinBlurManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -89,23 +90,24 @@ pub mod blur {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -114,35 +116,36 @@ pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur {
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlur<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinBlur<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_blur";
             const VERSION: u32 = 1u32;
             fn commit(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_region(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -154,8 +157,7 @@ pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast_manager {
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrastManager<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait OrgKdeKwinContrastManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -164,23 +166,24 @@ pub mod contrast {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -189,43 +192,43 @@ pub mod contrast {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_contrast {
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrast<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinContrast<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_contrast";
             const VERSION: u32 = 2u32;
             fn commit(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_region(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_contrast(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 contrast: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_intensity(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 intensity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_saturation(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 saturation: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "enables 'frost' variant of contrast effect."]
             #[doc = ""]
             #[doc = "'frost' is an enhanced version of the contrast effect that"]
@@ -242,22 +245,23 @@ pub mod contrast {
                 green: i32,
                 blue: i32,
                 alpha: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn unset_frost(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -279,7 +283,7 @@ pub mod dpms {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_dpms_manager {
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
@@ -289,17 +293,18 @@ pub mod dpms {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -341,7 +346,7 @@ pub mod dpms {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpms<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinDpms<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_dpms";
             const VERSION: u32 = 1u32;
             #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
@@ -355,12 +360,12 @@ pub mod dpms {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
             #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
             #[doc = "make sense (e.g. nested compositors)."]
@@ -369,7 +374,8 @@ pub mod dpms {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 supported: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This mode gets pushed on binding the resource and provides the currently used"]
@@ -382,7 +388,8 @@ pub mod dpms {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event gets pushed on binding the resource once all other states are pushed."]
@@ -393,7 +400,8 @@ pub mod dpms {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -401,11 +409,12 @@ pub mod dpms {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -429,7 +438,7 @@ pub mod fake_input {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_fake_input {
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinFakeInput<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinFakeInput<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_fake_input";
             const VERSION: u32 = 6u32;
             #[doc = "A client should use this request to tell the compositor why it wants to"]
@@ -443,28 +452,28 @@ pub mod fake_input {
                 sender_id: waynest::ObjectId,
                 application: String,
                 reason: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn pointer_motion(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 delta_x: waynest::Fixed,
                 delta_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn button(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn axis(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 axis: u32,
                 value: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch down event at specific"]
             #[doc = "coordinates."]
             fn touch_down(
@@ -474,7 +483,7 @@ pub mod fake_input {
                 id: u32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch motion to specific position."]
             fn touch_motion(
                 &self,
@@ -483,63 +492,64 @@ pub mod fake_input {
                 id: u32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch up event."]
             fn touch_up(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to cancel the current"]
             #[doc = "touch event."]
             fn touch_cancel(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch frame event."]
             fn touch_frame(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn pointer_motion_absolute(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn keyboard_key(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn keyboard_keysym(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 keysym: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -678,7 +688,7 @@ pub mod fullscreen_shell {
             }
         }
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShell<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WlFullscreenShell<C: waynest::Connection> {
             const INTERFACE: &'static str = "_wl_fullscreen_shell";
             const VERSION: u32 = 1u32;
             #[doc = "Release the binding from the wl_fullscreen_shell interface"]
@@ -690,7 +700,7 @@ pub mod fullscreen_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Present a surface on the given output."]
             #[doc = ""]
             #[doc = "If the output is null, the compositor will present the surface on"]
@@ -715,7 +725,7 @@ pub mod fullscreen_shell {
                 surface: Option<waynest::ObjectId>,
                 method: u32,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Presents a surface on the given output for a particular mode."]
             #[doc = ""]
             #[doc = "If the current size of the output differs from that of the surface,"]
@@ -761,7 +771,7 @@ pub mod fullscreen_shell {
                 output: waynest::ObjectId,
                 framerate: i32,
                 feedback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Advertises a single capability of the compositor."]
             #[doc = ""]
             #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
@@ -775,7 +785,8 @@ pub mod fullscreen_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capability: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -783,11 +794,12 @@ pub mod fullscreen_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -796,11 +808,7 @@ pub mod fullscreen_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShellModeFeedback<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WlFullscreenShellModeFeedback<C: waynest::Connection> {
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -813,7 +821,8 @@ pub mod fullscreen_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event indicates that the attempted mode switch operation"]
@@ -826,7 +835,8 @@ pub mod fullscreen_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -839,7 +849,8 @@ pub mod fullscreen_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -847,11 +858,12 @@ pub mod fullscreen_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -870,7 +882,7 @@ pub mod idle {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle {
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdle<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinIdle<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_idle";
             const VERSION: u32 = 1u32;
             fn get_idle_timeout(
@@ -880,17 +892,18 @@ pub mod idle {
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 timeout: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -899,31 +912,33 @@ pub mod idle {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_idle_timeout {
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
             const VERSION: u32 = 1u32;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn simulate_user_activity(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn idle(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn resumed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -931,11 +946,12 @@ pub mod idle {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -951,30 +967,31 @@ pub mod kde_external_brightness_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeExternalBrightnessV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_external_brightness_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn create_brightness_control(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -987,41 +1004,37 @@ pub mod kde_external_brightness_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_external_brightness_device_v1 {
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessDeviceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait KdeExternalBrightnessDeviceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_internal(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 internal: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_edid(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 string: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_max_brightness(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn commit(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The client can set this to notify the compositor of the device's initial brightness."]
             #[doc = "It can also set this again after the initial commit to notify the compositor that"]
             #[doc = "the brightness level has changed due to external factors."]
@@ -1031,7 +1044,7 @@ pub mod kde_external_brightness_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor can use this information to ignore this object if its commands"]
             #[doc = "expose monitor issues. The compositor may also reduce the amount of brightness"]
             #[doc = "requests given potentially slow response times and concerns about monitor EEPROM"]
@@ -1041,7 +1054,7 @@ pub mod kde_external_brightness_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The client must ensure that if the brightness level changes due to external factors,"]
             #[doc = "that it either overwrites those changes with what the compositor last requested,"]
             #[doc = "or commit again with set_observed_brightness specifying the changed brightness."]
@@ -1050,7 +1063,8 @@ pub mod kde_external_brightness_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1058,11 +1072,12 @@ pub mod kde_external_brightness_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1103,7 +1118,7 @@ pub mod kde_lockscreen_overlay_v1 {
             }
         }
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
-        pub trait KdeLockscreenOverlayV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeLockscreenOverlayV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
@@ -1112,23 +1127,24 @@ pub mod kde_lockscreen_overlay_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This won't affect the surface previously marked with the allow request."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1397,7 +1413,7 @@ pub mod kde_output_device_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeOutputDeviceV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_output_device_v2";
             const VERSION: u32 = 17u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -1415,7 +1431,8 @@ pub mod kde_output_device_v2 {
                 make: String,
                 model: String,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event describes the mode currently in use for this head. It is only"]
@@ -1425,7 +1442,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The mode event describes an available mode for the output."]
@@ -1451,7 +1469,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent after all other properties have been"]
@@ -1463,7 +1482,8 @@ pub mod kde_output_device_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event contains scaling geometry information"]
@@ -1489,7 +1509,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 factor: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
@@ -1503,7 +1524,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 raw: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The enabled event notifies whether this output is currently"]
@@ -1516,7 +1538,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 enabled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The uuid can be used to identify the output. It's controlled by"]
@@ -1527,7 +1550,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
@@ -1536,7 +1560,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial_number: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
@@ -1545,7 +1570,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 eisa_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "What capabilities this device has, sent on startup before the first"]
@@ -1555,7 +1581,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: Capability,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
@@ -1565,7 +1592,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "What policy the compositor will employ regarding its use of variable"]
@@ -1575,7 +1603,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 vrr_policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "What rgb range the compositor is using for this output"]
@@ -1584,7 +1613,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 rgb_range: RgbRange,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
@@ -1593,7 +1623,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Whether or not high dynamic range is enabled for this output"]
@@ -1602,7 +1633,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 hdr_enabled: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
@@ -1613,7 +1645,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 sdr_brightness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
@@ -1622,7 +1655,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 wcg_enabled: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn auto_rotate_policy(
@@ -1630,7 +1664,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 policy: AutoRotatePolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn icc_profile_path(
@@ -1638,7 +1673,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 profile_path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn brightness_metadata(
@@ -1648,7 +1684,8 @@ pub mod kde_output_device_v2 {
                 max_peak_brightness: u32,
                 max_frame_average_brightness: u32,
                 min_brightness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn brightness_overrides(
@@ -1658,7 +1695,8 @@ pub mod kde_output_device_v2 {
                 max_peak_brightness: i32,
                 max_average_brightness: i32,
                 min_brightness: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
@@ -1668,7 +1706,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 gamut_wideness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn color_profile_source(
@@ -1676,7 +1715,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: ColorProfileSource,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This is the brightness modifier of the output. It doesn't specify"]
@@ -1690,7 +1730,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 brightness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn color_power_tradeoff(
@@ -1698,7 +1739,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 preference: ColorPowerTradeoff,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This is the dimming multiplier of the output. This is similar to"]
@@ -1712,7 +1754,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 multiplier: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn replication_source(
@@ -1720,7 +1763,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the ddc_ci capability is present, this determines if settings"]
@@ -1730,7 +1774,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 allowed: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This limits the amount of bits per color that are sent to the display."]
@@ -1739,7 +1784,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_bpc: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn max_bits_per_color_range(
@@ -1748,7 +1794,8 @@ pub mod kde_output_device_v2 {
                 sender_id: waynest::ObjectId,
                 min_value: u32,
                 max_value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn automatic_max_bits_per_color_limit(
@@ -1756,7 +1803,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_bpc_limit: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
@@ -1769,7 +1817,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 policy: EdrPolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This is the sharpness modifier of the output."]
@@ -1779,7 +1828,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 sharpness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1787,11 +1837,12 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1808,7 +1859,7 @@ pub mod kde_output_device_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_device_mode_v2 {
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeOutputDeviceModeV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
             const VERSION: u32 = 1u32;
             #[doc = "This event describes the mode size. The size is given in physical"]
@@ -1821,7 +1872,8 @@ pub mod kde_output_device_v2 {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
@@ -1831,7 +1883,8 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 refresh: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises this mode as preferred."]
@@ -1839,7 +1892,8 @@ pub mod kde_output_device_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The compositor will destroy the object immediately after sending this"]
@@ -1849,7 +1903,8 @@ pub mod kde_output_device_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1857,11 +1912,12 @@ pub mod kde_output_device_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1915,7 +1971,7 @@ pub mod kde_output_management_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeOutputManagementV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_output_management_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
@@ -1925,17 +1981,18 @@ pub mod kde_output_management_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2126,8 +2183,7 @@ pub mod kde_output_management_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait KdeOutputConfigurationV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_output_configuration_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Mark the output as enabled or disabled."]
@@ -2137,7 +2193,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the mode for a given output."]
             fn mode(
                 &self,
@@ -2145,7 +2201,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
@@ -2153,7 +2209,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
             #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
             #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
@@ -2168,7 +2224,7 @@ pub mod kde_output_management_v2 {
                 outputdevice: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
@@ -2176,7 +2232,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 scale: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
             #[doc = ""]
@@ -2186,12 +2242,12 @@ pub mod kde_output_management_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
@@ -2199,7 +2255,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
@@ -2208,7 +2264,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Whether full or limited color range should be used"]
             fn set_rgb_range(
                 &self,
@@ -2216,13 +2272,13 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 rgb_range: RgbRange,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_primary_output(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
             #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
             #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
@@ -2232,7 +2288,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 priority: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets whether or not the output should be set to HDR mode."]
             fn set_high_dynamic_range(
                 &self,
@@ -2240,7 +2296,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable_hdr: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
             #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
             fn set_sdr_brightness(
@@ -2249,7 +2305,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 sdr_brightness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Whether or not the output should use a wide color gamut"]
             fn set_wide_color_gamut(
                 &self,
@@ -2257,21 +2313,21 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable_wcg: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_auto_rotate_policy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: AutoRotatePolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_icc_profile_path(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 profile_path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_brightness_overrides(
                 &self,
                 connection: &mut C,
@@ -2280,7 +2336,7 @@ pub mod kde_output_management_v2 {
                 max_peak_brightness: i32,
                 max_frame_average_brightness: i32,
                 min_brightness: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
             #[doc = "default experience on many modern sRGB screens."]
             fn set_sdr_gamut_wideness(
@@ -2289,14 +2345,14 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 gamut_wideness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_color_profile_source(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 color_profile_source: ColorProfileSource,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set the brightness modifier of the output. It doesn't specify"]
             #[doc = "any absolute values, but is merely a multiplier on top of other"]
             #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
@@ -2311,14 +2367,14 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 brightness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_color_power_tradeoff(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 preference: ColorPowerTradeoff,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set the dimming multiplier of the output. This is similar to the"]
             #[doc = "brightness setting, except it's meant to be a temporary setting"]
             #[doc = "only, not persistent and may be implemented differently depending"]
@@ -2334,7 +2390,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 multiplier: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set the source output that the outputdevice should mirror its"]
             #[doc = "viewport from."]
             fn set_replication_source(
@@ -2343,14 +2399,14 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 source: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_ddc_ci_allowed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 allowed: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This limits the amount of bits per color that are sent to the display."]
             fn set_max_bits_per_color(
                 &self,
@@ -2358,7 +2414,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 max_bpc: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
             #[doc = "the user-specified setting, in order to present HDR content on displays"]
             #[doc = "without native HDR support."]
@@ -2370,7 +2426,7 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: EdrPolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This is the sharpness modifier of the output."]
             #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
             fn set_sharpness(
@@ -2379,14 +2435,15 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 sharpness: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
@@ -2394,7 +2451,8 @@ pub mod kde_output_management_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Describes why applying the output configuration failed. Is only"]
@@ -2404,7 +2462,8 @@ pub mod kde_output_management_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2412,11 +2471,12 @@ pub mod kde_output_management_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2435,21 +2495,22 @@ pub mod kde_output_order_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_output_order_v1 {
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
-        pub trait KdeOutputOrderV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeOutputOrderV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_output_order_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Specifies the output identified by their wl_output.name."]
             fn output(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
@@ -2457,7 +2518,8 @@ pub mod kde_output_order_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2465,11 +2527,12 @@ pub mod kde_output_order_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2488,21 +2551,22 @@ pub mod kde_primary_output_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_primary_output_v1 {
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
-        pub trait KdePrimaryOutputV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdePrimaryOutputV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_primary_output_v1";
             const VERSION: u32 = 2u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
             fn primary_output(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2510,11 +2574,12 @@ pub mod kde_primary_output_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2596,7 +2661,7 @@ pub mod kde_screen_edge_v1 {
             }
         }
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
-        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
@@ -2605,7 +2670,7 @@ pub mod kde_screen_edge_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Create a new auto hide screen edge object associated with the specified"]
             #[doc = "surface and the border."]
             #[doc = ""]
@@ -2625,17 +2690,18 @@ pub mod kde_screen_edge_v1 {
                 id: waynest::ObjectId,
                 border: Border,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2658,7 +2724,7 @@ pub mod kde_screen_edge_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod kde_auto_hide_screen_edge_v1 {
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
-        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
@@ -2667,30 +2733,31 @@ pub mod kde_screen_edge_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Deactivate the screen edge. The surface will be made visible."]
             fn deactivate(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
             #[doc = "edge is triggered."]
             fn activate(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2763,26 +2830,27 @@ pub mod keystate {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinKeystate<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinKeystate<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_keystate";
             const VERSION: u32 = 5u32;
             fn fetch_states(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn state_changed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 key: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2790,11 +2858,12 @@ pub mod keystate {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2806,11 +2875,7 @@ pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop_management {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktopManagement<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdePlasmaVirtualDesktopManagement<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
             const VERSION: u32 = 3u32;
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
@@ -2825,7 +2890,7 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
             fn request_create_virtual_desktop(
                 &self,
@@ -2833,21 +2898,22 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
                 name: String,
                 position: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
             fn request_remove_virtual_desktop(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn desktop_created(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
                 position: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn desktop_removed(
@@ -2855,7 +2921,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent after all other properties have been sent after"]
@@ -2870,7 +2937,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn rows(
@@ -2878,7 +2946,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 rows: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2886,11 +2955,12 @@ pub mod org_kde_plasma_virtual_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2899,11 +2969,7 @@ pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_virtual_desktop {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktop<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdePlasmaVirtualDesktop<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
             const VERSION: u32 = 3u32;
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
@@ -2911,14 +2977,15 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
             fn desktop_id(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn name(
@@ -2926,7 +2993,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The desktop will be the new \"current\" desktop of the system. The server may support either one virtual desktop active at a time, or other combinations such as one virtual desktop active per screen."]
@@ -2935,7 +3003,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Windows that were associated only to this desktop will be hidden."]
@@ -2943,7 +3012,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent after all other properties has been"]
@@ -2955,7 +3025,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This virtual desktop has just been removed by the server:"]
@@ -2964,7 +3035,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The position of the virtual desktop in the desktop list. The virtual"]
@@ -2975,7 +3047,8 @@ pub mod org_kde_plasma_virtual_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 index: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2983,11 +3056,12 @@ pub mod org_kde_plasma_virtual_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3038,11 +3112,7 @@ pub mod outputmanagement {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_outputmanagement {
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputmanagement<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinOutputmanagement<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
             const VERSION: u32 = 4u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
@@ -3052,17 +3122,18 @@ pub mod outputmanagement {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3108,11 +3179,7 @@ pub mod outputmanagement {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputconfiguration<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinOutputconfiguration<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
             const VERSION: u32 = 4u32;
             #[doc = "Mark the output as enabled or disabled."]
@@ -3122,7 +3189,7 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
             fn mode(
                 &self,
@@ -3130,7 +3197,7 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 mode_id: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
@@ -3138,7 +3205,7 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
             #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
             #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
@@ -3153,7 +3220,7 @@ pub mod outputmanagement {
                 outputdevice: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
@@ -3161,14 +3228,14 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 scale: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
             fn apply(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             #[doc = "Sending both scale and scalef is undefined."]
             fn scalef(
@@ -3177,7 +3244,7 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 scale: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set color curves of output devices through RGB color ramps. Allows color"]
             #[doc = "correction of output device from user space."]
             #[doc = ""]
@@ -3191,12 +3258,12 @@ pub mod outputmanagement {
                 red: Vec<u8>,
                 green: Vec<u8>,
                 blue: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
@@ -3204,7 +3271,7 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
@@ -3213,14 +3280,15 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
@@ -3228,7 +3296,8 @@ pub mod outputmanagement {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3236,11 +3305,12 @@ pub mod outputmanagement {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3432,7 +3502,7 @@ pub mod org_kde_kwin_outputdevice {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
             const VERSION: u32 = 4u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -3450,7 +3520,8 @@ pub mod org_kde_kwin_outputdevice {
                 make: String,
                 model: String,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The mode event describes an available mode for the output."]
@@ -3483,7 +3554,8 @@ pub mod org_kde_kwin_outputdevice {
                 height: i32,
                 refresh: i32,
                 mode_id: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent after all other properties have been"]
@@ -3495,7 +3567,8 @@ pub mod org_kde_kwin_outputdevice {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event contains scaling geometry information"]
@@ -3521,7 +3594,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 factor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
@@ -3535,7 +3609,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 raw: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The enabled event notifies whether this output is currently"]
@@ -3548,7 +3623,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 enabled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The uuid can be used to identify the output. It's controlled by"]
@@ -3559,7 +3635,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event contains scaling geometry information"]
@@ -3588,7 +3665,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 factor: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Describes the color intensity profile of the output."]
@@ -3605,7 +3683,8 @@ pub mod org_kde_kwin_outputdevice {
                 red: Vec<u8>,
                 green: Vec<u8>,
                 blue: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
@@ -3614,7 +3693,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial_number: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
@@ -3623,7 +3703,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 eisa_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "What capabilities this device has, sent on startup before the first"]
@@ -3633,7 +3714,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: Capability,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
@@ -3643,7 +3725,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "What policy the compositor will employ regarding its use of variable"]
@@ -3653,7 +3736,8 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 vrr_policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3661,11 +3745,12 @@ pub mod org_kde_kwin_outputdevice {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3684,7 +3769,7 @@ pub mod plasma_shell {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_shell {
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaShell<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdePlasmaShell<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_shell";
             const VERSION: u32 = 8u32;
             #[doc = "Create a shell surface for an existing surface."]
@@ -3697,17 +3782,18 @@ pub mod plasma_shell {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3807,7 +3893,7 @@ pub mod plasma_shell {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdePlasmaSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_surface";
             const VERSION: u32 = 8u32;
             #[doc = "The org_kde_plasma_surface interface is removed from the"]
@@ -3818,7 +3904,7 @@ pub mod plasma_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Assign an output to this shell surface."]
             #[doc = "The compositor will use this information to set the position"]
             #[doc = "when org_kde_plasma_surface.set_position request is"]
@@ -3828,7 +3914,7 @@ pub mod plasma_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Move the surface to new coordinates."]
             #[doc = ""]
             #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
@@ -3842,7 +3928,7 @@ pub mod plasma_shell {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Assign a role to a shell surface."]
             #[doc = ""]
             #[doc = "The compositor handles surfaces depending on their role."]
@@ -3941,7 +4027,7 @@ pub mod plasma_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 role: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set flags bitmask as described by the flag enum."]
             #[doc = "Pass 0 to unset any flag, the surface will adjust its behavior to"]
             #[doc = "the default."]
@@ -3952,14 +4038,14 @@ pub mod plasma_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flag: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
             fn set_skip_taskbar(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to hide the panel"]
             #[doc = "on a screen edge without unmapping it. The compositor informs the client about the panel"]
             #[doc = "being hidden with the event auto_hidden_panel_hidden."]
@@ -3974,14 +4060,14 @@ pub mod plasma_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
             #[doc = "again which got hidden with panel_auto_hide_hide."]
             fn panel_auto_hide_show(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
             #[doc = "activated. With this request the compositor can be instructed to pass focus also to this"]
             #[doc = "org_kde_plasma_surface."]
@@ -3990,27 +4076,28 @@ pub mod plasma_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 takes_focus: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
             fn set_skip_switcher(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Request the initial position of this surface to be under the current"]
             #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
             fn open_under_cursor(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "An auto-hiding panel got hidden by the compositor."]
             fn auto_hidden_panel_hidden(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "An auto-hiding panel got shown by the compositor."]
@@ -4018,7 +4105,8 @@ pub mod plasma_shell {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4026,11 +4114,12 @@ pub mod plasma_shell {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4135,11 +4224,7 @@ pub mod plasma_window_management {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdePlasmaWindowManagement<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
             const VERSION: u32 = 19u32;
             #[doc = "Tell the compositor to show/hide the desktop."]
@@ -4148,7 +4233,7 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Deprecated: use get_window_by_uuid"]
             fn get_window(
                 &self,
@@ -4156,20 +4241,20 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 internal_window_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn get_window_by_uuid(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 internal_window_uuid: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn get_stacking_order(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 stacking_order: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
             #[doc = "or left."]
             #[doc = ""]
@@ -4179,7 +4264,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent immediately after a window is mapped."]
@@ -4188,7 +4274,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when stacking order changed and on bind."]
@@ -4199,7 +4286,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 ids: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when stacking order changed and on bind."]
@@ -4210,7 +4298,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 uuids: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent immediately after a window is mapped."]
@@ -4220,7 +4309,8 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
                 id: u32,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when stacking order changed."]
@@ -4228,7 +4318,8 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4236,11 +4327,12 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4252,7 +4344,7 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_window {
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdePlasmaWindow<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_window";
             const VERSION: u32 = 18u32;
             #[doc = "Set window state."]
@@ -4266,7 +4358,7 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
                 flags: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Deprecated: use enter_virtual_desktop"]
             #[doc = "Maps the window to a different virtual desktop."]
             #[doc = ""]
@@ -4278,7 +4370,7 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 number: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the geometry of the taskbar entry for this window."]
             #[doc = "The geometry is relative to a panel in particular."]
             fn set_minimized_geometry(
@@ -4290,38 +4382,38 @@ pub mod plasma_window_management {
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Remove the task geometry information for a particular panel."]
             fn unset_minimized_geometry(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 panel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Close this window."]
             fn close(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Request an interactive move for this window."]
             fn request_move(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Request an interactive resize for this window."]
             fn request_resize(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Removes the resource bound for this org_kde_plasma_window."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor will write the window icon into the provided file descriptor."]
             #[doc = "The data is a serialized QIcon with QDataStream."]
             fn get_icon(
@@ -4329,7 +4421,7 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window enter a virtual desktop. A window can enter more"]
             #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
             fn request_enter_virtual_desktop(
@@ -4337,7 +4429,7 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
             #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
             #[doc = "it will create a new virtual desktop and assign the window to it."]
@@ -4345,42 +4437,43 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
             fn request_leave_virtual_desktop(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
             fn request_enter_activity(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
             fn request_leave_activity(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Requests this window to be displayed in a specific output."]
             fn send_to_output(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event will be sent as soon as the window title is changed."]
             fn title_changed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent as soon as the application"]
@@ -4390,7 +4483,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent as soon as the window state changes."]
@@ -4401,7 +4495,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
@@ -4414,7 +4509,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 number: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
@@ -4423,7 +4519,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent immediately after the window is closed"]
@@ -4432,7 +4529,8 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent immediately after all initial state been sent to the client."]
@@ -4442,7 +4540,8 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
@@ -4454,7 +4553,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
@@ -4467,7 +4567,8 @@ pub mod plasma_window_management {
                 y: i32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
@@ -4478,7 +4579,8 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
@@ -4488,7 +4590,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
@@ -4497,7 +4600,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
@@ -4507,7 +4611,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 is: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent after the application menu"]
@@ -4518,7 +4623,8 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
                 service_name: String,
                 object_path: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
@@ -4527,7 +4633,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
@@ -4537,7 +4644,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent when the X11 resource name of the window has changed."]
@@ -4547,7 +4655,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 resource_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
@@ -4560,7 +4669,8 @@ pub mod plasma_window_management {
                 y: i32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4568,11 +4678,12 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4583,11 +4694,7 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation_feedback {
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdePlasmaActivationFeedback<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the activation manager object. The activation objects introduced"]
@@ -4596,7 +4703,7 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Will be issued when an app is set to be activated. It offers"]
             #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
             #[doc = "and the extent of the activation."]
@@ -4605,7 +4712,8 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4613,11 +4721,12 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4626,7 +4735,7 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_activation {
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdePlasmaActivation<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_activation";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
@@ -4635,20 +4744,22 @@ pub mod plasma_window_management {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn app_id(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn finished(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4656,11 +4767,12 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4672,8 +4784,7 @@ pub mod plasma_window_management {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_plasma_stacking_order {
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
             const VERSION: u32 = 17u32;
             fn window(
@@ -4681,14 +4792,16 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn done(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4696,11 +4809,12 @@ pub mod plasma_window_management {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4712,11 +4826,7 @@ pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_access_manager {
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteAccessManager<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinRemoteAccessManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
             const VERSION: u32 = 1u32;
             fn get_buffer(
@@ -4725,19 +4835,20 @@ pub mod remote_access {
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
                 internal_buffer_id: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn buffer_ready(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: i32,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4745,11 +4856,12 @@ pub mod remote_access {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4758,14 +4870,14 @@ pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_remote_buffer {
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
             const VERSION: u32 = 1u32;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn gbm_handle(
                 &self,
                 connection: &mut C,
@@ -4775,7 +4887,8 @@ pub mod remote_access {
                 height: u32,
                 stride: u32,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4783,11 +4896,12 @@ pub mod remote_access {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4800,11 +4914,7 @@ pub mod server_decoration_palette {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPaletteManager<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinServerDecorationPaletteManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -4813,17 +4923,18 @@ pub mod server_decoration_palette {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4833,11 +4944,7 @@ pub mod server_decoration_palette {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPalette<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinServerDecorationPalette<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
             const VERSION: u32 = 1u32;
             #[doc = "Color scheme that should be applied to the window decoration."]
@@ -4848,22 +4955,23 @@ pub mod server_decoration_palette {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 palette: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4909,11 +5017,7 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationManager<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinServerDecorationManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
             const VERSION: u32 = 1u32;
             #[doc = "When a client creates a server-side decoration object it indicates"]
@@ -4932,7 +5036,7 @@ pub mod server_decoration {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted directly after binding the interface. It contains"]
             #[doc = "the default mode for the decoration. When a new server decoration object"]
             #[doc = "is created this new object will be in the default mode until the first"]
@@ -4944,7 +5048,8 @@ pub mod server_decoration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -4952,11 +5057,12 @@ pub mod server_decoration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -4992,24 +5098,20 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecoration<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait OrgKdeKwinServerDecoration<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration";
             const VERSION: u32 = 1u32;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn request_mode(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted directly after the decoration is created and"]
             #[doc = "represents the base decoration policy by the server. E.g. a server"]
             #[doc = "which wants all surfaces to be client-side decorated will send Client,"]
@@ -5028,7 +5130,8 @@ pub mod server_decoration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -5036,11 +5139,12 @@ pub mod server_decoration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5052,7 +5156,7 @@ pub mod shadow {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow_manager {
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadowManager<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinShadowManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
             const VERSION: u32 = 2u32;
             fn create(
@@ -5061,29 +5165,30 @@ pub mod shadow {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow_manager object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5092,86 +5197,86 @@ pub mod shadow {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_shadow {
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadow<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinShadow<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_shadow";
             const VERSION: u32 = 2u32;
             fn commit(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_left(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_top_left(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_top(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_top_right(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_right(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_bottom_right(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_bottom(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn attach_bottom_left(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_left_offset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_top_offset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_right_offset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_bottom_offset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow object. If the org_kde_kwin_shadow is"]
             #[doc = "still set on a wl_surface the shadow will be immediately removed."]
             #[doc = "Prefer to first call the request unset on the org_kde_kwin_shadow_manager and"]
@@ -5180,17 +5285,18 @@ pub mod shadow {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5202,7 +5308,7 @@ pub mod slide {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_slide_manager {
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlideManager<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinSlideManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
             const VERSION: u32 = 1u32;
             fn create(
@@ -5211,23 +5317,24 @@ pub mod slide {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5267,41 +5374,42 @@ pub mod slide {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlide<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait OrgKdeKwinSlide<C: waynest::Connection> {
             const INTERFACE: &'static str = "org_kde_kwin_slide";
             const VERSION: u32 = 1u32;
             fn commit(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_location(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 location: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_offset(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 offset: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5313,7 +5421,7 @@ pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
     pub mod qt_surface_extension {
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
-        pub trait QtSurfaceExtension<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait QtSurfaceExtension<C: waynest::Connection> {
             const INTERFACE: &'static str = "qt_surface_extension";
             const VERSION: u32 = 1u32;
             fn get_extended_surface(
@@ -5322,17 +5430,18 @@ pub mod surface_extension {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5393,7 +5502,7 @@ pub mod surface_extension {
             }
         }
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
-        pub trait QtExtendedSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait QtExtendedSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "qt_extended_surface";
             const VERSION: u32 = 1u32;
             fn update_generic_property(
@@ -5402,35 +5511,36 @@ pub mod surface_extension {
                 sender_id: waynest::ObjectId,
                 name: String,
                 value: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_content_orientation_mask(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 orientation: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_window_flags(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn raise(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn lower(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn onscreen_visibility(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 visible: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn set_generic_property(
@@ -5439,14 +5549,16 @@ pub mod surface_extension {
                 sender_id: waynest::ObjectId,
                 name: String,
                 value: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn close(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -5454,11 +5566,12 @@ pub mod surface_extension {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -5690,7 +5803,7 @@ pub mod text_input_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTextInputV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_text_input_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
@@ -5699,7 +5812,7 @@ pub mod text_input_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Enable text input in a surface (usually when a text entry inside of it"]
             #[doc = "has focus)."]
             #[doc = ""]
@@ -5711,7 +5824,7 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Disable text input in a surface (typically when there is no focus on any"]
             #[doc = "text entry inside the surface)."]
             fn disable(
@@ -5719,7 +5832,7 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             #[doc = ""]
             #[doc = "This should be used for example to show a virtual keyboard again"]
@@ -5729,13 +5842,13 @@ pub mod text_input_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
             #[doc = "UTF-8 encoded. Cursor is the byte offset within the surrounding text."]
             #[doc = "Anchor is the byte offset of the selection anchor within the"]
@@ -5758,7 +5871,7 @@ pub mod text_input_unstable_v2 {
                 text: String,
                 cursor: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
             #[doc = "of the behavior."]
@@ -5771,7 +5884,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the cursor outline as a x, y, width, height rectangle in surface"]
             #[doc = "local coordinates."]
             #[doc = ""]
@@ -5785,7 +5898,7 @@ pub mod text_input_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -5798,7 +5911,7 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Allows to atomically send state updates from client."]
             #[doc = ""]
             #[doc = "This request should follow after a batch of state updating requests"]
@@ -5826,7 +5939,7 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 reason: UpdateState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
             #[doc = ""]
             #[doc = "When the seat has the keyboard capability the text-input focus follows"]
@@ -5837,7 +5950,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notification that this seat's text-input focus is no longer on"]
@@ -5854,7 +5968,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notification that the visibility of the input panel (virtual keyboard)"]
@@ -5875,7 +5990,8 @@ pub mod text_input_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
@@ -5893,7 +6009,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 text: String,
                 commit: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
@@ -5909,7 +6026,8 @@ pub mod text_input_unstable_v2 {
                 index: u32,
                 length: u32,
                 style: PreeditStyle,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
@@ -5925,7 +6043,8 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 index: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
@@ -5940,7 +6059,8 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 text: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
@@ -5955,7 +6075,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when the text around the current cursor position should be"]
@@ -5971,7 +6092,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 before_length: u32,
                 after_length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
@@ -5982,7 +6104,8 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 map: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
@@ -5999,7 +6122,8 @@ pub mod text_input_unstable_v2 {
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
@@ -6009,7 +6133,8 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the text direction of input text."]
@@ -6022,7 +6147,8 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 direction: TextDirection,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Configure what amount of surrounding text is expected by the"]
@@ -6034,7 +6160,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 before_cursor: i32,
                 after_cursor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The input method changed on compositor side, which invalidates all"]
@@ -6047,7 +6174,8 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 flags: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -6055,11 +6183,12 @@ pub mod text_input_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -6069,7 +6198,7 @@ pub mod text_input_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_text_input_manager_v2 {
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV2<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZwpTextInputManagerV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zwp_text_input_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input_manager object."]
@@ -6077,7 +6206,7 @@ pub mod text_input_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Creates a new text-input object for a given seat."]
             fn get_text_input(
                 &self,
@@ -6085,17 +6214,18 @@ pub mod text_input_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -6310,7 +6440,7 @@ pub mod text {
             }
         }
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
-        pub trait WlTextInput<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WlTextInput<C: waynest::Connection> {
             const INTERFACE: &'static str = "wl_text_input";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the text-input object to be activated (typically when the"]
@@ -6325,7 +6455,7 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Requests the text-input object to be deactivated (typically when the"]
             #[doc = "text entry lost focus). The seat argument is a wl_seat which was used"]
             #[doc = "for activation."]
@@ -6334,19 +6464,19 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             fn show_input_panel(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Should be called by an editor widget when the input state should be"]
             #[doc = "reset, for example after the text was changed outside of the normal"]
             #[doc = "input method flow."]
@@ -6354,7 +6484,7 @@ pub mod text {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
             #[doc = "UTF-8 encoded. Cursor is the byte offset within the"]
             #[doc = "surrounding text. Anchor is the byte offset of the"]
@@ -6367,7 +6497,7 @@ pub mod text {
                 text: String,
                 cursor: u32,
                 anchor: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
             #[doc = "of the behavior."]
@@ -6381,7 +6511,7 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 hint: u32,
                 purpose: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_cursor_rectangle(
                 &self,
                 connection: &mut C,
@@ -6390,7 +6520,7 @@ pub mod text {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -6403,20 +6533,20 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn commit_state(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn invoke_action(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 index: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Notify the text-input object when it received focus. Typically in"]
             #[doc = "response to an activate request."]
             fn enter(
@@ -6424,7 +6554,8 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify the text-input object when it lost focus. Either in response"]
@@ -6434,7 +6565,8 @@ pub mod text {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
@@ -6445,7 +6577,8 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 map: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when the visibility state of the input panel changed."]
@@ -6454,7 +6587,8 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
@@ -6473,7 +6607,8 @@ pub mod text {
                 serial: u32,
                 text: String,
                 commit: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
@@ -6490,7 +6625,8 @@ pub mod text {
                 index: u32,
                 length: u32,
                 style: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
@@ -6503,7 +6639,8 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 index: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
@@ -6519,7 +6656,8 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 text: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
@@ -6532,7 +6670,8 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when the text around the current cursor position should be"]
@@ -6549,7 +6688,8 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 index: i32,
                 length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
@@ -6567,7 +6707,8 @@ pub mod text {
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
@@ -6578,7 +6719,8 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 language: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the text direction of input text."]
@@ -6592,7 +6734,8 @@ pub mod text {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 direction: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -6600,11 +6743,12 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -6614,7 +6758,7 @@ pub mod text {
     #[allow(clippy::too_many_arguments)]
     pub mod wl_text_input_manager {
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
-        pub trait WlTextInputManager<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WlTextInputManager<C: waynest::Connection> {
             const INTERFACE: &'static str = "wl_text_input_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a new text-input object."]
@@ -6623,17 +6767,18 @@ pub mod text {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -6709,7 +6854,7 @@ pub mod wl_eglstream_controller {
             }
         }
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
-        pub trait WlEglstreamController<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WlEglstreamController<C: waynest::Connection> {
             const INTERFACE: &'static str = "wl_eglstream_controller";
             const VERSION: u32 = 2u32;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
@@ -6720,7 +6865,7 @@ pub mod wl_eglstream_controller {
                 sender_id: waynest::ObjectId,
                 wl_surface: waynest::ObjectId,
                 wl_resource: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it using the given attributes."]
             fn attach_eglstream_consumer_attribs(
@@ -6730,17 +6875,18 @@ pub mod wl_eglstream_controller {
                 wl_surface: waynest::ObjectId,
                 wl_resource: waynest::ObjectId,
                 attribs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -6783,8 +6929,7 @@ pub mod zkde_screencast_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
             const VERSION: u32 = 5u32;
             fn stream_output(
@@ -6794,7 +6939,7 @@ pub mod zkde_screencast_unstable_v1 {
                 stream: waynest::ObjectId,
                 output: waynest::ObjectId,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn stream_window(
                 &self,
                 connection: &mut C,
@@ -6802,13 +6947,13 @@ pub mod zkde_screencast_unstable_v1 {
                 stream: waynest::ObjectId,
                 window_uuid: String,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Destroy the zkde_screencast_unstable_v1 object."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn stream_virtual_output(
                 &self,
                 connection: &mut C,
@@ -6819,7 +6964,7 @@ pub mod zkde_screencast_unstable_v1 {
                 height: i32,
                 scale: waynest::Fixed,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Since version 5, the compositor will choose the highest scale"]
             #[doc = "factor for the region if the given scale is 0.0."]
             fn stream_region(
@@ -6833,7 +6978,7 @@ pub mod zkde_screencast_unstable_v1 {
                 height: u32,
                 scale: waynest::Fixed,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn stream_virtual_output_with_description(
                 &self,
                 connection: &mut C,
@@ -6845,17 +6990,18 @@ pub mod zkde_screencast_unstable_v1 {
                 height: i32,
                 scale: waynest::Fixed,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -6864,23 +7010,20 @@ pub mod zkde_screencast_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastStreamUnstableV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZkdeScreencastStreamUnstableV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
             const VERSION: u32 = 5u32;
             fn close(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn closed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn created(
@@ -6888,7 +7031,8 @@ pub mod zkde_screencast_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 node: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn failed(
@@ -6896,7 +7040,8 @@ pub mod zkde_screencast_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 error: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -6904,11 +7049,12 @@ pub mod zkde_screencast_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }

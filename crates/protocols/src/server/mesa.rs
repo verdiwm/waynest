@@ -189,7 +189,7 @@ pub mod drm {
             }
         }
         #[doc = "Trait to implement the wl_drm interface. See the module level documentation for more info"]
-        pub trait WlDrm<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WlDrm<C: waynest::Connection> {
             const INTERFACE: &'static str = "wl_drm";
             const VERSION: u32 = 2u32;
             fn authenticate(
@@ -197,7 +197,7 @@ pub mod drm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn create_buffer(
                 &self,
                 connection: &mut C,
@@ -208,7 +208,7 @@ pub mod drm {
                 height: i32,
                 stride: u32,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn create_planar_buffer(
                 &self,
                 connection: &mut C,
@@ -224,7 +224,7 @@ pub mod drm {
                 stride1: i32,
                 offset2: i32,
                 stride2: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn create_prime_buffer(
                 &self,
                 connection: &mut C,
@@ -240,13 +240,14 @@ pub mod drm {
                 stride1: i32,
                 offset2: i32,
                 stride2: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn device(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn format(
@@ -254,14 +255,16 @@ pub mod drm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn authenticated(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn capabilities(
@@ -269,7 +272,8 @@ pub mod drm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -277,11 +281,12 @@ pub mod drm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }

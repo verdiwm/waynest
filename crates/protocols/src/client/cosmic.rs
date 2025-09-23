@@ -87,7 +87,7 @@ pub mod cosmic_a11y_v1 {
             }
         }
         #[doc = "Trait to implement the cosmic_a11y_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicA11yManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait CosmicA11yManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "cosmic_a11y_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Sets the state of the screen magnifier."]
@@ -99,7 +99,8 @@ pub mod cosmic_a11y_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 active: ActiveState,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the parameters for screen filtering."]
@@ -119,7 +120,8 @@ pub mod cosmic_a11y_v1 {
                 sender_id: waynest::ObjectId,
                 inverted: ActiveState,
                 filter: Filter,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the parameters for screen filtering."]
@@ -139,7 +141,8 @@ pub mod cosmic_a11y_v1 {
                 inverted: ActiveState,
                 filter: Filter,
                 filter_state: ActiveState,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "State of the screen magnifier."]
@@ -151,7 +154,7 @@ pub mod cosmic_a11y_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 active: ActiveState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Parameters used for screen filtering."]
             #[doc = ""]
             #[doc = "This event will be emitted by the compositor when binding the protocol"]
@@ -167,7 +170,7 @@ pub mod cosmic_a11y_v1 {
                 sender_id: waynest::ObjectId,
                 inverted: ActiveState,
                 filter: Filter,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Parameters used for screen filtering."]
             #[doc = ""]
             #[doc = "This event will be emitted by the compositor when binding the protocol"]
@@ -184,7 +187,7 @@ pub mod cosmic_a11y_v1 {
                 inverted: ActiveState,
                 filter: Filter,
                 filter_state: ActiveState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -200,7 +203,7 @@ pub mod cosmic_atspi_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod cosmic_atspi_manager_v1 {
         #[doc = "Trait to implement the cosmic_atspi_manager_v1 interface. See the module level documentation for more info"]
-        pub trait CosmicAtspiManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait CosmicAtspiManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "cosmic_atspi_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Any grabs that are still active will be disabled."]
@@ -208,7 +211,8 @@ pub mod cosmic_atspi_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Grab the given key combination, so it will not be sent to clients."]
@@ -219,7 +223,8 @@ pub mod cosmic_atspi_v1 {
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Disables a grab added with add_key_grab."]
@@ -230,7 +235,8 @@ pub mod cosmic_atspi_v1 {
                 mods: u32,
                 virtual_mods: Vec<u8>,
                 key: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Grab keyboard, so key input will not be sent to clients."]
@@ -238,7 +244,8 @@ pub mod cosmic_atspi_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Disables a grab added with grab_keyboard."]
@@ -246,7 +253,8 @@ pub mod cosmic_atspi_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Produces an fd that can be used with libei to monitor keyboard input."]
@@ -255,7 +263,7 @@ pub mod cosmic_atspi_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -267,11 +275,7 @@ pub mod cosmic_image_source_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_workspace_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicWorkspaceImageCaptureSourceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_workspace_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for a workspaces. Images captured from this source"]
@@ -284,7 +288,8 @@ pub mod cosmic_image_source_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 source: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
@@ -294,7 +299,8 @@ pub mod cosmic_image_source_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -334,7 +340,7 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZcosmicOutputManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_output_manager_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Gets an extension object for zwlr_output_head_v1."]
@@ -354,7 +360,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 extended: waynest::ObjectId,
                 head: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Gets an extension object for zwlr_output_configuration_v1."]
@@ -367,7 +374,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 extended: waynest::ObjectId,
                 config: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Gets an extension object for zwlr_output_configuration_head_v1."]
@@ -380,7 +388,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 extended: waynest::ObjectId,
                 config_head: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys this global. All previously created objects remain valid."]
@@ -388,7 +397,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This requests a head to be advertised as the primary output via randr to Xwayland."]
@@ -400,7 +410,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 head: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -468,7 +479,7 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputHeadV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZcosmicOutputHeadV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_output_head_v1";
             const VERSION: u32 = 3u32;
             #[doc = "Using this request a client can tell the compositor that it is not interested"]
@@ -477,7 +488,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This events describes the scale of the head in the global compositor"]
@@ -489,7 +501,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 scale_1000: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This events describes that the head is mirroring another."]
             #[doc = "In these cases `name` contains the unique name of the matching `zwlr_output_head_v1`."]
             #[doc = "If the name is null, no head is being mirrored onto this one."]
@@ -502,7 +514,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: Option<String>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This events describes if adaptive_sync is available for this head."]
             #[doc = ""]
             #[doc = "It is only sent if the output is enabled."]
@@ -511,7 +523,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 available: AdaptiveSyncAvailability,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This events describes the adaptive_sync state of this head."]
             #[doc = ""]
             #[doc = "It is only sent if the output is enabled."]
@@ -520,7 +532,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: AdaptiveSyncStateExt,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event describes if this head is advertised as the primary output via randr to Xwayland."]
             #[doc = ""]
             #[doc = "At most one output is marked primary, but it is not guaranteed that any output is marked."]
@@ -530,7 +542,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "Extension to zwlr_output_configuration_v1."]
@@ -563,11 +575,7 @@ pub mod cosmic_output_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_output_configuration_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicOutputConfigurationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_output_configuration_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Enable a head mirroring another."]
@@ -590,7 +598,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 id: waynest::ObjectId,
                 head: waynest::ObjectId,
                 mirroring: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Using this request a client can tell the compositor that it is not going"]
@@ -601,7 +610,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event indicates that the configuration is no longer available."]
@@ -615,7 +625,7 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "Extension to zwlr_output_configuration_head_v1."]
@@ -627,11 +637,7 @@ pub mod cosmic_output_management_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_output_configuration_head_v1 {
         #[doc = "Trait to implement the zcosmic_output_configuration_head_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOutputConfigurationHeadV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicOutputConfigurationHeadV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_output_configuration_head_v1";
             const VERSION: u32 = 2u32;
             #[doc = "This request sets the head's scale multiplied by 1000 for additional precision."]
@@ -646,7 +652,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 scale_1000: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Using this request a client can tell the compositor that it is not going"]
@@ -657,7 +664,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request requests a new adaptive sync state."]
@@ -672,7 +680,8 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state : super :: super :: super :: cosmic :: cosmic_output_management_unstable_v1 :: zcosmic_output_head_v1 :: AdaptiveSyncStateExt,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -689,7 +698,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notify_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notify_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotifyV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZcosmicOverlapNotifyV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_overlap_notify_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Requests notifications for toplevels and layer-surfaces entering and leaving the"]
@@ -704,7 +713,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 overlap_notification: waynest::ObjectId,
                 layer_surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -712,11 +722,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_overlap_notification_v1 {
         #[doc = "Trait to implement the zcosmic_overlap_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicOverlapNotificationV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicOverlapNotificationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_overlap_notification_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request should be called when the client has no interest in overlap"]
@@ -725,7 +731,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A ext_foreign_toplevel_handle_v1 has entered the surface area."]
@@ -745,7 +752,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A ext_foreign_toplevel_handle_v1 has left the surface area."]
             #[doc = ""]
             #[doc = "This event will be emitted once for every ext_foreign_toplevel_handle_v1"]
@@ -755,7 +762,7 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A zwlr_layer_surface_v1 has entered the surface area."]
             #[doc = ""]
             #[doc = "Compositors are free to update the overlapping area by sending additional"]
@@ -776,14 +783,14 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A zwlr_layer_surface_v1 has left the surface area."]
             fn layer_leave(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identifier: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -834,11 +841,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyManagerV2<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicScreencopyManagerV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_screencopy_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capturing session for an image source."]
@@ -853,7 +856,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 session: waynest::ObjectId,
                 source: waynest::ObjectId,
                 options: Options,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a cursor capturing session for the pointer of an image source."]
@@ -868,7 +872,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 source: waynest::ObjectId,
                 pointer: waynest::ObjectId,
                 options: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the manager object."]
@@ -878,7 +883,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -902,11 +908,7 @@ pub mod cosmic_screencopy_unstable_v2 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_screencopy_session_v2 {
         #[doc = "Trait to implement the zcosmic_screencopy_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopySessionV2<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicScreencopySessionV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_screencopy_session_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capture frame for this session."]
@@ -915,7 +917,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 frame: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -927,7 +930,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
@@ -939,7 +943,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the format that must be used for shared-memory buffers."]
             #[doc = ""]
             #[doc = "This event may be emitted multiple times, in which case the client may"]
@@ -949,7 +953,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the device buffers must be allocated on for"]
             #[doc = "dma-buf buffers."]
             #[doc = ""]
@@ -962,7 +966,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the format that must be used for dma-buf buffers."]
             #[doc = ""]
             #[doc = "The client may choose any of the modifiers advertised in the array of"]
@@ -976,7 +980,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent once when all buffer constraint events have been"]
             #[doc = "sent."]
             #[doc = ""]
@@ -987,7 +991,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the capture session has stopped and is no"]
             #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
             #[doc = "underlying source is destroyed, if the user decides to end the screen"]
@@ -998,7 +1002,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This object represents a screen capture frame."]
@@ -1065,8 +1069,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_frame_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyFrameV2<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZcosmicScreencopyFrameV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_screencopy_frame_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1075,7 +1078,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Attach a buffer to the session."]
@@ -1089,7 +1093,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Apply damage to the buffer which is to be captured next. This request"]
@@ -1121,7 +1126,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Capture a frame."]
@@ -1137,7 +1143,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent before the ready event and holds the transform of"]
@@ -1147,7 +1154,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 transform: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
             #[doc = "times to describe a region."]
             #[doc = ""]
@@ -1164,7 +1171,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates the time at which the frame is presented to the"]
             #[doc = "output in system monotonic time. This event is sent before the ready"]
             #[doc = "event."]
@@ -1181,7 +1188,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
             #[doc = "for reading."]
             #[doc = ""]
@@ -1192,7 +1199,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
@@ -1201,7 +1208,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason: FailureReason,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -1230,11 +1237,7 @@ pub mod cosmic_screencopy_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_screencopy_cursor_session_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicScreencopyCursorSessionV2<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicScreencopyCursorSessionV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_screencopy_cursor_session_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -1246,7 +1249,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Gets the screencopy session for this cursor session."]
@@ -1261,7 +1265,8 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 session: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
@@ -1275,7 +1280,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
             #[doc = "event is generated for the cursor until the cursor enters the captured"]
             #[doc = "area again."]
@@ -1283,7 +1288,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Cursors outside the image source do not get captured and no event will"]
             #[doc = "be generated for them."]
             #[doc = ""]
@@ -1300,7 +1305,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The hotspot describes the offset between the cursor image and the"]
             #[doc = "position of the input device."]
             #[doc = ""]
@@ -1315,7 +1320,7 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -1330,7 +1335,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_toplevel_info_v1 {
         #[doc = "Trait to implement the zcosmic_toplevel_info_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelInfoV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZcosmicToplevelInfoV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_toplevel_info_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -1345,7 +1350,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request a zcosmic_toplevel_handle_v1 extension object for an existing"]
@@ -1360,7 +1366,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 cosmic_toplevel: waynest::ObjectId,
                 foreign_toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is never emitted for clients binding version 2"]
@@ -1378,7 +1385,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the compositor is done sending events"]
             #[doc = "to the zcosmic_toplevel_info_v1. The server will destroy the"]
             #[doc = "object immediately after sending this request, so it will become"]
@@ -1390,7 +1397,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all changes for currently active"]
             #[doc = "zcosmic_toplevel_handle_v1 have been sent."]
             #[doc = ""]
@@ -1401,7 +1408,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A zcosmic_toplevel_handle_v1 object represents an open toplevel"]
@@ -1447,7 +1454,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelHandleV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ZcosmicToplevelHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_toplevel_handle_v1";
             const VERSION: u32 = 3u32;
             #[doc = "This request should be called either when the client will no longer"]
@@ -1456,7 +1463,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The server will emit no further events on the"]
@@ -1472,7 +1480,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all changes in the toplevel state have"]
             #[doc = "been sent."]
             #[doc = ""]
@@ -1488,7 +1496,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the title of the toplevel changes."]
             #[doc = ""]
             #[doc = "Note: This event will not be emitted for clients binding version 2"]
@@ -1499,7 +1507,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the app_id of the toplevel changes."]
             #[doc = ""]
             #[doc = "Note: This event will not be emitted for clients binding version 2"]
@@ -1510,7 +1518,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
             #[doc = "given output. A toplevel may be visible on multiple outputs."]
             fn output_enter(
@@ -1518,7 +1526,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the toplevel is no longer visible"]
             #[doc = "on a given output. It is guaranteed that an output_enter event with"]
             #[doc = "the same output has been emitted before this event."]
@@ -1527,7 +1535,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
             #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
             fn workspace_enter(
@@ -1535,7 +1543,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the toplevel is no longer visible"]
             #[doc = "on a given workspace. It is guaranteed that an workspace_enter event with"]
             #[doc = "the same workspace has been emitted before this event."]
@@ -1544,7 +1552,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted once on creation of the"]
             #[doc = "zcosmic_toplevel_handle_v1 and again whenever the state of the"]
             #[doc = "toplevel changes."]
@@ -1553,7 +1561,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Emitted when the geometry of a toplevel (it's position and/or size)"]
             #[doc = "relative to the provided output has changed."]
             #[doc = ""]
@@ -1569,7 +1577,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the toplevel becomes visible on the"]
             #[doc = "given workspace. A toplevel may be visible on multiple workspaces."]
             fn ext_workspace_enter(
@@ -1577,7 +1585,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever the toplevel is no longer visible"]
             #[doc = "on a given workspace. It is guaranteed that an workspace_enter event with"]
             #[doc = "the same workspace has been emitted before this event."]
@@ -1586,7 +1594,7 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -1661,8 +1669,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_toplevel_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicToplevelManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZcosmicToplevelManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_toplevel_manager_v1";
             const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client has finished using the"]
@@ -1672,7 +1679,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1682,7 +1690,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1693,7 +1702,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1703,7 +1713,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1713,7 +1724,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1723,7 +1735,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1733,7 +1746,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1750,7 +1764,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1760,7 +1775,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If a client using this protocol displays UI elements corresponding"]
@@ -1784,7 +1800,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Move window to workspace, on given output."]
@@ -1795,7 +1812,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 toplevel: waynest::ObjectId,
                 workspace: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1805,7 +1823,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If the compositor honors this request, the"]
@@ -1815,7 +1834,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Move window to workspace, on given output."]
@@ -1826,7 +1846,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 toplevel: waynest::ObjectId,
                 workspace: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
@@ -1850,7 +1871,7 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -1878,8 +1899,7 @@ pub mod cosmic_workspace_unstable_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod zcosmic_workspace_manager_v1 {
         #[doc = "Trait to implement the zcosmic_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZcosmicWorkspaceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_workspace_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "The client must send this request after it has finished sending other"]
@@ -1894,7 +1914,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Indicates the client no longer wishes to receive events for new"]
@@ -1906,7 +1927,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted whenever a new workspace group has been created."]
@@ -1919,7 +1941,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace_group: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all changes in all workspace groups have been"]
             #[doc = "sent."]
             #[doc = ""]
@@ -1935,7 +1957,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "zcosmic_workspace_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request, so it will become invalid and"]
@@ -1944,7 +1966,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A zcosmic_workspace_group_handle_v1 object represents a a workspace group"]
@@ -1982,11 +2004,7 @@ pub mod cosmic_workspace_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceGroupHandleV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ZcosmicWorkspaceGroupHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_workspace_group_handle_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor create a new workspace with the given name."]
@@ -1998,7 +2016,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the zcosmic_workspace_group_handle_v1 object."]
@@ -2010,7 +2029,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
@@ -2034,7 +2054,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever an output is assigned to the workspace"]
             #[doc = "group."]
             fn output_enter(
@@ -2042,7 +2062,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever an output is removed from the workspace"]
             #[doc = "group."]
             fn output_leave(
@@ -2050,7 +2070,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever a new workspace has been created."]
             #[doc = "A workspace can only be a member of a single workspace group and cannot"]
             #[doc = "be re-assigned."]
@@ -2063,7 +2083,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event means the zcosmic_workspace_group_handle_v1 has been destroyed."]
             #[doc = "It is guaranteed there won't be any more events for this"]
             #[doc = "zcosmic_workspace_group_handle_v1. The zext_workspace_group_handle_v1 becomes"]
@@ -2075,7 +2095,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A zcosmic_workspace_handle_v1 object represents a a workspace that handles a"]
@@ -2178,8 +2198,7 @@ pub mod cosmic_workspace_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZcosmicWorkspaceHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_workspace_handle_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroys the zcosmic_workspace_handle_v1 object."]
@@ -2191,7 +2210,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be activated."]
@@ -2204,7 +2224,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be deactivated."]
@@ -2214,7 +2235,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be removed."]
@@ -2224,7 +2246,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace is renamed."]
@@ -2235,7 +2258,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace's tiling state is changed."]
@@ -2246,7 +2270,8 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: TilingState,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v1 is"]
@@ -2256,7 +2281,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
             #[doc = "within a workspace group, and if supported, is emitted immediately after"]
             #[doc = "the zcosmic_workspace_handle_v1 is created and whenever the coordinates of"]
@@ -2280,7 +2305,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 coordinates: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v1 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -2289,7 +2314,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -2311,7 +2336,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event means the zcosmic_workspace_handle_v1 has been destroyed. It is"]
             #[doc = "guaranteed there won't be any more events for this"]
             #[doc = "zcosmic_workspace_handle_v1. The zext_workspace_handle_v1 becomes inert so"]
@@ -2320,7 +2345,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v1 is created"]
             #[doc = "and each time the workspace tiling state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -2329,7 +2354,7 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: TilingState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -2363,8 +2388,7 @@ pub mod cosmic_workspace_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceManagerV2<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZcosmicWorkspaceManagerV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_workspace_manager_v2";
             const VERSION: u32 = 2u32;
             #[doc = "Request a `zcosmic_workspace_handle_v2` extension object for an existing"]
@@ -2378,7 +2402,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 cosmic_workspace: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request should be called either when the client will no longer"]
@@ -2387,7 +2412,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2456,8 +2482,7 @@ pub mod cosmic_workspace_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zcosmic_workspace_handle_v2 interface. See the module level documentation for more info"]
-        pub trait ZcosmicWorkspaceHandleV2<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ZcosmicWorkspaceHandleV2<C: waynest::Connection> {
             const INTERFACE: &'static str = "zcosmic_workspace_handle_v2";
             const VERSION: u32 = 2u32;
             #[doc = "This request should be called either when the client will no longer"]
@@ -2466,7 +2491,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace is renamed."]
@@ -2477,7 +2503,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace's tiling state is changed."]
@@ -2488,7 +2515,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: TilingState,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Move a workspace to be before another workspace along a given axis."]
@@ -2512,7 +2540,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 other_workspace: waynest::ObjectId,
                 axis: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Move a workspace to be after another workspace along a given axis."]
@@ -2524,7 +2553,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 other_workspace: waynest::ObjectId,
                 axis: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be pinned."]
@@ -2534,7 +2564,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be unpinned."]
@@ -2544,7 +2575,8 @@ pub mod cosmic_workspace_unstable_v2 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
@@ -2565,7 +2597,7 @@ pub mod cosmic_workspace_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: WorkspaceCapabilities,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v2 is created"]
             #[doc = "and each time the workspace tiling state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -2574,7 +2606,7 @@ pub mod cosmic_workspace_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: TilingState,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted immediately after the zcosmic_workspace_handle_v2 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -2583,7 +2615,7 @@ pub mod cosmic_workspace_unstable_v2 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: State,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }

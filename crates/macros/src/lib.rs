@@ -19,7 +19,7 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
                 connection: &mut waynest_server::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> Result<(), waynest::ProtocolError> {
+            ) -> waynest_server::Result<()> {
                 self.handle_request(connection, sender_id, message).await
             }
         }

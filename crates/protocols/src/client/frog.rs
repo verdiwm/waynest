@@ -9,18 +9,15 @@ pub mod frog_color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod frog_color_management_factory_v1 {
         #[doc = "Trait to implement the frog_color_management_factory_v1 interface. See the module level documentation for more info"]
-        pub trait FrogColorManagementFactoryV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait FrogColorManagementFactoryV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "frog_color_management_factory_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn get_color_managed_surface(
@@ -29,7 +26,8 @@ pub mod frog_color_management_v1 {
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 callback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -131,7 +129,7 @@ pub mod frog_color_management_v1 {
             }
         }
         #[doc = "Trait to implement the frog_color_managed_surface interface. See the module level documentation for more info"]
-        pub trait FrogColorManagedSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait FrogColorManagedSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "frog_color_managed_surface";
             const VERSION: u32 = 1u32;
             #[doc = "Destroying the color managed surface resets all known color"]
@@ -141,7 +139,8 @@ pub mod frog_color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn set_known_transfer_function(
@@ -149,7 +148,8 @@ pub mod frog_color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 transfer_function: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn set_known_container_color_volume(
@@ -157,7 +157,8 @@ pub mod frog_color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "NOTE: On a surface with \"perceptual\" (default) render intent, handling of the container's color volume"]
@@ -171,7 +172,8 @@ pub mod frog_color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 render_intent: RenderIntent,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Forwards HDR metadata from the client to the compositor."]
@@ -196,7 +198,8 @@ pub mod frog_color_management_v1 {
                 min_display_mastering_luminance: u32,
                 max_cll: u32,
                 max_fall: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Current preferred metadata for a surface."]
@@ -221,7 +224,7 @@ pub mod frog_color_management_v1 {
                 max_luminance: u32,
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -264,7 +267,7 @@ pub mod frog_fifo_v1 {
             }
         }
         #[doc = "Trait to implement the frog_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait FrogFifoManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "frog_fifo_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -274,7 +277,8 @@ pub mod frog_fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Establish a fifo object for a surface that may be used to add"]
@@ -291,7 +295,8 @@ pub mod frog_fifo_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -324,7 +329,7 @@ pub mod frog_fifo_v1 {
             }
         }
         #[doc = "Trait to implement the frog_fifo_surface_v1 interface. See the module level documentation for more info"]
-        pub trait FrogFifoSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait FrogFifoSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "frog_fifo_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
@@ -345,7 +350,8 @@ pub mod frog_fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Indicate that this content update is not ready while a"]
@@ -365,7 +371,8 @@ pub mod frog_fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Informs the server that the client will no longer be using"]
@@ -377,7 +384,8 @@ pub mod frog_fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }

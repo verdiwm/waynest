@@ -1,13 +1,15 @@
 use std::{error, fmt, io};
 
-use waynest::{ObjectId, ProtocolError};
+use waynest::{ProtocolError, ObjectId};
 
 #[derive(Debug)]
 pub enum Error {
     Protocol(ProtocolError),
     IoError(io::Error),
+    UnknownOpcode(u16),
     MissingObject(ObjectId),
     XdgError,
+    Custom(String),
 }
 
 impl fmt::Display for Error {
@@ -15,8 +17,10 @@ impl fmt::Display for Error {
         match self {
             Error::Protocol(err) => write!(f, "Failed to decode message: {}", err),
             Error::IoError(err) => write!(f, "I/O operation failed: {}", err),
+            Error::UnknownOpcode(opcode) => write!(f, "Received unsupported opcode: {}", opcode),
             Error::MissingObject(id) => write!(f, "No object found with ID: {}", id),
             Error::XdgError => write!(f, "Failed to access XDG socket path"),
+            Error::Custom(msg) => write!(f, "{}", msg),
         }
     }
 }

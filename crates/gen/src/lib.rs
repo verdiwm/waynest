@@ -59,13 +59,13 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
 
             let request_impl = if requests_impl {
                 quote! {
-                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), E>> + Send {
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send {
                         async move { Ok(()) }
                     }
                 }
             } else {
                 quote! {
-                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), E>> + Send;
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId, #(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
                 }
             };
 
@@ -101,13 +101,13 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
 
             let event_impl = if events_impl {
                 quote! {
-                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), E>> + Send {
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send {
                         async move { Ok(()) }
                     }
                 }
             } else {
                 quote! {
-                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), E>> + Send;
+                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
                 }
             };
 
@@ -129,11 +129,11 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                     connection: &mut C,
                     sender_id: waynest::ObjectId,
                     message: &mut waynest::Message,
-                ) -> impl Future<Output = Result<(), E>> + Send {
+                ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send {
                     async move {
                         #[allow(clippy::match_single_binding)]
                         match message.opcode() {
-                            opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                            opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                         }
                     }
                 }
@@ -149,7 +149,7 @@ pub fn generate_module<D: Display, P: AsRef<Path>>(
                 #(#enums)*
 
                 #[doc = #trait_docs]
-                pub trait #trait_name<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+                pub trait #trait_name<C: waynest::Connection> {
                     const INTERFACE: &'static str = #name;
                     const VERSION: u32 = #version;
 

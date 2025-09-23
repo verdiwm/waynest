@@ -31,11 +31,7 @@ pub mod hyprland_ctm_control_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_ctm_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandCtmControlManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandCtmControlManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_ctm_control_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Set a CTM for a wl_output."]
@@ -65,7 +61,8 @@ pub mod hyprland_ctm_control_v1 {
                 mat6: waynest::Fixed,
                 mat7: waynest::Fixed,
                 mat8: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Commits the pending state(s) set by set_ctm_for_output."]
@@ -73,7 +70,8 @@ pub mod hyprland_ctm_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
@@ -84,7 +82,8 @@ pub mod hyprland_ctm_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent if another manager was bound by any client"]
@@ -97,7 +96,7 @@ pub mod hyprland_ctm_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -110,11 +109,7 @@ pub mod hyprland_focus_grab_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_manager_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandFocusGrabManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_focus_grab_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a surface grab object."]
@@ -123,7 +118,8 @@ pub mod hyprland_focus_grab_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 grab: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the focus grab manager."]
@@ -132,7 +128,8 @@ pub mod hyprland_focus_grab_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -155,7 +152,7 @@ pub mod hyprland_focus_grab_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_focus_grab_v1 {
         #[doc = "Trait to implement the hyprland_focus_grab_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandFocusGrabV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait HyprlandFocusGrabV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_focus_grab_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Add a surface to the whitelist. Destroying the surface is treated the"]
@@ -168,7 +165,8 @@ pub mod hyprland_focus_grab_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Remove a surface from the whitelist. Destroying the surface is treated"]
@@ -183,7 +181,8 @@ pub mod hyprland_focus_grab_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Commit pending changes to the surface whitelist."]
@@ -195,7 +194,8 @@ pub mod hyprland_focus_grab_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the grab object and remove the grab if active."]
@@ -203,7 +203,8 @@ pub mod hyprland_focus_grab_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent when an active grab is cancelled by the compositor,"]
@@ -212,7 +213,7 @@ pub mod hyprland_focus_grab_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -245,11 +246,7 @@ pub mod hyprland_global_shortcuts_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_global_shortcuts_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutsManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandGlobalShortcutsManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_global_shortcuts_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Register a new global shortcut."]
@@ -268,7 +265,8 @@ pub mod hyprland_global_shortcuts_v1 {
                 app_id: String,
                 description: String,
                 trigger_description: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
@@ -277,7 +275,8 @@ pub mod hyprland_global_shortcuts_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -286,8 +285,7 @@ pub mod hyprland_global_shortcuts_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_global_shortcut_v1 {
         #[doc = "Trait to implement the hyprland_global_shortcut_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandGlobalShortcutV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait HyprlandGlobalShortcutV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_global_shortcut_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the shortcut. Can be sent at any time by the client."]
@@ -295,7 +293,8 @@ pub mod hyprland_global_shortcuts_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The keystroke was pressed."]
@@ -308,7 +307,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The keystroke was released."]
             #[doc = ""]
             #[doc = "tv_ values hold the timestamp of the occurrence."]
@@ -319,7 +318,7 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -330,7 +329,7 @@ pub mod hyprland_lock_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_lock_notifier_v1 {
         #[doc = "Trait to implement the hyprland_lock_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandLockNotifierV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait HyprlandLockNotifierV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_lock_notifier_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the manager object. All objects created via this interface"]
@@ -339,7 +338,8 @@ pub mod hyprland_lock_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new lock notification object."]
@@ -351,7 +351,8 @@ pub mod hyprland_lock_notify_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -372,11 +373,7 @@ pub mod hyprland_lock_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_lock_notification_v1 {
         #[doc = "Trait to implement the hyprland_lock_notification_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandLockNotificationV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandLockNotificationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_lock_notification_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the notification object."]
@@ -384,7 +381,8 @@ pub mod hyprland_lock_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent when the wayland session is locked."]
@@ -395,7 +393,7 @@ pub mod hyprland_lock_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when the wayland session is unlocked."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without an"]
@@ -405,7 +403,7 @@ pub mod hyprland_lock_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -437,8 +435,7 @@ pub mod hyprland_surface_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_surface_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait HyprlandSurfaceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_surface_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Create a hyprland surface object for the given wayland surface."]
@@ -451,7 +448,8 @@ pub mod hyprland_surface_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the surface manager."]
@@ -460,7 +458,8 @@ pub mod hyprland_surface_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -496,7 +495,7 @@ pub mod hyprland_surface_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait HyprlandSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_surface_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Sets a multiplier for the overall opacity of the surface."]
@@ -511,7 +510,8 @@ pub mod hyprland_surface_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 opacity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the hyprland surface object, resetting properties provided"]
@@ -520,7 +520,8 @@ pub mod hyprland_surface_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request sets the region of the surface that contains visible content."]
@@ -547,7 +548,8 @@ pub mod hyprland_surface_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -564,11 +566,7 @@ pub mod hyprland_toplevel_export_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_export_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_export_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandToplevelExportManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_toplevel_export_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Capture the next frame of a toplevel. (window)"]
@@ -588,7 +586,8 @@ pub mod hyprland_toplevel_export_v1 {
                 frame: waynest::ObjectId,
                 overlay_cursor: i32,
                 handle: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
@@ -597,7 +596,8 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Same as capture_toplevel, but with a zwlr_foreign_toplevel_handle_v1 handle."]
@@ -608,7 +608,8 @@ pub mod hyprland_toplevel_export_v1 {
                 frame: waynest::ObjectId,
                 overlay_cursor: i32,
                 handle: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -667,11 +668,7 @@ pub mod hyprland_toplevel_export_v1 {
             }
         }
         #[doc = "Trait to implement the hyprland_toplevel_export_frame_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelExportFrameV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandToplevelExportFrameV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_toplevel_export_frame_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Copy the frame to the supplied buffer. The buffer must have the"]
@@ -690,7 +687,8 @@ pub mod hyprland_toplevel_export_v1 {
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
                 ignore_damage: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the frame. This request can be sent at any time by the client."]
@@ -698,7 +696,8 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides information about wl_shm buffer parameters that need to be"]
@@ -712,7 +711,7 @@ pub mod hyprland_toplevel_export_v1 {
                 width: u32,
                 height: u32,
                 stride: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent right before the ready event when ignore_damage was"]
             #[doc = "not set. It may be generated multiple times for each copy"]
             #[doc = "request."]
@@ -731,7 +730,7 @@ pub mod hyprland_toplevel_export_v1 {
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides flags about the frame. This event is sent once before the"]
             #[doc = "\"ready\" event."]
             fn flags(
@@ -739,7 +738,7 @@ pub mod hyprland_toplevel_export_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: Flags,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
             #[doc = "for reading. This event includes the time at which presentation happened"]
             #[doc = "at."]
@@ -759,7 +758,7 @@ pub mod hyprland_toplevel_export_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client should destroy the object."]
@@ -767,7 +766,7 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides information about linux-dmabuf buffer parameters that need to"]
             #[doc = "be used for this frame. This event is sent once after the frame is"]
             #[doc = "created if linux-dmabuf buffers are supported."]
@@ -778,7 +777,7 @@ pub mod hyprland_toplevel_export_v1 {
                 format: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent once after all buffer events have been sent."]
             #[doc = ""]
             #[doc = "The client should proceed to create a buffer of one of the supported"]
@@ -787,7 +786,7 @@ pub mod hyprland_toplevel_export_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -799,11 +798,7 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_mapping_manager_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_mapping_manager_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelMappingManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandToplevelMappingManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_toplevel_mapping_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Get the window address for a toplevel."]
@@ -813,7 +808,8 @@ pub mod hyprland_toplevel_mapping_v1 {
                 sender_id: waynest::ObjectId,
                 handle: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Get the window address for a wlr toplevel."]
@@ -823,7 +819,8 @@ pub mod hyprland_toplevel_mapping_v1 {
                 sender_id: waynest::ObjectId,
                 handle: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "All objects created by the manager will still remain valid, until their appropriate destroy"]
@@ -832,7 +829,8 @@ pub mod hyprland_toplevel_mapping_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -845,11 +843,7 @@ pub mod hyprland_toplevel_mapping_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod hyprland_toplevel_window_mapping_handle_v1 {
         #[doc = "Trait to implement the hyprland_toplevel_window_mapping_handle_v1 interface. See the module level documentation for more info"]
-        pub trait HyprlandToplevelWindowMappingHandleV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait HyprlandToplevelWindowMappingHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "hyprland_toplevel_window_mapping_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the handle. This request can be sent at any time by the client."]
@@ -857,7 +851,8 @@ pub mod hyprland_toplevel_mapping_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The full 64bit window address. The `address` field contains the lower 32 bits whilst the"]
@@ -868,14 +863,14 @@ pub mod hyprland_toplevel_mapping_v1 {
                 sender_id: waynest::ObjectId,
                 address_hi: u32,
                 address: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The mapping of the toplevel to a window address failed. Most likely the window does not"]
             #[doc = "exist (anymore)."]
             fn failed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }

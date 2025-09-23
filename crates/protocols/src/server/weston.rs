@@ -240,7 +240,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_manager_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagerV4<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XxColorManagerV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_color_manager_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xx_color_manager_v4 object. This does not affect any other"]
@@ -249,7 +249,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This creates a new xx_color_management_output_v4 object for the"]
             #[doc = "given wl_output."]
             #[doc = ""]
@@ -260,7 +260,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "If a xx_color_management_surface_v4 object already exists for the given"]
             #[doc = "wl_surface, the protocol error surface_exists is raised."]
             #[doc = ""]
@@ -274,7 +274,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This creates a new color xx_color_management_feedback_surface_v4 object"]
             #[doc = "for the given wl_surface."]
             #[doc = ""]
@@ -286,7 +286,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Makes a new ICC-based image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
             #[doc = "interface to define all the required properties for an image description"]
@@ -300,7 +300,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 obj: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Makes a new parametric image description creator object with all"]
             #[doc = "properties initially unset. The client can then use the object's"]
             #[doc = "interface to define all the required properties for an image description"]
@@ -314,7 +314,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 obj: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
             fn supported_intent(
@@ -322,7 +322,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 render_intent: RenderIntent,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -332,7 +333,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 feature: Feature,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -343,7 +345,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tf: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -354,7 +357,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -362,11 +366,12 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -382,8 +387,7 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_color_management_output_v4 {
         #[doc = "Trait to implement the xx_color_management_output_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementOutputV4<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait XxColorManagementOutputV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_color_management_output_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the color xx_color_management_output_v4 object. This does not"]
@@ -392,7 +396,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This creates a new xx_image_description_v4 object for the current image"]
             #[doc = "description of the output. There always is exactly one image description"]
             #[doc = "active for an output so the client should destroy the image description"]
@@ -429,7 +433,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent whenever the image description of the output changed,"]
             #[doc = "followed by one wl_output.done event common to output events across all"]
             #[doc = "extensions."]
@@ -441,7 +445,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -449,11 +454,12 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -491,11 +497,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_management_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementSurfaceV4<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait XxColorManagementSurfaceV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_color_management_surface_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xx_color_management_surface_v4 object and do the same as"]
@@ -504,7 +506,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Set the image description of the underlying surface. The image"]
             #[doc = "description and rendering intent are double-buffered state, see"]
             #[doc = "wl_surface.commit."]
@@ -539,7 +541,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
                 render_intent : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: RenderIntent,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This request removes any image description from the surface. See"]
             #[doc = "set_image_description for how a compositor handles a surface without"]
             #[doc = "an image description. This is double-buffered state, see"]
@@ -548,17 +550,18 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -593,11 +596,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_color_management_feedback_surface_v4 interface. See the module level documentation for more info"]
-        pub trait XxColorManagementFeedbackSurfaceV4<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait XxColorManagementFeedbackSurfaceV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_color_management_feedback_surface_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xx_color_management_feedback_surface_v4 object."]
@@ -605,7 +604,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
             #[doc = ""]
             #[doc = "The preferred image description represents the compositor's preferred"]
@@ -638,7 +637,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The preferred image description is the one which likely has the most"]
             #[doc = "performance and/or quality benefits for the compositor if used by the"]
             #[doc = "client for its wl_surface contents. This event is sent whenever the"]
@@ -658,7 +657,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -666,11 +666,12 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -726,11 +727,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_icc_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorIccV4<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait XxImageDescriptionCreatorIccV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_image_description_creator_icc_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the ICC information"]
@@ -757,7 +754,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
             #[doc = "description."]
             #[doc = ""]
@@ -804,17 +801,18 @@ pub mod color_management_v1 {
                 icc_profile: std::os::fd::OwnedFd,
                 offset: u32,
                 length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -889,11 +887,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_creator_params_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionCreatorParamsV4<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait XxImageDescriptionCreatorParamsV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_image_description_creator_params_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the parameters previously"]
@@ -923,7 +917,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
             #[doc = "functions."]
             #[doc = ""]
@@ -941,7 +935,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the color component transfer characteristic to a power curve with"]
             #[doc = "the given exponent. This curve represents the conversion from electrical"]
             #[doc = "to optical pixel or color values."]
@@ -966,7 +960,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 eexp: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the color primaries and white point using explicitly named sets."]
             #[doc = "This describes the primary color volume which is the basis for color"]
             #[doc = "value encoding."]
@@ -982,7 +976,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
             #[doc = "coordinates. This describes the primary color volume which is the basis"]
             #[doc = "for color value encoding."]
@@ -1008,7 +1002,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the primary color volume luminance range and the reference white"]
             #[doc = "luminance level."]
             #[doc = ""]
@@ -1057,7 +1051,7 @@ pub mod color_management_v1 {
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the color primaries and white point of the mastering display"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
             #[doc = "SMPTE ST 2086 definition of HDR static metadata."]
@@ -1115,7 +1109,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the luminance range that was used during the content mastering"]
             #[doc = "process as the minimum and maximum absolute luminance L. This is"]
             #[doc = "compatible with the SMPTE ST 2086 definition of HDR static metadata."]
@@ -1133,7 +1127,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
             #[doc = ""]
             #[doc = "This can only be set when set_tf_cicp is used to set the transfer"]
@@ -1147,7 +1141,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_cll: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the maximum frame-average light level (max_fall) as defined by"]
             #[doc = "CTA-861-H."]
             #[doc = ""]
@@ -1161,17 +1155,18 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_fall: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1253,7 +1248,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the xx_image_description_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionV4<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XxImageDescriptionV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_image_description_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
@@ -1265,7 +1260,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Creates a xx_image_description_info_v4 object which delivers the"]
             #[doc = "information that makes up the image description."]
             #[doc = ""]
@@ -1278,7 +1273,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 information: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "If creating a xx_image_description_v4 object fails for a reason that is"]
             #[doc = "not defined as a protocol error, this event is sent."]
             #[doc = ""]
@@ -1295,7 +1290,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 cause: Cause,
                 msg: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Once this event has been sent, the xx_image_description_v4 object is"]
@@ -1329,7 +1325,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identity: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1337,11 +1334,12 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1358,8 +1356,7 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xx_image_description_info_v4 {
         #[doc = "Trait to implement the xx_image_description_info_v4 interface. See the module level documentation for more info"]
-        pub trait XxImageDescriptionInfoV4<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait XxImageDescriptionInfoV4<C: waynest::Connection> {
             const INTERFACE: &'static str = "xx_image_description_info_v4";
             const VERSION: u32 = 1u32;
             #[doc = "Signals the end of information events and destroys the object."]
@@ -1367,7 +1364,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The icc argument provides a file descriptor to the client which may be"]
@@ -1384,7 +1382,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 icc: std::os::fd::OwnedFd,
                 icc_size: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Delivers the primary color volume primaries and white point using CIE"]
@@ -1404,7 +1403,8 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Delivers the primary color volume primaries and white point using an"]
@@ -1414,7 +1414,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The color component transfer characteristic of this image description is"]
@@ -1429,7 +1430,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 eexp: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
@@ -1439,7 +1441,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tf : super :: super :: super :: weston :: color_management_v1 :: xx_color_manager_v4 :: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Delivers the primary color volume luminance range and the reference"]
@@ -1455,7 +1458,8 @@ pub mod color_management_v1 {
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the color primaries and white point of the target color volume"]
@@ -1481,7 +1485,8 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the luminance range that the image description is targeting as"]
@@ -1499,7 +1504,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the targeted max_cll of the image description. max_cll is"]
@@ -1512,7 +1518,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_cll: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
@@ -1525,7 +1532,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_fall: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1533,11 +1541,12 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1549,7 +1558,7 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_surface";
             const VERSION: u32 = 1u32;
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
@@ -1558,7 +1567,7 @@ pub mod ivi_application {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The configure event asks the client to resize its surface."]
             #[doc = ""]
             #[doc = "The size is a hint, in the sense that the client is free to"]
@@ -1576,7 +1585,8 @@ pub mod ivi_application {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1584,11 +1594,12 @@ pub mod ivi_application {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1624,7 +1635,7 @@ pub mod ivi_application {
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviApplication<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_application";
             const VERSION: u32 = 1u32;
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
@@ -1655,17 +1666,18 @@ pub mod ivi_application {
                 ivi_id: u32,
                 surface: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1725,14 +1737,14 @@ pub mod ivi_hmi_controller {
             }
         }
         #[doc = "Trait to implement the ivi_hmi_controller interface. See the module level documentation for more info"]
-        pub trait IviHmiController<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviHmiController<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_hmi_controller";
             const VERSION: u32 = 1u32;
             fn ui_ready(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Reference protocol to control a surface by server."]
             #[doc = "To control a surface by server, it gives seat to the server"]
             #[doc = "to e.g. control Home screen. Home screen has several workspaces"]
@@ -1748,7 +1760,7 @@ pub mod ivi_hmi_controller {
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "hmi-controller loaded to ivi-shall implements 4 types of layout"]
             #[doc = "as a reference; tiling, side by side, full_screen, and random."]
             fn switch_mode(
@@ -1756,7 +1768,7 @@ pub mod ivi_hmi_controller {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layout_mode: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "home screen is a reference implementation of launcher to launch"]
             #[doc = "wayland applications. The home screen has several workspaces to"]
             #[doc = "group wayland applications. By defining the following keys in"]
@@ -1776,13 +1788,14 @@ pub mod ivi_hmi_controller {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 home: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn workspace_end_control(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 is_controlled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -1790,11 +1803,12 @@ pub mod ivi_hmi_controller {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1806,7 +1820,7 @@ pub mod text_cursor_position {
     #[allow(clippy::too_many_arguments)]
     pub mod text_cursor_position {
         #[doc = "Trait to implement the text_cursor_position interface. See the module level documentation for more info"]
-        pub trait TextCursorPosition<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait TextCursorPosition<C: waynest::Connection> {
             const INTERFACE: &'static str = "text_cursor_position";
             const VERSION: u32 = 1u32;
             fn notify(
@@ -1816,17 +1830,18 @@ pub mod text_cursor_position {
                 surface: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -1907,7 +1922,7 @@ pub mod weston_content_protection {
             }
         }
         #[doc = "Trait to implement the weston_content_protection interface. See the module level documentation for more info"]
-        pub trait WestonContentProtection<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonContentProtection<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_content_protection";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this"]
@@ -1917,7 +1932,7 @@ pub mod weston_content_protection {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Instantiate an interface extension for the given wl_surface to"]
             #[doc = "provide surface protection. If the given wl_surface already has"]
             #[doc = "a weston_protected_surface associated, the surface_exists protocol"]
@@ -1928,17 +1943,18 @@ pub mod weston_content_protection {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2038,7 +2054,7 @@ pub mod weston_content_protection {
             }
         }
         #[doc = "Trait to implement the weston_protected_surface interface. See the module level documentation for more info"]
-        pub trait WestonProtectedSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonProtectedSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_protected_surface";
             const VERSION: u32 = 1u32;
             #[doc = "If the protected_surface is destroyed, the wl_surface desired protection"]
@@ -2048,7 +2064,7 @@ pub mod weston_content_protection {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Informs the server about the type of content. The level of"]
             #[doc = "content-protection depends upon the content-type set by the client"]
             #[doc = "through this request. Initially, this is set to 'unprotected'."]
@@ -2065,7 +2081,7 @@ pub mod weston_content_protection {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 r#type: Type,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Censor the visibility of the wl_surface contents on non-secure outputs."]
             #[doc = "See weston_protected_surface for the description."]
             #[doc = ""]
@@ -2074,7 +2090,7 @@ pub mod weston_content_protection {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Do not enforce censored-visibility of the wl_surface contents on"]
             #[doc = "non-secure-outputs. See weston_protected_surface for the description."]
             #[doc = ""]
@@ -2086,7 +2102,7 @@ pub mod weston_content_protection {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent to the client to inform about the actual protection"]
             #[doc = "level for its surface in the relax mode."]
             #[doc = ""]
@@ -2116,7 +2132,8 @@ pub mod weston_content_protection {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 r#type: Type,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2124,11 +2141,12 @@ pub mod weston_content_protection {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2159,7 +2177,7 @@ pub mod weston_debug {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_v1 {
         #[doc = "Trait to implement the weston_debug_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonDebugV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_debug_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the factory object, but does not affect any other objects."]
@@ -2167,7 +2185,7 @@ pub mod weston_debug {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Subscribe to a named debug stream. The server will start printing"]
             #[doc = "to the given file descriptor."]
             #[doc = ""]
@@ -2185,7 +2203,7 @@ pub mod weston_debug {
                 name: String,
                 streamfd: std::os::fd::OwnedFd,
                 stream: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Advertises an available debug scope which the client may be able to"]
             #[doc = "bind to. No information is provided by the server about the content"]
             #[doc = "contained within the debug streams provided by the scope, once a"]
@@ -2196,7 +2214,8 @@ pub mod weston_debug {
                 sender_id: waynest::ObjectId,
                 name: String,
                 description: Option<String>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2204,11 +2223,12 @@ pub mod weston_debug {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2222,7 +2242,7 @@ pub mod weston_debug {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_debug_stream_v1 {
         #[doc = "Trait to implement the weston_debug_stream_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDebugStreamV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonDebugStreamV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_debug_stream_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the object, which causes the server to stop writing into"]
@@ -2235,7 +2255,7 @@ pub mod weston_debug {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The server has successfully finished writing to and has closed the"]
             #[doc = "associated file descriptor."]
             #[doc = ""]
@@ -2246,7 +2266,8 @@ pub mod weston_debug {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The server has stopped writing to and has closed the"]
@@ -2261,7 +2282,8 @@ pub mod weston_debug {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: Option<String>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2269,11 +2291,12 @@ pub mod weston_debug {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2377,7 +2400,7 @@ pub mod weston_desktop {
             }
         }
         #[doc = "Trait to implement the weston_desktop_shell interface. See the module level documentation for more info"]
-        pub trait WestonDesktopShell<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonDesktopShell<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_desktop_shell";
             const VERSION: u32 = 1u32;
             fn set_background(
@@ -2386,25 +2409,25 @@ pub mod weston_desktop {
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_panel(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn set_lock_surface(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn unlock(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The surface set by this request will receive a fake"]
             #[doc = "pointer.enter event during grabs at position 0, 0 and is"]
             #[doc = "expected to set an appropriate cursor image as described by"]
@@ -2414,7 +2437,7 @@ pub mod weston_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Tell the server, that enough desktop elements have been drawn"]
             #[doc = "to make the desktop look ready for use. During start-up, the"]
             #[doc = "server can wait for this request with a black screen before"]
@@ -2425,7 +2448,7 @@ pub mod weston_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Tell the shell which side of the screen the panel is"]
             #[doc = "located. This is so that new windows do not overlap the panel"]
             #[doc = "and maximized windows maximize properly."]
@@ -2434,7 +2457,7 @@ pub mod weston_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 position: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn configure(
                 &self,
                 connection: &mut C,
@@ -2443,7 +2466,8 @@ pub mod weston_desktop {
                 surface: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Tell the client we want it to create and set the lock surface, which is"]
@@ -2455,7 +2479,8 @@ pub mod weston_desktop {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event will be sent immediately before a fake enter event on the"]
@@ -2465,7 +2490,8 @@ pub mod weston_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 cursor: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2473,11 +2499,12 @@ pub mod weston_desktop {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2487,7 +2514,7 @@ pub mod weston_desktop {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_screensaver {
         #[doc = "Trait to implement the weston_screensaver interface. See the module level documentation for more info"]
-        pub trait WestonScreensaver<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonScreensaver<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_screensaver";
             const VERSION: u32 = 1u32;
             #[doc = "A screensaver surface is normally hidden, and only visible after an"]
@@ -2498,17 +2525,18 @@ pub mod weston_desktop {
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2547,7 +2575,7 @@ pub mod weston_direct_display {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_direct_display_v1 {
         #[doc = "Trait to implement the weston_direct_display_v1 interface. See the module level documentation for more info"]
-        pub trait WestonDirectDisplayV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonDirectDisplayV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_direct_display_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request tells the compositor not to import the dmabuf to the GPU"]
@@ -2565,23 +2593,24 @@ pub mod weston_direct_display {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 dmabuf: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Destroys the factory object, but does not affect any other objects."]
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2648,7 +2677,7 @@ pub mod weston_output_capture {
             }
         }
         #[doc = "Trait to implement the weston_capture_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonCaptureV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_capture_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Affects no other protocol objects in any way."]
@@ -2656,7 +2685,7 @@ pub mod weston_output_capture {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This creates a weston_capture_source_v1 object corresponding to the"]
             #[doc = "given wl_output. The object delivers information for allocating"]
             #[doc = "suitable buffers, and exposes the capture function."]
@@ -2692,17 +2721,18 @@ pub mod weston_output_capture {
                 output: waynest::ObjectId,
                 source: Source,
                 capture_source_new_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2739,7 +2769,7 @@ pub mod weston_output_capture {
             }
         }
         #[doc = "Trait to implement the weston_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait WestonCaptureSourceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonCaptureSourceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_capture_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "If a capture is on-going on this object, this will cancel it and"]
@@ -2750,7 +2780,7 @@ pub mod weston_output_capture {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "If the given wl_buffer is compatible, the associated output will go"]
             #[doc = "through a repaint some time after this request has been processed,"]
             #[doc = "and that repaint will execute the capture."]
@@ -2783,7 +2813,7 @@ pub mod weston_output_capture {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event delivers the pixel format that should be used for the"]
             #[doc = "image buffer. Any buffer is incompatible if it does not have"]
             #[doc = "this pixel format."]
@@ -2797,7 +2827,8 @@ pub mod weston_output_capture {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 drm_format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event delivers the size that should be used for the"]
@@ -2815,7 +2846,8 @@ pub mod weston_output_capture {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted as a response to 'capture' request when it"]
@@ -2827,7 +2859,8 @@ pub mod weston_output_capture {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted as a response to 'capture' request when it"]
@@ -2838,7 +2871,8 @@ pub mod weston_output_capture {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted as a response to 'capture' request when it"]
@@ -2854,7 +2888,8 @@ pub mod weston_output_capture {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 msg: Option<String>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -2862,11 +2897,12 @@ pub mod weston_output_capture {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -2927,7 +2963,7 @@ pub mod weston_test {
             }
         }
         #[doc = "Trait to implement the weston_test interface. See the module level documentation for more info"]
-        pub trait WestonTest<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonTest<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_test";
             const VERSION: u32 = 1u32;
             fn move_surface(
@@ -2937,7 +2973,7 @@ pub mod weston_test {
                 surface: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn move_pointer(
                 &self,
                 connection: &mut C,
@@ -2947,7 +2983,7 @@ pub mod weston_test {
                 tv_nsec: u32,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn send_button(
                 &self,
                 connection: &mut C,
@@ -2957,7 +2993,7 @@ pub mod weston_test {
                 tv_nsec: u32,
                 button: i32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn send_axis(
                 &self,
                 connection: &mut C,
@@ -2967,13 +3003,13 @@ pub mod weston_test {
                 tv_nsec: u32,
                 axis: u32,
                 value: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn activate_surface(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn send_key(
                 &self,
                 connection: &mut C,
@@ -2983,19 +3019,19 @@ pub mod weston_test {
                 tv_nsec: u32,
                 key: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn device_release(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn device_add(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn send_touch(
                 &self,
                 connection: &mut C,
@@ -3007,7 +3043,7 @@ pub mod weston_test {
                 x: waynest::Fixed,
                 y: waynest::Fixed,
                 touch_type: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Request that the compositor pauses execution at a certain point. When"]
             #[doc = "execution is paused, the compositor will signal the shared semaphore"]
             #[doc = "to the client."]
@@ -3017,14 +3053,15 @@ pub mod weston_test {
                 sender_id: waynest::ObjectId,
                 breakpoint: Breakpoint,
                 resource_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn pointer_position(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3032,11 +3069,12 @@ pub mod weston_test {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3086,25 +3124,26 @@ pub mod weston_test {
             }
         }
         #[doc = "Trait to implement the weston_test_runner interface. See the module level documentation for more info"]
-        pub trait WestonTestRunner<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonTestRunner<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_test_runner";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn run(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 test_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn finished(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3112,11 +3151,12 @@ pub mod weston_test {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3182,7 +3222,7 @@ pub mod weston_touch_calibration {
             }
         }
         #[doc = "Trait to implement the weston_touch_calibration interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibration<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonTouchCalibration<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_touch_calibration";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the binding to the global interface, does not affect any"]
@@ -3191,7 +3231,7 @@ pub mod weston_touch_calibration {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This gives the calibrator role to the surface and ties it with the"]
             #[doc = "given touch input device."]
             #[doc = ""]
@@ -3210,7 +3250,7 @@ pub mod weston_touch_calibration {
                 surface: waynest::ObjectId,
                 device: String,
                 cal: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This request asks the compositor to save the calibration data for the"]
             #[doc = "given touch input device. The compositor may ignore this request."]
             #[doc = ""]
@@ -3234,7 +3274,7 @@ pub mod weston_touch_calibration {
                 sender_id: waynest::ObjectId,
                 device: String,
                 matrix: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When a client binds to weston_touch_calibration, one touch_device event"]
             #[doc = "is sent for each touchscreen that is available to be calibrated. This"]
             #[doc = "is the only time the event is sent. Touch devices added in the"]
@@ -3252,7 +3292,8 @@ pub mod weston_touch_calibration {
                 sender_id: waynest::ObjectId,
                 device: String,
                 head: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3260,11 +3301,12 @@ pub mod weston_touch_calibration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3328,7 +3370,7 @@ pub mod weston_touch_calibration {
             }
         }
         #[doc = "Trait to implement the weston_touch_calibrator interface. See the module level documentation for more info"]
-        pub trait WestonTouchCalibrator<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonTouchCalibrator<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_touch_calibrator";
             const VERSION: u32 = 1u32;
             #[doc = "This unmaps the surface if it was mapped. The input device grab"]
@@ -3338,7 +3380,7 @@ pub mod weston_touch_calibration {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This request asks the compositor to convert the surface-local"]
             #[doc = "coordinates into the expected touch input coordinates appropriate for"]
             #[doc = "the associated touch device. The intention is that a client uses this"]
@@ -3363,7 +3405,7 @@ pub mod weston_touch_calibration {
                 x: i32,
                 y: i32,
                 reply: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event tells the client what size to make the surface. The client"]
             #[doc = "must obey the size exactly on the next commit with a wl_buffer."]
             #[doc = ""]
@@ -3375,7 +3417,8 @@ pub mod weston_touch_calibration {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This is sent when the compositor wants to cancel the calibration and"]
@@ -3388,7 +3431,8 @@ pub mod weston_touch_calibration {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "For whatever reason, a touch event resulting from a user action cannot"]
@@ -3407,7 +3451,8 @@ pub mod weston_touch_calibration {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A new touch point has appeared on the surface. This touch point is"]
@@ -3424,7 +3469,8 @@ pub mod weston_touch_calibration {
                 id: i32,
                 x: u32,
                 y: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The touch point has disappeared. No further events will be sent for"]
@@ -3436,7 +3482,8 @@ pub mod weston_touch_calibration {
                 sender_id: waynest::ObjectId,
                 time: u32,
                 id: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A touch point has changed coordinates."]
@@ -3450,7 +3497,8 @@ pub mod weston_touch_calibration {
                 id: i32,
                 x: u32,
                 y: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Indicates the end of a set of events that logically belong together."]
@@ -3465,7 +3513,8 @@ pub mod weston_touch_calibration {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent if the compositor decides the touch stream is a global"]
@@ -3478,7 +3527,8 @@ pub mod weston_touch_calibration {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3486,11 +3536,12 @@ pub mod weston_touch_calibration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }
@@ -3499,7 +3550,7 @@ pub mod weston_touch_calibration {
     #[allow(clippy::too_many_arguments)]
     pub mod weston_touch_coordinate {
         #[doc = "Trait to implement the weston_touch_coordinate interface. See the module level documentation for more info"]
-        pub trait WestonTouchCoordinate<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WestonTouchCoordinate<C: waynest::Connection> {
             const INTERFACE: &'static str = "weston_touch_coordinate";
             const VERSION: u32 = 1u32;
             #[doc = "This event returns the conversion result from surface coordinates to"]
@@ -3515,7 +3566,8 @@ pub mod weston_touch_calibration {
                 sender_id: waynest::ObjectId,
                 x: u32,
                 y: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn handle_request(
@@ -3523,11 +3575,12 @@ pub mod weston_touch_calibration {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(E::from(waynest::ProtocolError::UnknownOpcode(opcode))),
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
             }

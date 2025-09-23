@@ -3,7 +3,7 @@ pub mod ivi_application {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_surface {
         #[doc = "Trait to implement the ivi_surface interface. See the module level documentation for more info"]
-        pub trait IviSurface<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviSurface<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_surface";
             const VERSION: u32 = 1u32;
             #[doc = "This removes the link from ivi_id to wl_surface and destroys ivi_surface."]
@@ -12,7 +12,8 @@ pub mod ivi_application {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The configure event asks the client to resize its surface."]
@@ -32,7 +33,7 @@ pub mod ivi_application {
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This interface is exposed as a global singleton."]
@@ -65,7 +66,7 @@ pub mod ivi_application {
             }
         }
         #[doc = "Trait to implement the ivi_application interface. See the module level documentation for more info"]
-        pub trait IviApplication<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviApplication<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_application";
             const VERSION: u32 = 1u32;
             #[doc = "This request gives the wl_surface the role of an IVI Surface. Creating more than"]
@@ -96,7 +97,8 @@ pub mod ivi_application {
                 ivi_id: u32,
                 surface: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -109,7 +111,7 @@ pub mod ivi_input {
     #[allow(clippy::too_many_arguments)]
     pub mod ivi_input {
         #[doc = "Trait to implement the ivi_input interface. See the module level documentation for more info"]
-        pub trait IviInput<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviInput<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_input";
             const VERSION: u32 = 2u32;
             #[doc = "Set input focus state of surface in ivi compositor. If the surface has input"]
@@ -125,7 +127,8 @@ pub mod ivi_input {
                 surface: u32,
                 device: u32,
                 enabled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set input acceptance of one seat for a surface. Surfaces may"]
@@ -141,7 +144,8 @@ pub mod ivi_input {
                 surface: u32,
                 seat: String,
                 accepted: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn seat_created(
@@ -151,20 +155,20 @@ pub mod ivi_input {
                 name: String,
                 capabilities: u32,
                 is_default: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn seat_capabilities(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
                 capabilities: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn seat_destroyed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The new input focus state is provided in argument enabled:"]
             #[doc = "If enabled is ILM_TRUE, this surface now has input focus enabled."]
             #[doc = "If enabled is not ILM_TRUE, this surface no longer has input focus."]
@@ -175,7 +179,7 @@ pub mod ivi_input {
                 surface: u32,
                 device: u32,
                 enabled: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A surface has changed its input acceptance for a specific seat."]
             #[doc = "If argument 'accepted' is ILM_TRUE, the surface now accepts"]
             #[doc = "the seat."]
@@ -188,7 +192,7 @@ pub mod ivi_input {
                 surface: u32,
                 seat: String,
                 accepted: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -224,7 +228,7 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_wm_screen interface. See the module level documentation for more info"]
-        pub trait IviWmScreen<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviWmScreen<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_wm_screen";
             const VERSION: u32 = 2u32;
             #[doc = "Request to destroy the ivi_wm_screen."]
@@ -232,7 +236,8 @@ pub mod ivi_wm {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -243,7 +248,8 @@ pub mod ivi_wm {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -254,7 +260,8 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A screen has no content assigned to itself, it is a container for layers."]
@@ -264,7 +271,8 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "An ivi_screenshot object is created which will receive the screenshot"]
@@ -275,7 +283,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
                 screenshot: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor sends the requested parameter."]
@@ -284,7 +293,8 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 param: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
@@ -293,21 +303,21 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A layer is added to the render order lisf of the screen"]
             fn layer_added(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent immediately after creating the ivi_wm_screen object."]
             fn connector_name(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 process_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The error event is sent out when an error has occurred."]
             fn error(
                 &self,
@@ -315,7 +325,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 error: u32,
                 message: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "An ivi_screenshot object receives a single \"done\" or \"error\" event."]
@@ -363,7 +373,7 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_screenshot interface. See the module level documentation for more info"]
-        pub trait IviScreenshot<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviScreenshot<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_screenshot";
             const VERSION: u32 = 2u32;
             #[doc = "This event notifies the filling data to buffer is done. The client"]
@@ -373,7 +383,7 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 timestamp: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The error event is sent when the screenshot could not be created."]
             fn error(
                 &self,
@@ -381,7 +391,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 error: Error,
                 message: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -512,7 +522,7 @@ pub mod ivi_wm {
             }
         }
         #[doc = "Trait to implement the ivi_wm interface. See the module level documentation for more info"]
-        pub trait IviWm<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait IviWm<C: waynest::Connection> {
             const INTERFACE: &'static str = "ivi_wm";
             const VERSION: u32 = 2u32;
             #[doc = "All requests are not applied directly to scene object, so a controller"]
@@ -523,7 +533,8 @@ pub mod ivi_wm {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Ask the ivi-wm to create a ivi-screen for given wl_output."]
@@ -533,7 +544,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If visibility argument is 0, the surface in the ivi compositor is set to invisible."]
@@ -544,7 +556,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 visibility: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If visibility argument is 0, the layer in the ivi compositor is set to invisible."]
@@ -555,7 +568,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 visibility: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
@@ -565,7 +579,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 opacity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The valid range for opacity is 0.0 (fully transparent) to 1.0 (fully opaque)."]
@@ -575,7 +590,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 opacity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The source rectangle defines the part of the surface content, that is used for"]
@@ -595,7 +611,8 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The source rectangle defines the part of the layer content, that is used for"]
@@ -615,7 +632,8 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The destination rectangle defines the position and size of a surface on a layer."]
@@ -634,7 +652,8 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The destination rectangle defines the position and size of a layer on a screen."]
@@ -653,7 +672,8 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor sends the properties of the surface."]
@@ -666,7 +686,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 sync_state: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor sends the properties of the layer."]
@@ -679,7 +700,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 sync_state: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor sends the requested parameter."]
@@ -689,7 +711,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 param: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor sends the requested parameter."]
@@ -699,7 +722,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 param: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "An ivi_screenshot object is created which will receive an image of the"]
@@ -713,7 +737,8 @@ pub mod ivi_wm {
                 buffer: waynest::ObjectId,
                 screenshot: waynest::ObjectId,
                 surface_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor changes the type of the surface."]
@@ -723,7 +748,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 r#type: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
@@ -733,7 +759,8 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
@@ -745,7 +772,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "A layer has no content assigned to itself, it is a container for surfaces."]
@@ -758,7 +786,8 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor creates an ivi_layout_layer"]
@@ -769,7 +798,8 @@ pub mod ivi_wm {
                 layer_id: u32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "After this request, compositor destroyes an existing ivi_layout_layer."]
@@ -778,7 +808,8 @@ pub mod ivi_wm {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The new visibility state is provided in argument visibility."]
@@ -790,7 +821,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 visibility: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The new visibility state is provided in argument visibility."]
             #[doc = "If visibility is 0, the layer has become invisible."]
             #[doc = "If visibility is not 0, the layer has become visible."]
@@ -800,7 +831,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 visibility: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The new opacity state is provided in argument opacity."]
             #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn surface_opacity(
@@ -809,7 +840,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
                 opacity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The new opacity state is provided in argument opacity."]
             #[doc = "The valid range for opactiy is 0.0 (fully transparent) to 1.0 (fully opaque)."]
             fn layer_opacity(
@@ -818,7 +849,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 opacity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The scanout region of the surface content has changed."]
             #[doc = "The new values for source rectangle are provided by"]
             #[doc = "x:      new horizontal start position of scanout area within the surface"]
@@ -834,7 +865,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The scanout region of the layer content has changed."]
             #[doc = "The new values for source rectangle are provided by"]
             #[doc = "x:      new horizontal start position of scanout area within the layer"]
@@ -850,7 +881,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The new values for source rectangle are provided by"]
             #[doc = "x:      new horizontal start position of surface within the layer"]
             #[doc = "y:      new vertical start position of surface within the layer"]
@@ -865,7 +896,7 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The new values for source rectangle are provided by"]
             #[doc = "x:      new horizontal start position of layer within the screen"]
             #[doc = "y:      new vertical start position of layer within the screen"]
@@ -880,31 +911,31 @@ pub mod ivi_wm {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn surface_created(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn layer_created(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn surface_destroyed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             fn layer_destroyed(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The error event is sent out when an error has occurred."]
             fn surface_error(
                 &self,
@@ -913,7 +944,7 @@ pub mod ivi_wm {
                 object_id: u32,
                 error: u32,
                 message: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The error event is sent out when an error has occurred."]
             fn layer_error(
                 &self,
@@ -922,7 +953,7 @@ pub mod ivi_wm {
                 object_id: u32,
                 error: u32,
                 message: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The client providing content for this surface modified size of the surface."]
             #[doc = "The modified surface size is provided by arguments width and height."]
             fn surface_size(
@@ -932,7 +963,7 @@ pub mod ivi_wm {
                 surface_id: u32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The information contained in this event is essential for monitoring, debugging,"]
             #[doc = "logging and tracing support in IVI systems."]
             fn surface_stats(
@@ -942,7 +973,7 @@ pub mod ivi_wm {
                 surface_id: u32,
                 frame_count: u32,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "A surface is added to the render order of the layer"]
             fn layer_surface_added(
                 &self,
@@ -950,7 +981,7 @@ pub mod ivi_wm {
                 sender_id: waynest::ObjectId,
                 layer_id: u32,
                 surface_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }

@@ -32,7 +32,7 @@ pub mod alpha_modifier_v1 {
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpAlphaModifierV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_alpha_modifier_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the alpha modifier manager. This doesn't destroy objects"]
@@ -41,7 +41,8 @@ pub mod alpha_modifier_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new alpha modifier surface object associated with the"]
@@ -53,7 +54,8 @@ pub mod alpha_modifier_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -89,8 +91,7 @@ pub mod alpha_modifier_v1 {
             }
         }
         #[doc = "Trait to implement the wp_alpha_modifier_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpAlphaModifierSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait WpAlphaModifierSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_alpha_modifier_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This destroys the object, and is equivalent to set_multiplier with"]
@@ -100,7 +101,8 @@ pub mod alpha_modifier_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the alpha multiplier for the surface. The alpha multiplier is"]
@@ -121,7 +123,8 @@ pub mod alpha_modifier_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 factor: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -381,7 +384,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpColorManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_color_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
@@ -390,7 +393,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates a new wp_color_management_output_v1 object for the"]
@@ -403,7 +407,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If a wp_color_management_surface_v1 object already exists for the given"]
@@ -419,7 +424,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates a new color wp_color_management_surface_feedback_v1 object"]
@@ -433,7 +439,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Makes a new ICC-based image description creator object with all"]
@@ -449,7 +456,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 obj: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Makes a new parametric image description creator object with all"]
@@ -465,7 +473,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 obj: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates a pre-defined image description for the so-called"]
@@ -517,7 +526,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -527,7 +537,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 render_intent: RenderIntent,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each compositor supported feature listed in the enumeration."]
             fn supported_feature(
@@ -535,7 +545,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 feature: Feature,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named transfer function the compositor supports with the"]
             #[doc = "parametric image description creator."]
@@ -544,7 +554,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tf: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named set of primaries the compositor supports with the"]
             #[doc = "parametric image description creator."]
@@ -553,14 +563,14 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when all supported rendering intents, features,"]
             #[doc = "transfer functions and named primaries have been sent."]
             fn done(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A wp_color_management_output_v1 describes the color properties of an"]
@@ -573,8 +583,7 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_color_management_output_v1 {
         #[doc = "Trait to implement the wp_color_management_output_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementOutputV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait WpColorManagementOutputV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_color_management_output_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
@@ -583,7 +592,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This creates a new wp_image_description_v1 object for the current image"]
@@ -622,7 +632,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent whenever the image description of the output changed,"]
@@ -636,7 +647,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A wp_color_management_surface_v1 allows the client to set the color"]
@@ -674,11 +685,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_management_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpColorManagementSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_color_management_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
@@ -687,7 +694,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -735,7 +743,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
                 render_intent : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: RenderIntent,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -748,7 +757,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -785,11 +795,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_management_surface_feedback_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorManagementSurfaceFeedbackV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpColorManagementSurfaceFeedbackV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
@@ -797,7 +803,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -838,7 +845,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The same description as for get_preferred applies, except the returned"]
@@ -852,7 +860,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The preferred image description is the one which likely has the most"]
@@ -876,7 +885,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identity: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This type of object is used for collecting all the information required"]
@@ -929,11 +938,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_creator_icc_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorIccV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpImageDescriptionCreatorIccV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the ICC information"]
@@ -960,7 +965,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the ICC profile file to be used as the basis of the image"]
@@ -1009,7 +1015,8 @@ pub mod color_management_v1 {
                 icc_profile: std::os::fd::OwnedFd,
                 offset: u32,
                 length: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -1080,11 +1087,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_creator_params_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionCreatorParamsV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpImageDescriptionCreatorParamsV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create an image description object based on the parameters previously"]
@@ -1120,7 +1123,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the transfer characteristic using explicitly enumerated named"]
@@ -1140,7 +1144,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the color component transfer characteristic to a power curve with"]
@@ -1169,7 +1174,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 eexp: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the color primaries and white point using explicitly named sets."]
@@ -1187,7 +1193,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the color primaries and white point using CIE 1931 xy chromaticity"]
@@ -1215,7 +1222,8 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the primary color volume luminance range and the reference white"]
@@ -1274,7 +1282,8 @@ pub mod color_management_v1 {
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the color primaries and white point of the mastering display"]
@@ -1335,7 +1344,8 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the luminance range that was used during the content mastering"]
@@ -1377,7 +1387,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the maximum content light level (max_cll) as defined by CTA-861-H."]
@@ -1388,7 +1399,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_cll: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the maximum frame-average light level (max_fall) as defined by"]
@@ -1400,7 +1412,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_fall: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -1481,7 +1494,7 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Trait to implement the wp_image_description_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpImageDescriptionV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_image_description_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
@@ -1493,7 +1506,8 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a wp_image_description_info_v1 object which delivers the"]
@@ -1508,7 +1522,8 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 information: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If creating a wp_image_description_v1 object fails for a reason that is"]
@@ -1527,7 +1542,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 cause: Cause,
                 msg: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
             #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
             #[doc = "used through other interfaces."]
@@ -1560,7 +1575,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identity: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "Sends all matching events describing an image description object exactly"]
@@ -1588,8 +1603,7 @@ pub mod color_management_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_info_v1 {
         #[doc = "Trait to implement the wp_image_description_info_v1 interface. See the module level documentation for more info"]
-        pub trait WpImageDescriptionInfoV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait WpImageDescriptionInfoV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_image_description_info_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Signals the end of information events and destroys the object."]
@@ -1597,7 +1611,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The icc argument provides a file descriptor to the client which may be"]
             #[doc = "memory-mapped to provide the ICC profile matching the image description."]
             #[doc = "The fd is read-only, and if mapped then it must be mapped with"]
@@ -1612,7 +1626,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 icc: std::os::fd::OwnedFd,
                 icc_size: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Delivers the primary color volume primaries and white point using CIE"]
             #[doc = "1931 xy chromaticity coordinates."]
             #[doc = ""]
@@ -1630,7 +1644,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Delivers the primary color volume primaries and white point using an"]
             #[doc = "explicitly enumerated named set."]
             fn primaries_named(
@@ -1638,7 +1652,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 primaries : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: Primaries,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The color component transfer characteristic of this image description is"]
             #[doc = "a pure power curve. This event provides the exponent of the power"]
             #[doc = "function. This curve represents the conversion from electrical to"]
@@ -1651,7 +1665,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 eexp: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Delivers the transfer characteristic using an explicitly enumerated"]
             #[doc = "named function."]
             fn tf_named(
@@ -1659,7 +1673,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 tf : super :: super :: super :: staging :: color_management_v1 :: wp_color_manager_v1 :: TransferFunction,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Delivers the primary color volume luminance range and the reference"]
             #[doc = "white luminance level. These values include the minimum display emission"]
             #[doc = "and ambient flare luminances, assumed to be optically additive and have"]
@@ -1675,7 +1689,7 @@ pub mod color_management_v1 {
                 min_lum: u32,
                 max_lum: u32,
                 reference_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the color primaries and white point of the target color volume"]
             #[doc = "using CIE 1931 xy chromaticity coordinates. This is compatible with the"]
             #[doc = "SMPTE ST 2086 definition of HDR static metadata for mastering displays."]
@@ -1699,7 +1713,7 @@ pub mod color_management_v1 {
                 b_y: i32,
                 w_x: i32,
                 w_y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the luminance range that the image description is targeting as"]
             #[doc = "the minimum and maximum absolute luminance L. These values include the"]
             #[doc = "minimum display emission and ambient flare luminances, assumed to be"]
@@ -1718,7 +1732,7 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 min_lum: u32,
                 max_lum: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the targeted max_cll of the image description. max_cll is"]
             #[doc = "defined by CTA-861-H."]
             #[doc = ""]
@@ -1729,7 +1743,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_cll: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the targeted max_fall of the image description. max_fall is"]
             #[doc = "defined by CTA-861-H."]
             #[doc = ""]
@@ -1740,7 +1754,7 @@ pub mod color_management_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 max_fall: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -1790,11 +1804,7 @@ pub mod color_representation_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_representation_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorRepresentationManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpColorRepresentationManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_color_representation_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_representation_manager_v1 object. This does not"]
@@ -1803,7 +1813,8 @@ pub mod color_representation_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If a wp_color_representation_surface_v1 object already exists for the"]
@@ -1819,7 +1830,8 @@ pub mod color_representation_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
@@ -1832,7 +1844,7 @@ pub mod color_representation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 alpha_mode : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: AlphaMode,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each matrix coefficient and color range combination the compositor"]
             #[doc = "supports."]
@@ -1846,13 +1858,13 @@ pub mod color_representation_v1 {
                 sender_id: waynest::ObjectId,
                 coefficients : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: Coefficients,
                 range : super :: super :: super :: staging :: color_representation_v1 :: wp_color_representation_surface_v1 :: Range,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when all supported features have been sent."]
             fn done(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A wp_color_representation_surface_v1 allows the client to set the color"]
@@ -2028,11 +2040,7 @@ pub mod color_representation_v1 {
             }
         }
         #[doc = "Trait to implement the wp_color_representation_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpColorRepresentationSurfaceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpColorRepresentationSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_color_representation_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_color_representation_surface_v1 object."]
@@ -2046,7 +2054,8 @@ pub mod color_representation_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -2065,7 +2074,8 @@ pub mod color_representation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 alpha_mode: AlphaMode,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -2100,7 +2110,8 @@ pub mod color_representation_v1 {
                 sender_id: waynest::ObjectId,
                 coefficients: Coefficients,
                 range: Range,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this protocol object is inert, the protocol error inert is raised."]
@@ -2122,7 +2133,8 @@ pub mod color_representation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 chroma_location: ChromaLocation,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2175,7 +2187,7 @@ pub mod commit_timing_v1 {
             }
         }
         #[doc = "Trait to implement the wp_commit_timing_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimingManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpCommitTimingManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_commit_timing_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -2185,7 +2197,8 @@ pub mod commit_timing_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Establish a timing controller for a surface."]
@@ -2198,7 +2211,8 @@ pub mod commit_timing_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2234,7 +2248,7 @@ pub mod commit_timing_v1 {
             }
         }
         #[doc = "Trait to implement the wp_commit_timer_v1 interface. See the module level documentation for more info"]
-        pub trait WpCommitTimerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpCommitTimerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_commit_timer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Provide a timing constraint for a surface content update."]
@@ -2258,7 +2272,8 @@ pub mod commit_timing_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Informs the server that the client will no longer be using"]
@@ -2269,7 +2284,8 @@ pub mod commit_timing_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2308,7 +2324,7 @@ pub mod content_type_v1 {
             }
         }
         #[doc = "Trait to implement the wp_content_type_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpContentTypeManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_content_type_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the content type manager. This doesn't destroy objects created"]
@@ -2317,7 +2333,8 @@ pub mod content_type_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new content type object associated with the given surface."]
@@ -2330,7 +2347,8 @@ pub mod content_type_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2372,7 +2390,7 @@ pub mod content_type_v1 {
             }
         }
         #[doc = "Trait to implement the wp_content_type_v1 interface. See the module level documentation for more info"]
-        pub trait WpContentTypeV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpContentTypeV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_content_type_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Switch back to not specifying the content type of this surface. This is"]
@@ -2382,7 +2400,8 @@ pub mod content_type_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the surface content type. This informs the compositor that the"]
@@ -2398,7 +2417,8 @@ pub mod content_type_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 content_type: Type,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2417,7 +2437,7 @@ pub mod cursor_shape_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_cursor_shape_manager_v1 {
         #[doc = "Trait to implement the wp_cursor_shape_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpCursorShapeManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_cursor_shape_manager_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the cursor shape manager."]
@@ -2425,7 +2445,8 @@ pub mod cursor_shape_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a wl_pointer object."]
@@ -2438,7 +2459,8 @@ pub mod cursor_shape_v1 {
                 sender_id: waynest::ObjectId,
                 cursor_shape_device: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Obtain a wp_cursor_shape_device_v1 for a zwp_tablet_tool_v2 object."]
@@ -2451,7 +2473,8 @@ pub mod cursor_shape_v1 {
                 sender_id: waynest::ObjectId,
                 cursor_shape_device: waynest::ObjectId,
                 tablet_tool: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2619,7 +2642,7 @@ pub mod cursor_shape_v1 {
             }
         }
         #[doc = "Trait to implement the wp_cursor_shape_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpCursorShapeDeviceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpCursorShapeDeviceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_cursor_shape_device_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the cursor shape device."]
@@ -2629,7 +2652,8 @@ pub mod cursor_shape_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sets the device cursor to the specified shape. The compositor will"]
@@ -2656,7 +2680,8 @@ pub mod cursor_shape_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 shape: Shape,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2697,7 +2722,7 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_device_v1 {
         #[doc = "Trait to implement the wp_drm_lease_device_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseDeviceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpDrmLeaseDeviceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_drm_lease_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a lease request object."]
@@ -2708,7 +2733,8 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Indicates the client no longer wishes to use this object. In response"]
@@ -2721,7 +2747,8 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The compositor will send this event when the wp_drm_lease_device_v1"]
@@ -2737,7 +2764,7 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor will use this event to advertise connectors available for"]
             #[doc = "lease by clients. This object may be passed into a lease request to"]
             #[doc = "indicate the client would like to lease that connector, see"]
@@ -2753,7 +2780,7 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor will send this event to indicate that it has sent all"]
             #[doc = "currently available connectors after the client binds to the global or"]
             #[doc = "when it updates the connector list, for example on hotplug, drm master"]
@@ -2764,7 +2791,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent in response to the release request and indicates"]
             #[doc = "that the compositor is done sending connector events."]
             #[doc = "The compositor will destroy this object immediately after sending the"]
@@ -2774,7 +2801,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "Represents a DRM connector which is available for lease. These objects are"]
@@ -2787,7 +2814,7 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_connector_v1 {
         #[doc = "Trait to implement the wp_drm_lease_connector_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseConnectorV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpDrmLeaseConnectorV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_drm_lease_connector_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client may send this request to indicate that it will not use this"]
@@ -2799,7 +2826,8 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The compositor sends this event once the connector is created to"]
@@ -2815,7 +2843,7 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor sends this event once the connector is created to provide"]
             #[doc = "a human-readable description for this connector, which may be presented"]
             #[doc = "to the user. The compositor may send this event multiple times over the"]
@@ -2825,7 +2853,7 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 description: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor sends this event once the connector is created to"]
             #[doc = "indicate the DRM object ID which represents the underlying connector"]
             #[doc = "that is being offered. Note that the final lease may include additional"]
@@ -2835,7 +2863,7 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 connector_id: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all properties of a connector have been sent."]
             #[doc = "This allows changes to the properties to be seen as atomic even if they"]
             #[doc = "happen via multiple events."]
@@ -2843,7 +2871,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent to indicate that the compositor will no longer honor requests for"]
             #[doc = "DRM leases which include this connector. The client may still issue a"]
             #[doc = "lease request including this connector, but the compositor will send"]
@@ -2859,7 +2887,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A client that wishes to lease DRM resources will attach the list of"]
@@ -2896,7 +2924,7 @@ pub mod drm_lease_v1 {
             }
         }
         #[doc = "Trait to implement the wp_drm_lease_request_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseRequestV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpDrmLeaseRequestV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_drm_lease_request_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Indicates that the client would like to lease the given connector."]
@@ -2914,7 +2942,8 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 connector: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Submits the lease request and creates a new wp_drm_lease_v1 object."]
@@ -2929,7 +2958,8 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -2945,7 +2975,7 @@ pub mod drm_lease_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_drm_lease_v1 {
         #[doc = "Trait to implement the wp_drm_lease_v1 interface. See the module level documentation for more info"]
-        pub trait WpDrmLeaseV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpDrmLeaseV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_drm_lease_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client should send this to indicate that it no longer wishes to use"]
@@ -2959,7 +2989,8 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event returns a file descriptor suitable for use with DRM-related"]
@@ -2977,7 +3008,7 @@ pub mod drm_lease_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 leased_fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor uses this event to either reject a lease request, or if"]
             #[doc = "it previously sent a lease_fd, to notify the client that the lease has"]
             #[doc = "been revoked. If the client requires a new lease, they should destroy"]
@@ -2992,7 +3023,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -3045,11 +3076,7 @@ pub mod ext_background_effect_v1 {
             }
         }
         #[doc = "Trait to implement the ext_background_effect_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtBackgroundEffectManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtBackgroundEffectManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_background_effect_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this"]
@@ -3059,7 +3086,8 @@ pub mod ext_background_effect_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Instantiate an interface extension for the given wl_surface to add"]
@@ -3074,7 +3102,8 @@ pub mod ext_background_effect_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             fn capabilities(
@@ -3082,7 +3111,7 @@ pub mod ext_background_effect_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 flags: Capability,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The background effect object provides a way to specify a region behind"]
@@ -3114,11 +3143,7 @@ pub mod ext_background_effect_v1 {
             }
         }
         #[doc = "Trait to implement the ext_background_effect_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtBackgroundEffectSurfaceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtBackgroundEffectSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_background_effect_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using this protocol"]
@@ -3127,7 +3152,8 @@ pub mod ext_background_effect_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request sets the region of the surface that will have its"]
@@ -3152,7 +3178,8 @@ pub mod ext_background_effect_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3173,7 +3200,7 @@ pub mod ext_data_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_data_control_manager_v1 {
         #[doc = "Trait to implement the ext_data_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtDataControlManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_data_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new data source."]
@@ -3182,7 +3209,8 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a data device that can be used to manage a seat's selection."]
@@ -3192,7 +3220,8 @@ pub mod ext_data_control_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "All objects created by the manager will still remain valid, until their"]
@@ -3201,7 +3230,8 @@ pub mod ext_data_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3233,7 +3263,7 @@ pub mod ext_data_control_v1 {
             }
         }
         #[doc = "Trait to implement the ext_data_control_device_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlDeviceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtDataControlDeviceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_data_control_device_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request asks the compositor to set the selection to the data from"]
@@ -3249,7 +3279,8 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the data device object."]
@@ -3257,7 +3288,8 @@ pub mod ext_data_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request asks the compositor to set the primary selection to the"]
@@ -3276,7 +3308,8 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 source: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The data_offer event introduces a new ext_data_control_offer object,"]
@@ -3292,7 +3325,7 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the selection for this device. The"]
             #[doc = "ext_data_control_device.data_offer and the ext_data_control_offer.offer"]
@@ -3311,14 +3344,14 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This data control object is no longer valid and should be destroyed by"]
             #[doc = "the client."]
             fn finished(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The primary_selection event is sent out to notify the client of a new"]
             #[doc = "ext_data_control_offer for the primary selection for this device. The"]
             #[doc = "ext_data_control_device.data_offer and the ext_data_control_offer.offer"]
@@ -3339,7 +3372,7 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The ext_data_control_source object is the source side of a"]
@@ -3370,7 +3403,7 @@ pub mod ext_data_control_v1 {
             }
         }
         #[doc = "Trait to implement the ext_data_control_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlSourceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtDataControlSourceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_data_control_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request adds a MIME type to the set of MIME types advertised to"]
@@ -3383,7 +3416,8 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the data source object."]
@@ -3391,7 +3425,8 @@ pub mod ext_data_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request for data from the client. Send the data as the specified MIME"]
@@ -3402,7 +3437,7 @@ pub mod ext_data_control_v1 {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This data source is no longer valid. The data source has been replaced"]
             #[doc = "by another data source."]
             #[doc = ""]
@@ -3411,7 +3446,7 @@ pub mod ext_data_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A ext_data_control_offer represents a piece of data offered for transfer"]
@@ -3421,7 +3456,7 @@ pub mod ext_data_control_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_data_control_offer_v1 {
         #[doc = "Trait to implement the ext_data_control_offer_v1 interface. See the module level documentation for more info"]
-        pub trait ExtDataControlOfferV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtDataControlOfferV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_data_control_offer_v1";
             const VERSION: u32 = 1u32;
             #[doc = "To transfer the offered data, the client issues this request and"]
@@ -3440,7 +3475,8 @@ pub mod ext_data_control_v1 {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the data offer object."]
@@ -3448,7 +3484,8 @@ pub mod ext_data_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent immediately after creating the ext_data_control_offer object."]
@@ -3458,7 +3495,7 @@ pub mod ext_data_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -3503,8 +3540,7 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_list_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_list_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelListV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ExtForeignToplevelListV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_foreign_toplevel_list_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
@@ -3518,7 +3554,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request should be called either when the client will no longer"]
@@ -3532,7 +3569,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted whenever a new toplevel window is created. It is"]
@@ -3548,7 +3586,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the compositor is done sending events"]
             #[doc = "to this object. The client should destroy the object."]
             #[doc = "See ext_foreign_toplevel_list_v1.destroy for more information."]
@@ -3558,7 +3596,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A ext_foreign_toplevel_handle_v1 object represents a mapped toplevel"]
@@ -3566,11 +3604,7 @@ pub mod ext_foreign_toplevel_list_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_handle_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelHandleV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtForeignToplevelHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_foreign_toplevel_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This request should be used when the client will no longer use the handle"]
@@ -3590,7 +3624,8 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The server will emit no further events on the ext_foreign_toplevel_handle_v1"]
@@ -3603,7 +3638,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all changes in the toplevel state have"]
             #[doc = "been sent."]
             #[doc = ""]
@@ -3618,7 +3653,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The title of the toplevel has changed."]
             #[doc = ""]
             #[doc = "The configured state must not be applied immediately. See"]
@@ -3628,7 +3663,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The app id of the toplevel has changed."]
             #[doc = ""]
             #[doc = "The configured state must not be applied immediately. See"]
@@ -3638,7 +3673,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This identifier is used to check if two or more toplevel handles belong"]
             #[doc = "to the same toplevel."]
             #[doc = ""]
@@ -3664,7 +3699,7 @@ pub mod ext_foreign_toplevel_list_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 identifier: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -3677,7 +3712,7 @@ pub mod ext_idle_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notifier_v1 {
         #[doc = "Trait to implement the ext_idle_notifier_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotifierV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtIdleNotifierV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_idle_notifier_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the manager object. All objects created via this interface"]
@@ -3686,7 +3721,8 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new idle notification object."]
@@ -3704,7 +3740,8 @@ pub mod ext_idle_notify_v1 {
                 id: waynest::ObjectId,
                 timeout: u32,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a new idle notification object to track input from the"]
@@ -3724,7 +3761,8 @@ pub mod ext_idle_notify_v1 {
                 id: waynest::ObjectId,
                 timeout: u32,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3754,7 +3792,7 @@ pub mod ext_idle_notify_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_idle_notification_v1 {
         #[doc = "Trait to implement the ext_idle_notification_v1 interface. See the module level documentation for more info"]
-        pub trait ExtIdleNotificationV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtIdleNotificationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_idle_notification_v1";
             const VERSION: u32 = 2u32;
             #[doc = "Destroy the notification object."]
@@ -3762,7 +3800,8 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent when the notification object becomes idle."]
@@ -3773,7 +3812,7 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when the notification object stops being idle."]
             #[doc = ""]
             #[doc = "It's a compositor protocol error to send this event twice without an"]
@@ -3783,7 +3822,7 @@ pub mod ext_idle_notify_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -3811,7 +3850,7 @@ pub mod ext_image_capture_source_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_image_capture_source_v1 {
         #[doc = "Trait to implement the ext_image_capture_source_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCaptureSourceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtImageCaptureSourceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_image_capture_source_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the image capture source. This request may be sent at any time"]
@@ -3820,7 +3859,8 @@ pub mod ext_image_capture_source_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3829,11 +3869,7 @@ pub mod ext_image_capture_source_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_output_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the ext_output_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtOutputImageCaptureSourceManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtOutputImageCaptureSourceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_output_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for an output. Images captured from this source"]
@@ -3846,7 +3882,8 @@ pub mod ext_image_capture_source_v1 {
                 sender_id: waynest::ObjectId,
                 source: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
@@ -3856,7 +3893,8 @@ pub mod ext_image_capture_source_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3866,11 +3904,7 @@ pub mod ext_image_capture_source_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_foreign_toplevel_image_capture_source_manager_v1 {
         #[doc = "Trait to implement the ext_foreign_toplevel_image_capture_source_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtForeignToplevelImageCaptureSourceManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtForeignToplevelImageCaptureSourceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_foreign_toplevel_image_capture_source_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a source object for a foreign toplevel handle. Images captured"]
@@ -3881,7 +3915,8 @@ pub mod ext_image_capture_source_v1 {
                 sender_id: waynest::ObjectId,
                 source: waynest::ObjectId,
                 toplevel_handle: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the manager. This request may be sent at any time by the client"]
@@ -3891,7 +3926,8 @@ pub mod ext_image_capture_source_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -3944,11 +3980,7 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtImageCopyCaptureManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_image_copy_capture_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capturing session for an image capture source."]
@@ -3966,7 +3998,8 @@ pub mod ext_image_copy_capture_v1 {
                 session: waynest::ObjectId,
                 source: waynest::ObjectId,
                 options: Options,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a cursor capturing session for the pointer of an image capture"]
@@ -3978,7 +4011,8 @@ pub mod ext_image_copy_capture_v1 {
                 session: waynest::ObjectId,
                 source: waynest::ObjectId,
                 pointer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the manager object."]
@@ -3988,7 +4022,8 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -4033,11 +4068,7 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureSessionV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtImageCopyCaptureSessionV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_image_copy_capture_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a capture frame for this session."]
@@ -4050,7 +4081,8 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 frame: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -4062,7 +4094,8 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Provides the dimensions of the source image in buffer pixel coordinates."]
@@ -4074,7 +4107,7 @@ pub mod ext_image_copy_capture_v1 {
                 sender_id: waynest::ObjectId,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the format that must be used for shared-memory buffers."]
             #[doc = ""]
             #[doc = "This event may be emitted multiple times, in which case the client may"]
@@ -4084,7 +4117,7 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the device buffers must be allocated on for"]
             #[doc = "dma-buf buffers."]
             #[doc = ""]
@@ -4097,7 +4130,7 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 device: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Provides the format that must be used for dma-buf buffers."]
             #[doc = ""]
             #[doc = "The client may choose any of the modifiers advertised in the array of"]
@@ -4111,7 +4144,7 @@ pub mod ext_image_copy_capture_v1 {
                 sender_id: waynest::ObjectId,
                 format: u32,
                 modifiers: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent once when all buffer constraint events have been"]
             #[doc = "sent."]
             #[doc = ""]
@@ -4122,7 +4155,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the capture session has stopped and is no"]
             #[doc = "longer available. This can happen in a number of cases, e.g. when the"]
             #[doc = "underlying source is destroyed, if the user decides to end the image"]
@@ -4133,7 +4166,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This object represents an image capture frame."]
@@ -4200,11 +4233,7 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_frame_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureFrameV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtImageCopyCaptureFrameV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_image_copy_capture_frame_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the frame. This request can be sent at any time by the"]
@@ -4213,7 +4242,8 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Attach a buffer to the session."]
@@ -4229,7 +4259,8 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Apply damage to the buffer which is to be captured next. This request"]
@@ -4261,7 +4292,8 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Capture a frame."]
@@ -4277,7 +4309,8 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent before the ready event and holds the transform that"]
@@ -4287,7 +4320,7 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 transform: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent before the ready event. It may be generated multiple"]
             #[doc = "times to describe a region."]
             #[doc = ""]
@@ -4304,7 +4337,7 @@ pub mod ext_image_copy_capture_v1 {
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates the time at which the frame is presented to the"]
             #[doc = "output in system monotonic time. This event is sent before the ready"]
             #[doc = "event."]
@@ -4321,7 +4354,7 @@ pub mod ext_image_copy_capture_v1 {
                 tv_sec_hi: u32,
                 tv_sec_lo: u32,
                 tv_nsec: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Called as soon as the frame is copied, indicating it is available"]
             #[doc = "for reading."]
             #[doc = ""]
@@ -4332,7 +4365,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted frame copy has failed."]
             #[doc = ""]
             #[doc = "After receiving this event, the client must destroy the object."]
@@ -4341,7 +4374,7 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 reason: FailureReason,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -4370,11 +4403,7 @@ pub mod ext_image_copy_capture_v1 {
             }
         }
         #[doc = "Trait to implement the ext_image_copy_capture_cursor_session_v1 interface. See the module level documentation for more info"]
-        pub trait ExtImageCopyCaptureCursorSessionV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait ExtImageCopyCaptureCursorSessionV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_image_copy_capture_cursor_session_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the session. This request can be sent at any time by the"]
@@ -4386,7 +4415,8 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Gets the image copy capture session for this cursor session."]
@@ -4401,7 +4431,8 @@ pub mod ext_image_copy_capture_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 session: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Sent when a cursor enters the captured area. It shall be generated"]
@@ -4415,7 +4446,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Sent when a cursor leaves the captured area. No \"position\" or \"hotspot\""]
             #[doc = "event is generated for the cursor until the cursor enters the captured"]
             #[doc = "area again."]
@@ -4423,7 +4454,7 @@ pub mod ext_image_copy_capture_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "Cursors outside the image capture source do not get captured and no"]
             #[doc = "event will be generated for them."]
             #[doc = ""]
@@ -4437,7 +4468,7 @@ pub mod ext_image_copy_capture_v1 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The hotspot describes the offset between the cursor image and the"]
             #[doc = "position of the input device."]
             #[doc = ""]
@@ -4454,7 +4485,7 @@ pub mod ext_image_copy_capture_v1 {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -4484,7 +4515,7 @@ pub mod ext_session_lock_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_session_lock_manager_v1 {
         #[doc = "Trait to implement the ext_session_lock_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtSessionLockManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_session_lock_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the session lock manager object will"]
@@ -4494,7 +4525,8 @@ pub mod ext_session_lock_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request creates a session lock and asks the compositor to lock the"]
@@ -4506,7 +4538,8 @@ pub mod ext_session_lock_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -4595,7 +4628,7 @@ pub mod ext_session_lock_v1 {
             }
         }
         #[doc = "Trait to implement the ext_session_lock_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtSessionLockV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_session_lock_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the lock object will no longer be"]
@@ -4611,7 +4644,8 @@ pub mod ext_session_lock_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The client is expected to create lock surfaces for all outputs"]
@@ -4632,7 +4666,8 @@ pub mod ext_session_lock_v1 {
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request indicates that the session should be unlocked, for"]
@@ -4662,7 +4697,8 @@ pub mod ext_session_lock_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This client is now responsible for displaying graphics while the"]
@@ -4678,7 +4714,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor has decided that the session lock should be destroyed"]
             #[doc = "as it will no longer be used by the compositor. Exactly when this"]
             #[doc = "event is sent is compositor policy, but it must never be sent more"]
@@ -4705,7 +4741,7 @@ pub mod ext_session_lock_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "The client may use lock surfaces to display a screensaver, render a"]
@@ -4756,7 +4792,7 @@ pub mod ext_session_lock_v1 {
             }
         }
         #[doc = "Trait to implement the ext_session_lock_surface_v1 interface. See the module level documentation for more info"]
-        pub trait ExtSessionLockSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtSessionLockSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_session_lock_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "This informs the compositor that the lock surface object will no"]
@@ -4772,7 +4808,8 @@ pub mod ext_session_lock_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "When a configure event is received, if a client commits the surface"]
@@ -4804,7 +4841,8 @@ pub mod ext_session_lock_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is sent once on binding the interface and may be sent again"]
@@ -4820,7 +4858,7 @@ pub mod ext_session_lock_v1 {
                 serial: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -4848,8 +4886,7 @@ pub mod ext_transient_seat_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_manager_v1 {
         #[doc = "Trait to implement the ext_transient_seat_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ExtTransientSeatManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_transient_seat_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Create a new seat that is removed when the client side transient seat"]
@@ -4862,7 +4899,8 @@ pub mod ext_transient_seat_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the manager."]
@@ -4873,7 +4911,8 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -4883,7 +4922,7 @@ pub mod ext_transient_seat_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_transient_seat_v1 {
         #[doc = "Trait to implement the ext_transient_seat_v1 interface. See the module level documentation for more info"]
-        pub trait ExtTransientSeatV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtTransientSeatV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_transient_seat_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the transient seat object is destroyed by the client, the"]
@@ -4892,7 +4931,8 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises the global name for the wl_seat to be used with"]
@@ -4906,7 +4946,7 @@ pub mod ext_transient_seat_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 global_name: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "The event informs the client that the compositor denied its request to"]
             #[doc = "create a transient seat."]
             #[doc = ""]
@@ -4918,7 +4958,7 @@ pub mod ext_transient_seat_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -4946,7 +4986,7 @@ pub mod ext_workspace_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod ext_workspace_manager_v1 {
         #[doc = "Trait to implement the ext_workspace_manager_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtWorkspaceManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_workspace_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "The client must send this request after it has finished sending other"]
@@ -4961,7 +5001,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Indicates the client no longer wishes to receive events for new"]
@@ -4975,7 +5016,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event is emitted whenever a new workspace group has been created."]
@@ -4988,7 +5030,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace_group: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever a new workspace has been created."]
             #[doc = ""]
             #[doc = "All initial details of the workspace (name, coordinates, state) will"]
@@ -5001,7 +5043,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all changes in all workspaces and workspace groups have been"]
             #[doc = "sent."]
             #[doc = ""]
@@ -5017,7 +5059,7 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the compositor is done sending events to the"]
             #[doc = "ext_workspace_manager_v1. The server will destroy the object"]
             #[doc = "immediately after sending this request."]
@@ -5025,7 +5067,7 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A ext_workspace_group_handle_v1 object represents a workspace group"]
@@ -5054,8 +5096,7 @@ pub mod ext_workspace_v1 {
             }
         }
         #[doc = "Trait to implement the ext_workspace_group_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceGroupHandleV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait ExtWorkspaceGroupHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_workspace_group_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Request that the compositor create a new workspace with the given name"]
@@ -5068,7 +5109,8 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroys the ext_workspace_group_handle_v1 object."]
@@ -5080,7 +5122,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
@@ -5101,7 +5144,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: GroupCapabilities,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever an output is assigned to the workspace"]
             #[doc = "group or a new `wl_output` object is bound by the client, which was already"]
             #[doc = "assigned to this workspace_group."]
@@ -5110,7 +5153,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever an output is removed from the workspace"]
             #[doc = "group."]
             fn output_leave(
@@ -5118,7 +5161,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever a workspace is assigned to this group."]
             #[doc = "A workspace may only ever be assigned to a single group at a single point"]
             #[doc = "in time, but can be re-assigned during it's lifetime."]
@@ -5127,14 +5170,14 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted whenever a workspace is removed from this group."]
             fn workspace_leave(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is send when the group associated with the ext_workspace_group_handle_v1"]
             #[doc = "has been removed. After sending this request the compositor will immediately consider"]
             #[doc = "the object inert. Any requests will be ignored except the destroy request."]
@@ -5147,7 +5190,7 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "A ext_workspace_handle_v1 object represents a workspace that handles a"]
@@ -5193,7 +5236,7 @@ pub mod ext_workspace_v1 {
             }
         }
         #[doc = "Trait to implement the ext_workspace_handle_v1 interface. See the module level documentation for more info"]
-        pub trait ExtWorkspaceHandleV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait ExtWorkspaceHandleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "ext_workspace_handle_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the ext_workspace_handle_v1 object."]
@@ -5205,7 +5248,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be activated."]
@@ -5218,7 +5262,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be deactivated."]
@@ -5228,7 +5273,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests that this workspace is assigned to the given workspace group."]
@@ -5239,7 +5285,8 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 workspace_group: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that this workspace be removed."]
@@ -5249,7 +5296,8 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "If this event is emitted, it will be send immediately after the"]
@@ -5270,7 +5318,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and whenever the name of the workspace changes."]
             #[doc = ""]
@@ -5281,7 +5329,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is used to organize workspaces into an N-dimensional grid"]
             #[doc = "within a workspace group, and if supported, is emitted immediately after"]
             #[doc = "the ext_workspace_handle_v1 is created and whenever the coordinates of"]
@@ -5305,7 +5353,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 coordinates: Vec<u8>,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted immediately after the ext_workspace_handle_v1 is"]
             #[doc = "created and each time the workspace state changes, either because of a"]
             #[doc = "compositor action or because of a request in this protocol."]
@@ -5317,7 +5365,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 state: State,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event advertises the capabilities supported by the compositor. If"]
             #[doc = "a capability isn't supported, clients should hide or disable the UI"]
             #[doc = "elements that expose this functionality. For instance, if the"]
@@ -5336,7 +5384,7 @@ pub mod ext_workspace_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 capabilities: WorkspaceCapabilities,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is send when the workspace associated with the ext_workspace_handle_v1"]
             #[doc = "has been removed. After sending this request, the compositor will immediately consider"]
             #[doc = "the object inert. Any requests will be ignored except the destroy request."]
@@ -5350,7 +5398,7 @@ pub mod ext_workspace_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -5393,7 +5441,7 @@ pub mod fifo_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fifo_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpFifoManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_fifo_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will no longer be using"]
@@ -5403,7 +5451,8 @@ pub mod fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Establish a fifo object for a surface that may be used to add"]
@@ -5420,7 +5469,8 @@ pub mod fifo_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5453,7 +5503,7 @@ pub mod fifo_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fifo_v1 interface. See the module level documentation for more info"]
-        pub trait WpFifoV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpFifoV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_fifo_v1";
             const VERSION: u32 = 1u32;
             #[doc = "When the content update containing the \"set_barrier\" is applied,"]
@@ -5474,7 +5524,8 @@ pub mod fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Indicate that this content update is not ready while a"]
@@ -5501,7 +5552,8 @@ pub mod fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Informs the server that the client will no longer be using"]
@@ -5513,7 +5565,8 @@ pub mod fifo_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5564,11 +5617,7 @@ pub mod fractional_scale_v1 {
             }
         }
         #[doc = "Trait to implement the wp_fractional_scale_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpFractionalScaleManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_fractional_scale_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the server that the client will not be using this protocol"]
@@ -5578,7 +5627,8 @@ pub mod fractional_scale_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create an add-on object for the the wl_surface to let the compositor"]
@@ -5591,7 +5641,8 @@ pub mod fractional_scale_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5601,7 +5652,7 @@ pub mod fractional_scale_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_fractional_scale_v1 {
         #[doc = "Trait to implement the wp_fractional_scale_v1 interface. See the module level documentation for more info"]
-        pub trait WpFractionalScaleV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpFractionalScaleV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_fractional_scale_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the fractional scale object. When this object is destroyed,"]
@@ -5610,7 +5661,8 @@ pub mod fractional_scale_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notification of a new preferred scale for this surface that the"]
@@ -5622,7 +5674,7 @@ pub mod fractional_scale_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 scale: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -5685,11 +5737,7 @@ pub mod linux_drm_syncobj_v1 {
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpLinuxDrmSyncobjManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this explicit synchronization factory object. Other objects"]
@@ -5698,7 +5746,8 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Instantiate an interface extension for the given wl_surface to provide"]
@@ -5718,7 +5767,8 @@ pub mod linux_drm_syncobj_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Import a DRM synchronization object timeline."]
@@ -5730,7 +5780,8 @@ pub mod linux_drm_syncobj_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5740,11 +5791,7 @@ pub mod linux_drm_syncobj_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_linux_drm_syncobj_timeline_v1 {
         #[doc = "Trait to implement the wp_linux_drm_syncobj_timeline_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjTimelineV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpLinuxDrmSyncobjTimelineV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_timeline_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the synchronization object timeline. Other objects are not"]
@@ -5754,7 +5801,8 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5823,11 +5871,7 @@ pub mod linux_drm_syncobj_v1 {
             }
         }
         #[doc = "Trait to implement the wp_linux_drm_syncobj_surface_v1 interface. See the module level documentation for more info"]
-        pub trait WpLinuxDrmSyncobjSurfaceV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpLinuxDrmSyncobjSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_linux_drm_syncobj_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this surface synchronization object."]
@@ -5840,7 +5884,8 @@ pub mod linux_drm_syncobj_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the timeline point that must be signalled before the compositor may"]
@@ -5872,7 +5917,8 @@ pub mod linux_drm_syncobj_v1 {
                 timeline: waynest::ObjectId,
                 point_hi: u32,
                 point_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set the timeline point that must be signalled by the compositor when it"]
@@ -5925,7 +5971,8 @@ pub mod linux_drm_syncobj_v1 {
                 timeline: waynest::ObjectId,
                 point_hi: u32,
                 point_lo: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -5948,7 +5995,7 @@ pub mod pointer_warp_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_pointer_warp_v1 {
         #[doc = "Trait to implement the wp_pointer_warp_v1 interface. See the module level documentation for more info"]
-        pub trait WpPointerWarpV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpPointerWarpV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_pointer_warp_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the pointer warp manager."]
@@ -5956,7 +6003,8 @@ pub mod pointer_warp_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request the compositor to move the pointer to a surface-local position."]
@@ -5979,7 +6027,8 @@ pub mod pointer_warp_v1 {
                 x: waynest::Fixed,
                 y: waynest::Fixed,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6032,11 +6081,7 @@ pub mod security_context_v1 {
             }
         }
         #[doc = "Trait to implement the wp_security_context_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpSecurityContextManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_security_context_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the manager. This doesn't destroy objects created with the"]
@@ -6045,7 +6090,8 @@ pub mod security_context_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a new security context with a socket listening FD."]
@@ -6070,7 +6116,8 @@ pub mod security_context_v1 {
                 id: waynest::ObjectId,
                 listen_fd: std::os::fd::OwnedFd,
                 close_fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6115,7 +6162,7 @@ pub mod security_context_v1 {
             }
         }
         #[doc = "Trait to implement the wp_security_context_v1 interface. See the module level documentation for more info"]
-        pub trait WpSecurityContextV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpSecurityContextV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_security_context_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the security context object."]
@@ -6123,7 +6170,8 @@ pub mod security_context_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Attach a unique sandbox engine name to the security context. The name"]
@@ -6139,7 +6187,8 @@ pub mod security_context_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Attach an application ID to the security context."]
@@ -6160,7 +6209,8 @@ pub mod security_context_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Attach an instance ID to the security context."]
@@ -6179,7 +6229,8 @@ pub mod security_context_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 instance_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Atomically register the new client and attach the security context"]
@@ -6196,7 +6247,8 @@ pub mod security_context_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6219,11 +6271,7 @@ pub mod single_pixel_buffer_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod wp_single_pixel_buffer_manager_v1 {
         #[doc = "Trait to implement the wp_single_pixel_buffer_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpSinglePixelBufferManagerV1<
-            C: waynest::Connection,
-            E: From<waynest::ProtocolError>,
-        >
-        {
+        pub trait WpSinglePixelBufferManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_single_pixel_buffer_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_single_pixel_buffer_manager_v1 object."]
@@ -6233,7 +6281,8 @@ pub mod single_pixel_buffer_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create a single-pixel buffer from four 32-bit RGBA values."]
@@ -6258,7 +6307,8 @@ pub mod single_pixel_buffer_v1 {
                 g: u32,
                 b: u32,
                 a: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6305,8 +6355,7 @@ pub mod tearing_control_v1 {
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_manager_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait WpTearingControlManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_tearing_control_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this tearing control factory object. Other objects, including"]
@@ -6316,7 +6365,8 @@ pub mod tearing_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Instantiate an interface extension for the given wl_surface to request"]
@@ -6330,7 +6380,8 @@ pub mod tearing_control_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6370,7 +6421,7 @@ pub mod tearing_control_v1 {
             }
         }
         #[doc = "Trait to implement the wp_tearing_control_v1 interface. See the module level documentation for more info"]
-        pub trait WpTearingControlV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait WpTearingControlV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "wp_tearing_control_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Set the presentation hint for the associated wl_surface. This state is"]
@@ -6384,7 +6435,8 @@ pub mod tearing_control_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 hint: PresentationHint,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy this surface tearing object and revert the presentation hint to"]
@@ -6393,7 +6445,8 @@ pub mod tearing_control_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6445,7 +6498,7 @@ pub mod xdg_activation_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_activation_v1 {
         #[doc = "Trait to implement the xdg_activation_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgActivationV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_activation_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the xdg_activation object will no longer be"]
@@ -6457,7 +6510,8 @@ pub mod xdg_activation_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates an xdg_activation_token_v1 object that will provide"]
@@ -6468,7 +6522,8 @@ pub mod xdg_activation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests surface activation. It's up to the compositor to display"]
@@ -6487,7 +6542,8 @@ pub mod xdg_activation_v1 {
                 sender_id: waynest::ObjectId,
                 token: String,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6524,7 +6580,7 @@ pub mod xdg_activation_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_activation_token_v1 interface. See the module level documentation for more info"]
-        pub trait XdgActivationTokenV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgActivationTokenV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_activation_token_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Provides information about the seat and serial event that requested the"]
@@ -6545,7 +6601,8 @@ pub mod xdg_activation_v1 {
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The requesting client can specify an app_id to associate the token"]
@@ -6557,7 +6614,8 @@ pub mod xdg_activation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request sets the surface requesting the activation. Note, this is"]
@@ -6572,7 +6630,8 @@ pub mod xdg_activation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Requests an activation token based on the different parameters that"]
@@ -6581,7 +6640,8 @@ pub mod xdg_activation_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Notify the compositor that the xdg_activation_token_v1 object will no"]
@@ -6590,7 +6650,8 @@ pub mod xdg_activation_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "The 'done' event contains the unique token of this activation request"]
@@ -6600,7 +6661,7 @@ pub mod xdg_activation_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 token: String,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
 }
@@ -6641,7 +6702,7 @@ pub mod xdg_dialog_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_wm_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgWmDialogV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgWmDialogV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_wm_dialog_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the xdg_wm_dialog_v1 object. This does not affect"]
@@ -6650,7 +6711,8 @@ pub mod xdg_dialog_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a xdg_dialog_v1 object for the given toplevel. See the interface"]
@@ -6664,7 +6726,8 @@ pub mod xdg_dialog_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6681,7 +6744,7 @@ pub mod xdg_dialog_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_dialog_v1 {
         #[doc = "Trait to implement the xdg_dialog_v1 interface. See the module level documentation for more info"]
-        pub trait XdgDialogV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgDialogV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_dialog_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the xdg_dialog_v1 object. If this object is destroyed"]
@@ -6691,7 +6754,8 @@ pub mod xdg_dialog_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Hints that the dialog has \"modal\" behavior. Modal dialogs typically"]
@@ -6709,7 +6773,8 @@ pub mod xdg_dialog_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Drops the hint that this dialog has \"modal\" behavior. See"]
@@ -6718,7 +6783,8 @@ pub mod xdg_dialog_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6735,7 +6801,7 @@ pub mod xdg_system_bell_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_system_bell_v1 {
         #[doc = "Trait to implement the xdg_system_bell_v1 interface. See the module level documentation for more info"]
-        pub trait XdgSystemBellV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgSystemBellV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_system_bell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Notify that the object will no longer be used."]
@@ -6743,7 +6809,8 @@ pub mod xdg_system_bell_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This requests rings the system bell on behalf of a client. How ringing"]
@@ -6760,7 +6827,8 @@ pub mod xdg_system_bell_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 surface: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6825,8 +6893,7 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait XdgToplevelDragManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_toplevel_drag_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_toplevel_drag_manager_v1 object. Other objects,"]
@@ -6836,7 +6903,8 @@ pub mod xdg_toplevel_drag_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create an xdg_toplevel_drag for a drag and drop operation that is going"]
@@ -6855,7 +6923,8 @@ pub mod xdg_toplevel_drag_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 data_source: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6887,7 +6956,7 @@ pub mod xdg_toplevel_drag_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_drag_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelDragV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgToplevelDragV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_toplevel_drag_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this xdg_toplevel_drag_v1 object. This request must only be"]
@@ -6898,7 +6967,8 @@ pub mod xdg_toplevel_drag_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Request that the window will be moved with the cursor during the drag"]
@@ -6923,7 +6993,8 @@ pub mod xdg_toplevel_drag_v1 {
                 toplevel: waynest::ObjectId,
                 x_offset: i32,
                 y_offset: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -6951,8 +7022,7 @@ pub mod xdg_toplevel_icon_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_icon_manager_v1 {
         #[doc = "Trait to implement the xdg_toplevel_icon_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>>
-        {
+        pub trait XdgToplevelIconManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_toplevel_icon_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the toplevel icon manager."]
@@ -6961,7 +7031,8 @@ pub mod xdg_toplevel_icon_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Creates a new icon object. This icon can then be attached to a"]
@@ -6971,7 +7042,8 @@ pub mod xdg_toplevel_icon_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request assigns the icon 'icon' to 'toplevel', or clears the"]
@@ -7000,7 +7072,8 @@ pub mod xdg_toplevel_icon_v1 {
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
                 icon: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This event indicates an icon size the compositor prefers to be"]
@@ -7020,13 +7093,13 @@ pub mod xdg_toplevel_icon_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 size: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent after all 'icon_size' events have been sent."]
             fn done(
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send;
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
         }
     }
     #[doc = "This interface defines a toplevel icon."]
@@ -7067,7 +7140,7 @@ pub mod xdg_toplevel_icon_v1 {
             }
         }
         #[doc = "Trait to implement the xdg_toplevel_icon_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelIconV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgToplevelIconV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_toplevel_icon_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroys the 'xdg_toplevel_icon_v1' object."]
@@ -7077,7 +7150,8 @@ pub mod xdg_toplevel_icon_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request assigns an icon name to this icon."]
@@ -7100,7 +7174,8 @@ pub mod xdg_toplevel_icon_v1 {
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
                 icon_name: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "This request adds pixel data supplied as wl_buffer to the icon."]
@@ -7133,7 +7208,8 @@ pub mod xdg_toplevel_icon_v1 {
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
                 scale: i32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -7155,7 +7231,7 @@ pub mod xdg_toplevel_tag_v1 {
     #[allow(clippy::too_many_arguments)]
     pub mod xdg_toplevel_tag_manager_v1 {
         #[doc = "Trait to implement the xdg_toplevel_tag_manager_v1 interface. See the module level documentation for more info"]
-        pub trait XdgToplevelTagManagerV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XdgToplevelTagManagerV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xdg_toplevel_tag_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy this toplevel tag manager object. This request has no other"]
@@ -7164,7 +7240,8 @@ pub mod xdg_toplevel_tag_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a tag for a toplevel. The tag may be shown to the user in UI, so"]
@@ -7187,7 +7264,8 @@ pub mod xdg_toplevel_tag_v1 {
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
                 tag: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Set a description for a toplevel. This description may be shown to the"]
@@ -7204,7 +7282,8 @@ pub mod xdg_toplevel_tag_v1 {
                 sender_id: waynest::ObjectId,
                 toplevel: waynest::ObjectId,
                 description: String,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -7280,7 +7359,7 @@ pub mod xwayland_shell_v1 {
             }
         }
         #[doc = "Trait to implement the xwayland_shell_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandShellV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XwaylandShellV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xwayland_shell_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the xwayland_shell_v1 object."]
@@ -7290,7 +7369,8 @@ pub mod xwayland_shell_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Create an xwayland_surface_v1 interface for a given wl_surface"]
@@ -7308,7 +7388,8 @@ pub mod xwayland_shell_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
@@ -7348,7 +7429,7 @@ pub mod xwayland_shell_v1 {
             }
         }
         #[doc = "Trait to implement the xwayland_surface_v1 interface. See the module level documentation for more info"]
-        pub trait XwaylandSurfaceV1<C: waynest::Connection, E: From<waynest::ProtocolError>> {
+        pub trait XwaylandSurfaceV1<C: waynest::Connection> {
             const INTERFACE: &'static str = "xwayland_surface_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Associates an Xwayland window to a wl_surface."]
@@ -7378,7 +7459,8 @@ pub mod xwayland_shell_v1 {
                 sender_id: waynest::ObjectId,
                 serial_lo: u32,
                 serial_hi: u32,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
             #[doc = "Destroy the xwayland_surface_v1 object."]
@@ -7388,7 +7470,8 @@ pub mod xwayland_shell_v1 {
                 &self,
                 connection: &mut C,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), E>> + Send {
+            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            {
                 async move { Ok(()) }
             }
         }
