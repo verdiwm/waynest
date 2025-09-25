@@ -1,6 +1,7 @@
 #[derive(Debug)]
 pub enum ProtocolError {
     InvalidSenderId,
+    MissingFd,
     MalformedPayload,
     UnknownOpcode(u16),
     InvalidLength(usize),
@@ -11,6 +12,7 @@ impl std::fmt::Display for ProtocolError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ProtocolError::InvalidSenderId => write!(f, "Sender object ID cannot be null"),
+            ProtocolError::MissingFd => write!(f, "Missing fd from payload"),
             ProtocolError::MalformedPayload => write!(f, "Failed to decode malformed payload"),
             ProtocolError::UnknownOpcode(opcode) => {
                 write!(f, "Received unsupported opcode: {}", opcode)

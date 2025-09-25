@@ -46,7 +46,7 @@ impl Connection for Socket {
         self.decode_fds
             .pop_front()
             .map(|fd| unsafe { OwnedFd::from_raw_fd(fd) })
-            .ok_or(ProtocolError::MalformedPayload)
+            .ok_or(ProtocolError::MissingFd)
     }
 }
 
