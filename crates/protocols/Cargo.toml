@@ -10,11 +10,12 @@ version = "0.1.0"
 bitflags = { version = "2.9.4", features = ["std"] }
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
+futures-util = { version = "0.3.31", default-features = false, features = ["sink"], optional = true }
 tracing = { version = "0.1.41", optional = true }
 waynest = { version = "0.1", path = "../core" }
 
 [features]
-server = []
+server = ["dep:futures-util"]
 client = []
 
 stable = []

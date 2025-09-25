@@ -619,7 +619,21 @@ pub mod dpms {
                 supported: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_dpms#{}.supported({})",
+                        sender_id,
+                        supported
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(supported).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This mode gets pushed on binding the resource and provides the currently used"]
             #[doc = "DPMS mode. It also gets pushed if DPMS is not supported for the wl_output, in that"]
@@ -633,7 +647,17 @@ pub mod dpms {
                 mode: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", sender_id, mode);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(mode).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event gets pushed on binding the resource once all other states are pushed."]
             #[doc = ""]
@@ -645,7 +669,17 @@ pub mod dpms {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_dpms#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -1195,7 +1229,22 @@ pub mod fullscreen_shell {
                 capability: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> _wl_fullscreen_shell#{}.capability({})",
+                        sender_id,
+                        capability
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_uint(capability).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -1284,7 +1333,20 @@ pub mod fullscreen_shell {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> _wl_fullscreen_shell_mode_feedback#{}.mode_successful()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event indicates that the attempted mode switch operation"]
             #[doc = "failed. This may be because the requested output mode is not"]
@@ -1298,7 +1360,20 @@ pub mod fullscreen_shell {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> _wl_fullscreen_shell_mode_feedback#{}.mode_failed()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event indicates that the attempted mode switch operation was"]
             #[doc = "cancelled.  Most likely this is because the client requested a"]
@@ -1312,7 +1387,20 @@ pub mod fullscreen_shell {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> _wl_fullscreen_shell_mode_feedback#{}.present_cancelled()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -1419,7 +1507,17 @@ pub mod idle {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_idle_timeout#{}.idle()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn resumed(
                 &self,
@@ -1427,7 +1525,17 @@ pub mod idle {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_idle_timeout#{}.resumed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -1592,7 +1700,21 @@ pub mod kde_external_brightness_v1 {
                 value: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_external_brightness_device_v1#{}.requested_brightness({})",
+                        sender_id,
+                        value
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(value).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -2054,7 +2176,37 @@ pub mod kde_output_device_v2 {
                 transform: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                        sender_id,
+                        x,
+                        y,
+                        physical_width,
+                        physical_height,
+                        subpixel,
+                        make,
+                        model,
+                        transform
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .put_int(physical_width)
+                        .put_int(physical_height)
+                        .put_int(subpixel)
+                        .put_string(Some(make))
+                        .put_string(Some(model))
+                        .put_int(transform)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event describes the mode currently in use for this head. It is only"]
             #[doc = "sent if the output is enabled."]
@@ -2065,7 +2217,23 @@ pub mod kde_output_device_v2 {
                 mode: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.current_mode({})",
+                        sender_id,
+                        mode
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(mode))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The mode event describes an available mode for the output."]
             #[doc = ""]
@@ -2092,7 +2260,19 @@ pub mod kde_output_device_v2 {
                 mode: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.mode({})", sender_id, mode);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(mode))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event is sent after all other properties have been"]
             #[doc = "sent on binding to the output object as well as after any"]
@@ -2105,7 +2285,17 @@ pub mod kde_output_device_v2 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event contains scaling geometry information"]
             #[doc = "that is not in the geometry event. It may be sent after"]
@@ -2132,7 +2322,17 @@ pub mod kde_output_device_v2 {
                 factor: waynest::Fixed,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.scale({})", sender_id, factor);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(factor).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
             #[doc = ""]
@@ -2147,7 +2347,18 @@ pub mod kde_output_device_v2 {
                 raw: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(raw)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The enabled event notifies whether this output is currently"]
             #[doc = "enabled and used for displaying content by the server."]
@@ -2161,7 +2372,17 @@ pub mod kde_output_device_v2 {
                 enabled: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.enabled({})", sender_id, enabled);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(enabled).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The uuid can be used to identify the output. It's controlled by"]
             #[doc = "the server entirely. The server should make sure the uuid is"]
@@ -2173,7 +2394,19 @@ pub mod kde_output_device_v2 {
                 uuid: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.uuid(\"{}\")", sender_id, uuid);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(uuid))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
             fn serial_number(
@@ -2183,7 +2416,23 @@ pub mod kde_output_device_v2 {
                 serial_number: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.serial_number(\"{}\")",
+                        sender_id,
+                        serial_number
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(serial_number))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
             fn eisa_id(
@@ -2193,7 +2442,23 @@ pub mod kde_output_device_v2 {
                 eisa_id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.eisa_id(\"{}\")",
+                        sender_id,
+                        eisa_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(eisa_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "What capabilities this device has, sent on startup before the first"]
             #[doc = "done event."]
@@ -2204,7 +2469,23 @@ pub mod kde_output_device_v2 {
                 flags: Capability,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.capabilities({})",
+                        sender_id,
+                        flags
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(flags.bits())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
             #[doc = "first done event."]
@@ -2215,7 +2496,21 @@ pub mod kde_output_device_v2 {
                 overscan: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.overscan({})",
+                        sender_id,
+                        overscan
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(overscan).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "What policy the compositor will employ regarding its use of variable"]
             #[doc = "refresh rate."]
@@ -2226,7 +2521,23 @@ pub mod kde_output_device_v2 {
                 vrr_policy: VrrPolicy,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.vrr_policy({})",
+                        sender_id,
+                        vrr_policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(vrr_policy as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "What rgb range the compositor is using for this output"]
             fn rgb_range(
@@ -2236,7 +2547,23 @@ pub mod kde_output_device_v2 {
                 rgb_range: RgbRange,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.rgb_range({})",
+                        sender_id,
+                        rgb_range
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(rgb_range as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
             fn name(
@@ -2246,7 +2573,19 @@ pub mod kde_output_device_v2 {
                 name: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.name(\"{}\")", sender_id, name);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Whether or not high dynamic range is enabled for this output"]
             fn high_dynamic_range(
@@ -2256,7 +2595,22 @@ pub mod kde_output_device_v2 {
                 hdr_enabled: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.high_dynamic_range({})",
+                        sender_id,
+                        hdr_enabled
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_uint(hdr_enabled).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 15u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
             #[doc = "that's in standard dynamic range format. Note that while the value is in nits, that"]
@@ -2268,7 +2622,23 @@ pub mod kde_output_device_v2 {
                 sdr_brightness: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.sdr_brightness({})",
+                        sender_id,
+                        sdr_brightness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(sdr_brightness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 16u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
             fn wide_color_gamut(
@@ -2278,7 +2648,22 @@ pub mod kde_output_device_v2 {
                 wcg_enabled: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.wide_color_gamut({})",
+                        sender_id,
+                        wcg_enabled
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_uint(wcg_enabled).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 17u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn auto_rotate_policy(
                 &self,
@@ -2287,7 +2672,23 @@ pub mod kde_output_device_v2 {
                 policy: AutoRotatePolicy,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.auto_rotate_policy({})",
+                        sender_id,
+                        policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(policy as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 18u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn icc_profile_path(
                 &self,
@@ -2296,7 +2697,23 @@ pub mod kde_output_device_v2 {
                 profile_path: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.icc_profile_path(\"{}\")",
+                        sender_id,
+                        profile_path
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(profile_path))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 19u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn brightness_metadata(
                 &self,
@@ -2307,7 +2724,27 @@ pub mod kde_output_device_v2 {
                 min_brightness: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
+                        sender_id,
+                        max_peak_brightness,
+                        max_frame_average_brightness,
+                        min_brightness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(max_peak_brightness)
+                        .put_uint(max_frame_average_brightness)
+                        .put_uint(min_brightness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 20u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn brightness_overrides(
                 &self,
@@ -2318,7 +2755,27 @@ pub mod kde_output_device_v2 {
                 min_brightness: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
+                        sender_id,
+                        max_peak_brightness,
+                        max_average_brightness,
+                        min_brightness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(max_peak_brightness)
+                        .put_int(max_average_brightness)
+                        .put_int(min_brightness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 21u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
             #[doc = "default experience on many modern sRGB screens."]
@@ -2329,7 +2786,23 @@ pub mod kde_output_device_v2 {
                 gamut_wideness: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.sdr_gamut_wideness({})",
+                        sender_id,
+                        gamut_wideness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(gamut_wideness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 22u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn color_profile_source(
                 &self,
@@ -2338,7 +2811,23 @@ pub mod kde_output_device_v2 {
                 source: ColorProfileSource,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.color_profile_source({})",
+                        sender_id,
+                        source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(source as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 23u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This is the brightness modifier of the output. It doesn't specify"]
             #[doc = "any absolute values, but is merely a multiplier on top of other"]
@@ -2353,7 +2842,22 @@ pub mod kde_output_device_v2 {
                 brightness: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.brightness({})",
+                        sender_id,
+                        brightness
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_uint(brightness).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 24u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn color_power_tradeoff(
                 &self,
@@ -2362,7 +2866,23 @@ pub mod kde_output_device_v2 {
                 preference: ColorPowerTradeoff,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.color_power_tradeoff({})",
+                        sender_id,
+                        preference
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(preference as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 25u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This is the dimming multiplier of the output. This is similar to"]
             #[doc = "the brightness setting, except it's meant to be a temporary setting"]
@@ -2377,7 +2897,22 @@ pub mod kde_output_device_v2 {
                 multiplier: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.dimming({})",
+                        sender_id,
+                        multiplier
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_uint(multiplier).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 26u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn replication_source(
                 &self,
@@ -2386,7 +2921,23 @@ pub mod kde_output_device_v2 {
                 source: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.replication_source(\"{}\")",
+                        sender_id,
+                        source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(source))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 27u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "If the ddc_ci capability is present, this determines if settings"]
             #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
@@ -2397,7 +2948,21 @@ pub mod kde_output_device_v2 {
                 allowed: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.ddc_ci_allowed({})",
+                        sender_id,
+                        allowed
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(allowed).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 28u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This limits the amount of bits per color that are sent to the display."]
             fn max_bits_per_color(
@@ -2407,7 +2972,21 @@ pub mod kde_output_device_v2 {
                 max_bpc: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.max_bits_per_color({})",
+                        sender_id,
+                        max_bpc
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(max_bpc).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 29u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn max_bits_per_color_range(
                 &self,
@@ -2417,7 +2996,25 @@ pub mod kde_output_device_v2 {
                 max_value: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.max_bits_per_color_range({}, {})",
+                        sender_id,
+                        min_value,
+                        max_value
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(min_value)
+                        .put_uint(max_value)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 30u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn automatic_max_bits_per_color_limit(
                 &self,
@@ -2426,7 +3023,23 @@ pub mod kde_output_device_v2 {
                 max_bpc_limit: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.automatic_max_bits_per_color_limit({})",
+                        sender_id,
+                        max_bpc_limit
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(max_bpc_limit)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 31u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
             #[doc = "the user-specified setting, in order to present HDR content on displays"]
@@ -2440,7 +3053,23 @@ pub mod kde_output_device_v2 {
                 policy: EdrPolicy,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.edr_policy({})",
+                        sender_id,
+                        policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(policy as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 32u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This is the sharpness modifier of the output."]
             #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
@@ -2451,7 +3080,21 @@ pub mod kde_output_device_v2 {
                 sharpness: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.sharpness({})",
+                        sender_id,
+                        sharpness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(sharpness).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 33u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -2499,7 +3142,25 @@ pub mod kde_output_device_v2 {
                 height: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_mode_v2#{}.size({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(width)
+                        .put_int(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
             #[doc = "sent if the mode has a fixed refresh rate."]
@@ -2510,7 +3171,21 @@ pub mod kde_output_device_v2 {
                 refresh: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_mode_v2#{}.refresh({})",
+                        sender_id,
+                        refresh
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(refresh).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event advertises this mode as preferred."]
             fn preferred(
@@ -2519,7 +3194,17 @@ pub mod kde_output_device_v2 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The compositor will destroy the object immediately after sending this"]
             #[doc = "event, so it will become invalid and the client should release any"]
@@ -2530,7 +3215,17 @@ pub mod kde_output_device_v2 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -3089,7 +3784,17 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_configuration_v2#{}.applied()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             fn failed(
@@ -3098,7 +3803,17 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_configuration_v2#{}.failed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Describes why applying the output configuration failed. Is only"]
             #[doc = "sent before the failure event."]
@@ -3109,7 +3824,23 @@ pub mod kde_output_management_v2 {
                 reason: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.failure_reason(\"{}\")",
+                        sender_id,
+                        reason
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(reason))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -3634,7 +4365,23 @@ pub mod kde_output_order_v1 {
                 output_name: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_order_v1#{}.output(\"{}\")",
+                        sender_id,
+                        output_name
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(output_name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
             fn done(
@@ -3643,7 +4390,17 @@ pub mod kde_output_order_v1 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_order_v1#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -3699,7 +4456,23 @@ pub mod kde_primary_output_v1 {
                 output_name: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_primary_output_v1#{}.primary_output(\"{}\")",
+                        sender_id,
+                        output_name
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(output_name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -4051,7 +4824,25 @@ pub mod keystate {
                 state: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_keystate#{}.state_changed({}, {})",
+                        sender_id,
+                        key,
+                        state
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(key)
+                        .put_uint(state)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -4128,7 +4919,25 @@ pub mod org_kde_plasma_virtual_desktop {
                 position: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
+                        sender_id,
+                        desktop_id,
+                        position
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(desktop_id))
+                        .put_uint(position)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn desktop_removed(
                 &self,
@@ -4137,7 +4946,23 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
+                        sender_id,
+                        desktop_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(desktop_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event is sent after all other properties have been sent after"]
             #[doc = "binding to the desktop manager global and after all changes to"]
@@ -4153,7 +4978,20 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop_management#{}.done()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn rows(
                 &self,
@@ -4162,7 +5000,21 @@ pub mod org_kde_plasma_virtual_desktop {
                 rows: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop_management#{}.rows({})",
+                        sender_id,
+                        rows
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(rows).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -4251,7 +5103,23 @@ pub mod org_kde_plasma_virtual_desktop {
                 desktop_id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
+                        sender_id,
+                        desktop_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(desktop_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn name(
                 &self,
@@ -4260,7 +5128,23 @@ pub mod org_kde_plasma_virtual_desktop {
                 name: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
+                        sender_id,
+                        name
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The desktop will be the new \"current\" desktop of the system. The server may support either one virtual desktop active at a time, or other combinations such as one virtual desktop active per screen."]
             #[doc = "Windows associated to this virtual desktop will be shown."]
@@ -4270,7 +5154,20 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop#{}.activated()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Windows that were associated only to this desktop will be hidden."]
             fn deactivated(
@@ -4279,7 +5176,20 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop#{}.deactivated()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event is sent after all other properties has been"]
             #[doc = "sent after binding to the desktop object and after any"]
@@ -4292,7 +5202,17 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This virtual desktop has just been removed by the server:"]
             #[doc = "All windows will lose the association to this desktop."]
@@ -4302,7 +5222,17 @@ pub mod org_kde_plasma_virtual_desktop {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The position of the virtual desktop in the desktop list. The virtual"]
             #[doc = "desktop position is in the [0, N - 1] range, where N is the number of"]
@@ -4314,7 +5244,21 @@ pub mod org_kde_plasma_virtual_desktop {
                 index: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop#{}.position({})",
+                        sender_id,
+                        index
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(index).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -4582,7 +5526,20 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputconfiguration#{}.applied()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             fn failed(
@@ -4591,7 +5548,17 @@ pub mod outputmanagement {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -4980,7 +5947,37 @@ pub mod org_kde_kwin_outputdevice {
                 transform: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                        sender_id,
+                        x,
+                        y,
+                        physical_width,
+                        physical_height,
+                        subpixel,
+                        make,
+                        model,
+                        transform
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .put_int(physical_width)
+                        .put_int(physical_height)
+                        .put_int(subpixel)
+                        .put_string(Some(make))
+                        .put_string(Some(model))
+                        .put_int(transform)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The mode event describes an available mode for the output."]
             #[doc = ""]
@@ -5014,7 +6011,31 @@ pub mod org_kde_kwin_outputdevice {
                 mode_id: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.mode({}, {}, {}, {}, {})",
+                        sender_id,
+                        flags,
+                        width,
+                        height,
+                        refresh,
+                        mode_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(flags)
+                        .put_int(width)
+                        .put_int(height)
+                        .put_int(refresh)
+                        .put_int(mode_id)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event is sent after all other properties have been"]
             #[doc = "sent on binding to the output object as well as after any"]
@@ -5027,7 +6048,17 @@ pub mod org_kde_kwin_outputdevice {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_outputdevice#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event contains scaling geometry information"]
             #[doc = "that is not in the geometry event. It may be sent after"]
@@ -5054,7 +6085,21 @@ pub mod org_kde_kwin_outputdevice {
                 factor: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.scale({})",
+                        sender_id,
+                        factor
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(factor).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
             #[doc = ""]
@@ -5069,7 +6114,22 @@ pub mod org_kde_kwin_outputdevice {
                 raw: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.edid(\"{}\")",
+                        sender_id,
+                        raw
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(raw)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The enabled event notifies whether this output is currently"]
             #[doc = "enabled and used for displaying content by the server."]
@@ -5083,7 +6143,21 @@ pub mod org_kde_kwin_outputdevice {
                 enabled: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.enabled({})",
+                        sender_id,
+                        enabled
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(enabled).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The uuid can be used to identify the output. It's controlled by"]
             #[doc = "the server entirely. The server should make sure the uuid is"]
@@ -5095,7 +6169,23 @@ pub mod org_kde_kwin_outputdevice {
                 uuid: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.uuid(\"{}\")",
+                        sender_id,
+                        uuid
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(uuid))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event contains scaling geometry information"]
             #[doc = "that is not in the geometry event. It may be sent after"]
@@ -5125,7 +6215,21 @@ pub mod org_kde_kwin_outputdevice {
                 factor: waynest::Fixed,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.scalef({})",
+                        sender_id,
+                        factor
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(factor).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Describes the color intensity profile of the output."]
             #[doc = "Commonly used for gamma/color correction."]
@@ -5143,7 +6247,27 @@ pub mod org_kde_kwin_outputdevice {
                 blue: Vec<u8>,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])",
+                        sender_id,
+                        red.len(),
+                        green.len(),
+                        blue.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_array(red)
+                        .put_array(green)
+                        .put_array(blue)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
             fn serial_number(
@@ -5153,7 +6277,23 @@ pub mod org_kde_kwin_outputdevice {
                 serial_number: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.serial_number(\"{}\")",
+                        sender_id,
+                        serial_number
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(serial_number))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
             fn eisa_id(
@@ -5163,7 +6303,23 @@ pub mod org_kde_kwin_outputdevice {
                 eisa_id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.eisa_id(\"{}\")",
+                        sender_id,
+                        eisa_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(eisa_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "What capabilities this device has, sent on startup before the first"]
             #[doc = "done event."]
@@ -5174,7 +6330,23 @@ pub mod org_kde_kwin_outputdevice {
                 flags: Capability,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.capabilities({})",
+                        sender_id,
+                        flags
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(flags.bits())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
             #[doc = "first done event."]
@@ -5185,7 +6357,21 @@ pub mod org_kde_kwin_outputdevice {
                 overscan: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.overscan({})",
+                        sender_id,
+                        overscan
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(overscan).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "What policy the compositor will employ regarding its use of variable"]
             #[doc = "refresh rate."]
@@ -5196,7 +6382,23 @@ pub mod org_kde_kwin_outputdevice {
                 vrr_policy: VrrPolicy,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_outputdevice#{}.vrr_policy({})",
+                        sender_id,
+                        vrr_policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(vrr_policy as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -5580,7 +6782,20 @@ pub mod plasma_shell {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "An auto-hiding panel got shown by the compositor."]
             fn auto_hidden_panel_shown(
@@ -5589,7 +6804,20 @@ pub mod plasma_shell {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -5856,7 +7084,21 @@ pub mod plasma_window_management {
                 state: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.show_desktop_changed({})",
+                        sender_id,
+                        state
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent immediately after a window is mapped."]
             fn window(
@@ -5866,7 +7108,21 @@ pub mod plasma_window_management {
                 id: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.window({})",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(id).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when stacking order changed and on bind."]
             #[doc = ""]
@@ -5878,7 +7134,21 @@ pub mod plasma_window_management {
                 ids: Vec<u8>,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
+                        sender_id,
+                        ids.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(ids).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when stacking order changed and on bind."]
             #[doc = ""]
@@ -5890,7 +7160,23 @@ pub mod plasma_window_management {
                 uuids: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
+                        sender_id,
+                        uuids
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(uuids))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent immediately after a window is mapped."]
             fn window_with_uuid(
@@ -5901,7 +7187,25 @@ pub mod plasma_window_management {
                 uuid: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
+                        sender_id,
+                        id,
+                        uuid
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(id)
+                        .put_string(Some(uuid))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when stacking order changed."]
             fn stacking_order_changed_2(
@@ -5910,7 +7214,20 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.stacking_order_changed_2()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6123,7 +7440,23 @@ pub mod plasma_window_management {
                 title: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.title_changed(\"{}\")",
+                        sender_id,
+                        title
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(title))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent as soon as the application"]
             #[doc = "identifier is changed."]
@@ -6134,7 +7467,23 @@ pub mod plasma_window_management {
                 app_id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.app_id_changed(\"{}\")",
+                        sender_id,
+                        app_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(app_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent as soon as the window state changes."]
             #[doc = ""]
@@ -6146,7 +7495,21 @@ pub mod plasma_window_management {
                 flags: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.state_changed({})",
+                        sender_id,
+                        flags
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(flags).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
             #[doc = "This event will be sent when a window is moved to another"]
@@ -6160,7 +7523,21 @@ pub mod plasma_window_management {
                 number: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.virtual_desktop_changed({})",
+                        sender_id,
+                        number
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(number).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
             fn themed_icon_name_changed(
@@ -6170,7 +7547,23 @@ pub mod plasma_window_management {
                 name: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
+                        sender_id,
+                        name
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent immediately after the window is closed"]
             #[doc = "and its surface is unmapped."]
@@ -6180,7 +7573,17 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent immediately after all initial state been sent to the client."]
             #[doc = "If the Plasma window is already unmapped, the unmapped event will be sent before the"]
@@ -6191,7 +7594,17 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
             #[doc = "The passed parent is another org_kde_plasma_window and this org_kde_plasma_window is a"]
@@ -6204,7 +7617,23 @@ pub mod plasma_window_management {
                 parent: Option<waynest::ObjectId>,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.parent_window({})",
+                        sender_id,
+                        parent
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_object(parent).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
             #[doc = "The coordinates are in absolute coordinates of the windowing system."]
@@ -6218,7 +7647,29 @@ pub mod plasma_window_management {
                 height: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .put_uint(width)
+                        .put_uint(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
             #[doc = "icon name. Common examples are Xwayland windows which have a pixmap based icon."]
@@ -6230,7 +7681,17 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
             #[doc = "This should be set once before the initial_state is sent."]
@@ -6241,7 +7702,21 @@ pub mod plasma_window_management {
                 pid: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.pid_changed({})",
+                        sender_id,
+                        pid
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(pid).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
             fn virtual_desktop_entered(
@@ -6251,7 +7726,22 @@ pub mod plasma_window_management {
                 id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
             #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
@@ -6262,7 +7752,22 @@ pub mod plasma_window_management {
                 is: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
+                        sender_id,
+                        is
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(is)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent after the application menu"]
             #[doc = "for the window has changed."]
@@ -6274,7 +7779,25 @@ pub mod plasma_window_management {
                 object_path: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
+                        sender_id,
+                        service_name,
+                        object_path
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(service_name))
+                        .put_string(Some(object_path))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
             fn activity_entered(
@@ -6284,7 +7807,22 @@ pub mod plasma_window_management {
                 id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.activity_entered(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
             #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
@@ -6295,7 +7833,22 @@ pub mod plasma_window_management {
                 id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.activity_left(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 15u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent when the X11 resource name of the window has changed."]
             #[doc = "This is only set for XWayland windows."]
@@ -6306,7 +7859,23 @@ pub mod plasma_window_management {
                 resource_name: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
+                        sender_id,
+                        resource_name
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(resource_name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 16u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
             #[doc = "The coordinates are in absolute coordinates of the windowing system."]
@@ -6320,7 +7889,29 @@ pub mod plasma_window_management {
                 height: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .put_uint(width)
+                        .put_uint(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 17u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6527,7 +8118,22 @@ pub mod plasma_window_management {
                 id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_activation_feedback#{}.activation({})",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_object(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6577,7 +8183,23 @@ pub mod plasma_window_management {
                 app_id: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_activation#{}.app_id(\"{}\")",
+                        sender_id,
+                        app_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(app_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn finished(
                 &self,
@@ -6585,7 +8207,17 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_activation#{}.finished()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6628,7 +8260,23 @@ pub mod plasma_window_management {
                 uuid: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_stacking_order#{}.window(\"{}\")",
+                        sender_id,
+                        uuid
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(uuid))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn done(
                 &self,
@@ -6636,7 +8284,17 @@ pub mod plasma_window_management {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6687,7 +8345,25 @@ pub mod remote_access {
                 output: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_remote_access_manager#{}.buffer_ready({}, {})",
+                        sender_id,
+                        id,
+                        output
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(id)
+                        .put_object(Some(output))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6754,7 +8430,31 @@ pub mod remote_access {
                 format: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_remote_buffer#{}.gbm_handle({}, {}, {}, {}, {})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd),
+                        width,
+                        height,
+                        stride,
+                        format
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_fd(fd)
+                        .put_uint(width)
+                        .put_uint(height)
+                        .put_uint(stride)
+                        .put_uint(format)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -6968,7 +8668,21 @@ pub mod server_decoration {
                 mode: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_server_decoration_manager#{}.default_mode({})",
+                        sender_id,
+                        mode
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(mode).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -7070,7 +8784,21 @@ pub mod server_decoration {
                 mode: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_server_decoration#{}.mode({})",
+                        sender_id,
+                        mode
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(mode).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -7776,7 +9504,21 @@ pub mod surface_extension {
                 visible: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> qt_extended_surface#{}.onscreen_visibility({})",
+                        sender_id,
+                        visible
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(visible).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn set_generic_property(
                 &self,
@@ -7786,7 +9528,25 @@ pub mod surface_extension {
                 value: Vec<u8>,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> qt_extended_surface#{}.set_generic_property(\"{}\", array[{}])",
+                        sender_id,
+                        name,
+                        value.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .put_array(value)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn close(
                 &self,
@@ -7794,7 +9554,17 @@ pub mod surface_extension {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> qt_extended_surface#{}.close()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -8237,7 +10007,25 @@ pub mod text_input_unstable_v2 {
                 surface: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.enter({}, {})",
+                        sender_id,
+                        serial,
+                        surface
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notification that this seat's text-input focus is no longer on"]
             #[doc = "a certain surface."]
@@ -8255,7 +10043,25 @@ pub mod text_input_unstable_v2 {
                 surface: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.leave({}, {})",
+                        sender_id,
+                        serial,
+                        surface
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notification that the visibility of the input panel (virtual keyboard)"]
             #[doc = "changed."]
@@ -8277,7 +10083,31 @@ pub mod text_input_unstable_v2 {
                 height: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.input_panel_state({}, {}, {}, {}, {})",
+                        sender_id,
+                        state,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(state as u32)
+                        .put_int(x)
+                        .put_int(y)
+                        .put_int(width)
+                        .put_int(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
             #[doc = "current cursor position. Any previously set composing text should"]
@@ -8296,7 +10126,25 @@ pub mod text_input_unstable_v2 {
                 commit: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.preedit_string(\"{}\", \"{}\")",
+                        sender_id,
+                        text,
+                        commit
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(text))
+                        .put_string(Some(commit))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
             #[doc = "length bytes from index relative to the beginning of the composing"]
@@ -8313,7 +10161,27 @@ pub mod text_input_unstable_v2 {
                 style: PreeditStyle,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.preedit_styling({}, {}, {})",
+                        sender_id,
+                        index,
+                        length,
+                        style
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(index)
+                        .put_uint(length)
+                        .put_uint(style as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
             #[doc = "offset) relative to the start of the composing text. When index is a"]
@@ -8330,7 +10198,21 @@ pub mod text_input_unstable_v2 {
                 index: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.preedit_cursor({})",
+                        sender_id,
+                        index
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(index).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
             #[doc = "commit could be either just a single character after a key press or the"]
@@ -8346,7 +10228,23 @@ pub mod text_input_unstable_v2 {
                 text: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.commit_string(\"{}\")",
+                        sender_id,
+                        text
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(text))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
             #[doc = ""]
@@ -8362,7 +10260,25 @@ pub mod text_input_unstable_v2 {
                 anchor: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.cursor_position({}, {})",
+                        sender_id,
+                        index,
+                        anchor
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(index)
+                        .put_int(anchor)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when the text around the current cursor position should be"]
             #[doc = "deleted. BeforeLength and afterLength is the length (in bytes) of text"]
@@ -8379,7 +10295,25 @@ pub mod text_input_unstable_v2 {
                 after_length: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.delete_surrounding_text({}, {})",
+                        sender_id,
+                        before_length,
+                        after_length
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(before_length)
+                        .put_uint(after_length)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
             #[doc = "the array is the index of the modifier as used in the modifiers"]
@@ -8391,7 +10325,21 @@ pub mod text_input_unstable_v2 {
                 map: Vec<u8>,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.modifiers_map(array[{}])",
+                        sender_id,
+                        map.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(map).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
             #[doc = "for normal text input operations, which should be done with"]
@@ -8409,7 +10357,29 @@ pub mod text_input_unstable_v2 {
                 modifiers: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.keysym({}, {}, {}, {})",
+                        sender_id,
+                        time,
+                        sym,
+                        state,
+                        modifiers
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(time)
+                        .put_uint(sym)
+                        .put_uint(state)
+                        .put_uint(modifiers)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -8420,7 +10390,23 @@ pub mod text_input_unstable_v2 {
                 language: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.language(\"{}\")",
+                        sender_id,
+                        language
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(language))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets the text direction of input text."]
             #[doc = ""]
@@ -8434,7 +10420,23 @@ pub mod text_input_unstable_v2 {
                 direction: TextDirection,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.text_direction({})",
+                        sender_id,
+                        direction
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(direction as u32)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Configure what amount of surrounding text is expected by the"]
             #[doc = "input method. The surrounding text will be sent in the"]
@@ -8447,7 +10449,25 @@ pub mod text_input_unstable_v2 {
                 after_cursor: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.configure_surrounding_text({}, {})",
+                        sender_id,
+                        before_cursor,
+                        after_cursor
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(before_cursor)
+                        .put_int(after_cursor)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "The input method changed on compositor side, which invalidates all"]
             #[doc = "current state information. New state information should be sent from"]
@@ -8461,7 +10481,25 @@ pub mod text_input_unstable_v2 {
                 flags: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v2#{}.input_method_changed({}, {})",
+                        sender_id,
+                        serial,
+                        flags
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_uint(flags)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -8979,7 +11017,19 @@ pub mod text {
                 surface: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_text_input#{}.enter({})", sender_id, surface);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify the text-input object when it lost focus. Either in response"]
             #[doc = "to a deactivate request or when the assigned surface lost focus or was"]
@@ -8990,7 +11040,17 @@ pub mod text {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_text_input#{}.leave()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
             #[doc = "the array is the index of the modifier as used in the modifiers"]
@@ -9002,7 +11062,21 @@ pub mod text {
                 map: Vec<u8>,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.modifiers_map(array[{}])",
+                        sender_id,
+                        map.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(map).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when the visibility state of the input panel changed."]
             fn input_panel_state(
@@ -9012,7 +11086,21 @@ pub mod text {
                 state: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.input_panel_state({})",
+                        sender_id,
+                        state
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
             #[doc = "current cursor position. Any previously set composing text should"]
@@ -9032,7 +11120,27 @@ pub mod text {
                 commit: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.preedit_string({}, \"{}\", \"{}\")",
+                        sender_id,
+                        serial,
+                        text,
+                        commit
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_string(Some(text))
+                        .put_string(Some(commit))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
             #[doc = "length bytes from index relative to the beginning of the composing"]
@@ -9050,7 +11158,27 @@ pub mod text {
                 style: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.preedit_styling({}, {}, {})",
+                        sender_id,
+                        index,
+                        length,
+                        style
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(index)
+                        .put_uint(length)
+                        .put_uint(style)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
             #[doc = "offset) relative to the start of the composing text. When index is a"]
@@ -9064,7 +11192,17 @@ pub mod text {
                 index: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_text_input#{}.preedit_cursor({})", sender_id, index);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(index).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
             #[doc = "commit could be either just a single character after a key press or the"]
@@ -9081,7 +11219,25 @@ pub mod text {
                 text: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.commit_string({}, \"{}\")",
+                        sender_id,
+                        serial,
+                        text
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_string(Some(text))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
             #[doc = ""]
@@ -9095,7 +11251,25 @@ pub mod text {
                 anchor: i32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.cursor_position({}, {})",
+                        sender_id,
+                        index,
+                        anchor
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(index)
+                        .put_int(anchor)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when the text around the current cursor position should be"]
             #[doc = "deleted."]
@@ -9113,7 +11287,25 @@ pub mod text {
                 length: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.delete_surrounding_text({}, {})",
+                        sender_id,
+                        index,
+                        length
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(index)
+                        .put_uint(length)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
             #[doc = "for normal text input operations, which should be done with"]
@@ -9132,7 +11324,31 @@ pub mod text {
                 modifiers: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.keysym({}, {}, {}, {}, {})",
+                        sender_id,
+                        serial,
+                        time,
+                        sym,
+                        state,
+                        modifiers
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_uint(time)
+                        .put_uint(sym)
+                        .put_uint(state)
+                        .put_uint(modifiers)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -9144,7 +11360,25 @@ pub mod text {
                 language: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.language({}, \"{}\")",
+                        sender_id,
+                        serial,
+                        language
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_string(Some(language))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             #[doc = "Sets the text direction of input text."]
             #[doc = ""]
@@ -9159,7 +11393,25 @@ pub mod text {
                 direction: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_text_input#{}.text_direction({}, {})",
+                        sender_id,
+                        serial,
+                        direction
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(serial)
+                        .put_uint(direction)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,
@@ -9776,7 +12028,20 @@ pub mod zkde_screencast_unstable_v1 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zkde_screencast_stream_unstable_v1#{}.closed()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn created(
                 &self,
@@ -9785,7 +12050,21 @@ pub mod zkde_screencast_unstable_v1 {
                 node: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zkde_screencast_stream_unstable_v1#{}.created({})",
+                        sender_id,
+                        node
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(node).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn failed(
                 &self,
@@ -9794,7 +12073,23 @@ pub mod zkde_screencast_unstable_v1 {
                 error: String,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zkde_screencast_stream_unstable_v1#{}.failed(\"{}\")",
+                        sender_id,
+                        error
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(error))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,

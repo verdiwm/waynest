@@ -252,7 +252,45 @@ pub mod frog_color_management_v1 {
                 max_full_frame_luminance: u32,
             ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        transfer_function,
+                        output_display_primary_red_x,
+                        output_display_primary_red_y,
+                        output_display_primary_green_x,
+                        output_display_primary_green_y,
+                        output_display_primary_blue_x,
+                        output_display_primary_blue_y,
+                        output_white_point_x,
+                        output_white_point_y,
+                        max_luminance,
+                        min_luminance,
+                        max_full_frame_luminance
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(transfer_function as u32)
+                        .put_uint(output_display_primary_red_x)
+                        .put_uint(output_display_primary_red_y)
+                        .put_uint(output_display_primary_green_x)
+                        .put_uint(output_display_primary_green_y)
+                        .put_uint(output_display_primary_blue_x)
+                        .put_uint(output_display_primary_blue_y)
+                        .put_uint(output_white_point_x)
+                        .put_uint(output_white_point_y)
+                        .put_uint(max_luminance)
+                        .put_uint(min_luminance)
+                        .put_uint(max_full_frame_luminance)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await?;
+                    Ok(())
+                }
             }
             fn handle_request(
                 &self,

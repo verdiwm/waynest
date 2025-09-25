@@ -157,7 +157,7 @@ impl Store {
 }
 
 #[async_trait::async_trait]
-pub trait RequestDispatcher: Any + Send + Sync + 'static {
+pub trait RequestDispatcher<E: From<ProtocolError> = Error>: Any + Send + Sync + 'static {
     fn as_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync + 'static>;
 
     async fn dispatch_request(

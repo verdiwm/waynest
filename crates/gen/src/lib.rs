@@ -2,7 +2,7 @@ use std::{collections::HashMap, fmt::Display};
 
 use heck::{ToSnekCase, ToUpperCamelCase};
 use proc_macro2::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote};
 
 mod common;
 mod error;
@@ -14,6 +14,11 @@ use error::Error;
 use utils::{description_to_docs, make_ident, write_enums};
 
 pub use parser::Protocol;
+
+use crate::{
+    parser::{ArgType, Interface},
+    utils::find_enum,
+};
 
 pub fn generate_module<D: Display>(
     module: D,
@@ -101,21 +106,9 @@ pub fn generate_module<D: Display>(
                 args.push(quote! {#name: #ty})
             }
 
-            let event_impl = if events_impl {
-                quote! {
-                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send {
-                        async move { Ok(()) }
-                    }
-                }
-            } else {
-                quote! {
-                    fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
-                }
-            };
-
             events.push(quote! {
                 #(#docs)*
-                #event_impl
+                fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
             });
         }
 
@@ -146,6 +139,10 @@ pub fn generate_module<D: Display>(
         } else {
             quote! {}
         };
+
+        if events_impl {
+            events = write_events(&module, protocols, protocol, interface);
+        }
 
         inner_modules.push(quote! {
             #(#docs)*
@@ -178,4 +175,130 @@ pub fn generate_module<D: Display>(
             #(#inner_modules)*
         }
     })
+}
+
+fn write_events<D: Display>(
+    module: D,
+    protocols: &HashMap<&'static str, Protocol>,
+    protocol: &Protocol,
+    interface: &Interface,
+) -> Vec<TokenStream> {
+    let mut events = Vec::new();
+
+    for (opcode, event) in interface.events.iter().enumerate() {
+        let opcode = opcode as u16;
+
+        let docs = description_to_docs(event.description.as_ref());
+        let name = make_ident(event.name.to_snek_case());
+
+        let mut args = Vec::new();
+        let mut tracing_fmt = Vec::new();
+        let mut tracing_args = Vec::new();
+
+        for arg in &event.args {
+            let mut ty = arg.to_rust_type_token(
+                arg.find_protocol(protocols)
+                    .unwrap_or((module.to_string().as_str(), protocol.clone())),
+            );
+
+            let mut map_display = quote! {};
+
+            if arg.allow_null {
+                ty = quote! {Option<#ty>};
+                map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
+            }
+
+            let name = make_ident(arg.name.to_snek_case());
+
+            args.push(quote! {#name: #ty});
+
+            match arg.ty {
+                ArgType::Array => {
+                    tracing_fmt.push("array[{}]");
+                    tracing_args.push(quote! { #name .len() });
+                }
+                ArgType::String => {
+                    tracing_fmt.push("\"{}\"");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+                ArgType::Fd => {
+                    tracing_fmt.push("{}");
+                    tracing_args
+                        .push(quote! { std::os::fd::AsRawFd::as_raw_fd(&#name) #map_display });
+                }
+                _ => {
+                    tracing_fmt.push("{}");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+            }
+        }
+
+        let tracing_fmt = tracing_fmt.join(", ");
+
+        let tracing_inner = format!(
+            "-> {interface}#{{}}.{event}({tracing_fmt})",
+            interface = interface.name,
+            event = event.name.to_snek_case()
+        );
+
+        let mut build_args = Vec::new();
+
+        for arg in &event.args {
+            let build_ty = arg.to_caller();
+            let build_ty = format_ident!("put_{build_ty}");
+
+            let mut build_convert = quote! {};
+
+            if let Some((enum_interface, name)) = arg.to_enum_name() {
+                let e = if let Some(enum_interface) = enum_interface {
+                    protocols.iter().find_map(|(_, protocol)| {
+                        protocol
+                            .interfaces
+                            .iter()
+                            .find(|e| e.name == enum_interface)
+                            .and_then(|interface| interface.enums.iter().find(|e| e.name == name))
+                    })
+                } else {
+                    find_enum(&protocol, &name)
+                };
+
+                if let Some(e) = e {
+                    if e.bitfield {
+                        build_convert = quote! { .bits() };
+                    } else {
+                        build_convert = quote! {  as u32 };
+                    }
+                }
+            }
+
+            let build_name = make_ident(arg.name.to_snek_case());
+            let mut build_name = quote! { #build_name };
+
+            if arg.is_return_option() && !arg.allow_null {
+                build_name = quote! { Some(#build_name) }
+            }
+
+            build_args.push(quote! { .#build_ty(#build_name #build_convert) })
+        }
+
+        events.push(quote! {
+            #(#docs)*
+            fn #name(&self, connection: &mut C, sender_id: waynest::ObjectId,#(#args),*) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
+
+                    let (payload,fds) = waynest::PayloadBuilder::new()
+                        #(#build_args)*
+                        .build();
+
+                    futures_util::SinkExt::send(connection, waynest::Message::new(sender_id, #opcode, payload, fds)).await?;
+
+                    Ok(())
+                }
+            }
+        });
+    }
+
+    events
 }
