@@ -3,15 +3,14 @@ name = "waynest-macros"
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
+repository.workspace = true
 version = "0.1.0"
 description = "Macros for waynest"
-readme = "../README.md"
 documentation = "https://docs.rs/waynest-macros"
-repository.workspace = true
-include = ["src/**/*.rs", "../README.md", "../LICENSE"]
+include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
-[lib]
-proc-macro = true
+[features]
+gen = ["dep:waynest-gen"]
 
 [dependencies]
 darling = "0.21.3"
@@ -19,5 +18,5 @@ quote = "1.0.37"
 syn = { version = "2.0.89", features = ["full"] }
 waynest-gen = { version = "0.1", path = "../gen", optional = true }
 
-[features]
-gen = ["dep:waynest-gen"]
+[lib]
+proc-macro = true

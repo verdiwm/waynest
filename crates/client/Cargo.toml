@@ -5,6 +5,9 @@ license.workspace = true
 authors.workspace = true
 repository.workspace = true
 version = "0.1.0"
+description = "Client library for waynest"
+documentation = "https://docs.rs/waynest-client"
+include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [dependencies]
 waynest = { version = "0.1.0", path = "../core" }

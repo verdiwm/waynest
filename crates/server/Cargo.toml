@@ -5,6 +5,9 @@ license.workspace = true
 authors.workspace = true
 repository.workspace = true
 version = "0.1.0"
+description = "Server library for waynest"
+documentation = "https://docs.rs/waynest-server"
+include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [dependencies]
 async-trait = "0.1.89"

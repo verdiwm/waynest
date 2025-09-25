@@ -3,12 +3,11 @@ name = "waynest-gen"
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
+repository.workspace = true
 version = "0.1.0"
 description = "Codegen glue for waynest"
-readme = "../README.md"
 documentation = "https://docs.rs/waynest-gen"
-repository.workspace = true
-include = ["src/**/*.rs", "../README.md", "../LICENSE"]
+include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [dependencies]
 heck = "0.5.0"
