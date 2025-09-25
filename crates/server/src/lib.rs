@@ -80,17 +80,6 @@ impl<E: From<ProtocolError> + 'static> Connection<E> {
     pub fn remove(&mut self, id: ObjectId) {
         self.store.remove(id)
     }
-
-    // pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
-    //     let object = self
-    //         .store
-    //         .get(message.object_id())
-    //         .ok_or(Error::MissingObject(message.object_id()))?;
-
-    //     object
-    //         .dispatch_request(self, message.object_id(), message)
-    //         .await
-    // }
 }
 
 impl<E: From<ProtocolError>> Stream for Connection<E> {
