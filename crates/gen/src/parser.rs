@@ -1,11 +1,10 @@
-use std::{collections::HashMap, fs, path::Path};
+use std::{fs, path::Path};
 
-use heck::ToUpperCamelCase;
 use proc_macro2::TokenStream;
-use quote::{ToTokens, quote};
+use quote::quote;
 use serde::{Deserialize, Serialize};
 
-use crate::{error::Error, utils::make_ident};
+use crate::error::Error;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(deny_unknown_fields)]
@@ -145,61 +144,6 @@ pub struct Entry {
 }
 
 impl Arg {
-    pub fn to_enum_name(&self) -> Option<(Option<String>, String)> {
-        if let Some(e) = &self.r#enum {
-            if let Some((interface, name)) = e.split_once('.') {
-                return Some((Some(interface.to_string()), name.to_string()));
-            } else {
-                return Some((None, e.to_string()));
-            }
-        }
-
-        None
-    }
-
-    pub fn find_protocol(
-        &self,
-        protocols: &HashMap<&'static str, Protocol>,
-    ) -> Option<(&'static str, Protocol)> {
-        if let Some((enum_interface, _name)) = self.to_enum_name()
-            && let Some(enum_interface) = enum_interface
-        {
-            return protocols.iter().find_map(|(str, protocol)| {
-                if protocol.interfaces.iter().any(|e| e.name == enum_interface) {
-                    Some((*str, protocol.clone()))
-                } else {
-                    None
-                }
-            });
-        }
-
-        None
-    }
-
-    pub fn to_rust_type_token(&self, (module_name, protocol): (&str, Protocol)) -> TokenStream {
-        if let Some(e) = &self.r#enum {
-            if let Some((module, name)) = e.split_once('.') {
-                // Check if the referenced interface actually exists in the current pair
-                let interface_exists = protocol.interfaces.iter().any(|iface| iface.name == module);
-                if interface_exists {
-                    let protocol_name = make_ident(&protocol.name);
-                    let name = make_ident(name.to_upper_camel_case());
-                    let module = make_ident(module);
-                    let protocol_module = make_ident(module_name);
-
-                    return quote! {super::super::super::#protocol_module::#protocol_name::#module::#name};
-                } else {
-                    // Invalid cross-protocol reference, fall back to the underlying type
-                    return self.to_underlying_type_token();
-                }
-            } else {
-                return make_ident(e.to_upper_camel_case()).to_token_stream();
-            }
-        }
-
-        self.to_underlying_type_token()
-    }
-
     pub fn to_underlying_type_token(&self) -> TokenStream {
         match self.ty {
             ArgType::Int => quote! { i32 },

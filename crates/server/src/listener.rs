@@ -9,8 +9,6 @@ use pin_project_lite::pin_project;
 use tokio::net::{UnixListener, UnixStream};
 use tokio_stream::Stream;
 
-use crate::Error;
-
 pin_project! {
     pub struct Listener {
         unix_listener: UnixListener,
@@ -20,11 +18,42 @@ pin_project! {
     }
 }
 
+#[derive(Debug)]
+#[non_exhaustive]
+pub enum ListenerError {
+    Xdg,
+    Io(io::Error),
+}
+
+impl std::fmt::Display for ListenerError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Xdg => write!(f, "Failed to access XDG socket path"),
+            Self::Io(error) => error.fmt(f),
+        }
+    }
+}
+
+impl From<io::Error> for ListenerError {
+    fn from(err: io::Error) -> Self {
+        ListenerError::Io(err)
+    }
+}
+
+impl std::error::Error for ListenerError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            ListenerError::Io(err) => Some(err),
+            _ => None,
+        }
+    }
+}
+
 impl Listener {
-    pub fn new() -> Result<Self, Error> {
+    pub fn new() -> Result<Self, ListenerError> {
         // FIXME: add a proper error
         let runtime_dir: PathBuf = std::env::var("XDG_RUNTIME_DIR")
-            .map_err(|_| Error::XdgError)?
+            .map_err(|_| ListenerError::Xdg)?
             .into();
 
         #[allow(clippy::never_loop)]
@@ -36,10 +65,10 @@ impl Listener {
             return Self::new_with_path(path);
         }
 
-        Err(Error::XdgError)
+        Err(ListenerError::Xdg)
     }
 
-    pub fn new_with_path<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+    pub fn new_with_path<P: AsRef<Path>>(path: P) -> Result<Self, ListenerError> {
         if !path.as_ref().exists() {
             // FIXME: add a proper error
             // return Err(Error::Internal);

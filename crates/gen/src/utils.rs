@@ -3,7 +3,7 @@ use proc_macro2::{Ident, TokenStream};
 use quote::{format_ident, quote};
 use std::{collections::VecDeque, fmt::Display};
 
-use crate::parser::{Enum, Interface, Protocol};
+use crate::parser::Interface;
 
 const KEYWORDS: [&str; 52] = [
     "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for",
@@ -62,13 +62,6 @@ pub fn make_ident<D: Display>(ident: D) -> Ident {
     format_ident!("{raw}{prefix}{ident}")
 }
 
-pub fn find_enum<'a>(protocol: &'a Protocol, name: &str) -> Option<&'a Enum> {
-    protocol
-        .interfaces
-        .iter()
-        .find_map(|interface| interface.enums.iter().find(|e| e.name == name))
-}
-
 pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
     let mut enums = Vec::new();
 
@@ -100,6 +93,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
                 pub enum #name {
                     #(#variants),*
+                }
+
+                impl From<#name> for u32 {
+                    fn from(value: #name) -> Self {
+                        value as u32
+                    }
                 }
 
                 impl TryFrom<u32> for #name {
@@ -141,6 +140,12 @@ pub fn write_enums(interface: &Interface) -> Vec<TokenStream> {
                     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
                     pub struct #name: u32 {
                         #(#variants)*
+                    }
+                }
+
+                impl From<#name> for u32 {
+                    fn from(value: #name) -> Self {
+                        value.bits()
                     }
                 }
 

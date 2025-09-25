@@ -4,7 +4,7 @@ use anyhow::{Context, Result, anyhow, bail};
 use quote::quote;
 use sap::{Argument, Parser};
 use walkdir::WalkDir;
-use waynest_gen::{Protocol, generate_module};
+use waynest_gen::{ProtocolGenerator, parser::Protocol};
 
 fn main() -> Result<()> {
     let mut parser = Parser::from_env().context("Failed to init sap")?;
@@ -43,15 +43,15 @@ const PROTOCOLS: [(&str, &str); 13] = [
     ("treeland", "treeland-protocols/xml"),
 ];
 
-const SKIP: [&str; 3] = [
+const SKIP: [&str; 4] = [
     "tests.xml",
     "cosmic-image-source-unstable-v1.xml",
     "treeland-personalization-manager-v1.xml",
+    "treeland-capture-unstable-v1.xml",
 ];
 
 fn generate() -> Result<()> {
     let mut protocols = HashMap::new();
-    let mut all_protocols_flat = HashMap::new();
 
     for (module, protocol) in PROTOCOLS {
         let mut protos = Vec::new();
@@ -64,9 +64,7 @@ fn generate() -> Result<()> {
                 && extension == OsStr::new("xml")
                 && !SKIP.map(OsStr::new).contains(&entry.file_name())
             {
-                let protocol = Protocol::from_path(entry.path())?;
-                protos.push(protocol.clone());
-                all_protocols_flat.insert(module, protocol);
+                protos.push(Protocol::from_path(entry.path())?);
             }
         }
 
@@ -76,28 +74,13 @@ fn generate() -> Result<()> {
     let mut server_rs_content = "pub mod core;".to_string();
     let mut client_rs_content = "pub mod core;".to_string();
 
-    for (module, protocols) in protocols {
+    for (module, xml) in &protocols {
         println!("Generating {module} protocols...");
 
-        let mut server_modules = Vec::new();
-        let mut client_modules = Vec::new();
-
-        for protocol in &protocols {
-            server_modules.push(generate_module(
-                module,
-                &protocol,
-                &all_protocols_flat,
-                false,
-                true,
-            )?);
-            client_modules.push(generate_module(
-                module,
-                &protocol,
-                &all_protocols_flat,
-                true,
-                false,
-            )?);
-        }
+        let server_modules =
+            ProtocolGenerator::new(xml, &protocols).generate_protocols(false, true)?;
+        let client_modules =
+            ProtocolGenerator::new(xml, &protocols).generate_protocols(true, false)?;
 
         let server_module_content = quote! {
             #(#server_modules)*
@@ -122,7 +105,7 @@ fn generate() -> Result<()> {
         write!(&mut server_module_file, "{server_module_content}",)?;
         write!(&mut client_module_file, "{client_module_content}",)?;
 
-        if module != "core" {
+        if *module != "core" {
             writeln!(
                 &mut server_rs_content,
                 r#"#[cfg(feature = "{module}")]

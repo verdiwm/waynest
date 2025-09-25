@@ -14,6 +14,7 @@ include = ["src/**/*.rs", "../README.md", "../LICENSE"]
 proc-macro = true
 
 [dependencies]
+darling = "0.21.3"
 quote = "1.0.37"
 syn = { version = "2.0.89", features = ["full"] }
 waynest-gen = { version = "0.1", path = "../gen", optional = true }

@@ -1,7 +1,6 @@
 #[allow(clippy::module_inception)]
 pub mod drm {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod wl_drm {
         #[repr(u32)]
         #[non_exhaustive]
@@ -10,6 +9,11 @@ pub mod drm {
             AuthenticateFail = 0u32,
             InvalidFormat = 1u32,
             InvalidName = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Error {
             type Error = waynest::ProtocolError;
@@ -93,6 +97,11 @@ pub mod drm {
             Abgr16f = 1211384385u32,
             Xbgr16f = 1211384408u32,
         }
+        impl From<Format> for u32 {
+            fn from(value: Format) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Format {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -175,6 +184,11 @@ pub mod drm {
             #[doc = "wl_drm prime available"]
             Prime = 1u32,
         }
+        impl From<Capability> for u32 {
+            fn from(value: Capability) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Capability {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -190,24 +204,33 @@ pub mod drm {
             }
         }
         #[doc = "Trait to implement the wl_drm interface. See the module level documentation for more info"]
-        pub trait WlDrm<C: waynest::Connection>
+        pub trait WlDrm
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_drm";
             const VERSION: u32 = 2u32;
             fn authenticate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(id).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
             }
             fn create_buffer(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 name: u32,
@@ -215,13 +238,28 @@ pub mod drm {
                 height: i32,
                 stride: u32,
                 format: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_uint(name)
+                        .put_int(width)
+                        .put_int(height)
+                        .put_uint(stride)
+                        .put_uint(format)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
             }
             fn create_planar_buffer(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 name: u32,
@@ -234,13 +272,33 @@ pub mod drm {
                 stride1: i32,
                 offset2: i32,
                 stride2: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_uint(name)
+                        .put_int(width)
+                        .put_int(height)
+                        .put_uint(format)
+                        .put_int(offset0)
+                        .put_int(stride0)
+                        .put_int(offset1)
+                        .put_int(stride1)
+                        .put_int(offset2)
+                        .put_int(stride2)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
             }
             fn create_prime_buffer(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 name: std::os::fd::OwnedFd,
@@ -253,33 +311,53 @@ pub mod drm {
                 stride1: i32,
                 offset2: i32,
                 stride2: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
-                async move { Ok(()) }
+                async move {
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_fd(name)
+                        .put_int(width)
+                        .put_int(height)
+                        .put_uint(format)
+                        .put_int(offset0)
+                        .put_int(stride0)
+                        .put_int(offset1)
+                        .put_int(stride1)
+                        .put_int(offset2)
+                        .put_int(stride2)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
             }
             fn device(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn format(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 format: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn authenticated(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn capabilities(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
         }
     }
 }

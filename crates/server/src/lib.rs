@@ -1,4 +1,4 @@
-use std::{any::Any, collections::HashMap, sync::Arc};
+use std::{any::Any, collections::HashMap, io, sync::Arc};
 
 pub use async_trait;
 
@@ -10,39 +10,37 @@ use tokio::net::UnixStream;
 
 use waynest::{Message, ObjectId, ProtocolError, Socket};
 
-mod error;
 mod listener;
 
-pub use error::{Error, Result};
 pub use listener::Listener;
 pub use waynest_macros::RequestDispatcher;
 
 pin_project! {
-    pub struct Connection {
+    pub struct Connection<E: From<ProtocolError>> {
         #[pin]
         socket: Socket,
-        store: Store,
+        store: Store<E>,
         _next_id: usize,
         event_serial: u32,
     }
 }
 
-impl fmt::Debug for Connection {
+impl<E: From<ProtocolError>> fmt::Debug for Connection<E> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Connection").finish()
     }
 }
 
-impl waynest::Connection for Connection {
-    type Error = Error;
+impl<E: From<ProtocolError>> waynest::Connection for Connection<E> {
+    type Error = E;
 
-    fn fd(&mut self) -> std::result::Result<std::os::unix::prelude::OwnedFd, ProtocolError> {
-        self.socket.fd()
+    fn fd(&mut self) -> std::result::Result<std::os::unix::prelude::OwnedFd, E> {
+        self.socket.fd().map_err(E::from)
     }
 }
 
-impl Connection {
-    pub fn new(stream: UnixStream) -> Result<Self> {
+impl<E: From<ProtocolError> + From<io::Error> + 'static> Connection<E> {
+    pub fn new(stream: UnixStream) -> Result<Self, E> {
         Ok(Self {
             socket: Socket::new(stream.into_std()?)?,
             _next_id: 0xff000000,
@@ -50,7 +48,9 @@ impl Connection {
             event_serial: 0,
         })
     }
+}
 
+impl<E: From<ProtocolError> + 'static> Connection<E> {
     pub fn next_event_serial(&mut self) -> u32 {
         let prev = self.event_serial;
         self.event_serial = self.event_serial.wrapping_add(1);
@@ -58,13 +58,13 @@ impl Connection {
         prev
     }
 
-    pub fn insert<D: RequestDispatcher>(&mut self, id: ObjectId, object: D) -> Arc<D> {
+    pub fn insert<D: RequestDispatcher<Error = E>>(&mut self, id: ObjectId, object: D) -> Arc<D> {
         let dispatcher = Arc::new(object);
         self.insert_raw(id, dispatcher.clone());
         dispatcher
     }
 
-    pub fn insert_raw<D: RequestDispatcher>(&mut self, id: ObjectId, object: Arc<D>) {
+    pub fn insert_raw<D: RequestDispatcher<Error = E>>(&mut self, id: ObjectId, object: Arc<D>) {
         self.store.insert(id, object);
     }
 
@@ -73,23 +73,27 @@ impl Connection {
         Arc::downcast(dispatcher).ok()
     }
 
+    pub fn get_raw(&self, id: ObjectId) -> Option<Arc<dyn RequestDispatcher<Error = E>>> {
+        self.store.get(id)
+    }
+
     pub fn remove(&mut self, id: ObjectId) {
         self.store.remove(id)
     }
 
-    pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
-        let object = self
-            .store
-            .get(message.object_id())
-            .ok_or(Error::MissingObject(message.object_id()))?;
+    // pub async fn handle_message(&mut self, message: &mut Message) -> Result<()> {
+    //     let object = self
+    //         .store
+    //         .get(message.object_id())
+    //         .ok_or(Error::MissingObject(message.object_id()))?;
 
-        object
-            .dispatch_request(self, message.object_id(), message)
-            .await
-    }
+    //     object
+    //         .dispatch_request(self, message.object_id(), message)
+    //         .await
+    // }
 }
 
-impl Stream for Connection {
+impl<E: From<ProtocolError>> Stream for Connection<E> {
     type Item = Result<Message, ProtocolError>;
 
     fn poll_next(
@@ -100,7 +104,7 @@ impl Stream for Connection {
     }
 }
 
-impl Sink<Message> for Connection {
+impl<E: From<ProtocolError>> Sink<Message> for Connection<E> {
     type Error = ProtocolError;
 
     fn poll_ready(
@@ -132,22 +136,22 @@ impl Sink<Message> for Connection {
     }
 }
 
-struct Store {
-    objects: HashMap<ObjectId, Arc<dyn RequestDispatcher>>,
+struct Store<E: From<ProtocolError>> {
+    objects: HashMap<ObjectId, Arc<dyn RequestDispatcher<Error = E>>>,
 }
 
-impl Store {
+impl<E: From<ProtocolError>> Store<E> {
     fn new() -> Self {
         Self {
             objects: HashMap::new(),
         }
     }
     // FIXME: handle possible error if id already exists
-    fn insert(&mut self, sender_id: ObjectId, object: Arc<dyn RequestDispatcher>) {
+    fn insert(&mut self, sender_id: ObjectId, object: Arc<dyn RequestDispatcher<Error = E>>) {
         self.objects.insert(sender_id, object);
     }
 
-    fn get(&self, id: ObjectId) -> Option<Arc<dyn RequestDispatcher>> {
+    fn get(&self, id: ObjectId) -> Option<Arc<dyn RequestDispatcher<Error = E>>> {
         self.objects.get(&id).cloned()
     }
 
@@ -157,13 +161,15 @@ impl Store {
 }
 
 #[async_trait::async_trait]
-pub trait RequestDispatcher<E: From<ProtocolError> = Error>: Any + Send + Sync + 'static {
+pub trait RequestDispatcher: Any + Send + Sync + 'static {
+    type Error: From<ProtocolError>;
+
     fn as_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync + 'static>;
 
     async fn dispatch_request(
         &self,
-        connection: &mut Connection,
+        connection: &mut Connection<Self::Error>,
         sender_id: ObjectId,
         message: &mut Message,
-    ) -> Result<()>;
+    ) -> Result<(), Self::Error>;
 }

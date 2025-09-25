@@ -4,6 +4,7 @@ use quick_xml::DeError;
 
 #[derive(Debug)]
 pub enum Error {
+    NotFound(String),
     IoError(io::Error),
     Decode(DeError),
 }
@@ -11,8 +12,9 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Error::IoError(err) => write!(f, "{}", err),
-            Error::Decode(err) => write!(f, "{}", err),
+            Self::NotFound(interface) => write!(f, "Could not find interface {interface}"),
+            Self::IoError(err) => err.fmt(f),
+            Self::Decode(err) => err.fmt(f),
         }
     }
 }
@@ -22,6 +24,7 @@ impl error::Error for Error {
         match self {
             Error::IoError(err) => Some(err),
             Error::Decode(err) => Some(err),
+            _ => None,
         }
     }
 }

@@ -3,33 +3,33 @@ pub mod appmenu {
     #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
     #[doc = "interface registered on DBus."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_appmenu_manager {
         #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenuManager<C: waynest::Connection>
+        pub trait OrgKdeKwinAppmenuManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
             const VERSION: u32 = 2u32;
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -65,35 +65,35 @@ pub mod appmenu {
     #[doc = "The object should be registered on the session bus before sending this request."]
     #[doc = "If not applicable, clients should remove this object."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_appmenu {
         #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenu<C: waynest::Connection>
+        pub trait OrgKdeKwinAppmenu
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_appmenu";
             const VERSION: u32 = 2u32;
             #[doc = "Set or update the service name and object path."]
             #[doc = "Strings should be formatted in Latin-1 matching the relevant DBus specifications."]
             fn set_address(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 service_name: String,
                 object_path: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -130,34 +130,34 @@ pub mod appmenu {
 #[allow(clippy::module_inception)]
 pub mod blur {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_blur_manager {
         #[doc = "Trait to implement the org_kde_kwin_blur_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlurManager<C: waynest::Connection>
+        pub trait OrgKdeKwinBlurManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_blur_manager";
             const VERSION: u32 = 1u32;
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -197,37 +197,37 @@ pub mod blur {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_blur {
         #[doc = "Trait to implement the org_kde_kwin_blur interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinBlur<C: waynest::Connection>
+        pub trait OrgKdeKwinBlur
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_blur";
             const VERSION: u32 = 1u32;
             fn commit(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_region(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -264,34 +264,34 @@ pub mod blur {
 #[allow(clippy::module_inception)]
 pub mod contrast {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_contrast_manager {
         #[doc = "Trait to implement the org_kde_kwin_contrast_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrastManager<C: waynest::Connection>
+        pub trait OrgKdeKwinContrastManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_contrast_manager";
             const VERSION: u32 = 2u32;
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -331,49 +331,49 @@ pub mod contrast {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_contrast {
         #[doc = "Trait to implement the org_kde_kwin_contrast interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinContrast<C: waynest::Connection>
+        pub trait OrgKdeKwinContrast
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_contrast";
             const VERSION: u32 = 2u32;
             fn commit(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_region(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 region: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_contrast(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 contrast: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_intensity(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 intensity: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_saturation(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 saturation: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "enables 'frost' variant of contrast effect."]
             #[doc = ""]
             #[doc = "'frost' is an enhanced version of the contrast effect that"]
@@ -384,24 +384,24 @@ pub mod contrast {
             #[doc = "should be based off of the \"main\" background colour of the surface."]
             fn set_frost(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 red: i32,
                 green: i32,
                 blue: i32,
                 alpha: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn unset_frost(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -500,29 +500,29 @@ pub mod dpms {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_dpms_manager {
         #[doc = "Trait to implement the org_kde_kwin_dpms_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpmsManager<C: waynest::Connection>
+        pub trait OrgKdeKwinDpmsManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_dpms_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Factory request to get the org_kde_kwin_dpms for a given wl_output."]
             fn get(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -557,7 +557,6 @@ pub mod dpms {
     #[doc = "states are pushed. Whenever a state changes the set of changes is committed with the"]
     #[doc = "done event."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_dpms {
         #[repr(u32)]
         #[non_exhaustive]
@@ -567,6 +566,11 @@ pub mod dpms {
             Standby = 1u32,
             Suspend = 2u32,
             Off = 3u32,
+        }
+        impl From<Mode> for u32 {
+            fn from(value: Mode) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Mode {
             type Error = waynest::ProtocolError;
@@ -586,10 +590,11 @@ pub mod dpms {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_dpms interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinDpms<C: waynest::Connection>
+        pub trait OrgKdeKwinDpms
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_dpms";
             const VERSION: u32 = 1u32;
             #[doc = "Requests that the compositor puts the wl_output into the passed mode. The compositor"]
@@ -600,39 +605,33 @@ pub mod dpms {
             #[doc = "Instead the client should listen for the mode event."]
             fn set(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event gets pushed on binding the resource and indicates whether the wl_output"]
             #[doc = "supports DPMS. There are operation modes of a Wayland server where DPMS might not"]
             #[doc = "make sense (e.g. nested compositors)."]
             fn supported(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 supported: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_dpms#{}.supported({})",
-                        sender_id,
-                        supported
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(supported).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This mode gets pushed on binding the resource and provides the currently used"]
@@ -642,21 +641,19 @@ pub mod dpms {
             #[doc = "The event is also pushed whenever the state changes."]
             fn mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_dpms#{}.mode({})", sender_id, mode);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(mode).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event gets pushed on binding the resource once all other states are pushed."]
@@ -665,28 +662,26 @@ pub mod dpms {
             #[doc = "state changes have been pushed."]
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_dpms#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -724,13 +719,13 @@ pub mod fake_input {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_fake_input {
         #[doc = "Trait to implement the org_kde_kwin_fake_input interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinFakeInput<C: waynest::Connection>
+        pub trait OrgKdeKwinFakeInput
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_fake_input";
             const VERSION: u32 = 6u32;
             #[doc = "A client should use this request to tell the compositor why it wants to"]
@@ -740,103 +735,103 @@ pub mod fake_input {
             #[doc = "this very privileged interface."]
             fn authenticate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 application: String,
                 reason: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn pointer_motion(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 delta_x: waynest::Fixed,
                 delta_y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn button(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn axis(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 axis: u32,
                 value: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch down event at specific"]
             #[doc = "coordinates."]
             fn touch_down(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: u32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch motion to specific position."]
             fn touch_motion(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: u32,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch up event."]
             fn touch_up(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to cancel the current"]
             #[doc = "touch event."]
             fn touch_cancel(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A client should use this request to send touch frame event."]
             fn touch_frame(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn pointer_motion_absolute(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: waynest::Fixed,
                 y: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn keyboard_key(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn keyboard_keysym(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 keysym: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1021,7 +1016,6 @@ pub mod fullscreen_shell {
     #[doc = "output.  This way, the client can update the output's contents by"]
     #[doc = "simply attaching a new buffer."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod _wl_fullscreen_shell {
         #[doc = "Various capabilities that can be advertised by the compositor.  They"]
         #[doc = "are advertised one-at-a-time when the wl_fullscreen_shell interface is"]
@@ -1052,6 +1046,11 @@ pub mod fullscreen_shell {
             ArbitraryModes = 1u32,
             #[doc = "compositor has a separate cursor plane"]
             CursorPlane = 2u32,
+        }
+        impl From<Capability> for u32 {
+            fn from(value: Capability) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Capability {
             type Error = waynest::ProtocolError;
@@ -1086,6 +1085,11 @@ pub mod fullscreen_shell {
             #[doc = "scale the surface to the size of the output ignoring aspect ratio"]
             Stretch = 4u32,
         }
+        impl From<PresentMethod> for u32 {
+            fn from(value: PresentMethod) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for PresentMethod {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -1112,6 +1116,11 @@ pub mod fullscreen_shell {
             #[doc = "present_method is not known"]
             InvalidMethod = 0u32,
         }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Error {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -1127,10 +1136,11 @@ pub mod fullscreen_shell {
             }
         }
         #[doc = "Trait to implement the _wl_fullscreen_shell interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShell<C: waynest::Connection>
+        pub trait WlFullscreenShell
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "_wl_fullscreen_shell";
             const VERSION: u32 = 1u32;
             #[doc = "Release the binding from the wl_fullscreen_shell interface"]
@@ -1140,9 +1150,9 @@ pub mod fullscreen_shell {
             #[doc = "to free some of those bindings."]
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Present a surface on the given output."]
             #[doc = ""]
             #[doc = "If the output is null, the compositor will present the surface on"]
@@ -1162,12 +1172,12 @@ pub mod fullscreen_shell {
             #[doc = "ignored."]
             fn present_surface(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: Option<waynest::ObjectId>,
                 method: u32,
                 output: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Presents a surface on the given output for a particular mode."]
             #[doc = ""]
             #[doc = "If the current size of the output differs from that of the surface,"]
@@ -1207,13 +1217,13 @@ pub mod fullscreen_shell {
             #[doc = "output."]
             fn present_surface_for_mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
                 output: waynest::ObjectId,
                 framerate: i32,
                 feedback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Advertises a single capability of the compositor."]
             #[doc = ""]
             #[doc = "When the wl_fullscreen_shell interface is bound, this event is emitted"]
@@ -1224,34 +1234,28 @@ pub mod fullscreen_shell {
             #[doc = "receive all the capability events."]
             fn capability(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 capability: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> _wl_fullscreen_shell#{}.capability({})",
-                        sender_id,
-                        capability
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(capability).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1312,13 +1316,13 @@ pub mod fullscreen_shell {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod _wl_fullscreen_shell_mode_feedback {
         #[doc = "Trait to implement the _wl_fullscreen_shell_mode_feedback interface. See the module level documentation for more info"]
-        pub trait WlFullscreenShellModeFeedback<C: waynest::Connection>
+        pub trait WlFullscreenShellModeFeedback
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "_wl_fullscreen_shell_mode_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -1329,23 +1333,18 @@ pub mod fullscreen_shell {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn mode_successful(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> _wl_fullscreen_shell_mode_feedback#{}.mode_successful()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event indicates that the attempted mode switch operation"]
@@ -1356,23 +1355,18 @@ pub mod fullscreen_shell {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn mode_failed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> _wl_fullscreen_shell_mode_feedback#{}.mode_failed()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event indicates that the attempted mode switch operation was"]
@@ -1383,31 +1377,26 @@ pub mod fullscreen_shell {
             #[doc = "wl_fullscreen_shell_mode_feedback object."]
             fn present_cancelled(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> _wl_fullscreen_shell_mode_feedback#{}.present_cancelled()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
-                sender_id: waynest::ObjectId,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1429,29 +1418,29 @@ pub mod idle {
     #[doc = "interacting with the system, e.g. chat applications setting the user as away, power"]
     #[doc = "management features to dim screen, etc.."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_idle {
         #[doc = "Trait to implement the org_kde_kwin_idle interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdle<C: waynest::Connection>
+        pub trait OrgKdeKwinIdle
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_idle";
             const VERSION: u32 = 1u32;
             fn get_idle_timeout(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 timeout: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1482,67 +1471,63 @@ pub mod idle {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_idle_timeout {
         #[doc = "Trait to implement the org_kde_kwin_idle_timeout interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinIdleTimeout<C: waynest::Connection>
+        pub trait OrgKdeKwinIdleTimeout
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_idle_timeout";
             const VERSION: u32 = 1u32;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn simulate_user_activity(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn idle(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_idle_timeout#{}.idle()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn resumed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_idle_timeout#{}.resumed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1574,32 +1559,32 @@ pub mod kde_external_brightness_v1 {
     #[doc = "This protocol is for outsourcing the actual brightness-setting to a"]
     #[doc = "process outside of the compositor."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_external_brightness_v1 {
         #[doc = "Trait to implement the kde_external_brightness_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessV1<C: waynest::Connection>
+        pub trait KdeExternalBrightnessV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_external_brightness_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn create_brightness_control(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1633,95 +1618,89 @@ pub mod kde_external_brightness_v1 {
     #[doc = "and finish the sequence with commit."]
     #[doc = "Afterwards, for each change in values, the client must call commit again."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_external_brightness_device_v1 {
         #[doc = "Trait to implement the kde_external_brightness_device_v1 interface. See the module level documentation for more info"]
-        pub trait KdeExternalBrightnessDeviceV1<C: waynest::Connection>
+        pub trait KdeExternalBrightnessDeviceV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_external_brightness_device_v1";
             const VERSION: u32 = 3u32;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_internal(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 internal: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_edid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 string: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_max_brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn commit(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The client can set this to notify the compositor of the device's initial brightness."]
             #[doc = "It can also set this again after the initial commit to notify the compositor that"]
             #[doc = "the brightness level has changed due to external factors."]
             #[doc = "The compositor is free to use or ignore this value as it sees fit."]
             fn set_observed_brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor can use this information to ignore this object if its commands"]
             #[doc = "expose monitor issues. The compositor may also reduce the amount of brightness"]
             #[doc = "requests given potentially slow response times and concerns about monitor EEPROM"]
             #[doc = "longevity/wear-out."]
             fn set_uses_ddc_ci(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The client must ensure that if the brightness level changes due to external factors,"]
             #[doc = "that it either overwrites those changes with what the compositor last requested,"]
             #[doc = "or commit again with set_observed_brightness specifying the changed brightness."]
             fn requested_brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 value: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_external_brightness_device_v1#{}.requested_brightness({})",
-                        sender_id,
-                        value
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(value).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1813,7 +1792,6 @@ pub mod kde_lockscreen_overlay_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_lockscreen_overlay_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -1821,6 +1799,11 @@ pub mod kde_lockscreen_overlay_v1 {
         pub enum Error {
             #[doc = "the client provided an invalid surface state"]
             InvalidSurfaceState = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Error {
             type Error = waynest::ProtocolError;
@@ -1837,31 +1820,32 @@ pub mod kde_lockscreen_overlay_v1 {
             }
         }
         #[doc = "Trait to implement the kde_lockscreen_overlay_v1 interface. See the module level documentation for more info"]
-        pub trait KdeLockscreenOverlayV1<C: waynest::Connection>
+        pub trait KdeLockscreenOverlayV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_lockscreen_overlay_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Informs the compositor that the surface could be shown when the screen is locked. This request should be called while the surface is unmapped."]
             fn allow(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This won't affect the surface previously marked with the allow request."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -1914,7 +1898,6 @@ pub mod kde_output_device_v2 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_output_device_v2 {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -1928,6 +1911,11 @@ pub mod kde_output_device_v2 {
             HorizontalBgr = 3u32,
             VerticalRgb = 4u32,
             VerticalBgr = 5u32,
+        }
+        impl From<Subpixel> for u32 {
+            fn from(value: Subpixel) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Subpixel {
             type Error = waynest::ProtocolError;
@@ -1971,6 +1959,11 @@ pub mod kde_output_device_v2 {
             Flipped180 = 6u32,
             Flipped270 = 7u32,
         }
+        impl From<Transform> for u32 {
+            fn from(value: Transform) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Transform {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -1993,6 +1986,11 @@ pub mod kde_output_device_v2 {
             }
         }
         bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; # [doc = "if this outputdevice supports the sharpness setting"] const Sharpness = 4096u32 ; } }
+        impl From<Capability> for u32 {
+            fn from(value: Capability) -> Self {
+                value.bits()
+            }
+        }
         impl TryFrom<u32> for Capability {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -2012,6 +2010,11 @@ pub mod kde_output_device_v2 {
             Never = 0u32,
             Always = 1u32,
             Automatic = 2u32,
+        }
+        impl From<VrrPolicy> for u32 {
+            fn from(value: VrrPolicy) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for VrrPolicy {
             type Error = waynest::ProtocolError;
@@ -2038,6 +2041,11 @@ pub mod kde_output_device_v2 {
             Full = 1u32,
             Limited = 2u32,
         }
+        impl From<RgbRange> for u32 {
+            fn from(value: RgbRange) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for RgbRange {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -2062,6 +2070,11 @@ pub mod kde_output_device_v2 {
             InTabletMode = 1u32,
             Always = 2u32,
         }
+        impl From<AutoRotatePolicy> for u32 {
+            fn from(value: AutoRotatePolicy) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for AutoRotatePolicy {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -2085,6 +2098,11 @@ pub mod kde_output_device_v2 {
             SRgb = 0u32,
             Icc = 1u32,
             Edid = 2u32,
+        }
+        impl From<ColorProfileSource> for u32 {
+            fn from(value: ColorProfileSource) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for ColorProfileSource {
             type Error = waynest::ProtocolError;
@@ -2115,6 +2133,11 @@ pub mod kde_output_device_v2 {
             #[doc = "prefer accuracy"]
             Accuracy = 1u32,
         }
+        impl From<ColorPowerTradeoff> for u32 {
+            fn from(value: ColorPowerTradeoff) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for ColorPowerTradeoff {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -2137,6 +2160,11 @@ pub mod kde_output_device_v2 {
             Never = 0u32,
             Always = 1u32,
         }
+        impl From<EdrPolicy> for u32 {
+            fn from(value: EdrPolicy) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for EdrPolicy {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -2153,10 +2181,11 @@ pub mod kde_output_device_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2<C: waynest::Connection>
+        pub trait KdeOutputDeviceV2
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_device_v2";
             const VERSION: u32 = 17u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -2164,7 +2193,7 @@ pub mod kde_output_device_v2 {
             #[doc = "any of the properties change."]
             fn geometry(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
@@ -2174,22 +2203,9 @@ pub mod kde_output_device_v2 {
                 make: String,
                 model: String,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
-                        sender_id,
-                        x,
-                        y,
-                        physical_width,
-                        physical_height,
-                        subpixel,
-                        make,
-                        model,
-                        transform
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -2204,26 +2220,20 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event describes the mode currently in use for this head. It is only"]
             #[doc = "sent if the output is enabled."]
             fn current_mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.current_mode({})",
-                        sender_id,
-                        mode
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(mode))
                         .build();
@@ -2231,8 +2241,8 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The mode event describes an available mode for the output."]
@@ -2255,14 +2265,12 @@ pub mod kde_output_device_v2 {
             #[doc = "kde_output_device_v2.transform."]
             fn mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.mode({})", sender_id, mode);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(mode))
                         .build();
@@ -2270,8 +2278,8 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event is sent after all other properties have been"]
@@ -2281,20 +2289,18 @@ pub mod kde_output_device_v2 {
             #[doc = "even if multiple events successively announce them."]
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event contains scaling geometry information"]
@@ -2317,21 +2323,19 @@ pub mod kde_output_device_v2 {
             #[doc = "a higher detail image."]
             fn scale(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 factor: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.scale({})", sender_id, factor);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(factor).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
@@ -2342,22 +2346,20 @@ pub mod kde_output_device_v2 {
             #[doc = "et al. properties of the outputdevice."]
             fn edid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 raw: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(raw)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The enabled event notifies whether this output is currently"]
@@ -2367,21 +2369,19 @@ pub mod kde_output_device_v2 {
             #[doc = "enabled or disabled."]
             fn enabled(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 enabled: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.enabled({})", sender_id, enabled);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(enabled).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 6u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The uuid can be used to identify the output. It's controlled by"]
@@ -2389,14 +2389,12 @@ pub mod kde_output_device_v2 {
             #[doc = "persistent across restarts. An empty uuid is considered invalid."]
             fn uuid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.uuid(\"{}\")", sender_id, uuid);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(uuid))
                         .build();
@@ -2404,25 +2402,19 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
             fn serial_number(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial_number: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.serial_number(\"{}\")",
-                        sender_id,
-                        serial_number
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(serial_number))
                         .build();
@@ -2430,25 +2422,19 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 8u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
             fn eisa_id(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 eisa_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.eisa_id(\"{}\")",
-                        sender_id,
-                        eisa_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(eisa_id))
                         .build();
@@ -2456,126 +2442,100 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 9u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "What capabilities this device has, sent on startup before the first"]
             #[doc = "done event."]
             fn capabilities(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flags: Capability,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.capabilities({})",
-                        sender_id,
-                        flags
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(flags.bits())
+                        .put_uint(flags.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 10u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
             #[doc = "first done event."]
             fn overscan(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.overscan({})",
-                        sender_id,
-                        overscan
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(overscan).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 11u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "What policy the compositor will employ regarding its use of variable"]
             #[doc = "refresh rate."]
             fn vrr_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 vrr_policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.vrr_policy({})",
-                        sender_id,
-                        vrr_policy
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(vrr_policy as u32)
+                        .put_uint(vrr_policy.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 12u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "What rgb range the compositor is using for this output"]
             fn rgb_range(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 rgb_range: RgbRange,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.rgb_range({})",
-                        sender_id,
-                        rgb_range
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(rgb_range as u32)
+                        .put_uint(rgb_range.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 13u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
             fn name(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_v2#{}.name(\"{}\")", sender_id, name);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -2583,33 +2543,27 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 14u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Whether or not high dynamic range is enabled for this output"]
             fn high_dynamic_range(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 hdr_enabled: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.high_dynamic_range({})",
-                        sender_id,
-                        hdr_enabled
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(hdr_enabled).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 15u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
@@ -2617,18 +2571,12 @@ pub mod kde_output_device_v2 {
             #[doc = "doesn't necessarily translate to the same brightness on the screen."]
             fn sdr_brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 sdr_brightness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.sdr_brightness({})",
-                        sender_id,
-                        sdr_brightness
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(sdr_brightness)
                         .build();
@@ -2636,74 +2584,56 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 16u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
             fn wide_color_gamut(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 wcg_enabled: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.wide_color_gamut({})",
-                        sender_id,
-                        wcg_enabled
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(wcg_enabled).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 17u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn auto_rotate_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 policy: AutoRotatePolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.auto_rotate_policy({})",
-                        sender_id,
-                        policy
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(policy as u32)
+                        .put_uint(policy.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 18u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn icc_profile_path(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 profile_path: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.icc_profile_path(\"{}\")",
-                        sender_id,
-                        profile_path
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(profile_path))
                         .build();
@@ -2711,28 +2641,20 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 19u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn brightness_metadata(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 max_peak_brightness: u32,
                 max_frame_average_brightness: u32,
                 min_brightness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
-                        sender_id,
-                        max_peak_brightness,
-                        max_frame_average_brightness,
-                        min_brightness
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(max_peak_brightness)
                         .put_uint(max_frame_average_brightness)
@@ -2742,28 +2664,20 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 20u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn brightness_overrides(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 max_peak_brightness: i32,
                 max_average_brightness: i32,
                 min_brightness: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
-                        sender_id,
-                        max_peak_brightness,
-                        max_average_brightness,
-                        min_brightness
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(max_peak_brightness)
                         .put_int(max_average_brightness)
@@ -2773,26 +2687,20 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 21u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
             #[doc = "default experience on many modern sRGB screens."]
             fn sdr_gamut_wideness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 gamut_wideness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.sdr_gamut_wideness({})",
-                        sender_id,
-                        gamut_wideness
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(gamut_wideness)
                         .build();
@@ -2800,33 +2708,27 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 22u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn color_profile_source(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 source: ColorProfileSource,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.color_profile_source({})",
-                        sender_id,
-                        source
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(source as u32)
+                        .put_uint(source.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 23u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This is the brightness modifier of the output. It doesn't specify"]
@@ -2837,51 +2739,39 @@ pub mod kde_output_device_v2 {
             #[doc = "This is currently only supported / meaningful while HDR is active."]
             fn brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 brightness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.brightness({})",
-                        sender_id,
-                        brightness
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(brightness).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 24u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn color_power_tradeoff(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 preference: ColorPowerTradeoff,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.color_power_tradeoff({})",
-                        sender_id,
-                        preference
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(preference as u32)
+                        .put_uint(preference.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 25u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This is the dimming multiplier of the output. This is similar to"]
@@ -2892,42 +2782,30 @@ pub mod kde_output_device_v2 {
             #[doc = "means the output is not dimmed."]
             fn dimming(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 multiplier: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.dimming({})",
-                        sender_id,
-                        multiplier
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(multiplier).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 26u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn replication_source(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 source: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.replication_source(\"{}\")",
-                        sender_id,
-                        source
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(source))
                         .build();
@@ -2935,75 +2813,56 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 27u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "If the ddc_ci capability is present, this determines if settings"]
             #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
             fn ddc_ci_allowed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 allowed: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.ddc_ci_allowed({})",
-                        sender_id,
-                        allowed
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(allowed).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 28u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This limits the amount of bits per color that are sent to the display."]
             fn max_bits_per_color(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 max_bpc: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.max_bits_per_color({})",
-                        sender_id,
-                        max_bpc
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(max_bpc).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 29u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn max_bits_per_color_range(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 min_value: u32,
                 max_value: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.max_bits_per_color_range({}, {})",
-                        sender_id,
-                        min_value,
-                        max_value
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(min_value)
                         .put_uint(max_value)
@@ -3012,24 +2871,18 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 30u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn automatic_max_bits_per_color_limit(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 max_bpc_limit: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.automatic_max_bits_per_color_limit({})",
-                        sender_id,
-                        max_bpc_limit
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(max_bpc_limit)
                         .build();
@@ -3037,8 +2890,8 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 31u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
@@ -3048,60 +2901,48 @@ pub mod kde_output_device_v2 {
             #[doc = "usage."]
             fn edr_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 policy: EdrPolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.edr_policy({})",
-                        sender_id,
-                        policy
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(policy as u32)
+                        .put_uint(policy.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 32u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This is the sharpness modifier of the output."]
             #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
             fn sharpness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 sharpness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_v2#{}.sharpness({})",
-                        sender_id,
-                        sharpness
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(sharpness).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 33u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
-                sender_id: waynest::ObjectId,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3121,13 +2962,13 @@ pub mod kde_output_device_v2 {
     #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
     #[doc = "in which properties are sent."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_output_device_mode_v2 {
         #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2<C: waynest::Connection>
+        pub trait KdeOutputDeviceModeV2
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
             const VERSION: u32 = 1u32;
             #[doc = "This event describes the mode size. The size is given in physical"]
@@ -3136,20 +2977,13 @@ pub mod kde_output_device_v2 {
             #[doc = "may be scaled or transformed."]
             fn size(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_mode_v2#{}.size({}, {})",
-                        sender_id,
-                        width,
-                        height
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
@@ -3158,52 +2992,44 @@ pub mod kde_output_device_v2 {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
             #[doc = "sent if the mode has a fixed refresh rate."]
             fn refresh(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 refresh: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_device_mode_v2#{}.refresh({})",
-                        sender_id,
-                        refresh
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(refresh).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event advertises this mode as preferred."]
             fn preferred(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_mode_v2#{}.preferred()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The compositor will destroy the object immediately after sending this"]
@@ -3211,28 +3037,26 @@ pub mod kde_output_device_v2 {
             #[doc = "resources associated with it."]
             fn removed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_device_mode_v2#{}.removed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
-                sender_id: waynest::ObjectId,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3289,29 +3113,29 @@ pub mod kde_output_management_v2 {
     #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
     #[doc = "changes may be added without bumping the major version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_output_management_v2 {
         #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2<C: waynest::Connection>
+        pub trait KdeOutputManagementV2
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_management_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
             fn create_configuration(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -3347,7 +3171,6 @@ pub mod kde_output_management_v2 {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_output_configuration_v2 {
         #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
         #[repr(u32)]
@@ -3356,6 +3179,11 @@ pub mod kde_output_management_v2 {
         pub enum Error {
             #[doc = "the config is already applied"]
             AlreadyApplied = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Error {
             type Error = waynest::ProtocolError;
@@ -3379,6 +3207,11 @@ pub mod kde_output_management_v2 {
             Never = 0u32,
             Always = 1u32,
             Automatic = 2u32,
+        }
+        impl From<VrrPolicy> for u32 {
+            fn from(value: VrrPolicy) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for VrrPolicy {
             type Error = waynest::ProtocolError;
@@ -3405,6 +3238,11 @@ pub mod kde_output_management_v2 {
             Full = 1u32,
             Limited = 2u32,
         }
+        impl From<RgbRange> for u32 {
+            fn from(value: RgbRange) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for RgbRange {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -3429,6 +3267,11 @@ pub mod kde_output_management_v2 {
             InTabletMode = 1u32,
             Always = 2u32,
         }
+        impl From<AutoRotatePolicy> for u32 {
+            fn from(value: AutoRotatePolicy) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for AutoRotatePolicy {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -3452,6 +3295,11 @@ pub mod kde_output_management_v2 {
             SRgb = 0u32,
             Icc = 1u32,
             Edid = 2u32,
+        }
+        impl From<ColorProfileSource> for u32 {
+            fn from(value: ColorProfileSource) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for ColorProfileSource {
             type Error = waynest::ProtocolError;
@@ -3482,6 +3330,11 @@ pub mod kde_output_management_v2 {
             #[doc = "prefer accuracy"]
             Accuracy = 1u32,
         }
+        impl From<ColorPowerTradeoff> for u32 {
+            fn from(value: ColorPowerTradeoff) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for ColorPowerTradeoff {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -3504,6 +3357,11 @@ pub mod kde_output_management_v2 {
             Never = 0u32,
             Always = 1u32,
         }
+        impl From<EdrPolicy> for u32 {
+            fn from(value: EdrPolicy) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for EdrPolicy {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -3520,36 +3378,37 @@ pub mod kde_output_management_v2 {
             }
         }
         #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2<C: waynest::Connection>
+        pub trait KdeOutputConfigurationV2
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_configuration_v2";
             const VERSION: u32 = 17u32;
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the mode for a given output."]
             fn mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
             #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
             #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
@@ -3559,20 +3418,20 @@ pub mod kde_output_management_v2 {
             #[doc = "stacked horizontally, vertically, or both on each other."]
             fn position(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 scale: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
             #[doc = ""]
@@ -3580,119 +3439,119 @@ pub mod kde_output_management_v2 {
             #[doc = "will be posted if the apply request is called the second time."]
             fn apply(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Whether full or limited color range should be used"]
             fn set_rgb_range(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 rgb_range: RgbRange,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_primary_output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
             #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
             #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
             fn set_priority(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 priority: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets whether or not the output should be set to HDR mode."]
             fn set_high_dynamic_range(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable_hdr: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
             #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
             fn set_sdr_brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 sdr_brightness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Whether or not the output should use a wide color gamut"]
             fn set_wide_color_gamut(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable_wcg: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_auto_rotate_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: AutoRotatePolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_icc_profile_path(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 profile_path: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_brightness_overrides(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 max_peak_brightness: i32,
                 max_frame_average_brightness: i32,
                 min_brightness: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
             #[doc = "default experience on many modern sRGB screens."]
             fn set_sdr_gamut_wideness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 gamut_wideness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_color_profile_source(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 color_profile_source: ColorProfileSource,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set the brightness modifier of the output. It doesn't specify"]
             #[doc = "any absolute values, but is merely a multiplier on top of other"]
             #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
@@ -3703,18 +3562,18 @@ pub mod kde_output_management_v2 {
             #[doc = "versions 9 and above."]
             fn set_brightness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 brightness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_color_power_tradeoff(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 preference: ColorPowerTradeoff,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set the dimming multiplier of the output. This is similar to the"]
             #[doc = "brightness setting, except it's meant to be a temporary setting"]
             #[doc = "only, not persistent and may be implemented differently depending"]
@@ -3726,35 +3585,35 @@ pub mod kde_output_management_v2 {
             #[doc = "also supported."]
             fn set_dimming(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 multiplier: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set the source output that the outputdevice should mirror its"]
             #[doc = "viewport from."]
             fn set_replication_source(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 source: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_ddc_ci_allowed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 allowed: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This limits the amount of bits per color that are sent to the display."]
             fn set_max_bits_per_color(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 max_bpc: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
             #[doc = "the user-specified setting, in order to present HDR content on displays"]
             #[doc = "without native HDR support."]
@@ -3762,75 +3621,65 @@ pub mod kde_output_management_v2 {
             #[doc = "usage."]
             fn set_edr_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: EdrPolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This is the sharpness modifier of the output."]
             #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
             fn set_sharpness(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 sharpness: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_configuration_v2#{}.applied()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             fn failed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_configuration_v2#{}.failed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Describes why applying the output configuration failed. Is only"]
             #[doc = "sent before the failure event."]
             fn failure_reason(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 reason: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.failure_reason(\"{}\")",
-                        sender_id,
-                        reason
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(reason))
                         .build();
@@ -3838,16 +3687,16 @@ pub mod kde_output_management_v2 {
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4343,35 +4192,29 @@ pub mod kde_output_order_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_output_order_v1 {
         #[doc = "Trait to implement the kde_output_order_v1 interface. See the module level documentation for more info"]
-        pub trait KdeOutputOrderV1<C: waynest::Connection>
+        pub trait KdeOutputOrderV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_order_v1";
             const VERSION: u32 = 1u32;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Specifies the output identified by their wl_output.name."]
             fn output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 output_name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_order_v1#{}.output(\"{}\")",
-                        sender_id,
-                        output_name
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(output_name))
                         .build();
@@ -4379,35 +4222,33 @@ pub mod kde_output_order_v1 {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Specifies that the output list is complete. On the next output event, a new list begins."]
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_order_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4434,35 +4275,29 @@ pub mod kde_primary_output_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_primary_output_v1 {
         #[doc = "Trait to implement the kde_primary_output_v1 interface. See the module level documentation for more info"]
-        pub trait KdePrimaryOutputV1<C: waynest::Connection>
+        pub trait KdePrimaryOutputV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_primary_output_v1";
             const VERSION: u32 = 2u32;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Specifies which output is the primary one identified by their uuid. See kde_output_device_v2 uuid event for more information about it."]
             fn primary_output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 output_name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_primary_output_v1#{}.primary_output(\"{}\")",
-                        sender_id,
-                        output_name
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(output_name))
                         .build();
@@ -4470,16 +4305,16 @@ pub mod kde_primary_output_v1 {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4511,7 +4346,6 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_screen_edge_manager_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4523,6 +4357,11 @@ pub mod kde_screen_edge_v1 {
             InvalidRole = 1u32,
             #[doc = "the surface already has a screen edge"]
             AlreadyConstructed = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Error {
             type Error = waynest::ProtocolError;
@@ -4554,6 +4393,11 @@ pub mod kde_screen_edge_v1 {
             #[doc = "right screen edge"]
             Right = 4u32,
         }
+        impl From<Border> for u32 {
+            fn from(value: Border) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Border {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -4572,19 +4416,20 @@ pub mod kde_screen_edge_v1 {
             }
         }
         #[doc = "Trait to implement the kde_screen_edge_manager_v1 interface. See the module level documentation for more info"]
-        pub trait KdeScreenEdgeManagerV1<C: waynest::Connection>
+        pub trait KdeScreenEdgeManagerV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_screen_edge_manager_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the screen edge manager. This doesn't destroy objects created"]
             #[doc = "with this manager."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Create a new auto hide screen edge object associated with the specified"]
             #[doc = "surface and the border."]
             #[doc = ""]
@@ -4599,18 +4444,18 @@ pub mod kde_screen_edge_v1 {
             #[doc = "does not have layer_surface role."]
             fn get_auto_hide_screen_edge(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 border: Border,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4666,41 +4511,41 @@ pub mod kde_screen_edge_v1 {
     #[doc = "Another kde_auto_hide_screen_edge_v1.activate request must be made by the"]
     #[doc = "client to activate the screen edge."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod kde_auto_hide_screen_edge_v1 {
         #[doc = "Trait to implement the kde_auto_hide_screen_edge_v1 interface. See the module level documentation for more info"]
-        pub trait KdeAutoHideScreenEdgeV1<C: waynest::Connection>
+        pub trait KdeAutoHideScreenEdgeV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_auto_hide_screen_edge_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the auto hide screen edge object. If the screen edge is active,"]
             #[doc = "it will be deactivated and the surface will be made visible."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Deactivate the screen edge. The surface will be made visible."]
             fn deactivate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Activate the screen edge. The surface will be hidden until the screen"]
             #[doc = "edge is triggered."]
             fn activate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4737,7 +4582,6 @@ pub mod kde_screen_edge_v1 {
 pub mod keystate {
     #[doc = "Keeps track of the states of the different keys that have a state attached to it."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_keystate {
         #[repr(u32)]
         #[non_exhaustive]
@@ -4751,6 +4595,11 @@ pub mod keystate {
             Shift = 5u32,
             Meta = 6u32,
             Altgr = 7u32,
+        }
+        impl From<Key> for u32 {
+            fn from(value: Key) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Key {
             type Error = waynest::ProtocolError;
@@ -4782,6 +4631,11 @@ pub mod keystate {
             Locked = 2u32,
             Pressed = 3u32,
         }
+        impl From<State> for u32 {
+            fn from(value: State) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for State {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -4800,38 +4654,32 @@ pub mod keystate {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_keystate interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinKeystate<C: waynest::Connection>
+        pub trait OrgKdeKwinKeystate
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_keystate";
             const VERSION: u32 = 5u32;
             fn fetch_states(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn state_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 key: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_keystate#{}.state_changed({}, {})",
-                        sender_id,
-                        key,
-                        state
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(key)
                         .put_uint(state)
@@ -4840,16 +4688,16 @@ pub mod keystate {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -4874,13 +4722,13 @@ pub mod keystate {
 #[allow(clippy::module_inception)]
 pub mod org_kde_plasma_virtual_desktop {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_virtual_desktop_management {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktopManagement<C: waynest::Connection>
+        pub trait OrgKdePlasmaVirtualDesktopManagement
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
             const VERSION: u32 = 3u32;
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
@@ -4891,42 +4739,35 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "version of the extension."]
             fn get_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Ask the server to create a new virtual desktop, and position it at a specified position. If the position is zero or less, it will be positioned at the beginning, if the position is the count or more, it will be positioned at the end."]
             fn request_create_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
                 position: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Ask the server to get rid of a virtual desktop, the server may or may not acconsent to the request."]
             fn request_remove_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn desktop_created(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
                 position: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop_management#{}.desktop_created(\"{}\", {})",
-                        sender_id,
-                        desktop_id,
-                        position
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(desktop_id))
                         .put_uint(position)
@@ -4935,24 +4776,18 @@ pub mod org_kde_plasma_virtual_desktop {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn desktop_removed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop_management#{}.desktop_removed(\"{}\")",
-                        sender_id,
-                        desktop_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(desktop_id))
                         .build();
@@ -4960,8 +4795,8 @@ pub mod org_kde_plasma_virtual_desktop {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event is sent after all other properties have been sent after"]
@@ -4974,54 +4809,43 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "if they happen via multiple events."]
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop_management#{}.done()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn rows(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 rows: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop_management#{}.rows({})",
-                        sender_id,
-                        rows
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(rows).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -5080,36 +4904,30 @@ pub mod org_kde_plasma_virtual_desktop {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_virtual_desktop {
         #[doc = "Trait to implement the org_kde_plasma_virtual_desktop interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaVirtualDesktop<C: waynest::Connection>
+        pub trait OrgKdePlasmaVirtualDesktop
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
             const VERSION: u32 = 3u32;
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
             fn request_activate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
             fn desktop_id(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 desktop_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop#{}.desktop_id(\"{}\")",
-                        sender_id,
-                        desktop_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(desktop_id))
                         .build();
@@ -5117,24 +4935,18 @@ pub mod org_kde_plasma_virtual_desktop {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn name(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop#{}.name(\"{}\")",
-                        sender_id,
-                        name
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -5142,53 +4954,43 @@ pub mod org_kde_plasma_virtual_desktop {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The desktop will be the new \"current\" desktop of the system. The server may support either one virtual desktop active at a time, or other combinations such as one virtual desktop active per screen."]
             #[doc = "Windows associated to this virtual desktop will be shown."]
             fn activated(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop#{}.activated()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Windows that were associated only to this desktop will be hidden."]
             fn deactivated(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop#{}.deactivated()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event is sent after all other properties has been"]
@@ -5198,40 +5000,36 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "atomic, even if they happen via multiple events."]
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This virtual desktop has just been removed by the server:"]
             #[doc = "All windows will lose the association to this desktop."]
             fn removed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_virtual_desktop#{}.removed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The position of the virtual desktop in the desktop list. The virtual"]
@@ -5239,33 +5037,27 @@ pub mod org_kde_plasma_virtual_desktop {
             #[doc = "virtual desktops."]
             fn position(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_virtual_desktop#{}.position({})",
-                        sender_id,
-                        index
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(index).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 6u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -5327,29 +5119,29 @@ pub mod outputmanagement {
     #[doc = "internally supported by the server."]
     #[doc = ""]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_outputmanagement {
         #[doc = "Trait to implement the org_kde_kwin_outputmanagement interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputmanagement<C: waynest::Connection>
+        pub trait OrgKdeKwinOutputmanagement
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_outputmanagement";
             const VERSION: u32 = 4u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
             fn create_configuration(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -5385,7 +5177,6 @@ pub mod outputmanagement {
     #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
     #[doc = "applied to the hardware and before the server side sends the applied event."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_outputconfiguration {
         #[doc = "Describes when the compositor may employ variable refresh rate"]
         #[repr(u32)]
@@ -5395,6 +5186,11 @@ pub mod outputmanagement {
             Never = 0u32,
             Always = 1u32,
             Automatic = 2u32,
+        }
+        impl From<VrrPolicy> for u32 {
+            fn from(value: VrrPolicy) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for VrrPolicy {
             type Error = waynest::ProtocolError;
@@ -5413,36 +5209,37 @@ pub mod outputmanagement {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputconfiguration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputconfiguration<C: waynest::Connection>
+        pub trait OrgKdeKwinOutputconfiguration
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_outputconfiguration";
             const VERSION: u32 = 4u32;
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enable: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the mode for a given output by its mode size (width and height) and refresh rate."]
             fn mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 mode_id: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the transformation for a given output."]
             fn transform(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
             #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
             #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
@@ -5452,36 +5249,36 @@ pub mod outputmanagement {
             #[doc = "stacked horizontally, vertically, or both on each other."]
             fn position(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             fn scale(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 scale: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
             #[doc = "object to all outputs on the server side."]
             fn apply(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the scaling factor for this output device."]
             #[doc = "Sending both scale and scalef is undefined."]
             fn scalef(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 scale: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set color curves of output devices through RGB color ramps. Allows color"]
             #[doc = "correction of output device from user space."]
             #[doc = ""]
@@ -5489,83 +5286,76 @@ pub mod outputmanagement {
             #[doc = "internally, for example to shift color temperature at night."]
             fn colorcurves(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 red: Vec<u8>,
                 green: Vec<u8>,
                 blue: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set the overscan value of this output device with a value in percent."]
             fn overscan(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set what policy the compositor should employ regarding its use of"]
             #[doc = "variable refresh rate."]
             fn set_vrr_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
             fn applied(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputconfiguration#{}.applied()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sent if the server rejects the changes or failed to apply them."]
             fn failed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_outputconfiguration#{}.failed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -5757,7 +5547,6 @@ pub mod org_kde_kwin_outputdevice {
     #[doc = "display devices, or when one later becomes available, for example by"]
     #[doc = "being hotplugged via a physical connector."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_outputdevice {
         #[doc = "This enumeration describes how the physical pixels on an output are"]
         #[doc = "laid out."]
@@ -5771,6 +5560,11 @@ pub mod org_kde_kwin_outputdevice {
             HorizontalBgr = 3u32,
             VerticalRgb = 4u32,
             VerticalBgr = 5u32,
+        }
+        impl From<Subpixel> for u32 {
+            fn from(value: Subpixel) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Subpixel {
             type Error = waynest::ProtocolError;
@@ -5814,6 +5608,11 @@ pub mod org_kde_kwin_outputdevice {
             Flipped180 = 6u32,
             Flipped270 = 7u32,
         }
+        impl From<Transform> for u32 {
+            fn from(value: Transform) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Transform {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -5846,6 +5645,11 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "indicates this is the preferred mode"]
             Preferred = 2u32,
         }
+        impl From<Mode> for u32 {
+            fn from(value: Mode) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Mode {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -5871,6 +5675,11 @@ pub mod org_kde_kwin_outputdevice {
             Disabled = 0u32,
             Enabled = 1u32,
         }
+        impl From<Enablement> for u32 {
+            fn from(value: Enablement) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Enablement {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -5887,6 +5696,11 @@ pub mod org_kde_kwin_outputdevice {
             }
         }
         bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this outputdevice can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; } }
+        impl From<Capability> for u32 {
+            fn from(value: Capability) -> Self {
+                value.bits()
+            }
+        }
         impl TryFrom<u32> for Capability {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -5907,6 +5721,11 @@ pub mod org_kde_kwin_outputdevice {
             Always = 1u32,
             Automatic = 2u32,
         }
+        impl From<VrrPolicy> for u32 {
+            fn from(value: VrrPolicy) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for VrrPolicy {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -5924,10 +5743,11 @@ pub mod org_kde_kwin_outputdevice {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_outputdevice interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinOutputdevice<C: waynest::Connection>
+        pub trait OrgKdeKwinOutputdevice
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_outputdevice";
             const VERSION: u32 = 4u32;
             #[doc = "The geometry event describes geometric properties of the output."]
@@ -5935,7 +5755,7 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "any of the properties change."]
             fn geometry(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
@@ -5945,22 +5765,9 @@ pub mod org_kde_kwin_outputdevice {
                 make: String,
                 model: String,
                 transform: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
-                        sender_id,
-                        x,
-                        y,
-                        physical_width,
-                        physical_height,
-                        subpixel,
-                        make,
-                        model,
-                        transform
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -5975,8 +5782,8 @@ pub mod org_kde_kwin_outputdevice {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The mode event describes an available mode for the output."]
@@ -6002,26 +5809,16 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "org_kde_kwin_outputconfiguration object."]
             fn mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flags: u32,
                 width: i32,
                 height: i32,
                 refresh: i32,
                 mode_id: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.mode({}, {}, {}, {}, {})",
-                        sender_id,
-                        flags,
-                        width,
-                        height,
-                        refresh,
-                        mode_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(flags)
                         .put_int(width)
@@ -6033,8 +5830,8 @@ pub mod org_kde_kwin_outputdevice {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event is sent after all other properties have been"]
@@ -6044,20 +5841,18 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "even if multiple events successively announce them."]
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_outputdevice#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event contains scaling geometry information"]
@@ -6080,25 +5875,19 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "a higher detail image."]
             fn scale(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 factor: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.scale({})",
-                        sender_id,
-                        factor
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(factor).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
@@ -6109,26 +5898,20 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "et al. properties of the outputdevice."]
             fn edid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 raw: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.edid(\"{}\")",
-                        sender_id,
-                        raw
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(raw)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The enabled event notifies whether this output is currently"]
@@ -6138,25 +5921,19 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "enabled or disabled."]
             fn enabled(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 enabled: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.enabled({})",
-                        sender_id,
-                        enabled
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(enabled).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The uuid can be used to identify the output. It's controlled by"]
@@ -6164,18 +5941,12 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "persistent across restarts. An empty uuid is considered invalid."]
             fn uuid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.uuid(\"{}\")",
-                        sender_id,
-                        uuid
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(uuid))
                         .build();
@@ -6183,8 +5954,8 @@ pub mod org_kde_kwin_outputdevice {
                         connection,
                         waynest::Message::new(sender_id, 6u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event contains scaling geometry information"]
@@ -6210,25 +5981,19 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "configuring the window manager you want to use that."]
             fn scalef(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 factor: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.scalef({})",
-                        sender_id,
-                        factor
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(factor).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Describes the color intensity profile of the output."]
@@ -6240,22 +6005,14 @@ pub mod org_kde_kwin_outputdevice {
             #[doc = "The array elements are unsigned 16bit integers."]
             fn colorcurves(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 red: Vec<u8>,
                 green: Vec<u8>,
                 blue: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.colorcurves(array[{}], array[{}], array[{}])",
-                        sender_id,
-                        red.len(),
-                        green.len(),
-                        blue.len()
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_array(red)
                         .put_array(green)
@@ -6265,25 +6022,19 @@ pub mod org_kde_kwin_outputdevice {
                         connection,
                         waynest::Message::new(sender_id, 8u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
             fn serial_number(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial_number: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.serial_number(\"{}\")",
-                        sender_id,
-                        serial_number
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(serial_number))
                         .build();
@@ -6291,25 +6042,19 @@ pub mod org_kde_kwin_outputdevice {
                         connection,
                         waynest::Message::new(sender_id, 9u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
             fn eisa_id(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 eisa_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.eisa_id(\"{}\")",
-                        sender_id,
-                        eisa_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(eisa_id))
                         .build();
@@ -6317,95 +6062,77 @@ pub mod org_kde_kwin_outputdevice {
                         connection,
                         waynest::Message::new(sender_id, 10u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "What capabilities this device has, sent on startup before the first"]
             #[doc = "done event."]
             fn capabilities(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flags: Capability,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.capabilities({})",
-                        sender_id,
-                        flags
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(flags.bits())
+                        .put_uint(flags.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 11u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
             #[doc = "first done event."]
             fn overscan(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 overscan: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.overscan({})",
-                        sender_id,
-                        overscan
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(overscan).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 12u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "What policy the compositor will employ regarding its use of variable"]
             #[doc = "refresh rate."]
             fn vrr_policy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 vrr_policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_outputdevice#{}.vrr_policy({})",
-                        sender_id,
-                        vrr_policy
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(vrr_policy as u32)
+                        .put_uint(vrr_policy.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 13u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
-                sender_id: waynest::ObjectId,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -6427,13 +6154,13 @@ pub mod plasma_shell {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_shell {
         #[doc = "Trait to implement the org_kde_plasma_shell interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaShell<C: waynest::Connection>
+        pub trait OrgKdePlasmaShell
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_shell";
             const VERSION: u32 = 8u32;
             #[doc = "Create a shell surface for an existing surface."]
@@ -6442,17 +6169,17 @@ pub mod plasma_shell {
             #[doc = "surface."]
             fn get_surface(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -6490,7 +6217,6 @@ pub mod plasma_shell {
     #[doc = "org_kde_plasma_surface.destroy() must be called before"]
     #[doc = "destroying the wl_surface object."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6504,6 +6230,11 @@ pub mod plasma_shell {
             Tooltip = 5u32,
             Criticalnotification = 6u32,
             Appletpopup = 7u32,
+        }
+        impl From<Role> for u32 {
+            fn from(value: Role) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Role {
             type Error = waynest::ProtocolError;
@@ -6535,6 +6266,11 @@ pub mod plasma_shell {
             WindowsCanCover = 3u32,
             WindowsGoBelow = 4u32,
         }
+        impl From<PanelBehavior> for u32 {
+            fn from(value: PanelBehavior) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for PanelBehavior {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -6559,6 +6295,11 @@ pub mod plasma_shell {
             #[doc = "Request panel_auto_hide performed on a surface which does not correspond to an auto-hide panel."]
             PanelNotAutoHide = 0u32,
         }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Error {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -6574,10 +6315,11 @@ pub mod plasma_shell {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_surface interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaSurface<C: waynest::Connection>
+        pub trait OrgKdePlasmaSurface
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_surface";
             const VERSION: u32 = 8u32;
             #[doc = "The org_kde_plasma_surface interface is removed from the"]
@@ -6586,19 +6328,19 @@ pub mod plasma_shell {
             #[doc = "The shell surface role is lost and wl_surface is unmapped."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Assign an output to this shell surface."]
             #[doc = "The compositor will use this information to set the position"]
             #[doc = "when org_kde_plasma_surface.set_position request is"]
             #[doc = "called."]
             fn set_output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Move the surface to new coordinates."]
             #[doc = ""]
             #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
@@ -6608,11 +6350,11 @@ pub mod plasma_shell {
             #[doc = "to this surface."]
             fn set_position(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Assign a role to a shell surface."]
             #[doc = ""]
             #[doc = "The compositor handles surfaces depending on their role."]
@@ -6708,10 +6450,10 @@ pub mod plasma_shell {
             #[doc = "Only one surface per output can have the lock role."]
             fn set_role(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 role: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Set flags bitmask as described by the flag enum."]
             #[doc = "Pass 0 to unset any flag, the surface will adjust its behavior to"]
             #[doc = "the default."]
@@ -6719,17 +6461,17 @@ pub mod plasma_shell {
             #[doc = "Deprecated in Plasma 6. Setting this flag will have no effect. Applications should use layer shell where appropriate."]
             fn set_panel_behavior(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flag: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Setting this bit to the window, will make it say it prefers to not be listed in the taskbar. Taskbar implementations may or may not follow this hint."]
             fn set_skip_taskbar(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to hide the panel"]
             #[doc = "on a screen edge without unmapping it. The compositor informs the client about the panel"]
             #[doc = "being hidden with the event auto_hidden_panel_hidden."]
@@ -6742,89 +6484,79 @@ pub mod plasma_shell {
             #[doc = "The client can also request to show the panel again with the request panel_auto_hide_show."]
             fn panel_auto_hide_hide(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A panel surface with panel_behavior auto_hide can perform this request to show the panel"]
             #[doc = "again which got hidden with panel_auto_hide_hide."]
             fn panel_auto_hide_show(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "By default various org_kde_plasma_surface roles do not take focus and cannot be"]
             #[doc = "activated. With this request the compositor can be instructed to pass focus also to this"]
             #[doc = "org_kde_plasma_surface."]
             fn set_panel_takes_focus(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 takes_focus: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
             fn set_skip_switcher(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 skip: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Request the initial position of this surface to be under the current"]
             #[doc = "cursor position. Has to be called before attaching any buffer to this surface."]
             fn open_under_cursor(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "An auto-hiding panel got hidden by the compositor."]
             fn auto_hidden_panel_hidden(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_surface#{}.auto_hidden_panel_hidden()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "An auto-hiding panel got shown by the compositor."]
             fn auto_hidden_panel_shown(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_surface#{}.auto_hidden_panel_shown()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -6954,7 +6686,6 @@ pub mod plasma_window_management {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_window_management {
         #[repr(u32)]
         #[non_exhaustive]
@@ -6981,6 +6712,11 @@ pub mod plasma_window_management {
             Skipswitcher = 262144u32,
             NoBorder = 524288u32,
             CanSetNoBorder = 1048576u32,
+        }
+        impl From<State> for u32 {
+            fn from(value: State) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for State {
             type Error = waynest::ProtocolError;
@@ -7023,6 +6759,11 @@ pub mod plasma_window_management {
             Disabled = 0u32,
             Enabled = 1u32,
         }
+        impl From<ShowDesktop> for u32 {
+            fn from(value: ShowDesktop) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for ShowDesktop {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -7039,89 +6780,78 @@ pub mod plasma_window_management {
             }
         }
         #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement<C: waynest::Connection>
+        pub trait OrgKdePlasmaWindowManagement
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_window_management";
             const VERSION: u32 = 19u32;
             #[doc = "Tell the compositor to show/hide the desktop."]
             fn show_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Deprecated: use get_window_by_uuid"]
             fn get_window(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 internal_window_id: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn get_window_by_uuid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 internal_window_uuid: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn get_stacking_order(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 stacking_order: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
             #[doc = "or left."]
             #[doc = ""]
             #[doc = "On binding the interface the current state is sent."]
             fn show_desktop_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.show_desktop_changed({})",
-                        sender_id,
-                        state
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent immediately after a window is mapped."]
             fn window(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.window({})",
-                        sender_id,
-                        id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(id).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when stacking order changed and on bind."]
@@ -7129,25 +6859,19 @@ pub mod plasma_window_management {
             #[doc = "With version 17 this event is deprecated and will no longer be sent."]
             fn stacking_order_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 ids: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
-                        sender_id,
-                        ids.len()
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_array(ids).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when stacking order changed and on bind."]
@@ -7155,18 +6879,12 @@ pub mod plasma_window_management {
             #[doc = "With version 17 this event is deprecated and will no longer be sent."]
             fn stacking_order_uuid_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 uuids: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
-                        sender_id,
-                        uuids
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(uuids))
                         .build();
@@ -7174,27 +6892,20 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent immediately after a window is mapped."]
             fn window_with_uuid(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: u32,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
-                        sender_id,
-                        id,
-                        uuid
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(id)
                         .put_string(Some(uuid))
@@ -7203,38 +6914,33 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when stacking order changed."]
             fn stacking_order_changed_2(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.stacking_order_changed_2()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -7304,13 +7010,13 @@ pub mod plasma_window_management {
     #[doc = ""]
     #[doc = "Only one client can bind this interface at a time."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_window {
         #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow<C: waynest::Connection>
+        pub trait OrgKdePlasmaWindow
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_window";
             const VERSION: u32 = 18u32;
             #[doc = "Set window state."]
@@ -7320,11 +7026,11 @@ pub mod plasma_window_management {
             #[doc = "supposed to be set, the state bitfield the value for the set flags"]
             fn set_state(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flags: u32,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Deprecated: use enter_virtual_desktop"]
             #[doc = "Maps the window to a different virtual desktop."]
             #[doc = ""]
@@ -7333,120 +7039,114 @@ pub mod plasma_window_management {
             #[doc = "state in the bitfield."]
             fn set_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 number: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the geometry of the taskbar entry for this window."]
             #[doc = "The geometry is relative to a panel in particular."]
             fn set_minimized_geometry(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 panel: waynest::ObjectId,
                 x: u32,
                 y: u32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Remove the task geometry information for a particular panel."]
             fn unset_minimized_geometry(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 panel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Close this window."]
             fn close(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Request an interactive move for this window."]
             fn request_move(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Request an interactive resize for this window."]
             fn request_resize(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Removes the resource bound for this org_kde_plasma_window."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The compositor will write the window icon into the provided file descriptor."]
             #[doc = "The data is a serialized QIcon with QDataStream."]
             fn get_icon(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window enter a virtual desktop. A window can enter more"]
             #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
             fn request_enter_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
             #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
             #[doc = "it will create a new virtual desktop and assign the window to it."]
             fn request_enter_new_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
             fn request_leave_virtual_desktop(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
             fn request_enter_activity(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
             fn request_leave_activity(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Requests this window to be displayed in a specific output."]
             fn send_to_output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event will be sent as soon as the window title is changed."]
             fn title_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 title: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.title_changed(\"{}\")",
-                        sender_id,
-                        title
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(title))
                         .build();
@@ -7454,26 +7154,20 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent as soon as the application"]
             #[doc = "identifier is changed."]
             fn app_id_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.app_id_changed(\"{}\")",
-                        sender_id,
-                        app_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
@@ -7481,8 +7175,8 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent as soon as the window state changes."]
@@ -7490,25 +7184,19 @@ pub mod plasma_window_management {
             #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
             fn state_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flags: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.state_changed({})",
-                        sender_id,
-                        flags
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(flags).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
@@ -7518,42 +7206,30 @@ pub mod plasma_window_management {
             #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
             fn virtual_desktop_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 number: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.virtual_desktop_changed({})",
-                        sender_id,
-                        number
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(number).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
             fn themed_icon_name_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
-                        sender_id,
-                        name
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -7561,28 +7237,26 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent immediately after the window is closed"]
             #[doc = "and its surface is unmapped."]
             fn unmapped(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.unmapped()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent immediately after all initial state been sent to the client."]
@@ -7590,20 +7264,18 @@ pub mod plasma_window_management {
             #[doc = "initial_state event."]
             fn initial_state(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.initial_state()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 6u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
@@ -7612,51 +7284,34 @@ pub mod plasma_window_management {
             #[doc = "org_kde_plasma_window does not have a parent window."]
             fn parent_window(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.parent_window({})",
-                        sender_id,
-                        parent
-                            .as_ref()
-                            .map_or("null".to_string(), |v| v.to_string())
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(parent).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
             #[doc = "The coordinates are in absolute coordinates of the windowing system."]
             fn geometry(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
-                        sender_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -7667,8 +7322,8 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 8u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
@@ -7677,116 +7332,89 @@ pub mod plasma_window_management {
             #[doc = "The client can request the icon using get_icon."]
             fn icon_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.icon_changed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 9u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
             #[doc = "This should be set once before the initial_state is sent."]
             fn pid_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 pid: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.pid_changed({})",
-                        sender_id,
-                        pid
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(pid).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 10u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
             fn virtual_desktop_entered(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
-                        sender_id,
-                        id
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(id)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 11u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
             #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
             fn virtual_desktop_left(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 is: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
-                        sender_id,
-                        is
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(is)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 12u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent after the application menu"]
             #[doc = "for the window has changed."]
             fn application_menu(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 service_name: String,
                 object_path: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
-                        sender_id,
-                        service_name,
-                        object_path
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(service_name))
                         .put_string(Some(object_path))
@@ -7795,77 +7423,59 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 13u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
             fn activity_entered(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.activity_entered(\"{}\")",
-                        sender_id,
-                        id
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(id)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 14u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
             #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
             fn activity_left(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.activity_left(\"{}\")",
-                        sender_id,
-                        id
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(id)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 15u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent when the X11 resource name of the window has changed."]
             #[doc = "This is only set for XWayland windows."]
             fn resource_name_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 resource_name: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
-                        sender_id,
-                        resource_name
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(resource_name))
                         .build();
@@ -7873,32 +7483,23 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 16u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
             #[doc = "The coordinates are in absolute coordinates of the windowing system."]
             fn client_geometry(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
                 width: u32,
                 height: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
-                        sender_id,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -7909,16 +7510,16 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 17u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8003,7 +7604,7 @@ pub mod plasma_window_management {
                             self.destroy(connection, sender_id).await
                         }
                         8u16 => {
-                            let fd = connection.fd()?;
+                            let fd = waynest::Connection::fd(connection)?;
                             #[cfg(feature = "tracing")]
                             tracing::debug!(
                                 "org_kde_plasma_window#{}.get_icon({})",
@@ -8092,55 +7693,49 @@ pub mod plasma_window_management {
     #[doc = "The activation manager interface provides a way to get notified"]
     #[doc = "when an application is about to be activated."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_activation_feedback {
         #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback<C: waynest::Connection>
+        pub trait OrgKdePlasmaActivationFeedback
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the activation manager object. The activation objects introduced"]
             #[doc = "by this manager object will be unaffected."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Will be issued when an app is set to be activated. It offers"]
             #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
             #[doc = "and the extent of the activation."]
             fn activation(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_activation_feedback#{}.activation({})",
-                        sender_id,
-                        id
-                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8160,36 +7755,30 @@ pub mod plasma_window_management {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_activation {
         #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation<C: waynest::Connection>
+        pub trait OrgKdePlasmaActivation
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_activation";
             const VERSION: u32 = 1u32;
             #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
             #[doc = "longer be used."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn app_id(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 app_id: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_activation#{}.app_id(\"{}\")",
-                        sender_id,
-                        app_id
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
@@ -8197,34 +7786,32 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn finished(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_activation#{}.finished()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8244,29 +7831,23 @@ pub mod plasma_window_management {
     #[doc = "each window in the stacking order, and afterwards sends the done event"]
     #[doc = "and destroys this object."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_plasma_stacking_order {
         #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder<C: waynest::Connection>
+        pub trait OrgKdePlasmaStackingOrder
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
             const VERSION: u32 = 17u32;
             fn window(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 uuid: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_stacking_order#{}.window(\"{}\")",
-                        sender_id,
-                        uuid
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(uuid))
                         .build();
@@ -8274,34 +7855,32 @@ pub mod plasma_window_management {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn done(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_stacking_order#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
-                sender_id: waynest::ObjectId,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8316,43 +7895,36 @@ pub mod plasma_window_management {
 #[allow(clippy::module_inception)]
 pub mod remote_access {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_remote_access_manager {
         #[doc = "Trait to implement the org_kde_kwin_remote_access_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteAccessManager<C: waynest::Connection>
+        pub trait OrgKdeKwinRemoteAccessManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_remote_access_manager";
             const VERSION: u32 = 1u32;
             fn get_buffer(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
                 internal_buffer_id: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn buffer_ready(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: i32,
                 output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_remote_access_manager#{}.buffer_ready({}, {})",
-                        sender_id,
-                        id,
-                        output
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(id)
                         .put_object(Some(output))
@@ -8361,16 +7933,16 @@ pub mod remote_access {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8405,42 +7977,32 @@ pub mod remote_access {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_remote_buffer {
         #[doc = "Trait to implement the org_kde_kwin_remote_buffer interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinRemoteBuffer<C: waynest::Connection>
+        pub trait OrgKdeKwinRemoteBuffer
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_remote_buffer";
             const VERSION: u32 = 1u32;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn gbm_handle(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
                 width: u32,
                 height: u32,
                 stride: u32,
                 format: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_remote_buffer#{}.gbm_handle({}, {}, {}, {}, {})",
-                        sender_id,
-                        std::os::fd::AsRawFd::as_raw_fd(&fd),
-                        width,
-                        height,
-                        stride,
-                        format
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_fd(fd)
                         .put_uint(width)
@@ -8452,16 +8014,16 @@ pub mod remote_access {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8482,28 +8044,28 @@ pub mod remote_access {
 pub mod server_decoration_palette {
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_palette_manager {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPaletteManager<C: waynest::Connection>
+        pub trait OrgKdeKwinServerDecorationPaletteManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette_manager";
             const VERSION: u32 = 1u32;
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8532,13 +8094,13 @@ pub mod server_decoration_palette {
     }
     #[doc = "This interface allows a client to alter the palette of a server side decoration."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_palette {
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_palette interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationPalette<C: waynest::Connection>
+        pub trait OrgKdeKwinServerDecorationPalette
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_palette";
             const VERSION: u32 = 1u32;
             #[doc = "Color scheme that should be applied to the window decoration."]
@@ -8546,21 +8108,21 @@ pub mod server_decoration_palette {
             #[doc = "The server may choose not to follow the requested style."]
             fn set_palette(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 palette: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8602,7 +8164,6 @@ pub mod server_decoration {
     #[doc = ""]
     #[doc = "Use in conjunction with zxdg_decoration_manager_v1 is undefined."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration_manager {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8614,6 +8175,11 @@ pub mod server_decoration {
             Client = 1u32,
             #[doc = "Server-side decoration: The server embeds the surface into a decoration frame."]
             Server = 2u32,
+        }
+        impl From<Mode> for u32 {
+            fn from(value: Mode) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Mode {
             type Error = waynest::ProtocolError;
@@ -8632,10 +8198,11 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecorationManager<C: waynest::Connection>
+        pub trait OrgKdeKwinServerDecorationManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration_manager";
             const VERSION: u32 = 1u32;
             #[doc = "When a client creates a server-side decoration object it indicates"]
@@ -8650,11 +8217,11 @@ pub mod server_decoration {
             #[doc = "to the server that it does not want a server-side deco."]
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted directly after binding the interface. It contains"]
             #[doc = "the default mode for the decoration. When a new server decoration object"]
             #[doc = "is created this new object will be in the default mode until the first"]
@@ -8663,33 +8230,27 @@ pub mod server_decoration {
             #[doc = "The server may change the default mode at any time."]
             fn default_mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_server_decoration_manager#{}.default_mode({})",
-                        sender_id,
-                        mode
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(mode).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8717,7 +8278,6 @@ pub mod server_decoration {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_server_decoration {
         #[repr(u32)]
         #[non_exhaustive]
@@ -8729,6 +8289,11 @@ pub mod server_decoration {
             Client = 1u32,
             #[doc = "Server-side decoration: The server embeds the surface into a decoration frame."]
             Server = 2u32,
+        }
+        impl From<Mode> for u32 {
+            fn from(value: Mode) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Mode {
             type Error = waynest::ProtocolError;
@@ -8747,23 +8312,24 @@ pub mod server_decoration {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_server_decoration interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinServerDecoration<C: waynest::Connection>
+        pub trait OrgKdeKwinServerDecoration
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_server_decoration";
             const VERSION: u32 = 1u32;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn request_mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted directly after the decoration is created and"]
             #[doc = "represents the base decoration policy by the server. E.g. a server"]
             #[doc = "which wants all surfaces to be client-side decorated will send Client,"]
@@ -8779,33 +8345,27 @@ pub mod server_decoration {
             #[doc = "prevent a feedback loop."]
             fn mode(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mode: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_server_decoration#{}.mode({})",
-                        sender_id,
-                        mode
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(mode).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8838,40 +8398,40 @@ pub mod server_decoration {
 #[allow(clippy::module_inception)]
 pub mod shadow {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_shadow_manager {
         #[doc = "Trait to implement the org_kde_kwin_shadow_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadowManager<C: waynest::Connection>
+        pub trait OrgKdeKwinShadowManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_shadow_manager";
             const VERSION: u32 = 2u32;
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow_manager object."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -8916,107 +8476,107 @@ pub mod shadow {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_shadow {
         #[doc = "Trait to implement the org_kde_kwin_shadow interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinShadow<C: waynest::Connection>
+        pub trait OrgKdeKwinShadow
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_shadow";
             const VERSION: u32 = 2u32;
             fn commit(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_left(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_top_left(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_top(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_top_right(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_right(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_bottom_right(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_bottom(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn attach_bottom_left(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 buffer: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_left_offset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_top_offset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_right_offset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_bottom_offset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 offset: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Destroy the org_kde_kwin_shadow object. If the org_kde_kwin_shadow is"]
             #[doc = "still set on a wl_surface the shadow will be immediately removed."]
             #[doc = "Prefer to first call the request unset on the org_kde_kwin_shadow_manager and"]
             #[doc = "commit the wl_surface to apply the change."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -9178,34 +8738,34 @@ pub mod shadow {
 #[allow(clippy::module_inception)]
 pub mod slide {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_slide_manager {
         #[doc = "Trait to implement the org_kde_kwin_slide_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlideManager<C: waynest::Connection>
+        pub trait OrgKdeKwinSlideManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_slide_manager";
             const VERSION: u32 = 1u32;
             fn create(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn unset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -9250,7 +8810,6 @@ pub mod slide {
     #[doc = "The from argument provides a clue about where the slide animation"]
     #[doc = "begins, offset is the distance from screen edge to begin the animation."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod org_kde_kwin_slide {
         #[repr(u32)]
         #[non_exhaustive]
@@ -9260,6 +8819,11 @@ pub mod slide {
             Top = 1u32,
             Right = 2u32,
             Bottom = 3u32,
+        }
+        impl From<Location> for u32 {
+            fn from(value: Location) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Location {
             type Error = waynest::ProtocolError;
@@ -9279,40 +8843,41 @@ pub mod slide {
             }
         }
         #[doc = "Trait to implement the org_kde_kwin_slide interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinSlide<C: waynest::Connection>
+        pub trait OrgKdeKwinSlide
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_kwin_slide";
             const VERSION: u32 = 1u32;
             fn commit(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_location(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 location: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_offset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 offset: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn release(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -9357,28 +8922,28 @@ pub mod slide {
 #[allow(clippy::module_inception)]
 pub mod surface_extension {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod qt_surface_extension {
         #[doc = "Trait to implement the qt_surface_extension interface. See the module level documentation for more info"]
-        pub trait QtSurfaceExtension<C: waynest::Connection>
+        pub trait QtSurfaceExtension
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "qt_surface_extension";
             const VERSION: u32 = 1u32;
             fn get_extended_surface(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -9407,7 +8972,6 @@ pub mod surface_extension {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod qt_extended_surface {
         #[repr(u32)]
         #[non_exhaustive]
@@ -9418,6 +8982,11 @@ pub mod surface_extension {
             LandscapeOrientation = 2u32,
             InvertedPortraitOrientation = 4u32,
             InvertedLandscapeOrientation = 8u32,
+        }
+        impl From<Orientation> for u32 {
+            fn from(value: Orientation) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Orientation {
             type Error = waynest::ProtocolError;
@@ -9445,6 +9014,11 @@ pub mod surface_extension {
             StaysOnTop = 2u32,
             BypassWindowManager = 4u32,
         }
+        impl From<Windowflag> for u32 {
+            fn from(value: Windowflag) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Windowflag {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -9462,80 +9036,68 @@ pub mod surface_extension {
             }
         }
         #[doc = "Trait to implement the qt_extended_surface interface. See the module level documentation for more info"]
-        pub trait QtExtendedSurface<C: waynest::Connection>
+        pub trait QtExtendedSurface
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "qt_extended_surface";
             const VERSION: u32 = 1u32;
             fn update_generic_property(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
                 value: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_content_orientation_mask(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 orientation: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_window_flags(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 flags: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn raise(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn lower(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn onscreen_visibility(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 visible: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> qt_extended_surface#{}.onscreen_visibility({})",
-                        sender_id,
-                        visible
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(visible).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn set_generic_property(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
                 value: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> qt_extended_surface#{}.set_generic_property(\"{}\", array[{}])",
-                        sender_id,
-                        name,
-                        value.len()
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_array(value)
@@ -9544,34 +9106,32 @@ pub mod surface_extension {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn close(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> qt_extended_surface#{}.close()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -9654,9 +9214,13 @@ pub mod text_input_unstable_v2 {
     #[doc = "client. A reset or entering a new widget on client side also"]
     #[doc = "invalidates all current state information."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod zwp_text_input_v2 {
         bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behaviour"] const None = 0u32 ; # [doc = "suggest word completions"] const AutoCompletion = 1u32 ; # [doc = "suggest word corrections"] const AutoCorrection = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; } }
+        impl From<ContentHint> for u32 {
+            fn from(value: ContentHint) -> Self {
+                value.bits()
+            }
+        }
         impl TryFrom<u32> for ContentHint {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -9704,6 +9268,11 @@ pub mod text_input_unstable_v2 {
             #[doc = "input for a terminal"]
             Terminal = 12u32,
         }
+        impl From<ContentPurpose> for u32 {
+            fn from(value: ContentPurpose) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for ContentPurpose {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -9744,6 +9313,11 @@ pub mod text_input_unstable_v2 {
             #[doc = "full state after switching focus to a different widget on client side"]
             Enter = 3u32,
         }
+        impl From<UpdateState> for u32 {
+            fn from(value: UpdateState) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for UpdateState {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -9769,6 +9343,11 @@ pub mod text_input_unstable_v2 {
             Hidden = 0u32,
             #[doc = "the input panel (virtual keyboard) is visible"]
             Visible = 1u32,
+        }
+        impl From<InputPanelVisibility> for u32 {
+            fn from(value: InputPanelVisibility) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for InputPanelVisibility {
             type Error = waynest::ProtocolError;
@@ -9806,6 +9385,11 @@ pub mod text_input_unstable_v2 {
             #[doc = "composing text might be underlined with a red wavy line"]
             Incorrect = 7u32,
         }
+        impl From<PreeditStyle> for u32 {
+            fn from(value: PreeditStyle) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for PreeditStyle {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -9838,6 +9422,11 @@ pub mod text_input_unstable_v2 {
             #[doc = "right-to-left"]
             Rtl = 2u32,
         }
+        impl From<TextDirection> for u32 {
+            fn from(value: TextDirection) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for TextDirection {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -9855,19 +9444,20 @@ pub mod text_input_unstable_v2 {
             }
         }
         #[doc = "Trait to implement the zwp_text_input_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputV2<C: waynest::Connection>
+        pub trait ZwpTextInputV2
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_text_input_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
             #[doc = "through this wp_text_input object"]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Enable text input in a surface (usually when a text entry inside of it"]
             #[doc = "has focus)."]
             #[doc = ""]
@@ -9876,18 +9466,18 @@ pub mod text_input_unstable_v2 {
             #[doc = "when it has the current text (or keyboard) focus and is enabled."]
             fn enable(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Disable text input in a surface (typically when there is no focus on any"]
             #[doc = "text entry inside the surface)."]
             fn disable(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             #[doc = ""]
             #[doc = "This should be used for example to show a virtual keyboard again"]
@@ -9895,15 +9485,15 @@ pub mod text_input_unstable_v2 {
             #[doc = "keyboard."]
             fn show_input_panel(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
             #[doc = "UTF-8 encoded. Cursor is the byte offset within the surrounding text."]
             #[doc = "Anchor is the byte offset of the selection anchor within the"]
@@ -9921,12 +9511,12 @@ pub mod text_input_unstable_v2 {
             #[doc = "longer than 4000 bytes."]
             fn set_surrounding_text(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 text: String,
                 cursor: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
             #[doc = "of the behavior."]
@@ -9935,11 +9525,11 @@ pub mod text_input_unstable_v2 {
             #[doc = "none hint should be assumed."]
             fn set_content_type(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 hint: ContentHint,
                 purpose: ContentPurpose,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the cursor outline as a x, y, width, height rectangle in surface"]
             #[doc = "local coordinates."]
             #[doc = ""]
@@ -9947,13 +9537,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "cursor."]
             fn set_cursor_rectangle(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -9963,10 +9553,10 @@ pub mod text_input_unstable_v2 {
             #[doc = "tracks languages of contacts."]
             fn set_preferred_language(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Allows to atomically send state updates from client."]
             #[doc = ""]
             #[doc = "This request should follow after a batch of state updating requests"]
@@ -9990,31 +9580,24 @@ pub mod text_input_unstable_v2 {
             #[doc = "after update_state in these cases."]
             fn update_state(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 reason: UpdateState,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
             #[doc = ""]
             #[doc = "When the seat has the keyboard capability the text-input focus follows"]
             #[doc = "the keyboard focus."]
             fn enter(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.enter({}, {})",
-                        sender_id,
-                        serial,
-                        surface
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_object(Some(surface))
@@ -10023,8 +9606,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notification that this seat's text-input focus is no longer on"]
@@ -10037,20 +9620,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "the keyboard focus."]
             fn leave(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.leave({}, {})",
-                        sender_id,
-                        serial,
-                        surface
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_object(Some(surface))
@@ -10059,8 +9635,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notification that the visibility of the input panel (virtual keyboard)"]
@@ -10074,28 +9650,18 @@ pub mod text_input_unstable_v2 {
             #[doc = "a virtual keyboard."]
             fn input_panel_state(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 state: InputPanelVisibility,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.input_panel_state({}, {}, {}, {}, {})",
-                        sender_id,
-                        state,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(state as u32)
+                        .put_uint(state.into())
                         .put_int(x)
                         .put_int(y)
                         .put_int(width)
@@ -10105,8 +9671,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
@@ -10120,20 +9686,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "events occurring directly before preedit_string."]
             fn preedit_string(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 text: String,
                 commit: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.preedit_string(\"{}\", \"{}\")",
-                        sender_id,
-                        text,
-                        commit
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(text))
                         .put_string(Some(commit))
@@ -10142,8 +9701,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
@@ -10154,33 +9713,25 @@ pub mod text_input_unstable_v2 {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_styling(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: u32,
                 length: u32,
                 style: PreeditStyle,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.preedit_styling({}, {}, {})",
-                        sender_id,
-                        index,
-                        length,
-                        style
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(index)
                         .put_uint(length)
-                        .put_uint(style as u32)
+                        .put_uint(style.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
@@ -10193,25 +9744,19 @@ pub mod text_input_unstable_v2 {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_cursor(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.preedit_cursor({})",
-                        sender_id,
-                        index
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(index).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
@@ -10223,18 +9768,12 @@ pub mod text_input_unstable_v2 {
             #[doc = "Any previously set composing text should be removed."]
             fn commit_string(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 text: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.commit_string(\"{}\")",
-                        sender_id,
-                        text
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(text))
                         .build();
@@ -10242,8 +9781,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 6u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
@@ -10254,20 +9793,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "The text between anchor and index should be selected."]
             fn cursor_position(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.cursor_position({}, {})",
-                        sender_id,
-                        index,
-                        anchor
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(index)
                         .put_int(anchor)
@@ -10276,8 +9808,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when the text around the current cursor position should be"]
@@ -10289,20 +9821,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "or preedit_string event."]
             fn delete_surrounding_text(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 before_length: u32,
                 after_length: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.delete_surrounding_text({}, {})",
-                        sender_id,
-                        before_length,
-                        after_length
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(before_length)
                         .put_uint(after_length)
@@ -10311,8 +9836,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 8u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
@@ -10320,25 +9845,19 @@ pub mod text_input_unstable_v2 {
             #[doc = "bitmask in the keysym event."]
             fn modifiers_map(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 map: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.modifiers_map(array[{}])",
-                        sender_id,
-                        map.len()
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_array(map).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 9u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
@@ -10349,24 +9868,15 @@ pub mod text_input_unstable_v2 {
             #[doc = "(where the modifier indices are set by the modifiers_map event)"]
             fn keysym(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 time: u32,
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.keysym({}, {}, {}, {})",
-                        sender_id,
-                        time,
-                        sym,
-                        state,
-                        modifiers
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(time)
                         .put_uint(sym)
@@ -10377,26 +9887,20 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 10u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
             fn language(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.language(\"{}\")",
-                        sender_id,
-                        language
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(language))
                         .build();
@@ -10404,8 +9908,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 11u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets the text direction of input text."]
@@ -10415,27 +9919,21 @@ pub mod text_input_unstable_v2 {
             #[doc = "direction text is laid out properly."]
             fn text_direction(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 direction: TextDirection,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.text_direction({})",
-                        sender_id,
-                        direction
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(direction as u32)
+                        .put_uint(direction.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 12u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Configure what amount of surrounding text is expected by the"]
@@ -10443,20 +9941,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "set_surrounding_text request on the following state information updates."]
             fn configure_surrounding_text(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 before_cursor: i32,
                 after_cursor: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.configure_surrounding_text({}, {})",
-                        sender_id,
-                        before_cursor,
-                        after_cursor
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(before_cursor)
                         .put_int(after_cursor)
@@ -10465,8 +9956,8 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 13u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "The input method changed on compositor side, which invalidates all"]
@@ -10475,20 +9966,13 @@ pub mod text_input_unstable_v2 {
             #[doc = "set_content_hint, ...) and update_state."]
             fn input_method_changed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 flags: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zwp_text_input_v2#{}.input_method_changed({}, {})",
-                        sender_id,
-                        serial,
-                        flags
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(flags)
@@ -10497,16 +9981,16 @@ pub mod text_input_unstable_v2 {
                         connection,
                         waynest::Message::new(sender_id, 14u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -10628,35 +10112,35 @@ pub mod text_input_unstable_v2 {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod zwp_text_input_manager_v2 {
         #[doc = "Trait to implement the zwp_text_input_manager_v2 interface. See the module level documentation for more info"]
-        pub trait ZwpTextInputManagerV2<C: waynest::Connection>
+        pub trait ZwpTextInputManagerV2
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_text_input_manager_v2";
             const VERSION: u32 = 1u32;
             #[doc = "Destroy the wp_text_input_manager object."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Creates a new text-input object for a given seat."]
             fn get_text_input(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -10711,7 +10195,6 @@ pub mod text {
     #[doc = "and keysym. The text input can then ignore events from the input method"]
     #[doc = "which are based on an outdated state (for example after a reset)."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod wl_text_input {
         #[doc = "Content hint is a bitmask to allow to modify the behavior of the text"]
         #[doc = "input."]
@@ -10745,6 +10228,11 @@ pub mod text {
             Latin = 256u32,
             #[doc = "the text input is multiline"]
             Multiline = 512u32,
+        }
+        impl From<ContentHint> for u32 {
+            fn from(value: ContentHint) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for ContentHint {
             type Error = waynest::ProtocolError;
@@ -10808,6 +10296,11 @@ pub mod text {
             #[doc = "input for a terminal"]
             Terminal = 12u32,
         }
+        impl From<ContentPurpose> for u32 {
+            fn from(value: ContentPurpose) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for ContentPurpose {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -10849,6 +10342,11 @@ pub mod text {
             Selection = 6u32,
             Incorrect = 7u32,
         }
+        impl From<PreeditStyle> for u32 {
+            fn from(value: PreeditStyle) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for PreeditStyle {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -10881,6 +10379,11 @@ pub mod text {
             #[doc = "right-to-left"]
             Rtl = 2u32,
         }
+        impl From<TextDirection> for u32 {
+            fn from(value: TextDirection) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for TextDirection {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -10898,10 +10401,11 @@ pub mod text {
             }
         }
         #[doc = "Trait to implement the wl_text_input interface. See the module level documentation for more info"]
-        pub trait WlTextInput<C: waynest::Connection>
+        pub trait WlTextInput
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_text_input";
             const VERSION: u32 = 1u32;
             #[doc = "Requests the text-input object to be activated (typically when the"]
@@ -10912,40 +10416,40 @@ pub mod text {
             #[doc = "is emitted on successful activation."]
             fn activate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Requests the text-input object to be deactivated (typically when the"]
             #[doc = "text entry lost focus). The seat argument is a wl_seat which was used"]
             #[doc = "for activation."]
             fn deactivate(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to show."]
             fn show_input_panel(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Requests input panels (virtual keyboard) to hide."]
             fn hide_input_panel(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Should be called by an editor widget when the input state should be"]
             #[doc = "reset, for example after the text was changed outside of the normal"]
             #[doc = "input method flow."]
             fn reset(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the plain surrounding text around the input position. Text is"]
             #[doc = "UTF-8 encoded. Cursor is the byte offset within the"]
             #[doc = "surrounding text. Anchor is the byte offset of the"]
@@ -10953,12 +10457,12 @@ pub mod text {
             #[doc = "text anchor is the same as cursor."]
             fn set_surrounding_text(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 text: String,
                 cursor: u32,
                 anchor: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the content purpose and content hint. While the purpose is the"]
             #[doc = "basic purpose of an input field, the hint flags allow to modify some"]
             #[doc = "of the behavior."]
@@ -10968,20 +10472,20 @@ pub mod text {
             #[doc = "should be assumed."]
             fn set_content_type(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 hint: u32,
                 purpose: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn set_cursor_rectangle(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
                 width: i32,
                 height: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets a specific language. This allows for example a virtual keyboard to"]
             #[doc = "show a language specific layout. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
@@ -10991,35 +10495,33 @@ pub mod text {
             #[doc = "languages of contacts."]
             fn set_preferred_language(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 language: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn commit_state(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn invoke_action(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 button: u32,
                 index: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Notify the text-input object when it received focus. Typically in"]
             #[doc = "response to an activate request."]
             fn enter(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> wl_text_input#{}.enter({})", sender_id, surface);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
@@ -11027,8 +10529,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify the text-input object when it lost focus. Either in response"]
@@ -11036,20 +10538,18 @@ pub mod text {
             #[doc = "destroyed."]
             fn leave(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> wl_text_input#{}.leave()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Transfer an array of 0-terminated modifiers names. The position in"]
@@ -11057,49 +10557,37 @@ pub mod text {
             #[doc = "bitmask in the keysym event."]
             fn modifiers_map(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 map: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.modifiers_map(array[{}])",
-                        sender_id,
-                        map.len()
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_array(map).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when the visibility state of the input panel changed."]
             fn input_panel_state(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 state: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.input_panel_state({})",
-                        sender_id,
-                        state
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 3u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when a new composing text (pre-edit) should be set around the"]
@@ -11113,22 +10601,14 @@ pub mod text {
             #[doc = "events occurring directly before preedit_string."]
             fn preedit_string(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 text: String,
                 commit: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.preedit_string({}, \"{}\", \"{}\")",
-                        sender_id,
-                        serial,
-                        text,
-                        commit
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_string(Some(text))
@@ -11138,8 +10618,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets styling information on composing text. The style is applied for"]
@@ -11151,22 +10631,14 @@ pub mod text {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_styling(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: u32,
                 length: u32,
                 style: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.preedit_styling({}, {}, {})",
-                        sender_id,
-                        index,
-                        length,
-                        style
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(index)
                         .put_uint(length)
@@ -11176,8 +10648,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 5u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets the cursor position inside the composing text (as byte"]
@@ -11187,21 +10659,19 @@ pub mod text {
             #[doc = "This event is handled as part of a following preedit_string event."]
             fn preedit_cursor(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> wl_text_input#{}.preedit_cursor({})", sender_id, index);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(index).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 6u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when text should be inserted into the editor widget. The text to"]
@@ -11213,20 +10683,13 @@ pub mod text {
             #[doc = "Any previously set composing text should be removed."]
             fn commit_string(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 text: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.commit_string({}, \"{}\")",
-                        sender_id,
-                        serial,
-                        text
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_string(Some(text))
@@ -11235,8 +10698,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when the cursor or anchor position should be modified."]
@@ -11245,20 +10708,13 @@ pub mod text {
             #[doc = "event."]
             fn cursor_position(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: i32,
                 anchor: i32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.cursor_position({}, {})",
-                        sender_id,
-                        index,
-                        anchor
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(index)
                         .put_int(anchor)
@@ -11267,8 +10723,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 8u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when the text around the current cursor position should be"]
@@ -11281,20 +10737,13 @@ pub mod text {
             #[doc = "event."]
             fn delete_surrounding_text(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: i32,
                 length: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.delete_surrounding_text({}, {})",
-                        sender_id,
-                        index,
-                        length
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(index)
                         .put_uint(length)
@@ -11303,8 +10752,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 9u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Notify when a key event was sent. Key events should not be used"]
@@ -11315,26 +10764,16 @@ pub mod text {
             #[doc = "(where the modifier indices are set by the modifiers_map event)"]
             fn keysym(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 time: u32,
                 sym: u32,
                 state: u32,
                 modifiers: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.keysym({}, {}, {}, {}, {})",
-                        sender_id,
-                        serial,
-                        time,
-                        sym,
-                        state,
-                        modifiers
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(time)
@@ -11346,28 +10785,21 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 10u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets the language of the input text. The \"language\" argument is a RFC-3066"]
             #[doc = "format language tag."]
             fn language(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 language: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.language({}, \"{}\")",
-                        sender_id,
-                        serial,
-                        language
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_string(Some(language))
@@ -11376,8 +10808,8 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 11u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             #[doc = "Sets the text direction of input text."]
@@ -11387,20 +10819,13 @@ pub mod text {
             #[doc = "direction text is laid out properly."]
             fn text_direction(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 serial: u32,
                 direction: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> wl_text_input#{}.text_direction({}, {})",
-                        sender_id,
-                        serial,
-                        direction
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(direction)
@@ -11409,16 +10834,16 @@ pub mod text {
                         connection,
                         waynest::Message::new(sender_id, 12u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -11549,28 +10974,28 @@ pub mod text {
     }
     #[doc = "A factory for text-input objects. This object is a global singleton."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod wl_text_input_manager {
         #[doc = "Trait to implement the wl_text_input_manager interface. See the module level documentation for more info"]
-        pub trait WlTextInputManager<C: waynest::Connection>
+        pub trait WlTextInputManager
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_text_input_manager";
             const VERSION: u32 = 1u32;
             #[doc = "Creates a new text-input object."]
             fn create_text_input(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -11597,7 +11022,6 @@ pub mod text {
 #[allow(clippy::module_inception)]
 pub mod wl_eglstream_controller {
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod wl_eglstream_controller {
         #[doc = "- dont_care: Using this enum will tell the server to make its own"]
         #[doc = "decisions regarding present mode."]
@@ -11616,6 +11040,11 @@ pub mod wl_eglstream_controller {
             Fifo = 1u32,
             #[doc = "Use a mailbox mode"]
             Mailbox = 2u32,
+        }
+        impl From<PresentMode> for u32 {
+            fn from(value: PresentMode) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for PresentMode {
             type Error = waynest::ProtocolError;
@@ -11648,6 +11077,11 @@ pub mod wl_eglstream_controller {
             #[doc = "Tells the server the desired fifo length when the desired presenation_mode is fifo."]
             FifoLength = 1u32,
         }
+        impl From<Attrib> for u32 {
+            fn from(value: Attrib) -> Self {
+                value as u32
+            }
+        }
         impl TryFrom<u32> for Attrib {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
@@ -11664,37 +11098,38 @@ pub mod wl_eglstream_controller {
             }
         }
         #[doc = "Trait to implement the wl_eglstream_controller interface. See the module level documentation for more info"]
-        pub trait WlEglstreamController<C: waynest::Connection>
+        pub trait WlEglstreamController
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_eglstream_controller";
             const VERSION: u32 = 2u32;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it."]
             fn attach_eglstream_consumer(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 wl_surface: waynest::ObjectId,
                 wl_resource: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Creates the corresponding server side EGLStream from the given wl_buffer"]
             #[doc = "and attaches a consumer to it using the given attributes."]
             fn attach_eglstream_consumer_attribs(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 wl_surface: waynest::ObjectId,
                 wl_resource: waynest::ObjectId,
                 attribs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -11760,7 +11195,6 @@ pub mod zkde_screencast_unstable_v1 {
     #[doc = "Backward incompatible changes may be added without bumping the major"]
     #[doc = "version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod zkde_screencast_unstable_v1 {
         #[repr(u32)]
         #[non_exhaustive]
@@ -11772,6 +11206,11 @@ pub mod zkde_screencast_unstable_v1 {
             Embedded = 2u32,
             #[doc = "Send metadata about where the cursor is through PipeWire"]
             Metadata = 4u32,
+        }
+        impl From<Pointer> for u32 {
+            fn from(value: Pointer) -> Self {
+                value as u32
+            }
         }
         impl TryFrom<u32> for Pointer {
             type Error = waynest::ProtocolError;
@@ -11790,37 +11229,38 @@ pub mod zkde_screencast_unstable_v1 {
             }
         }
         #[doc = "Trait to implement the zkde_screencast_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastUnstableV1<C: waynest::Connection>
+        pub trait ZkdeScreencastUnstableV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
             const VERSION: u32 = 5u32;
             fn stream_output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 stream: waynest::ObjectId,
                 output: waynest::ObjectId,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn stream_window(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 stream: waynest::ObjectId,
                 window_uuid: String,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Destroy the zkde_screencast_unstable_v1 object."]
             fn destroy(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn stream_virtual_output(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 stream: waynest::ObjectId,
                 name: String,
@@ -11828,12 +11268,12 @@ pub mod zkde_screencast_unstable_v1 {
                 height: i32,
                 scale: waynest::Fixed,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Since version 5, the compositor will choose the highest scale"]
             #[doc = "factor for the region if the given scale is 0.0."]
             fn stream_region(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 stream: waynest::ObjectId,
                 x: i32,
@@ -11842,10 +11282,10 @@ pub mod zkde_screencast_unstable_v1 {
                 height: u32,
                 scale: waynest::Fixed,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn stream_virtual_output_with_description(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 stream: waynest::ObjectId,
                 name: String,
@@ -11854,13 +11294,13 @@ pub mod zkde_screencast_unstable_v1 {
                 height: i32,
                 scale: waynest::Fixed,
                 pointer: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
@@ -12008,78 +11448,61 @@ pub mod zkde_screencast_unstable_v1 {
         }
     }
     #[allow(clippy::too_many_arguments)]
-    #[allow(unused)]
     pub mod zkde_screencast_stream_unstable_v1 {
         #[doc = "Trait to implement the zkde_screencast_stream_unstable_v1 interface. See the module level documentation for more info"]
-        pub trait ZkdeScreencastStreamUnstableV1<C: waynest::Connection>
+        pub trait ZkdeScreencastStreamUnstableV1
         where
             Self: std::marker::Sync,
         {
+            type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
             const VERSION: u32 = 5u32;
             fn close(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send;
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn closed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zkde_screencast_stream_unstable_v1#{}.closed()",
-                        sender_id,
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn created(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 node: u32,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zkde_screencast_stream_unstable_v1#{}.created({})",
-                        sender_id,
-                        node
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(node).build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn failed(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 error: String,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> zkde_screencast_stream_unstable_v1#{}.failed(\"{}\")",
-                        sender_id,
-                        error
-                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(error))
                         .build();
@@ -12087,16 +11510,16 @@ pub mod zkde_screencast_unstable_v1 {
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
-                    .await?;
-                    Ok(())
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
             fn handle_request(
                 &self,
-                connection: &mut C,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <C as waynest::Connection>::Error>> + Send
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]

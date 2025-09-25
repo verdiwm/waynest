@@ -1,0 +1,11 @@
+[package]
+name = "waynest-client"
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+version = "0.1.0"
+
+[dependencies]
+waynest = { version = "0.1.0", path = "../core" }
+waynest-macros = { version = "0.1.0", path = "../macros" }
