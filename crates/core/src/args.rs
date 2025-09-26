@@ -1,6 +1,9 @@
 use std::{fmt, num::NonZeroU32};
 
-pub struct Fixed(u32);
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+#[cfg_attr(feature = "fuzz", derive(arbitrary::Arbitrary))]
+#[repr(transparent)]
+pub struct Fixed(i32);
 
 impl fmt::Display for Fixed {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -10,17 +13,37 @@ impl fmt::Display for Fixed {
 
 impl Fixed {
     /// # Safety
-    /// The caller must ensure the passed u32 is actually a fixed
-    pub const unsafe fn from_raw(raw: u32) -> Self {
+    /// The caller must ensure the passed i32 is actually a fixed
+    pub const unsafe fn from_raw(raw: i32) -> Self {
         Self(raw)
     }
 
-    pub const fn as_raw(&self) -> u32 {
+    pub const fn as_raw(&self) -> i32 {
         self.0
     }
+}
 
-    pub const fn into_raw(self) -> u32 {
-        self.0
+impl From<f64> for Fixed {
+    fn from(value: f64) -> Self {
+        Fixed((value * 256.0).round() as i32)
+    }
+}
+
+impl From<i32> for Fixed {
+    fn from(value: i32) -> Self {
+        Fixed(value * 256)
+    }
+}
+
+impl From<Fixed> for f64 {
+    fn from(value: Fixed) -> Self {
+        f64::from(value.0) / 256.0
+    }
+}
+
+impl From<Fixed> for i32 {
+    fn from(value: Fixed) -> Self {
+        value.0 / 256
     }
 }
 

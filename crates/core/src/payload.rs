@@ -43,7 +43,7 @@ impl PayloadBuilder {
 
     pub fn put_fixed(mut self, fixed: Fixed) -> Self {
         self.payload.reserve(4);
-        self.payload.put_u32_ne(fixed.into_raw());
+        self.payload.put_i32_ne(fixed.as_raw());
 
         self
     }

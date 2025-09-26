@@ -108,7 +108,7 @@ impl Message {
     }
 
     pub fn fixed(&mut self) -> Result<Fixed, ProtocolError> {
-        self.uint().map(|raw| unsafe { Fixed::from_raw(raw) })
+        self.int().map(|raw| unsafe { Fixed::from_raw(raw) })
     }
 
     pub fn string(&mut self) -> Result<Option<String>, ProtocolError> {
