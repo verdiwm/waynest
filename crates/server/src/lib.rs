@@ -12,7 +12,7 @@ use waynest::{Message, ObjectId, ProtocolError, Socket};
 
 mod listener;
 
-pub use listener::Listener;
+pub use listener::{Listener, ListenerError};
 pub use waynest_macros::RequestDispatcher;
 
 pin_project! {
