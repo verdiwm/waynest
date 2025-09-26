@@ -52,13 +52,13 @@ impl<'a> ProtocolGenerator<'a> {
                 );
 
                 let requests = self.generate_functions(
-                    &interface,
+                    interface,
                     &interface.requests,
                     &interface.events,
                     requests_body,
                 )?;
                 let events =
-                    self.generate_functions(&interface, &interface.events, &[], events_body)?;
+                    self.generate_functions(interface, &interface.events, &[], events_body)?;
 
                 let enums = write_enums(interface);
 
@@ -165,7 +165,7 @@ impl<'a> ProtocolGenerator<'a> {
             }
 
             let body = if generate_body {
-                self.generate_function_body(interface, &message, opcode as u16)
+                self.generate_function_body(interface, message, opcode as u16)
             } else {
                 quote! {;}
             };
@@ -329,7 +329,7 @@ impl<'a> ProtocolGenerator<'a> {
                 }
             }
 
-            let (tracing_inner, tracing_args) = self.generate_tracing(interface, &request, false);
+            let (tracing_inner, tracing_args) = self.generate_tracing(interface, request, false);
 
             let tracing = quote! {
                 #[cfg(feature = "tracing")]
