@@ -22,9 +22,6 @@ tokio-util = { version = "0.7.16", features = ["codec"] }
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
 
-# Waynest libs
-waynest-macros = { version = "0.1", path = "../macros" }
-
 # Internal features
 arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }
 
