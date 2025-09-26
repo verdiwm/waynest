@@ -268,6 +268,8 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_drm#{}.device(\"{}\")", sender_id, name);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -287,6 +289,8 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_drm#{}.format({})", sender_id, format);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(format).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -303,6 +307,8 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_drm#{}.authenticated()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -320,6 +326,8 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_drm#{}.capabilities({})", sender_id, value);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(value).build();
                     futures_util::SinkExt::send(
                         connection,

@@ -176,6 +176,8 @@ pub mod fullscreen_shell_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_fullscreen_shell_v1#{}.release()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -216,6 +218,18 @@ pub mod fullscreen_shell_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_fullscreen_shell_v1#{}.present_surface({}, {}, {})",
+                        sender_id,
+                        surface
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string()),
+                        method,
+                        output
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(surface)
                         .put_uint(method.into())
@@ -281,6 +295,15 @@ pub mod fullscreen_shell_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_fullscreen_shell_v1#{}.present_surface_for_mode({}, {}, {}, {})",
+                        sender_id,
+                        surface,
+                        output,
+                        framerate,
+                        feedback
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .put_object(Some(output))
@@ -389,6 +412,8 @@ pub mod idle_inhibit_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_idle_inhibit_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -408,6 +433,13 @@ pub mod idle_inhibit_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_idle_inhibit_manager_v1#{}.create_inhibitor({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -452,6 +484,8 @@ pub mod idle_inhibit_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_idle_inhibitor_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -506,6 +540,8 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_input_method_context_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -533,6 +569,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.commit_string({}, \"{}\")",
+                        sender_id,
+                        serial,
+                        text
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_string(Some(text))
@@ -562,6 +605,14 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.preedit_string({}, \"{}\", \"{}\")",
+                        sender_id,
+                        serial,
+                        text,
+                        commit
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_string(Some(text))
@@ -591,6 +642,14 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.preedit_styling({}, {}, {})",
+                        sender_id,
+                        index,
+                        length,
+                        style
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(index)
                         .put_uint(length)
@@ -618,6 +677,12 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.preedit_cursor({})",
+                        sender_id,
+                        index
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(index).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -640,6 +705,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.delete_surrounding_text({}, {})",
+                        sender_id,
+                        index,
+                        length
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(index)
                         .put_uint(length)
@@ -671,6 +743,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.cursor_position({}, {})",
+                        sender_id,
+                        index,
+                        anchor
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(index)
                         .put_int(anchor)
@@ -691,6 +770,12 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.modifiers_map(array[{}])",
+                        sender_id,
+                        map.len()
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_array(map).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -716,6 +801,16 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.keysym({}, {}, {}, {}, {})",
+                        sender_id,
+                        serial,
+                        time,
+                        sym,
+                        state,
+                        modifiers
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(time)
@@ -743,6 +838,12 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.grab_keyboard({})",
+                        sender_id,
+                        keyboard
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(keyboard))
                         .build();
@@ -771,6 +872,15 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.key({}, {}, {}, {})",
+                        sender_id,
+                        serial,
+                        time,
+                        key,
+                        state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(time)
@@ -801,6 +911,16 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.modifiers({}, {}, {}, {}, {})",
+                        sender_id,
+                        serial,
+                        mods_depressed,
+                        mods_latched,
+                        mods_locked,
+                        group
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(mods_depressed)
@@ -825,6 +945,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.language({}, \"{}\")",
+                        sender_id,
+                        serial,
+                        language
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_string(Some(language))
@@ -846,6 +973,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_method_context_v1#{}.text_direction({}, {})",
+                        sender_id,
+                        serial,
+                        direction
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(direction)
@@ -957,6 +1091,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_panel_v1#{}.get_input_panel_surface({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -1018,6 +1159,13 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_panel_surface_v1#{}.set_toplevel({}, {})",
+                        sender_id,
+                        output,
+                        position
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .put_uint(position)
@@ -1041,6 +1189,11 @@ pub mod input_method_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_panel_surface_v1#{}.set_overlay_panel()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1088,6 +1241,8 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_input_timestamps_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1114,6 +1269,13 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_timestamps_manager_v1#{}.get_keyboard_timestamps({}, {})",
+                        sender_id,
+                        id,
+                        keyboard
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(keyboard))
@@ -1143,6 +1305,13 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_timestamps_manager_v1#{}.get_pointer_timestamps({}, {})",
+                        sender_id,
+                        id,
+                        pointer
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(pointer))
@@ -1172,6 +1341,13 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_input_timestamps_manager_v1#{}.get_touch_timestamps({}, {})",
+                        sender_id,
+                        id,
+                        touch
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(touch))
@@ -1209,6 +1385,8 @@ pub mod input_timestamps_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_input_timestamps_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1304,6 +1482,11 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_keyboard_shortcuts_inhibit_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1328,6 +1511,14 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_keyboard_shortcuts_inhibit_manager_v1#{}.inhibit_shortcuts({}, {}, {})",
+                        sender_id,
+                        id,
+                        surface,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -1394,6 +1585,11 @@ pub mod keyboard_shortcuts_inhibit_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_keyboard_shortcuts_inhibitor_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1518,6 +1714,8 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_linux_dmabuf_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1539,6 +1737,12 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_dmabuf_v1#{}.create_params({})",
+                        sender_id,
+                        params_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(params_id))
                         .build();
@@ -1562,6 +1766,12 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_dmabuf_v1#{}.get_default_feedback({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -1587,6 +1797,13 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_dmabuf_v1#{}.get_surface_feedback({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -1747,6 +1964,8 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_linux_buffer_params_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1788,6 +2007,17 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_buffer_params_v1#{}.add({}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd),
+                        plane_idx,
+                        offset,
+                        stride,
+                        modifier_hi,
+                        modifier_lo
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_fd(fd)
                         .put_uint(plane_idx)
@@ -1874,6 +2104,15 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_buffer_params_v1#{}.create({}, {}, {}, {})",
+                        sender_id,
+                        width,
+                        height,
+                        format,
+                        flags
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
@@ -1923,6 +2162,16 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_buffer_params_v1#{}.create_immed({}, {}, {}, {}, {})",
+                        sender_id,
+                        buffer_id,
+                        width,
+                        height,
+                        format,
+                        flags
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(buffer_id))
                         .put_int(width)
@@ -2023,6 +2272,8 @@ pub mod linux_dmabuf_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_linux_dmabuf_feedback_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2246,6 +2497,11 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_explicit_synchronization_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2275,6 +2531,13 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_explicit_synchronization_v1#{}.get_synchronization({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -2385,6 +2648,11 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_surface_synchronization_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2425,6 +2693,12 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_surface_synchronization_v1#{}.set_acquire_fence({})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd)
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_fd(fd).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2459,6 +2733,12 @@ pub mod zwp_linux_explicit_synchronization_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_linux_surface_synchronization_v1#{}.get_release({})",
+                        sender_id,
+                        release
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(release))
                         .build();
@@ -2645,6 +2925,8 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_pointer_constraints_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2700,6 +2982,18 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_pointer_constraints_v1#{}.lock_pointer({}, {}, {}, {}, {})",
+                        sender_id,
+                        id,
+                        surface,
+                        pointer,
+                        region
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string()),
+                        lifetime
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -2744,6 +3038,18 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_pointer_constraints_v1#{}.confine_pointer({}, {}, {}, {}, {})",
+                        sender_id,
+                        id,
+                        surface,
+                        pointer,
+                        region
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string()),
+                        lifetime
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -2803,6 +3109,8 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_locked_pointer_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2831,6 +3139,13 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_locked_pointer_v1#{}.set_cursor_position_hint({}, {})",
+                        sender_id,
+                        surface_x,
+                        surface_y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_fixed(surface_x)
                         .put_fixed(surface_y)
@@ -2856,6 +3171,14 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_locked_pointer_v1#{}.set_region({})",
+                        sender_id,
+                        region
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(region).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2919,6 +3242,8 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_confined_pointer_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2950,6 +3275,14 @@ pub mod pointer_constraints_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_confined_pointer_v1#{}.set_region({})",
+                        sender_id,
+                        region
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(region).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3019,6 +3352,13 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_pointer_gestures_v1#{}.get_swipe_gesture({}, {})",
+                        sender_id,
+                        id,
+                        pointer
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(pointer))
@@ -3042,6 +3382,13 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_pointer_gestures_v1#{}.get_pinch_gesture({}, {})",
+                        sender_id,
+                        id,
+                        pointer
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(pointer))
@@ -3063,6 +3410,8 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_pointer_gestures_v1#{}.release()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3083,6 +3432,13 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_pointer_gestures_v1#{}.get_hold_gesture({}, {})",
+                        sender_id,
+                        id,
+                        pointer
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(pointer))
@@ -3129,6 +3485,8 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_pointer_gesture_swipe_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3211,6 +3569,8 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_pointer_gesture_pinch_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3304,6 +3664,8 @@ pub mod pointer_gestures_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_pointer_gesture_hold_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3409,6 +3771,12 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_primary_selection_device_manager_v1#{}.create_source({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -3429,6 +3797,13 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_primary_selection_device_manager_v1#{}.get_device({}, {})",
+                        sender_id,
+                        id,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(seat))
@@ -3449,6 +3824,11 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_primary_selection_device_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3483,6 +3863,15 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_primary_selection_device_v1#{}.set_selection({}, {})",
+                        sender_id,
+                        source
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string()),
+                        serial
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(source)
                         .put_uint(serial)
@@ -3503,6 +3892,8 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_primary_selection_device_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3573,6 +3964,13 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_primary_selection_offer_v1#{}.receive(\"{}\", {})",
+                        sender_id,
+                        mime_type,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd)
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(mime_type))
                         .put_fd(fd)
@@ -3593,6 +3991,8 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_primary_selection_offer_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3637,6 +4037,12 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_primary_selection_source_v1#{}.offer(\"{}\")",
+                        sender_id,
+                        mime_type
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(mime_type))
                         .build();
@@ -3656,6 +4062,8 @@ pub mod wp_primary_selection_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_primary_selection_source_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3730,6 +4138,8 @@ pub mod relative_pointer_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_relative_pointer_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3750,6 +4160,13 @@ pub mod relative_pointer_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_relative_pointer_manager_v1#{}.get_relative_pointer({}, {})",
+                        sender_id,
+                        id,
+                        pointer
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(pointer))
@@ -3785,6 +4202,8 @@ pub mod relative_pointer_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_relative_pointer_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3949,6 +4368,13 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_manager_v1#{}.get_tablet_seat({}, {})",
+                        sender_id,
+                        tablet_seat,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(tablet_seat))
                         .put_object(Some(seat))
@@ -3970,6 +4396,8 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4003,6 +4431,8 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_seat_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4264,6 +4694,17 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_tool_v1#{}.set_cursor({}, {}, {}, {})",
+                        sender_id,
+                        serial,
+                        surface
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string()),
+                        hotspot_x,
+                        hotspot_y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_object(surface)
@@ -4286,6 +4727,8 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_tool_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4590,6 +5033,8 @@ pub mod tablet_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4764,6 +5209,13 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_manager_v2#{}.get_tablet_seat({}, {})",
+                        sender_id,
+                        tablet_seat,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(tablet_seat))
                         .put_object(Some(seat))
@@ -4785,6 +5237,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_manager_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4818,6 +5272,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_seat_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5093,6 +5549,17 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_tool_v2#{}.set_cursor({}, {}, {}, {})",
+                        sender_id,
+                        serial,
+                        surface
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string()),
+                        hotspot_x,
+                        hotspot_y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_object(surface)
@@ -5115,6 +5582,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_tool_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5419,6 +5888,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5568,6 +6039,13 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_pad_ring_v2#{}.set_feedback(\"{}\", {})",
+                        sender_id,
+                        description,
+                        serial
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(description))
                         .put_uint(serial)
@@ -5588,6 +6066,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_pad_ring_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5734,6 +6214,13 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_pad_strip_v2#{}.set_feedback(\"{}\", {})",
+                        sender_id,
+                        description,
+                        serial
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(description))
                         .put_uint(serial)
@@ -5754,6 +6241,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_pad_strip_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5869,6 +6358,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_pad_group_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6079,6 +6570,14 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_tablet_pad_v2#{}.set_feedback({}, \"{}\", {})",
+                        sender_id,
+                        button,
+                        description,
+                        serial
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(button)
                         .put_string(Some(description))
@@ -6101,6 +6600,8 @@ pub mod tablet_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_tablet_pad_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6412,6 +6913,13 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.activate({}, {})",
+                        sender_id,
+                        seat,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_object(Some(surface))
@@ -6435,6 +6943,8 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v1#{}.deactivate({})", sender_id, seat);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .build();
@@ -6454,6 +6964,8 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v1#{}.show_input_panel()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6471,6 +6983,8 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v1#{}.hide_input_panel()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6490,6 +7004,8 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v1#{}.reset()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6514,6 +7030,14 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.set_surrounding_text(\"{}\", {}, {})",
+                        sender_id,
+                        text,
+                        cursor,
+                        anchor
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(text))
                         .put_uint(cursor)
@@ -6543,6 +7067,13 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.set_content_type({}, {})",
+                        sender_id,
+                        hint,
+                        purpose
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(hint.into())
                         .put_uint(purpose.into())
@@ -6566,6 +7097,15 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.set_cursor_rectangle({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -6595,6 +7135,12 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.set_preferred_language(\"{}\")",
+                        sender_id,
+                        language
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(language))
                         .build();
@@ -6614,6 +7160,12 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.commit_state({})",
+                        sender_id,
+                        serial
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(serial).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6632,6 +7184,13 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v1#{}.invoke_action({}, {})",
+                        sender_id,
+                        button,
+                        index
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(button)
                         .put_uint(index)
@@ -6818,6 +7377,12 @@ pub mod text_input_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_manager_v1#{}.create_text_input({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -7010,6 +7575,8 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7054,6 +7621,8 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.enable()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7075,6 +7644,8 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.disable()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7125,6 +7696,14 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.set_surrounding_text(\"{}\", {}, {})",
+                        sender_id,
+                        text,
+                        cursor,
+                        anchor
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(text))
                         .put_int(cursor)
@@ -7160,6 +7739,12 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.set_text_change_cause({})",
+                        sender_id,
+                        cause
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(cause.into())
                         .build();
@@ -7191,6 +7776,13 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.set_content_type({}, {})",
+                        sender_id,
+                        hint,
+                        purpose
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(hint.into())
                         .put_uint(purpose.into())
@@ -7231,6 +7823,15 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.set_cursor_rectangle({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -7275,6 +7876,8 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.commit()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7430,6 +8033,8 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_manager_v3#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7449,6 +8054,13 @@ pub mod text_input_unstable_v3 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_manager_v3#{}.get_text_input({}, {})",
+                        sender_id,
+                        id,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(seat))
@@ -7507,6 +8119,8 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_decoration_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7532,6 +8146,13 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_decoration_manager_v1#{}.get_toplevel_decoration({}, {})",
+                        sender_id,
+                        id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(toplevel))
@@ -7636,6 +8257,8 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_decoration_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7674,6 +8297,12 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_decoration_v1#{}.set_mode({})",
+                        sender_id,
+                        mode
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(mode.into()).build();
                     futures_util::SinkExt::send(
@@ -7695,6 +8324,8 @@ pub mod xdg_decoration_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_decoration_v1#{}.unset_mode()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7772,6 +8403,8 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_exporter_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7798,6 +8431,13 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_exporter_v1#{}.export({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -7834,6 +8474,8 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_importer_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7857,6 +8499,13 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_importer_v1#{}.import({}, \"{}\")",
+                        sender_id,
+                        id,
+                        handle
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_string(Some(handle))
@@ -7895,6 +8544,8 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_exported_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7939,6 +8590,8 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_imported_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7960,6 +8613,12 @@ pub mod xdg_foreign_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_imported_v1#{}.set_parent_of({})",
+                        sender_id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
@@ -8063,6 +8722,8 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_exporter_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8090,6 +8751,13 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_exporter_v2#{}.export_toplevel({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -8126,6 +8794,8 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_importer_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8149,6 +8819,13 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_importer_v2#{}.import_toplevel({}, \"{}\")",
+                        sender_id,
+                        id,
+                        handle
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_string(Some(handle))
@@ -8187,6 +8864,8 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_exported_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8259,6 +8938,8 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_imported_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8281,6 +8962,12 @@ pub mod xdg_foreign_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_imported_v2#{}.set_parent_of({})",
+                        sender_id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
@@ -8355,6 +9042,8 @@ pub mod xdg_output_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_output_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8374,6 +9063,13 @@ pub mod xdg_output_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_output_manager_v1#{}.get_xdg_output({}, {})",
+                        sender_id,
+                        id,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(output))
@@ -8416,6 +9112,8 @@ pub mod xdg_output_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_output_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8636,6 +9334,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_shell#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8658,6 +9358,12 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_shell#{}.use_unstable_version({})",
+                        sender_id,
+                        version
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(version).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8684,6 +9390,13 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_shell#{}.get_xdg_surface({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -8721,6 +9434,18 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_shell#{}.get_xdg_popup({}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        id,
+                        surface,
+                        parent,
+                        seat,
+                        serial,
+                        x,
+                        y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -8748,6 +9473,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_shell#{}.pong({})", sender_id, serial);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(serial).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8911,6 +9638,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8935,6 +9664,14 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_surface#{}.set_parent({})",
+                        sender_id,
+                        parent
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(parent).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8959,6 +9696,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.set_title(\"{}\")", sender_id, title);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(title))
                         .build();
@@ -8998,6 +9737,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.set_app_id(\"{}\")", sender_id, app_id);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
@@ -9031,6 +9772,15 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_surface#{}.show_window_menu({}, {}, {}, {})",
+                        sender_id,
+                        seat,
+                        serial,
+                        x,
+                        y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -9070,6 +9820,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.move({}, {})", sender_id, seat, serial);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -9122,6 +9874,14 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_surface#{}.resize({}, {}, {})",
+                        sender_id,
+                        seat,
+                        serial,
+                        edges
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -9162,6 +9922,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.ack_configure({})", sender_id, serial);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(serial).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9206,6 +9968,15 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_surface#{}.set_window_geometry({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -9248,6 +10019,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.set_maximized()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9286,6 +10059,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.unset_maximized()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9312,6 +10087,14 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_surface#{}.set_fullscreen({})",
+                        sender_id,
+                        output
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(output).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9328,6 +10111,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.unset_fullscreen()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9352,6 +10137,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_surface#{}.set_minimized()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9482,6 +10269,8 @@ pub mod xdg_shell_unstable_v5 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_popup#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9571,6 +10360,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_shell_v6#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9591,6 +10382,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_shell_v6#{}.create_positioner({})", sender_id, id);
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -9621,6 +10414,13 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_shell_v6#{}.get_xdg_surface({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -9643,6 +10443,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_shell_v6#{}.pong({})", sender_id, serial);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(serial).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9785,6 +10587,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_positioner_v6#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -9808,6 +10612,13 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_positioner_v6#{}.set_size({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
@@ -9841,6 +10652,15 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_positioner_v6#{}.set_anchor_rect({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -9873,6 +10693,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_positioner_v6#{}.set_anchor({})", sender_id, anchor);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(anchor.into())
                         .build();
@@ -9901,6 +10723,12 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_positioner_v6#{}.set_gravity({})",
+                        sender_id,
+                        gravity
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(gravity.into())
                         .build();
@@ -9933,6 +10761,12 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_positioner_v6#{}.set_constraint_adjustment({})",
+                        sender_id,
+                        constraint_adjustment
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(constraint_adjustment)
                         .build();
@@ -9964,6 +10798,13 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_positioner_v6#{}.set_offset({}, {})",
+                        sender_id,
+                        x,
+                        y
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
@@ -10056,6 +10897,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_surface_v6#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10079,6 +10922,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_surface_v6#{}.get_toplevel({})", sender_id, id);
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -10105,6 +10950,14 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_surface_v6#{}.get_popup({}, {}, {})",
+                        sender_id,
+                        id,
+                        parent,
+                        positioner
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(parent))
@@ -10152,6 +11005,15 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_surface_v6#{}.set_window_geometry({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -10196,6 +11058,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_surface_v6#{}.ack_configure({})", sender_id, serial);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(serial).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10338,6 +11202,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_v6#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10362,6 +11228,14 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.set_parent({})",
+                        sender_id,
+                        parent
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(parent).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10386,6 +11260,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_v6#{}.set_title(\"{}\")", sender_id, title);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(title))
                         .build();
@@ -10425,6 +11301,12 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.set_app_id(\"{}\")",
+                        sender_id,
+                        app_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
@@ -10458,6 +11340,15 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.show_window_menu({}, {}, {}, {})",
+                        sender_id,
+                        seat,
+                        serial,
+                        x,
+                        y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -10497,6 +11388,13 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.move({}, {})",
+                        sender_id,
+                        seat,
+                        serial
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -10549,6 +11447,14 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.resize({}, {}, {})",
+                        sender_id,
+                        seat,
+                        serial,
+                        edges
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -10604,6 +11510,13 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.set_max_size({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
@@ -10658,6 +11571,13 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.set_min_size({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
@@ -10698,6 +11618,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_v6#{}.set_maximized()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10736,6 +11658,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_v6#{}.unset_maximized()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10762,6 +11686,14 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zxdg_toplevel_v6#{}.set_fullscreen({})",
+                        sender_id,
+                        output
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(output).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10778,6 +11710,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_v6#{}.unset_fullscreen()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10802,6 +11736,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_toplevel_v6#{}.set_minimized()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10934,6 +11870,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_popup_v6#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10993,6 +11931,8 @@ pub mod xdg_shell_unstable_v6 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zxdg_popup_v6#{}.grab({}, {})", sender_id, seat, serial);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_uint(serial)
@@ -11090,6 +12030,11 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_xwayland_keyboard_grab_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -11128,6 +12073,14 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_xwayland_keyboard_grab_manager_v1#{}.grab_keyboard({}, {}, {})",
+                        sender_id,
+                        id,
+                        surface,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -11163,6 +12116,8 @@ pub mod xwayland_keyboard_grab_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_xwayland_keyboard_grab_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,

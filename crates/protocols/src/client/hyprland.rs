@@ -73,6 +73,21 @@ pub mod hyprland_ctm_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_ctm_control_manager_v1#{}.set_ctm_for_output({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        output,
+                        mat0,
+                        mat1,
+                        mat2,
+                        mat3,
+                        mat4,
+                        mat5,
+                        mat6,
+                        mat7,
+                        mat8
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .put_fixed(mat0)
@@ -101,6 +116,8 @@ pub mod hyprland_ctm_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.commit()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -121,6 +138,8 @@ pub mod hyprland_ctm_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_ctm_control_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -169,6 +188,12 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_focus_grab_manager_v1#{}.create_grab({})",
+                        sender_id,
+                        grab
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(grab))
                         .build();
@@ -189,6 +214,8 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_focus_grab_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -238,6 +265,12 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_focus_grab_v1#{}.add_surface({})",
+                        sender_id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
@@ -264,6 +297,12 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_focus_grab_v1#{}.remove_surface({})",
+                        sender_id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .build();
@@ -287,6 +326,8 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_focus_grab_v1#{}.commit()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -304,6 +345,8 @@ pub mod hyprland_focus_grab_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_focus_grab_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -383,6 +426,16 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_global_shortcuts_manager_v1#{}.register_shortcut({}, \"{}\", \"{}\", \"{}\", \"{}\")",
+                        sender_id,
+                        shortcut,
+                        id,
+                        app_id,
+                        description,
+                        trigger_description
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(shortcut))
                         .put_string(Some(id))
@@ -407,6 +460,11 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_global_shortcuts_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -437,6 +495,8 @@ pub mod hyprland_global_shortcuts_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_global_shortcut_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -494,6 +554,8 @@ pub mod hyprland_lock_notify_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_lock_notifier_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -515,6 +577,12 @@ pub mod hyprland_lock_notify_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_lock_notifier_v1#{}.get_lock_notification({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -558,6 +626,8 @@ pub mod hyprland_lock_notify_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_lock_notification_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -642,6 +712,13 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_surface_manager_v1#{}.get_hyprland_surface({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -663,6 +740,8 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_surface_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -732,6 +811,12 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_surface_v1#{}.set_opacity({})",
+                        sender_id,
+                        opacity
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(opacity).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -750,6 +835,8 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_surface_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -786,6 +873,14 @@ pub mod hyprland_surface_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_surface_v1#{}.set_visible_region({})",
+                        sender_id,
+                        region
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(region).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -836,6 +931,14 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_export_manager_v1#{}.capture_toplevel({}, {}, {})",
+                        sender_id,
+                        frame,
+                        overlay_cursor,
+                        handle
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(frame))
                         .put_int(overlay_cursor)
@@ -858,6 +961,11 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_export_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -878,6 +986,14 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_export_manager_v1#{}.capture_toplevel_with_wlr_toplevel_handle({}, {}, {})",
+                        sender_id,
+                        frame,
+                        overlay_cursor,
+                        handle
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(frame))
                         .put_int(overlay_cursor)
@@ -983,6 +1099,13 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_export_frame_v1#{}.copy({}, {})",
+                        sender_id,
+                        buffer,
+                        ignore_damage
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(buffer))
                         .put_int(ignore_damage)
@@ -1003,6 +1126,11 @@ pub mod hyprland_toplevel_export_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_export_frame_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1127,6 +1255,13 @@ pub mod hyprland_toplevel_mapping_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel({}, {})",
+                        sender_id,
+                        handle,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(handle))
                         .put_object(Some(toplevel))
@@ -1149,6 +1284,13 @@ pub mod hyprland_toplevel_mapping_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_mapping_manager_v1#{}.get_window_for_toplevel_wlr({}, {})",
+                        sender_id,
+                        handle,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(handle))
                         .put_object(Some(toplevel))
@@ -1170,6 +1312,11 @@ pub mod hyprland_toplevel_mapping_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_mapping_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1204,6 +1351,11 @@ pub mod hyprland_toplevel_mapping_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_toplevel_window_mapping_handle_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,

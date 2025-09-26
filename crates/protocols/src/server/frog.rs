@@ -268,6 +268,23 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        transfer_function,
+                        output_display_primary_red_x,
+                        output_display_primary_red_y,
+                        output_display_primary_green_x,
+                        output_display_primary_green_y,
+                        output_display_primary_blue_x,
+                        output_display_primary_blue_y,
+                        output_white_point_x,
+                        output_white_point_y,
+                        max_luminance,
+                        min_luminance,
+                        max_full_frame_luminance
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(transfer_function.into())
                         .put_uint(output_display_primary_red_x)

@@ -121,6 +121,12 @@ pub mod cosmic_a11y_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> cosmic_a11y_manager_v1#{}.set_magnifier({})",
+                        sender_id,
+                        active
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(active.into())
                         .build();
@@ -152,6 +158,13 @@ pub mod cosmic_a11y_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> cosmic_a11y_manager_v1#{}.set_screen_filter({}, {})",
+                        sender_id,
+                        inverted,
+                        filter
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(inverted.into())
                         .put_uint(filter.into())
@@ -184,6 +197,14 @@ pub mod cosmic_a11y_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> cosmic_a11y_manager_v1#{}.set_screen_filter2({}, {}, {})",
+                        sender_id,
+                        inverted,
+                        filter,
+                        filter_state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(inverted.into())
                         .put_uint(filter.into())
@@ -270,6 +291,8 @@ pub mod cosmic_atspi_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> cosmic_atspi_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -290,6 +313,14 @@ pub mod cosmic_atspi_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> cosmic_atspi_manager_v1#{}.add_key_grab({}, array[{}], {})",
+                        sender_id,
+                        mods,
+                        virtual_mods.len(),
+                        key
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(mods)
                         .put_array(virtual_mods)
@@ -314,6 +345,14 @@ pub mod cosmic_atspi_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> cosmic_atspi_manager_v1#{}.remove_key_grab({}, array[{}], {})",
+                        sender_id,
+                        mods,
+                        virtual_mods.len(),
+                        key
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(mods)
                         .put_array(virtual_mods)
@@ -335,6 +374,8 @@ pub mod cosmic_atspi_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> cosmic_atspi_manager_v1#{}.grab_keyboard()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -352,6 +393,8 @@ pub mod cosmic_atspi_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> cosmic_atspi_manager_v1#{}.ungrab_keyboard()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -399,6 +442,13 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_image_capture_source_manager_v1#{}.create_source({}, {})",
+                        sender_id,
+                        source,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(source))
                         .put_object(Some(output))
@@ -421,6 +471,11 @@ pub mod cosmic_image_source_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_image_capture_source_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -499,6 +554,13 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_manager_v1#{}.get_head({}, {})",
+                        sender_id,
+                        extended,
+                        head
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(extended))
                         .put_object(Some(head))
@@ -524,6 +586,13 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_manager_v1#{}.get_configuration({}, {})",
+                        sender_id,
+                        extended,
+                        config
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(extended))
                         .put_object(Some(config))
@@ -549,6 +618,13 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_manager_v1#{}.get_configuration_head({}, {})",
+                        sender_id,
+                        extended,
+                        config_head
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(extended))
                         .put_object(Some(config_head))
@@ -569,6 +645,8 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_output_manager_v1#{}.release()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -590,6 +668,12 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_manager_v1#{}.set_xwayland_primary({})",
+                        sender_id,
+                        head.as_ref().map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(head).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -690,6 +774,8 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_output_head_v1#{}.release()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -817,6 +903,14 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_configuration_v1#{}.mirror_head({}, {}, {})",
+                        sender_id,
+                        id,
+                        head,
+                        mirroring
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(head))
@@ -841,6 +935,8 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_output_configuration_v1#{}.release()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -895,6 +991,12 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_configuration_head_v1#{}.set_scale_1000({})",
+                        sender_id,
+                        scale_1000
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(scale_1000).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -915,6 +1017,11 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_configuration_head_v1#{}.release()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -939,6 +1046,12 @@ pub mod cosmic_output_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_output_configuration_head_v1#{}.set_adaptive_sync_ext({})",
+                        sender_id,
+                        state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(state.into())
                         .build();
@@ -986,6 +1099,13 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_overlap_notify_v1#{}.notify_on_overlap({}, {})",
+                        sender_id,
+                        overlap_notification,
+                        layer_surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(overlap_notification))
                         .put_object(Some(layer_surface))
@@ -1019,6 +1139,8 @@ pub mod cosmic_overlap_notify_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_overlap_notification_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1166,6 +1288,14 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_manager_v2#{}.create_session({}, {}, {})",
+                        sender_id,
+                        session,
+                        source,
+                        options
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(session))
                         .put_object(Some(source))
@@ -1194,6 +1324,15 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_manager_v2#{}.create_pointer_cursor_session({}, {}, {}, {})",
+                        sender_id,
+                        session,
+                        source,
+                        pointer,
+                        options
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(session))
                         .put_object(Some(source))
@@ -1218,6 +1357,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_screencopy_manager_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1264,6 +1405,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_session_v2#{}.create_frame({})",
+                        sender_id,
+                        frame
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(frame))
                         .build();
@@ -1287,6 +1434,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_screencopy_session_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1457,6 +1606,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1480,6 +1631,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_frame_v2#{}.attach_buffer({})",
+                        sender_id,
+                        buffer
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(buffer))
                         .build();
@@ -1523,6 +1680,15 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_frame_v2#{}.damage_buffer({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -1553,6 +1719,8 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_screencopy_frame_v2#{}.capture()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1676,6 +1844,11 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_cursor_session_v2#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1700,6 +1873,12 @@ pub mod cosmic_screencopy_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_screencopy_cursor_session_v2#{}.get_screencopy_session({})",
+                        sender_id,
+                        session
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(session))
                         .build();
@@ -1799,6 +1978,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_toplevel_info_v1#{}.stop()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1823,6 +2004,13 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_info_v1#{}.get_cosmic_toplevel({}, {})",
+                        sender_id,
+                        cosmic_toplevel,
+                        foreign_toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(cosmic_toplevel))
                         .put_object(Some(foreign_toplevel))
@@ -1940,6 +2128,8 @@ pub mod cosmic_toplevel_info_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_toplevel_handle_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2178,6 +2368,8 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_toplevel_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2197,6 +2389,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.close({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2219,6 +2417,13 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.activate({}, {})",
+                        sender_id,
+                        toplevel,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .put_object(Some(seat))
@@ -2241,6 +2446,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.set_maximized({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2262,6 +2473,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.unset_maximized({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2283,6 +2500,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.set_minimized({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2304,6 +2527,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.unset_minimized({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2332,6 +2561,15 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.set_fullscreen({}, {})",
+                        sender_id,
+                        toplevel,
+                        output
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .put_object(output)
@@ -2354,6 +2592,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.unset_fullscreen({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2389,6 +2633,17 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.set_rectangle({}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        toplevel,
+                        surface,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .put_object(Some(surface))
@@ -2416,6 +2671,14 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.move_to_workspace({}, {}, {})",
+                        sender_id,
+                        toplevel,
+                        workspace,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .put_object(Some(workspace))
@@ -2439,6 +2702,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.set_sticky({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2460,6 +2729,12 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.unset_sticky({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -2482,6 +2757,14 @@ pub mod cosmic_toplevel_management_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_toplevel_manager_v1#{}.move_to_ext_workspace({}, {}, {})",
+                        sender_id,
+                        toplevel,
+                        workspace,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .put_object(Some(workspace))
@@ -2566,6 +2849,8 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_manager_v1#{}.commit()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2587,6 +2872,8 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_manager_v1#{}.stop()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2693,6 +2980,12 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_group_handle_v1#{}.create_workspace(\"{}\")",
+                        sender_id,
+                        workspace
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(workspace))
                         .build();
@@ -2716,6 +3009,11 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_group_handle_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2924,6 +3222,8 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2946,6 +3246,8 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v1#{}.activate()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2965,6 +3267,8 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v1#{}.deactivate()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2984,6 +3288,8 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v1#{}.remove()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3004,6 +3310,12 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v1#{}.rename(\"{}\")",
+                        sender_id,
+                        name
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -3026,6 +3338,12 @@ pub mod cosmic_workspace_unstable_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v1#{}.set_tiling_state({})",
+                        sender_id,
+                        state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(state.into())
                         .build();
@@ -3177,6 +3495,13 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_manager_v2#{}.get_cosmic_workspace({}, {})",
+                        sender_id,
+                        cosmic_workspace,
+                        workspace
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(cosmic_workspace))
                         .put_object(Some(workspace))
@@ -3198,6 +3523,8 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_manager_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3304,6 +3631,8 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v2#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3324,6 +3653,12 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v2#{}.rename(\"{}\")",
+                        sender_id,
+                        name
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -3346,6 +3681,12 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v2#{}.set_tiling_state({})",
+                        sender_id,
+                        state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(state.into())
                         .build();
@@ -3381,6 +3722,13 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v2#{}.move_before({}, {})",
+                        sender_id,
+                        other_workspace,
+                        axis
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(other_workspace))
                         .put_uint(axis)
@@ -3405,6 +3753,13 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zcosmic_workspace_handle_v2#{}.move_after({}, {})",
+                        sender_id,
+                        other_workspace,
+                        axis
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(other_workspace))
                         .put_uint(axis)
@@ -3427,6 +3782,8 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v2#{}.pin()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3446,6 +3803,8 @@ pub mod cosmic_workspace_unstable_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zcosmic_workspace_handle_v2#{}.unpin()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,

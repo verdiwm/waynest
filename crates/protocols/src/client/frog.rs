@@ -23,6 +23,11 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_management_factory_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -41,6 +46,13 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_management_factory_v1#{}.get_color_managed_surface({}, {})",
+                        sender_id,
+                        surface,
+                        callback
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .put_object(Some(callback))
@@ -184,6 +196,8 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> frog_color_managed_surface#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -201,6 +215,12 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.set_known_transfer_function({})",
+                        sender_id,
+                        transfer_function
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(transfer_function.into())
                         .build();
@@ -220,6 +240,12 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.set_known_container_color_volume({})",
+                        sender_id,
+                        primaries
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(primaries.into())
                         .build();
@@ -245,6 +271,12 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.set_render_intent({})",
+                        sender_id,
+                        render_intent
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(render_intent.into())
                         .build();
@@ -281,6 +313,23 @@ pub mod frog_color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_color_managed_surface#{}.set_hdr_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        mastering_display_primary_red_x,
+                        mastering_display_primary_red_y,
+                        mastering_display_primary_green_x,
+                        mastering_display_primary_green_y,
+                        mastering_display_primary_blue_x,
+                        mastering_display_primary_blue_y,
+                        mastering_white_point_x,
+                        mastering_white_point_y,
+                        max_display_mastering_luminance,
+                        min_display_mastering_luminance,
+                        max_cll,
+                        max_fall
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(mastering_display_primary_red_x)
                         .put_uint(mastering_display_primary_red_y)
@@ -390,6 +439,8 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> frog_fifo_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -416,6 +467,13 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> frog_fifo_manager_v1#{}.get_fifo({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -491,6 +549,8 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> frog_fifo_surface_v1#{}.set_barrier()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -520,6 +580,8 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> frog_fifo_surface_v1#{}.wait_barrier()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -541,6 +603,8 @@ pub mod frog_fifo_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> frog_fifo_surface_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,

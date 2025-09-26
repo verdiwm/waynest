@@ -618,6 +618,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_intent({})",
+                        sender_id,
+                        render_intent
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(render_intent.into())
                         .build();
@@ -639,6 +645,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_feature({})",
+                        sender_id,
+                        feature
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(feature.into())
                         .build();
@@ -661,6 +673,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_tf_named({})",
+                        sender_id,
+                        tf
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(tf.into()).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -681,6 +699,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_manager_v1#{}.supported_primaries_named({})",
+                        sender_id,
+                        primaries
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(primaries.into())
                         .build();
@@ -701,6 +725,8 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_color_manager_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -893,6 +919,11 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_management_output_v1#{}.image_description_changed()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1227,6 +1258,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_management_surface_feedback_v1#{}.preferred_changed({})",
+                        sender_id,
+                        identity
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(identity).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2140,6 +2177,13 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_v1#{}.failed({}, \"{}\")",
+                        sender_id,
+                        cause,
+                        msg
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(cause.into())
                         .put_string(Some(msg))
@@ -2187,6 +2231,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_v1#{}.ready({})",
+                        sender_id,
+                        identity
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(identity).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2270,6 +2320,8 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_image_description_info_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2296,6 +2348,13 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.icc_file({}, {})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&icc),
+                        icc_size
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_fd(icc)
                         .put_uint(icc_size)
@@ -2328,6 +2387,19 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        r_x,
+                        r_y,
+                        g_x,
+                        g_y,
+                        b_x,
+                        b_y,
+                        w_x,
+                        w_y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
@@ -2356,6 +2428,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.primaries_named({})",
+                        sender_id,
+                        primaries
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(primaries.into())
                         .build();
@@ -2382,6 +2460,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.tf_power({})",
+                        sender_id,
+                        eexp
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(eexp).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2401,6 +2485,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.tf_named({})",
+                        sender_id,
+                        tf
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(tf.into()).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2428,6 +2518,14 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.luminances({}, {}, {})",
+                        sender_id,
+                        min_lum,
+                        max_lum,
+                        reference_lum
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(min_lum)
                         .put_uint(max_lum)
@@ -2467,6 +2565,19 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        r_x,
+                        r_y,
+                        g_x,
+                        g_y,
+                        b_x,
+                        b_y,
+                        w_x,
+                        w_y
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(r_x)
                         .put_int(r_y)
@@ -2506,6 +2617,13 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_luminance({}, {})",
+                        sender_id,
+                        min_lum,
+                        max_lum
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(min_lum)
                         .put_uint(max_lum)
@@ -2531,6 +2649,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_max_cll({})",
+                        sender_id,
+                        max_cll
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(max_cll).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2553,6 +2677,12 @@ pub mod color_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_info_v1#{}.target_max_fall({})",
+                        sender_id,
+                        max_fall
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(max_fall).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -2671,6 +2801,12 @@ pub mod color_representation_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_representation_manager_v1#{}.supported_alpha_mode({})",
+                        sender_id,
+                        alpha_mode
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(alpha_mode.into())
                         .build();
@@ -2698,6 +2834,13 @@ pub mod color_representation_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_representation_manager_v1#{}.supported_coefficients_and_ranges({}, {})",
+                        sender_id,
+                        coefficients,
+                        range
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(coefficients.into())
                         .put_uint(range.into())
@@ -2718,6 +2861,8 @@ pub mod color_representation_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_color_representation_manager_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -3988,6 +4133,12 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_drm_lease_device_v1#{}.drm_fd({})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd)
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_fd(fd).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4015,6 +4166,8 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_drm_lease_device_v1#{}.connector({})", sender_id, id);
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -4038,6 +4191,8 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_drm_lease_device_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4059,6 +4214,8 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_drm_lease_device_v1#{}.released()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4144,6 +4301,12 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_drm_lease_connector_v1#{}.name(\"{}\")",
+                        sender_id,
+                        name
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -4167,6 +4330,12 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_drm_lease_connector_v1#{}.description(\"{}\")",
+                        sender_id,
+                        description
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(description))
                         .build();
@@ -4190,6 +4359,12 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_drm_lease_connector_v1#{}.connector_id({})",
+                        sender_id,
+                        connector_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(connector_id)
                         .build();
@@ -4211,6 +4386,8 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_drm_lease_connector_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4238,6 +4415,8 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_drm_lease_connector_v1#{}.withdrawn()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4428,6 +4607,12 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_drm_lease_v1#{}.lease_fd({})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&leased_fd)
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_fd(leased_fd).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4454,6 +4639,8 @@ pub mod drm_lease_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wp_drm_lease_v1#{}.finished()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4580,6 +4767,12 @@ pub mod ext_background_effect_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_background_effect_manager_v1#{}.capabilities({})",
+                        sender_id,
+                        flags
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(flags.into())
                         .build();
@@ -4925,6 +5118,12 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_data_control_device_v1#{}.data_offer({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -4956,6 +5155,12 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_data_control_device_v1#{}.selection({})",
+                        sender_id,
+                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(id).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -4974,6 +5179,8 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_data_control_device_v1#{}.finished()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5006,6 +5213,12 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_data_control_device_v1#{}.primary_selection({})",
+                        sender_id,
+                        id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(id).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5129,6 +5342,13 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_data_control_source_v1#{}.send(\"{}\", {})",
+                        sender_id,
+                        mime_type,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd)
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(mime_type))
                         .put_fd(fd)
@@ -5152,6 +5372,8 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_data_control_source_v1#{}.cancelled()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5241,6 +5463,12 @@ pub mod ext_data_control_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_data_control_offer_v1#{}.offer(\"{}\")",
+                        sender_id,
+                        mime_type
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(mime_type))
                         .build();
@@ -5376,6 +5604,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_list_v1#{}.toplevel({})",
+                        sender_id,
+                        toplevel
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
@@ -5399,6 +5633,8 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_foreign_toplevel_list_v1#{}.finished()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5477,6 +5713,8 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.closed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5503,6 +5741,8 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_foreign_toplevel_handle_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5524,6 +5764,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_handle_v1#{}.title(\"{}\")",
+                        sender_id,
+                        title
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(title))
                         .build();
@@ -5547,6 +5793,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
+                        sender_id,
+                        app_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
@@ -5586,6 +5838,12 @@ pub mod ext_foreign_toplevel_list_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_foreign_toplevel_handle_v1#{}.identifier(\"{}\")",
+                        sender_id,
+                        identifier
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(identifier))
                         .build();
@@ -5789,6 +6047,8 @@ pub mod ext_idle_notify_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_idle_notification_v1#{}.idled()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5810,6 +6070,8 @@ pub mod ext_idle_notify_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_idle_notification_v1#{}.resumed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6297,6 +6559,13 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.buffer_size({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(width)
                         .put_uint(height)
@@ -6321,6 +6590,12 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.shm_format({})",
+                        sender_id,
+                        format
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(format.into())
                         .build();
@@ -6347,6 +6622,12 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.dmabuf_device(array[{}])",
+                        sender_id,
+                        device.len()
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_array(device).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6372,6 +6653,13 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.dmabuf_format({}, array[{}])",
+                        sender_id,
+                        format,
+                        modifiers.len()
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(format)
                         .put_array(modifiers)
@@ -6397,6 +6685,8 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_image_copy_capture_session_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6419,6 +6709,11 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_session_v1#{}.stopped()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6620,6 +6915,12 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.transform({})",
+                        sender_id,
+                        transform
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(transform.into())
                         .build();
@@ -6650,6 +6951,15 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.damage({}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
@@ -6683,6 +6993,14 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.presentation_time({}, {}, {})",
+                        sender_id,
+                        tv_sec_hi,
+                        tv_sec_lo,
+                        tv_nsec
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(tv_sec_hi)
                         .put_uint(tv_sec_lo)
@@ -6709,6 +7027,8 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_image_copy_capture_frame_v1#{}.ready()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6729,6 +7049,12 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_frame_v1#{}.failed({})",
+                        sender_id,
+                        reason
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(reason.into())
                         .build();
@@ -6876,6 +7202,11 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.enter()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6895,6 +7226,11 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.leave()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -6920,6 +7256,13 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.position({}, {})",
+                        sender_id,
+                        x,
+                        y
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
@@ -6949,6 +7292,13 @@ pub mod ext_image_copy_capture_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_image_copy_capture_cursor_session_v1#{}.hotspot({}, {})",
+                        sender_id,
+                        x,
+                        y
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
@@ -7254,6 +7604,8 @@ pub mod ext_session_lock_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_session_lock_v1#{}.locked()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7292,6 +7644,8 @@ pub mod ext_session_lock_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_session_lock_v1#{}.finished()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7471,6 +7825,14 @@ pub mod ext_session_lock_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_session_lock_surface_v1#{}.configure({}, {}, {})",
+                        sender_id,
+                        serial,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(serial)
                         .put_uint(width)
@@ -7636,6 +7998,12 @@ pub mod ext_transient_seat_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_transient_seat_v1#{}.ready({})",
+                        sender_id,
+                        global_name
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(global_name).build();
                     futures_util::SinkExt::send(
@@ -7660,6 +8028,8 @@ pub mod ext_transient_seat_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_transient_seat_v1#{}.denied()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7760,6 +8130,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_manager_v1#{}.workspace_group({})",
+                        sender_id,
+                        workspace_group
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(workspace_group))
                         .build();
@@ -7786,6 +8162,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_manager_v1#{}.workspace({})",
+                        sender_id,
+                        workspace
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(workspace))
                         .build();
@@ -7815,6 +8197,8 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_workspace_manager_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7834,6 +8218,8 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_workspace_manager_v1#{}.finished()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -7949,6 +8335,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.capabilities({})",
+                        sender_id,
+                        capabilities
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(capabilities.into())
                         .build();
@@ -7971,6 +8363,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.output_enter({})",
+                        sender_id,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .build();
@@ -7992,6 +8390,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.output_leave({})",
+                        sender_id,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .build();
@@ -8014,6 +8418,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.workspace_enter({})",
+                        sender_id,
+                        workspace
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(workspace))
                         .build();
@@ -8034,6 +8444,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_group_handle_v1#{}.workspace_leave({})",
+                        sender_id,
+                        workspace
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(workspace))
                         .build();
@@ -8060,6 +8476,8 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_workspace_group_handle_v1#{}.removed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8233,6 +8651,8 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_workspace_handle_v1#{}.id(\"{}\")", sender_id, id);
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_string(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -8256,6 +8676,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_handle_v1#{}.name(\"{}\")",
+                        sender_id,
+                        name
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
@@ -8293,6 +8719,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_handle_v1#{}.coordinates(array[{}])",
+                        sender_id,
+                        coordinates.len()
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_array(coordinates)
                         .build();
@@ -8318,6 +8750,8 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_workspace_handle_v1#{}.state({})", sender_id, state);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(state.into())
                         .build();
@@ -8350,6 +8784,12 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ext_workspace_handle_v1#{}.capabilities({})",
+                        sender_id,
+                        capabilities
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(capabilities.into())
                         .build();
@@ -8377,6 +8817,8 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ext_workspace_handle_v1#{}.removed()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -8820,6 +9262,12 @@ pub mod fractional_scale_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_fractional_scale_v1#{}.preferred_scale({})",
+                        sender_id,
+                        scale
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(scale).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10261,6 +10709,12 @@ pub mod xdg_activation_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_activation_token_v1#{}.done(\"{}\")",
+                        sender_id,
+                        token
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(token))
                         .build();
@@ -10933,6 +11387,12 @@ pub mod xdg_toplevel_icon_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_toplevel_icon_manager_v1#{}.icon_size({})",
+                        sender_id,
+                        size
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(size).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -10950,6 +11410,8 @@ pub mod xdg_toplevel_icon_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_toplevel_icon_manager_v1#{}.done()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,

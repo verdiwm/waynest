@@ -24,6 +24,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_manager_v1#{}.get_window_overlap_checker({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -48,6 +54,13 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_manager_v1#{}.get_shell_surface({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
@@ -70,6 +83,13 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_manager_v1#{}.get_treeland_dde_active({}, {})",
+                        sender_id,
+                        id,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(seat))
@@ -91,6 +111,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_manager_v1#{}.get_treeland_multitaskview({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -110,6 +136,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_manager_v1#{}.get_treeland_window_picker({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -129,6 +161,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_manager_v1#{}.get_treeland_lockscreen({})",
+                        sender_id,
+                        id
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
@@ -191,6 +229,15 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_window_overlap_checker#{}.update({}, {}, {}, {})",
+                        sender_id,
+                        width,
+                        height,
+                        anchor,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
@@ -217,6 +264,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_window_overlap_checker#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -306,6 +355,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_dde_shell_surface_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -328,6 +379,13 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_surface_position({}, {})",
+                        sender_id,
+                        x,
+                        y
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
@@ -347,6 +405,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_role({})",
+                        sender_id,
+                        role
+                    );
                     let (payload, fds) =
                         waynest::PayloadBuilder::new().put_uint(role.into()).build();
                     futures_util::SinkExt::send(
@@ -372,6 +436,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_auto_placement({})",
+                        sender_id,
+                        y_offset
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(y_offset).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -390,6 +460,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_skip_switcher({})",
+                        sender_id,
+                        skip
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(skip).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -408,6 +484,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_skip_dock_preview({})",
+                        sender_id,
+                        skip
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(skip).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -426,6 +508,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_skip_muti_task_view({})",
+                        sender_id,
+                        skip
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(skip).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -446,6 +534,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_shell_surface_v1#{}.set_accept_keyboard_focus({})",
+                        sender_id,
+                        accept
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(accept).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -502,6 +596,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_dde_active_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -553,6 +649,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_multitaskview_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -570,6 +668,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_multitaskview_v1#{}.toggle()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -599,6 +699,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_window_picker_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -617,6 +719,12 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_window_picker_v1#{}.pick(\"{}\")",
+                        sender_id,
+                        hint
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(hint))
                         .build();
@@ -655,6 +763,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_lockscreen_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -672,6 +782,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_lockscreen_v1#{}.lock()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -689,6 +801,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_lockscreen_v1#{}.shutdown()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -706,6 +820,8 @@ pub mod treeland_dde_shell_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_lockscreen_v1#{}.switch_user()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -740,6 +856,8 @@ pub mod treeland_ddm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm#{}.switch_to_greeter()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -758,6 +876,12 @@ pub mod treeland_ddm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_ddm#{}.switch_to_user(\"{}\")",
+                        sender_id,
+                        username
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(username))
                         .build();
@@ -778,6 +902,8 @@ pub mod treeland_ddm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm#{}.activate_session()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -796,6 +922,8 @@ pub mod treeland_ddm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm#{}.deactivate_session()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -814,6 +942,8 @@ pub mod treeland_ddm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm#{}.enable_render()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -833,6 +963,8 @@ pub mod treeland_ddm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm#{}.disable_render({})", sender_id, callback);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(callback))
                         .build();
@@ -893,6 +1025,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_manager_v1#{}.stop()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -911,6 +1048,13 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_manager_v1#{}.get_dock_preview_context({}, {})",
+                        sender_id,
+                        relative_surface,
+                        id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(relative_surface))
                         .put_object(Some(id))
@@ -1036,6 +1180,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.set_maximized()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1054,6 +1203,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.unset_maximized()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1072,6 +1226,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.set_minimized()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1090,6 +1249,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.unset_minimized()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1109,6 +1273,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.activate({})",
+                        sender_id,
+                        seat
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .build();
@@ -1133,6 +1303,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.close()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1165,6 +1340,16 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.set_rectangle({}, {}, {}, {}, {})",
+                        sender_id,
+                        surface,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(surface))
                         .put_int(x)
@@ -1192,6 +1377,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1217,6 +1407,14 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.set_fullscreen({})",
+                        sender_id,
+                        output
+                            .as_ref()
+                            .map_or("null".to_string(), |v| v.to_string())
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_object(output).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1235,6 +1433,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_foreign_toplevel_handle_v1#{}.unset_fullscreen()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1398,6 +1601,15 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dock_preview_context_v1#{}.show(array[{}], {}, {}, {})",
+                        sender_id,
+                        surfaces.len(),
+                        x,
+                        y,
+                        direction
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_array(surfaces)
                         .put_int(x)
@@ -1423,6 +1635,15 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dock_preview_context_v1#{}.show_tooltip(\"{}\", {}, {}, {})",
+                        sender_id,
+                        tooltip,
+                        x,
+                        y,
+                        direction
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(tooltip))
                         .put_int(x)
@@ -1445,6 +1666,8 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_dock_preview_context_v1#{}.close()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1462,6 +1685,11 @@ pub mod treeland_foreign_toplevel_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dock_preview_context_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1508,6 +1736,12 @@ pub mod treeland_output_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_output_manager_v1#{}.set_primary_output(\"{}\")",
+                        sender_id,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(output))
                         .build();
@@ -1526,6 +1760,8 @@ pub mod treeland_output_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_output_manager_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1576,6 +1812,13 @@ pub mod treeland_shortcut_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_shortcut_manager_v1#{}.register_shortcut_context(\"{}\", {})",
+                        sender_id,
+                        key,
+                        id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(key))
                         .put_object(Some(id))
@@ -1640,6 +1883,8 @@ pub mod treeland_shortcut_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_shortcut_context_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1691,6 +1936,14 @@ pub mod treeland_virtual_output_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_virtual_output_manager_v1#{}.create_virtual_output({}, \"{}\", array[{}])",
+                        sender_id,
+                        id,
+                        name,
+                        outputs.len()
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_string(Some(name))
@@ -1712,6 +1965,11 @@ pub mod treeland_virtual_output_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_virtual_output_manager_v1#{}.get_virtual_output_list()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1732,6 +1990,13 @@ pub mod treeland_virtual_output_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_virtual_output_manager_v1#{}.get_virtual_output(\"{}\", {})",
+                        sender_id,
+                        name,
+                        id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_object(Some(id))
@@ -1804,6 +2069,8 @@ pub mod treeland_virtual_output_manager_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_virtual_output_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1863,6 +2130,12 @@ pub mod treeland_wallpaper_color_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_color_manager_v1#{}.watch(\"{}\")",
+                        sender_id,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(output))
                         .build();
@@ -1883,6 +2156,12 @@ pub mod treeland_wallpaper_color_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_color_manager_v1#{}.unwatch(\"{}\")",
+                        sender_id,
+                        output
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(output))
                         .build();
@@ -1902,6 +2181,11 @@ pub mod treeland_wallpaper_color_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_color_manager_v1#{}.destroy()",
+                        sender_id,
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1979,6 +2263,12 @@ pub mod treeland_window_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_window_management_v1#{}.set_desktop({})",
+                        sender_id,
+                        state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1995,6 +2285,8 @@ pub mod treeland_window_management_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_window_management_v1#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,

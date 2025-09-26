@@ -219,6 +219,8 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> wl_drm#{}.authenticate({})", sender_id, id);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(id).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -241,6 +243,17 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_drm#{}.create_buffer({}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        id,
+                        name,
+                        width,
+                        height,
+                        stride,
+                        format
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_uint(name)
@@ -275,6 +288,22 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_drm#{}.create_planar_buffer({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        id,
+                        name,
+                        width,
+                        height,
+                        format,
+                        offset0,
+                        stride0,
+                        offset1,
+                        stride1,
+                        offset2,
+                        stride2
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_uint(name)
@@ -314,6 +343,22 @@ pub mod drm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wl_drm#{}.create_prime_buffer({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        id,
+                        std::os::fd::AsRawFd::as_raw_fd(&name),
+                        width,
+                        height,
+                        format,
+                        offset0,
+                        stride0,
+                        offset1,
+                        stride1,
+                        offset2,
+                        stride2
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_fd(name)

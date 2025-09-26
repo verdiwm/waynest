@@ -19,6 +19,8 @@ pub mod ivi_application {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_surface#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -121,6 +123,14 @@ pub mod ivi_application {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_application#{}.surface_create({}, {}, {})",
+                        sender_id,
+                        ivi_id,
+                        surface,
+                        id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(ivi_id)
                         .put_object(Some(surface))
@@ -167,6 +177,14 @@ pub mod ivi_input {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_input#{}.set_input_focus({}, {}, {})",
+                        sender_id,
+                        surface,
+                        device,
+                        enabled
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface)
                         .put_uint(device)
@@ -196,6 +214,14 @@ pub mod ivi_input {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_input#{}.set_input_acceptance({}, \"{}\", {})",
+                        sender_id,
+                        surface,
+                        seat,
+                        accepted
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface)
                         .put_string(Some(seat))
@@ -309,6 +335,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm_screen#{}.destroy()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -329,6 +357,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm_screen#{}.clear()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -349,6 +379,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm_screen#{}.add_layer({})", sender_id, layer_id);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -368,6 +400,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm_screen#{}.remove_layer({})", sender_id, layer_id);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -388,6 +422,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm_screen#{}.screenshot({}, {})",
+                        sender_id,
+                        buffer,
+                        screenshot
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(buffer))
                         .put_object(Some(screenshot))
@@ -409,6 +450,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm_screen#{}.get({})", sender_id, param);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_int(param).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -695,6 +738,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm#{}.commit_changes()", sender_id,);
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
@@ -714,6 +759,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm#{}.create_screen({}, {})", sender_id, output, id);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .put_object(Some(id))
@@ -737,6 +784,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_surface_visibility({}, {})",
+                        sender_id,
+                        surface_id,
+                        visibility
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_uint(visibility)
@@ -760,6 +814,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_layer_visibility({}, {})",
+                        sender_id,
+                        layer_id,
+                        visibility
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_uint(visibility)
@@ -782,6 +843,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_surface_opacity({}, {})",
+                        sender_id,
+                        surface_id,
+                        opacity
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_fixed(opacity)
@@ -804,6 +872,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_layer_opacity({}, {})",
+                        sender_id,
+                        layer_id,
+                        opacity
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_fixed(opacity)
@@ -836,6 +911,16 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_surface_source_rectangle({}, {}, {}, {}, {})",
+                        sender_id,
+                        surface_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(x)
@@ -871,6 +956,16 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_layer_source_rectangle({}, {}, {}, {}, {})",
+                        sender_id,
+                        layer_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(x)
@@ -905,6 +1000,16 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_surface_destination_rectangle({}, {}, {}, {}, {})",
+                        sender_id,
+                        surface_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(x)
@@ -939,6 +1044,16 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_layer_destination_rectangle({}, {}, {}, {}, {})",
+                        sender_id,
+                        layer_id,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(x)
@@ -967,6 +1082,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.surface_sync({}, {})",
+                        sender_id,
+                        surface_id,
+                        sync_state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(sync_state)
@@ -992,6 +1114,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.layer_sync({}, {})",
+                        sender_id,
+                        layer_id,
+                        sync_state
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(sync_state)
@@ -1014,6 +1143,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.surface_get({}, {})",
+                        sender_id,
+                        surface_id,
+                        param
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(param)
@@ -1036,6 +1172,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm#{}.layer_get({}, {})", sender_id, layer_id, param);
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(param)
@@ -1062,6 +1200,14 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.surface_screenshot({}, {}, {})",
+                        sender_id,
+                        buffer,
+                        screenshot,
+                        surface_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_object(Some(buffer))
                         .put_object(Some(screenshot))
@@ -1085,6 +1231,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.set_surface_type({}, {})",
+                        sender_id,
+                        surface_id,
+                        r#type
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(r#type)
@@ -1107,6 +1260,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm#{}.layer_clear({})", sender_id, layer_id);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,
@@ -1128,6 +1283,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.layer_add_surface({}, {})",
+                        sender_id,
+                        layer_id,
+                        surface_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_uint(surface_id)
@@ -1153,6 +1315,13 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.layer_remove_surface({}, {})",
+                        sender_id,
+                        layer_id,
+                        surface_id
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_uint(surface_id)
@@ -1176,6 +1345,14 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> ivi_wm#{}.create_layout_layer({}, {}, {})",
+                        sender_id,
+                        layer_id,
+                        width,
+                        height
+                    );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(width)
@@ -1198,6 +1375,8 @@ pub mod ivi_wm {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> ivi_wm#{}.destroy_layout_layer({})", sender_id, layer_id);
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,

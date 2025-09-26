@@ -51,9 +51,14 @@ impl<'a> ProtocolGenerator<'a> {
                     interface.name
                 );
 
-                let requests =
-                    self.generate_functions(&interface.requests, &interface.events, requests_body)?;
-                let events = self.generate_functions(&interface.events, &[], events_body)?;
+                let requests = self.generate_functions(
+                    &interface,
+                    &interface.requests,
+                    &interface.events,
+                    requests_body,
+                )?;
+                let events =
+                    self.generate_functions(&interface, &interface.events, &[], events_body)?;
 
                 let enums = write_enums(interface);
 
@@ -130,6 +135,7 @@ impl<'a> ProtocolGenerator<'a> {
 
     fn generate_functions(
         &self,
+        interface: &Interface,
         messages: &[Message],
         skip: &[Message],
         generate_body: bool,
@@ -159,7 +165,7 @@ impl<'a> ProtocolGenerator<'a> {
             }
 
             let body = if generate_body {
-                self.generate_function_body(&message.args, opcode as u16)
+                self.generate_function_body(interface, &message, opcode as u16)
             } else {
                 quote! {;}
             };
@@ -174,10 +180,15 @@ impl<'a> ProtocolGenerator<'a> {
         Ok(functions)
     }
 
-    pub fn generate_function_body(&self, args: &[Arg], opcode: u16) -> TokenStream {
+    pub fn generate_function_body(
+        &self,
+        interface: &Interface,
+        message: &Message,
+        opcode: u16,
+    ) -> TokenStream {
         let mut build_args = Vec::new();
 
-        for arg in args {
+        for arg in &message.args {
             let build_ty = format_ident!("put_{}", arg.to_caller());
 
             let build_name = make_ident(arg.name.to_snek_case());
@@ -196,9 +207,18 @@ impl<'a> ProtocolGenerator<'a> {
             });
         }
 
+        let (tracing_inner, tracing_args) = self.generate_tracing(interface, message, true);
+
+        let tracing = quote! {
+            #[cfg(feature = "tracing")]
+            tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
+        };
+
         quote! {
             {
                 async move {
+                    #tracing
+
                     let (payload,fds) = waynest::PayloadBuilder::new()
                         #(#build_args)*
                         .build();
@@ -213,6 +233,58 @@ impl<'a> ProtocolGenerator<'a> {
         }
     }
 
+    pub fn generate_tracing(
+        &self,
+        interface: &Interface,
+        message: &Message,
+        outgoing: bool,
+    ) -> (String, Vec<TokenStream>) {
+        let mut tracing_fmt = Vec::new();
+        let mut tracing_args = Vec::new();
+
+        for arg in &message.args {
+            let mut map_display = quote! {};
+
+            if arg.allow_null {
+                map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
+            }
+
+            let name = make_ident(arg.name.to_snek_case());
+
+            match arg.ty {
+                ArgType::Array => {
+                    tracing_fmt.push("array[{}]");
+                    tracing_args.push(quote! { #name .len() });
+                }
+                ArgType::String => {
+                    tracing_fmt.push("\"{}\"");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+                ArgType::Fd => {
+                    tracing_fmt.push("{}");
+                    tracing_args
+                        .push(quote! { std::os::fd::AsRawFd::as_raw_fd(&#name) #map_display });
+                }
+                _ => {
+                    tracing_fmt.push("{}");
+                    tracing_args.push(quote! { #name #map_display });
+                }
+            }
+        }
+
+        let tracing_fmt = tracing_fmt.join(", ");
+
+        let outgoing = if outgoing { "-> " } else { "" };
+
+        let tracing_inner = format!(
+            "{outgoing}{interface}#{{}}.{request}({tracing_fmt})",
+            interface = interface.name,
+            request = message.name.to_snek_case()
+        );
+
+        (tracing_inner, tracing_args)
+    }
+
     pub fn write_dispatchers(
         &self,
         interface: &Interface,
@@ -224,31 +296,27 @@ impl<'a> ProtocolGenerator<'a> {
             let opcode = opcode as u16;
             let name = make_ident(request.name.to_snek_case());
 
-            let mut tracing_fmt = Vec::new();
-            let mut tracing_args = Vec::new();
-
-            let mut args = vec![quote! { connection }, quote! { sender_id }];
             let mut setters = Vec::new();
+            let mut args = vec![quote! { connection }, quote! { sender_id }];
 
             for arg in &request.args {
                 let mut optional = quote! {};
-                let mut map_display = quote! {};
+                let mut tryinto = quote! {};
 
                 if !arg.allow_null && arg.is_return_option() {
                     optional = quote! {.ok_or(waynest::ProtocolError::MalformedPayload)?};
-                } else if arg.allow_null {
-                    map_display = quote! {.as_ref().map_or("null".to_string(), |v| v.to_string())}
                 }
-
-                let mut tryinto = quote! {};
 
                 if arg.r#enum.is_some() {
                     tryinto = quote! {.try_into()?}
                 }
 
                 let caller = make_ident(arg.to_caller());
-
                 let name = make_ident(arg.name.to_snek_case());
+
+                args.push(quote! {
+                    #name #tryinto
+                });
 
                 if matches!(arg.ty, ArgType::Fd) {
                     setters.push(quote! {
@@ -259,46 +327,19 @@ impl<'a> ProtocolGenerator<'a> {
                        let #name = message.#caller()? #optional;
                     });
                 }
-
-                args.push(quote! {
-                    #name #tryinto
-                });
-
-                match arg.ty {
-                    ArgType::Array => {
-                        tracing_fmt.push("array[{}]");
-                        tracing_args.push(quote! { #name .len() });
-                    }
-                    ArgType::String => {
-                        tracing_fmt.push("\"{}\"");
-                        tracing_args.push(quote! { #name #map_display });
-                    }
-                    ArgType::Fd => {
-                        tracing_fmt.push("{}");
-                        tracing_args
-                            .push(quote! { std::os::fd::AsRawFd::as_raw_fd(&#name) #map_display });
-                    }
-                    _ => {
-                        tracing_fmt.push("{}");
-                        tracing_args.push(quote! { #name #map_display });
-                    }
-                }
             }
 
-            let tracing_fmt = tracing_fmt.join(", ");
+            let (tracing_inner, tracing_args) = self.generate_tracing(interface, &request, false);
 
-            let tracing_inner = format!(
-                "{interface}#{{}}.{request}({tracing_fmt})",
-                interface = interface.name,
-                request = request.name.to_snek_case()
-            );
+            let tracing = quote! {
+                #[cfg(feature = "tracing")]
+                tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
+            };
 
             let inner = quote! {
                 #opcode => {
                     #(#setters)*
-
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(#tracing_inner, sender_id, #(#tracing_args),*);
+                    #tracing
                     self.#name(#(#args),*).await
                 }
             };
