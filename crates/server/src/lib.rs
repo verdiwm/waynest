@@ -58,6 +58,13 @@ impl<T: Send + Sync + 'static, E: From<ProtocolError> + From<io::Error> + 'stati
         prev
     }
 
+    pub fn next_object_id(&mut self) -> usize {
+        let prev = self.next_object_id;
+        self.next_object_id = self.next_object_id.wrapping_add(1);
+
+        prev
+    }
+
     pub fn insert<D: RequestDispatcher<Error = E, Connection = Client<T, E>>>(
         &mut self,
         id: ObjectId,
