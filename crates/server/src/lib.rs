@@ -16,7 +16,7 @@ pub use listener::{Listener, ListenerError};
 pub use waynest_macros::RequestDispatcher;
 
 pin_project! {
-    pub struct Connection<E: From<ProtocolError>> {
+    pub struct Client<E: From<ProtocolError>> {
         #[pin]
         socket: Socket,
         store: Store<E>,
@@ -25,13 +25,13 @@ pin_project! {
     }
 }
 
-impl<E: From<ProtocolError>> fmt::Debug for Connection<E> {
+impl<E: From<ProtocolError>> fmt::Debug for Client<E> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Connection").finish()
+        f.debug_struct("Client").finish()
     }
 }
 
-impl<E: From<ProtocolError>> waynest::Connection for Connection<E> {
+impl<E: From<ProtocolError>> waynest::Connection for Client<E> {
     type Error = E;
 
     fn fd(&mut self) -> std::result::Result<std::os::unix::prelude::OwnedFd, E> {
@@ -39,7 +39,7 @@ impl<E: From<ProtocolError>> waynest::Connection for Connection<E> {
     }
 }
 
-impl<E: From<ProtocolError> + From<io::Error> + 'static> Connection<E> {
+impl<E: From<ProtocolError> + From<io::Error> + 'static> Client<E> {
     pub fn new(stream: UnixStream) -> Result<Self, E> {
         Ok(Self {
             socket: Socket::new(stream.into_std()?)?,
@@ -50,7 +50,7 @@ impl<E: From<ProtocolError> + From<io::Error> + 'static> Connection<E> {
     }
 }
 
-impl<E: From<ProtocolError> + 'static> Connection<E> {
+impl<E: From<ProtocolError> + 'static> Client<E> {
     pub fn next_event_serial(&mut self) -> u32 {
         let prev = self.event_serial;
         self.event_serial = self.event_serial.wrapping_add(1);
@@ -82,7 +82,7 @@ impl<E: From<ProtocolError> + 'static> Connection<E> {
     }
 }
 
-impl<E: From<ProtocolError>> Stream for Connection<E> {
+impl<E: From<ProtocolError>> Stream for Client<E> {
     type Item = Result<Message, ProtocolError>;
 
     fn poll_next(
@@ -93,7 +93,7 @@ impl<E: From<ProtocolError>> Stream for Connection<E> {
     }
 }
 
-impl<E: From<ProtocolError>> Sink<Message> for Connection<E> {
+impl<E: From<ProtocolError>> Sink<Message> for Client<E> {
     type Error = ProtocolError;
 
     fn poll_ready(
@@ -157,7 +157,7 @@ pub trait RequestDispatcher: Any + Send + Sync + 'static {
 
     async fn dispatch_request(
         &self,
-        connection: &mut Connection<Self::Error>,
+        connection: &mut Client<Self::Error>,
         sender_id: ObjectId,
         message: &mut Message,
     ) -> Result<(), Self::Error>;
