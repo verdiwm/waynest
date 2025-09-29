@@ -98,6 +98,14 @@ impl<T: Send + Sync + 'static, E: From<ProtocolError> + From<io::Error> + 'stati
     pub fn remove(&mut self, id: ObjectId) {
         self.store.remove(id)
     }
+
+    pub fn state(&self) -> &T {
+        &self.state
+    }
+
+    pub fn state_mut(&mut self) -> &mut T {
+        &mut self.state
+    }
 }
 
 impl<T: Send + Sync, E: From<ProtocolError>> Stream for Client<T, E> {
