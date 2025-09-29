@@ -7,14 +7,15 @@ use syn::{DeriveInput, parse_macro_input};
 #[darling(attributes(waynest))]
 struct Opts {
     error: syn::Path,
+    connection: syn::Path,
 }
 
-#[proc_macro_derive(RequestDispatcher, attributes(waynest))]
+#[proc_macro_derive(RequestDispatcher, attributes(waynest, connection))]
 pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let ident = &input.ident;
 
-    let Opts { error } = match Opts::from_derive_input(&input) {
+    let Opts { error, connection } = match Opts::from_derive_input(&input) {
         Ok(v) => v,
         Err(err) => return err.write_errors().into(),
     };
@@ -23,6 +24,7 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
         #[waynest_server::async_trait::async_trait]
         impl waynest_server::RequestDispatcher for #ident {
             type Error = #error;
+            type Connection = #connection;
 
             fn as_any(self: std::sync::Arc<Self>) -> std::sync::Arc<dyn std::any::Any + Send + Sync + 'static> {
                 self
@@ -30,7 +32,7 @@ pub fn derive_dispatcher(input: TokenStream) -> TokenStream {
 
             async fn dispatch_request(
                 &self,
-                connection: &mut waynest_server::Connection<Self::Error>,
+                connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
             ) -> Result<(), Self::Error> {
