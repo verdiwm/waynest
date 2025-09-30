@@ -1380,7 +1380,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                icc_profile: std::os::fd::OwnedFd,
+                icc_profile: std::os::fd::BorrowedFd,
                 offset: u32,
                 length: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
@@ -4786,7 +4786,7 @@ pub mod ext_data_control_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -7968,7 +7968,7 @@ pub mod linux_drm_syncobj_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -8454,8 +8454,8 @@ pub mod security_context_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-                listen_fd: std::os::fd::OwnedFd,
-                close_fd: std::os::fd::OwnedFd,
+                listen_fd: std::os::fd::BorrowedFd,
+                close_fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {

@@ -153,7 +153,7 @@ impl<'a> ProtocolGenerator<'a> {
             let mut args = Vec::new();
 
             for arg in &message.args {
-                let mut ty = self.arg_to_rust_type_token(arg)?;
+                let mut ty = self.arg_to_rust_type_token(arg, generate_body)?;
 
                 if arg.allow_null {
                     ty = quote! {Option<#ty>};
@@ -350,7 +350,11 @@ impl<'a> ProtocolGenerator<'a> {
         dispatchers
     }
 
-    pub fn arg_to_rust_type_token(&self, arg: &Arg) -> Result<TokenStream, Error> {
+    pub fn arg_to_rust_type_token(
+        &self,
+        arg: &Arg,
+        generate_body: bool,
+    ) -> Result<TokenStream, Error> {
         if let Some(e) = &arg.r#enum {
             if let Some((interface, name)) = e.split_once('.') {
                 for (module, protocols) in self.protocols {
@@ -374,6 +378,6 @@ impl<'a> ProtocolGenerator<'a> {
             return Ok(make_ident(e.to_upper_camel_case()).to_token_stream());
         }
 
-        Ok(arg.to_underlying_type_token())
+        Ok(arg.to_underlying_type_token(generate_body))
     }
 }

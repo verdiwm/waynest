@@ -367,7 +367,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
                 plane_idx: u32,
                 offset: u32,
                 stride: u32,

@@ -1032,7 +1032,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                icc_profile: std::os::fd::OwnedFd,
+                icc_profile: std::os::fd::BorrowedFd,
                 offset: u32,
                 length: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
@@ -2832,7 +2832,7 @@ pub mod weston_debug {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
-                streamfd: std::os::fd::OwnedFd,
+                streamfd: std::os::fd::BorrowedFd,
                 stream: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {

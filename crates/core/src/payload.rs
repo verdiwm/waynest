@@ -1,6 +1,6 @@
 use std::{
     collections::VecDeque,
-    os::fd::{IntoRawFd, OwnedFd, RawFd},
+    os::fd::{AsRawFd as _, BorrowedFd, RawFd},
 };
 
 use bytes::{BufMut, Bytes, BytesMut};
@@ -107,8 +107,8 @@ impl PayloadBuilder {
         self
     }
 
-    pub fn put_fd<Fd: Into<OwnedFd>>(mut self, fd: Fd) -> Self {
-        self.fds.push_back(fd.into().into_raw_fd());
+    pub fn put_fd(mut self, fd: BorrowedFd) -> Self {
+        self.fds.push_back(fd.as_raw_fd());
 
         self
     }

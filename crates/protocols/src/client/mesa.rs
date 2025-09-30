@@ -330,7 +330,7 @@ pub mod drm {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-                name: std::os::fd::OwnedFd,
+                name: std::os::fd::BorrowedFd,
                 width: i32,
                 height: i32,
                 format: u32,

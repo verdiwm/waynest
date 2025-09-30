@@ -8608,7 +8608,7 @@ pub mod remote_access {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
                 width: u32,
                 height: u32,
                 stride: u32,
