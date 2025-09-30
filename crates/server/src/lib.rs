@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity)]
+
 use std::{any::Any, collections::BTreeMap, sync::Arc};
 
 pub use async_trait;
@@ -91,6 +93,12 @@ pub trait Client {
 
 pub struct Store<C: waynest::Connection, E: From<ProtocolError>> {
     objects: BTreeMap<ObjectId, Arc<dyn RequestDispatcher<Error = E, Connection = C>>>,
+}
+
+impl<C: waynest::Connection, E: From<ProtocolError>> Default for Store<C, E> {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<C: waynest::Connection, E: From<ProtocolError>> Store<C, E> {
