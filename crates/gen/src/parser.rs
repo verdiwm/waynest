@@ -144,7 +144,7 @@ pub struct Entry {
 }
 
 impl Arg {
-    pub fn to_underlying_type_token(&self) -> TokenStream {
+    pub fn to_underlying_type_token(&self, generate_body: bool) -> TokenStream {
         match self.ty {
             ArgType::Int => quote! { i32 },
             ArgType::Uint => quote! { u32 },
@@ -159,7 +159,13 @@ impl Arg {
                 }
             }
             ArgType::Array => quote! { Vec<u8> },
-            ArgType::Fd => quote! { std::os::fd::OwnedFd },
+            ArgType::Fd => {
+                if generate_body {
+                    quote! { std::os::fd::BorrowedFd }
+                } else {
+                    quote! { std::os::fd::OwnedFd }
+                }
+            }
         }
     }
 

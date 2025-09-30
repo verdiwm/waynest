@@ -745,7 +745,7 @@ pub mod linux_dmabuf_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
                 size: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {

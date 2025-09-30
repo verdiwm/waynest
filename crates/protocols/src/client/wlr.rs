@@ -428,7 +428,7 @@ pub mod wlr_data_control_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -1358,7 +1358,7 @@ pub mod wlr_gamma_control_unstable_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {

@@ -1951,7 +1951,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                icc: std::os::fd::OwnedFd,
+                icc: std::os::fd::BorrowedFd,
                 icc_size: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {

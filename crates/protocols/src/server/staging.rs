@@ -2343,7 +2343,7 @@ pub mod color_management_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                icc: std::os::fd::OwnedFd,
+                icc: std::os::fd::BorrowedFd,
                 icc_size: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
@@ -4129,7 +4129,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -4603,7 +4603,7 @@ pub mod drm_lease_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                leased_fd: std::os::fd::OwnedFd,
+                leased_fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -5338,7 +5338,7 @@ pub mod ext_data_control_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 mime_type: String,
-                fd: std::os::fd::OwnedFd,
+                fd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
