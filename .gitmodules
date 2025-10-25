@@ -42,3 +42,6 @@
 	path = external/protocols/treeland-protocols
 	url = https://github.com/linuxdeepin/treeland-protocols
 	update = none
+[submodule "external/protocols/mutter"]
+	path = external/protocols/mutter
+	url = https://gitlab.gnome.org/GNOME/mutter.git
