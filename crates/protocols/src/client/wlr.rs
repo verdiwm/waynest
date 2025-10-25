@@ -101,6 +101,20 @@ pub mod wlr_data_control_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface allows a client to manage a seat's selection."]
@@ -288,6 +302,57 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 id: Option<waynest::ObjectId>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_data_control_device_v1#{}.data_offer({})",
+                                sender_id,
+                                id
+                            );
+                            self.data_offer(connection, sender_id, id).await
+                        }
+                        1u16 => {
+                            let id = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_data_control_device_v1#{}.selection({})",
+                                sender_id,
+                                id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.selection(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_data_control_device_v1#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let id = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_data_control_device_v1#{}.primary_selection({})",
+                                sender_id,
+                                id.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.primary_selection(connection, sender_id, id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "The wlr_data_control_source object is the source side of a"]
@@ -397,6 +462,42 @@ pub mod wlr_data_control_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let mime_type = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let fd = waynest::Connection::fd(connection)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_data_control_source_v1#{}.send(\"{}\", {})",
+                                sender_id,
+                                mime_type,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd)
+                            );
+                            self.send(connection, sender_id, mime_type, fd).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_data_control_source_v1#{}.cancelled()",
+                                sender_id,
+                            );
+                            self.cancelled(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A wlr_data_control_offer represents a piece of data offered for transfer"]
@@ -478,6 +579,32 @@ pub mod wlr_data_control_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 mime_type: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let mime_type = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_data_control_offer_v1#{}.offer(\"{}\")",
+                                sender_id,
+                                mime_type
+                            );
+                            self.offer(connection, sender_id, mime_type).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -554,6 +681,20 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -737,6 +878,117 @@ pub mod wlr_export_dmabuf_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 reason: CancelReason,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            let offset_x = message.uint()?;
+                            let offset_y = message.uint()?;
+                            let buffer_flags = message.uint()?;
+                            let flags = message.uint()?;
+                            let format = message.uint()?;
+                            let mod_high = message.uint()?;
+                            let mod_low = message.uint()?;
+                            let num_objects = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_export_dmabuf_frame_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                width,
+                                height,
+                                offset_x,
+                                offset_y,
+                                buffer_flags,
+                                flags,
+                                format,
+                                mod_high,
+                                mod_low,
+                                num_objects
+                            );
+                            self.frame(
+                                connection,
+                                sender_id,
+                                width,
+                                height,
+                                offset_x,
+                                offset_y,
+                                buffer_flags,
+                                flags.try_into()?,
+                                format,
+                                mod_high,
+                                mod_low,
+                                num_objects,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let index = message.uint()?;
+                            let fd = waynest::Connection::fd(connection)?;
+                            let size = message.uint()?;
+                            let offset = message.uint()?;
+                            let stride = message.uint()?;
+                            let plane_index = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_export_dmabuf_frame_v1#{}.object({}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                index,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd),
+                                size,
+                                offset,
+                                stride,
+                                plane_index
+                            );
+                            self.object(
+                                connection,
+                                sender_id,
+                                index,
+                                fd,
+                                size,
+                                offset,
+                                stride,
+                                plane_index,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_export_dmabuf_frame_v1#{}.ready({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.ready(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        3u16 => {
+                            let reason = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_export_dmabuf_frame_v1#{}.cancel({})",
+                                sender_id,
+                                reason
+                            );
+                            self.cancel(connection, sender_id, reason.try_into()?).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -803,6 +1055,40 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_manager_v1#{}.toplevel({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.toplevel(connection, sender_id, toplevel).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_manager_v1#{}.finished()",
+                                sender_id,
+                            );
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A zwlr_foreign_toplevel_handle_v1 object represents an opened toplevel"]
@@ -1221,6 +1507,103 @@ pub mod wlr_foreign_toplevel_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 parent: Option<waynest::ObjectId>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let title = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.title(\"{}\")",
+                                sender_id,
+                                title
+                            );
+                            self.title(connection, sender_id, title).await
+                        }
+                        1u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.app_id(connection, sender_id, app_id).await
+                        }
+                        2u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.output_enter({})",
+                                sender_id,
+                                output
+                            );
+                            self.output_enter(connection, sender_id, output).await
+                        }
+                        3u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.output_leave({})",
+                                sender_id,
+                                output
+                            );
+                            self.output_leave(connection, sender_id, output).await
+                        }
+                        4u16 => {
+                            let state = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.state(array[{}])",
+                                sender_id,
+                                state.len()
+                            );
+                            self.state(connection, sender_id, state).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_foreign_toplevel_handle_v1#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.closed()",
+                                sender_id,
+                            );
+                            self.closed(connection, sender_id).await
+                        }
+                        7u16 => {
+                            let parent = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_foreign_toplevel_handle_v1#{}.parent({})",
+                                sender_id,
+                                parent
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.parent(connection, sender_id, parent).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1297,6 +1680,20 @@ pub mod wlr_gamma_control_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -1419,6 +1816,35 @@ pub mod wlr_gamma_control_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let size = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_gamma_control_v1#{}.gamma_size({})",
+                                sender_id,
+                                size
+                            );
+                            self.gamma_size(connection, sender_id, size).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_gamma_control_v1#{}.failed()", sender_id,);
+                            self.failed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1493,6 +1919,20 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "While this resource exists, input to clients other than the owner of the"]
@@ -1531,6 +1971,20 @@ pub mod wlr_input_inhibit_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -1703,6 +2157,20 @@ pub mod wlr_layer_shell_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -2211,6 +2679,40 @@ pub mod wlr_layer_shell_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let serial = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_layer_surface_v1#{}.configure({}, {}, {})",
+                                sender_id,
+                                serial,
+                                width,
+                                height
+                            );
+                            self.configure(connection, sender_id, serial, width, height)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_layer_surface_v1#{}.closed()", sender_id,);
+                            self.closed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2352,6 +2854,43 @@ pub mod wlr_output_management_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let head = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_manager_v1#{}.head({})", sender_id, head);
+                            self.head(connection, sender_id, head).await
+                        }
+                        1u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_manager_v1#{}.done({})",
+                                sender_id,
+                                serial
+                            );
+                            self.done(connection, sender_id, serial).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_manager_v1#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A head is an output device. The difference between a wl_output object and"]
@@ -2629,6 +3168,161 @@ pub mod wlr_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 state: AdaptiveSyncState,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_head_v1#{}.name(\"{}\")", sender_id, name);
+                            self.name(connection, sender_id, name).await
+                        }
+                        1u16 => {
+                            let description = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.description(\"{}\")",
+                                sender_id,
+                                description
+                            );
+                            self.description(connection, sender_id, description).await
+                        }
+                        2u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.physical_size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.physical_size(connection, sender_id, width, height)
+                                .await
+                        }
+                        3u16 => {
+                            let mode = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_head_v1#{}.mode({})", sender_id, mode);
+                            self.mode(connection, sender_id, mode).await
+                        }
+                        4u16 => {
+                            let enabled = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.enabled({})",
+                                sender_id,
+                                enabled
+                            );
+                            self.enabled(connection, sender_id, enabled).await
+                        }
+                        5u16 => {
+                            let mode = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.current_mode({})",
+                                sender_id,
+                                mode
+                            );
+                            self.current_mode(connection, sender_id, mode).await
+                        }
+                        6u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.position(connection, sender_id, x, y).await
+                        }
+                        7u16 => {
+                            let transform = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.transform({})",
+                                sender_id,
+                                transform
+                            );
+                            self.transform(connection, sender_id, transform.try_into()?)
+                                .await
+                        }
+                        8u16 => {
+                            let scale = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_head_v1#{}.scale({})", sender_id, scale);
+                            self.scale(connection, sender_id, scale).await
+                        }
+                        9u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_head_v1#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        10u16 => {
+                            let make = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_head_v1#{}.make(\"{}\")", sender_id, make);
+                            self.make(connection, sender_id, make).await
+                        }
+                        11u16 => {
+                            let model = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.model(\"{}\")",
+                                sender_id,
+                                model
+                            );
+                            self.model(connection, sender_id, model).await
+                        }
+                        12u16 => {
+                            let serial_number = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.serial_number(\"{}\")",
+                                sender_id,
+                                serial_number
+                            );
+                            self.serial_number(connection, sender_id, serial_number)
+                                .await
+                        }
+                        13u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_head_v1#{}.adaptive_sync({})",
+                                sender_id,
+                                state
+                            );
+                            self.adaptive_sync(connection, sender_id, state.try_into()?)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object describes an output mode."]
@@ -2702,6 +3396,52 @@ pub mod wlr_output_management_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_mode_v1#{}.size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.size(connection, sender_id, width, height).await
+                        }
+                        1u16 => {
+                            let refresh = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_mode_v1#{}.refresh({})",
+                                sender_id,
+                                refresh
+                            );
+                            self.refresh(connection, sender_id, refresh).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_mode_v1#{}.preferred()", sender_id,);
+                            self.preferred(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_mode_v1#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object is used by the client to describe a full output configuration."]
@@ -2926,6 +3666,41 @@ pub mod wlr_output_management_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_configuration_v1#{}.succeeded()",
+                                sender_id,
+                            );
+                            self.succeeded(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_configuration_v1#{}.failed()", sender_id,);
+                            self.failed(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_output_configuration_v1#{}.cancelled()",
+                                sender_id,
+                            );
+                            self.cancelled(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object is used by the client to update a single head's configuration."]
@@ -3148,6 +3923,20 @@ pub mod wlr_output_management_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -3229,6 +4018,20 @@ pub mod wlr_output_power_management_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3369,6 +4172,31 @@ pub mod wlr_output_power_management_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let mode = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_power_v1#{}.mode({})", sender_id, mode);
+                            self.mode(connection, sender_id, mode.try_into()?).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_output_power_v1#{}.failed()", sender_id,);
+                            self.failed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -3498,6 +4326,20 @@ pub mod wlr_screencopy_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3733,6 +4575,111 @@ pub mod wlr_screencopy_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let format = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            let stride = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_screencopy_frame_v1#{}.buffer({}, {}, {}, {})",
+                                sender_id,
+                                format,
+                                width,
+                                height,
+                                stride
+                            );
+                            self.buffer(
+                                connection,
+                                sender_id,
+                                format.try_into()?,
+                                width,
+                                height,
+                                stride,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_screencopy_frame_v1#{}.flags({})",
+                                sender_id,
+                                flags
+                            );
+                            self.flags(connection, sender_id, flags.try_into()?).await
+                        }
+                        2u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_screencopy_frame_v1#{}.ready({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.ready(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_screencopy_frame_v1#{}.failed()", sender_id,);
+                            self.failed(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let x = message.uint()?;
+                            let y = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_screencopy_frame_v1#{}.damage({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.damage(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        5u16 => {
+                            let format = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwlr_screencopy_frame_v1#{}.linux_dmabuf({}, {}, {})",
+                                sender_id,
+                                format,
+                                width,
+                                height
+                            );
+                            self.linux_dmabuf(connection, sender_id, format, width, height)
+                                .await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwlr_screencopy_frame_v1#{}.buffer_done()", sender_id,);
+                            self.buffer_done(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -4048,6 +4995,20 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object allows clients to create individual virtual pointer objects."]
@@ -4144,6 +5105,20 @@ pub mod wlr_virtual_pointer_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }

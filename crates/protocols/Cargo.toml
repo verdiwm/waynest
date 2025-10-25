@@ -11,7 +11,7 @@ include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [features]
 server = ["dep:futures-util"]
-client = []
+client = ["dep:futures-util"]
 
 stable = []
 staging = []

@@ -403,6 +403,45 @@ pub mod drm {
                 sender_id: waynest::ObjectId,
                 value: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_drm#{}.device(\"{}\")", sender_id, name);
+                            self.device(connection, sender_id, name).await
+                        }
+                        1u16 => {
+                            let format = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_drm#{}.format({})", sender_id, format);
+                            self.format(connection, sender_id, format).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_drm#{}.authenticated()", sender_id,);
+                            self.authenticated(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let value = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_drm#{}.capabilities({})", sender_id, value);
+                            self.capabilities(connection, sender_id, value).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }

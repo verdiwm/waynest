@@ -160,6 +160,28 @@ pub mod hyprland_ctm_control_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_ctm_control_manager_v1#{}.blocked()",
+                                sender_id,
+                            );
+                            self.blocked(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -223,6 +245,20 @@ pub mod hyprland_focus_grab_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -363,6 +399,25 @@ pub mod hyprland_focus_grab_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_focus_grab_v1#{}.cleared()", sender_id,);
+                            self.cleared(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -474,6 +529,20 @@ pub mod hyprland_global_shortcuts_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object represents a single shortcut."]
@@ -528,6 +597,50 @@ pub mod hyprland_global_shortcuts_v1 {
                 tv_sec_lo: u32,
                 tv_nsec: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_global_shortcut_v1#{}.pressed({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.pressed(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        1u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_global_shortcut_v1#{}.released({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.released(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -593,6 +706,20 @@ pub mod hyprland_lock_notify_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface is used by the compositor to send lock notification events"]
@@ -656,6 +783,33 @@ pub mod hyprland_lock_notify_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_lock_notification_v1#{}.locked()", sender_id,);
+                            self.locked(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_lock_notification_v1#{}.unlocked()",
+                                sender_id,
+                            );
+                            self.unlocked(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -749,6 +903,20 @@ pub mod hyprland_surface_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -890,6 +1058,20 @@ pub mod hyprland_surface_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1005,6 +1187,20 @@ pub mod hyprland_toplevel_export_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -1227,6 +1423,117 @@ pub mod hyprland_toplevel_export_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let format = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            let stride = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.buffer({}, {}, {}, {})",
+                                sender_id,
+                                format,
+                                width,
+                                height,
+                                stride
+                            );
+                            self.buffer(
+                                connection,
+                                sender_id,
+                                format.try_into()?,
+                                width,
+                                height,
+                                stride,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let x = message.uint()?;
+                            let y = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.damage({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.damage(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        2u16 => {
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.flags({})",
+                                sender_id,
+                                flags
+                            );
+                            self.flags(connection, sender_id, flags.try_into()?).await
+                        }
+                        3u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.ready({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.ready(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec)
+                                .await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.failed()",
+                                sender_id,
+                            );
+                            self.failed(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let format = message.uint()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.linux_dmabuf({}, {}, {})",
+                                sender_id,
+                                format,
+                                width,
+                                height
+                            );
+                            self.linux_dmabuf(connection, sender_id, format, width, height)
+                                .await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_export_frame_v1#{}.buffer_done()",
+                                sender_id,
+                            );
+                            self.buffer_done(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1326,6 +1633,20 @@ pub mod hyprland_toplevel_mapping_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object represents a mapping of a (wlr) toplevel to a window address."]
@@ -1381,6 +1702,41 @@ pub mod hyprland_toplevel_mapping_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let address_hi = message.uint()?;
+                            let address = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_window_mapping_handle_v1#{}.window_address({}, {})",
+                                sender_id,
+                                address_hi,
+                                address
+                            );
+                            self.window_address(connection, sender_id, address_hi, address)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_toplevel_window_mapping_handle_v1#{}.failed()",
+                                sender_id,
+                            );
+                            self.failed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }

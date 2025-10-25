@@ -65,6 +65,20 @@ pub mod frog_color_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Interface for changing surface color management and HDR state."]
@@ -375,6 +389,68 @@ pub mod frog_color_management_v1 {
                 min_luminance: u32,
                 max_full_frame_luminance: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let transfer_function = message.uint()?;
+                            let output_display_primary_red_x = message.uint()?;
+                            let output_display_primary_red_y = message.uint()?;
+                            let output_display_primary_green_x = message.uint()?;
+                            let output_display_primary_green_y = message.uint()?;
+                            let output_display_primary_blue_x = message.uint()?;
+                            let output_display_primary_blue_y = message.uint()?;
+                            let output_white_point_x = message.uint()?;
+                            let output_white_point_y = message.uint()?;
+                            let max_luminance = message.uint()?;
+                            let min_luminance = message.uint()?;
+                            let max_full_frame_luminance = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "frog_color_managed_surface#{}.preferred_metadata({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                transfer_function,
+                                output_display_primary_red_x,
+                                output_display_primary_red_y,
+                                output_display_primary_green_x,
+                                output_display_primary_green_y,
+                                output_display_primary_blue_x,
+                                output_display_primary_blue_y,
+                                output_white_point_x,
+                                output_white_point_y,
+                                max_luminance,
+                                min_luminance,
+                                max_full_frame_luminance
+                            );
+                            self.preferred_metadata(
+                                connection,
+                                sender_id,
+                                transfer_function.try_into()?,
+                                output_display_primary_red_x,
+                                output_display_primary_red_y,
+                                output_display_primary_green_x,
+                                output_display_primary_green_y,
+                                output_display_primary_blue_x,
+                                output_display_primary_blue_y,
+                                output_white_point_x,
+                                output_white_point_y,
+                                max_luminance,
+                                min_luminance,
+                                max_full_frame_luminance,
+                            )
+                            .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -484,6 +560,20 @@ pub mod frog_fifo_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -612,6 +702,20 @@ pub mod frog_fifo_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }

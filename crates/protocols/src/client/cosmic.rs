@@ -261,6 +261,70 @@ pub mod cosmic_a11y_v1 {
                 filter: Filter,
                 filter_state: ActiveState,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let active = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.magnifier({})",
+                                sender_id,
+                                active
+                            );
+                            self.magnifier(connection, sender_id, active.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            let inverted = message.uint()?;
+                            let filter = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.screen_filter({}, {})",
+                                sender_id,
+                                inverted,
+                                filter
+                            );
+                            self.screen_filter(
+                                connection,
+                                sender_id,
+                                inverted.try_into()?,
+                                filter.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let inverted = message.uint()?;
+                            let filter = message.uint()?;
+                            let filter_state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_a11y_manager_v1#{}.screen_filter2({}, {}, {})",
+                                sender_id,
+                                inverted,
+                                filter,
+                                filter_state
+                            );
+                            self.screen_filter2(
+                                connection,
+                                sender_id,
+                                inverted.try_into()?,
+                                filter.try_into()?,
+                                filter_state.try_into()?,
+                            )
+                            .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -411,6 +475,30 @@ pub mod cosmic_atspi_v1 {
                 sender_id: waynest::ObjectId,
                 fd: std::os::fd::OwnedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let fd = waynest::Connection::fd(connection)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "cosmic_atspi_manager_v1#{}.key_events_eis({})",
+                                sender_id,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd)
+                            );
+                            self.key_events_eis(connection, sender_id, fd).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -483,6 +571,20 @@ pub mod cosmic_image_source_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -683,6 +785,20 @@ pub mod cosmic_output_management_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Extension to zwlr_output_head_v1."]
@@ -836,6 +952,76 @@ pub mod cosmic_output_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 state: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let scale_1000 = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_head_v1#{}.scale_1000({})",
+                                sender_id,
+                                scale_1000
+                            );
+                            self.scale_1000(connection, sender_id, scale_1000).await
+                        }
+                        1u16 => {
+                            let name = message.string()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_head_v1#{}.mirroring(\"{}\")",
+                                sender_id,
+                                name.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.mirroring(connection, sender_id, name).await
+                        }
+                        2u16 => {
+                            let available = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_head_v1#{}.adaptive_sync_available({})",
+                                sender_id,
+                                available
+                            );
+                            self.adaptive_sync_available(
+                                connection,
+                                sender_id,
+                                available.try_into()?,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_head_v1#{}.adaptive_sync_ext({})",
+                                sender_id,
+                                state
+                            );
+                            self.adaptive_sync_ext(connection, sender_id, state.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_head_v1#{}.xwayland_primary({})",
+                                sender_id,
+                                state
+                            );
+                            self.xwayland_primary(connection, sender_id, state).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Extension to zwlr_output_configuration_v1."]
@@ -958,6 +1144,28 @@ pub mod cosmic_output_management_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_output_configuration_v1#{}.finished()",
+                                sender_id,
+                            );
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Extension to zwlr_output_configuration_head_v1."]
@@ -1063,6 +1271,20 @@ pub mod cosmic_output_management_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1116,6 +1338,20 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -1206,6 +1442,107 @@ pub mod cosmic_overlap_notify_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 identifier: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_overlap_notification_v1#{}.toplevel_enter({}, {}, {}, {}, {})",
+                                sender_id,
+                                toplevel,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.toplevel_enter(
+                                connection, sender_id, toplevel, x, y, width, height,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_overlap_notification_v1#{}.toplevel_leave({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.toplevel_leave(connection, sender_id, toplevel).await
+                        }
+                        2u16 => {
+                            let identifier = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let namespace = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let exclusive = message.uint()?;
+                            let layer = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_overlap_notification_v1#{}.layer_enter(\"{}\", \"{}\", {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                identifier,
+                                namespace,
+                                exclusive,
+                                layer,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.layer_enter(
+                                connection,
+                                sender_id,
+                                identifier,
+                                namespace,
+                                exclusive,
+                                layer.try_into()?,
+                                x,
+                                y,
+                                width,
+                                height,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let identifier = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_overlap_notification_v1#{}.layer_leave(\"{}\")",
+                                sender_id,
+                                identifier
+                            );
+                            self.layer_leave(connection, sender_id, identifier).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1368,6 +1705,20 @@ pub mod cosmic_screencopy_unstable_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object represents an active screencopy session."]
@@ -1514,6 +1865,78 @@ pub mod cosmic_screencopy_unstable_v2 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.buffer_size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.buffer_size(connection, sender_id, width, height).await
+                        }
+                        1u16 => {
+                            let format = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.shm_format({})",
+                                sender_id,
+                                format
+                            );
+                            self.shm_format(connection, sender_id, format).await
+                        }
+                        2u16 => {
+                            let device = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.dmabuf_device(array[{}])",
+                                sender_id,
+                                device.len()
+                            );
+                            self.dmabuf_device(connection, sender_id, device).await
+                        }
+                        3u16 => {
+                            let format = message.uint()?;
+                            let modifiers = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.dmabuf_format({}, array[{}])",
+                                sender_id,
+                                format,
+                                modifiers.len()
+                            );
+                            self.dmabuf_format(connection, sender_id, format, modifiers)
+                                .await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_screencopy_session_v2#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_session_v2#{}.stopped()",
+                                sender_id,
+                            );
+                            self.stopped(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object represents a screen capture frame."]
@@ -1792,6 +2215,80 @@ pub mod cosmic_screencopy_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 reason: FailureReason,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let transform = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_frame_v2#{}.transform({})",
+                                sender_id,
+                                transform
+                            );
+                            self.transform(connection, sender_id, transform.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_frame_v2#{}.damage({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.damage(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        2u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_frame_v2#{}.presentation_time({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec
+                            );
+                            self.presentation_time(
+                                connection, sender_id, tv_sec_hi, tv_sec_lo, tv_nsec,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_screencopy_frame_v2#{}.ready()", sender_id,);
+                            self.ready(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let reason = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_frame_v2#{}.failed({})",
+                                sender_id,
+                                reason
+                            );
+                            self.failed(connection, sender_id, reason.try_into()?).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object represents a cursor capture session. It extends the base"]
@@ -1942,6 +2439,60 @@ pub mod cosmic_screencopy_unstable_v2 {
                 x: i32,
                 y: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.enter()",
+                                sender_id,
+                            );
+                            self.enter(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.leave()",
+                                sender_id,
+                            );
+                            self.leave(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.position(connection, sender_id, x, y).await
+                        }
+                        3u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_screencopy_cursor_session_v2#{}.hotspot({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.hotspot(connection, sender_id, x, y).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2062,6 +2613,42 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_info_v1#{}.toplevel({})",
+                                sender_id,
+                                toplevel
+                            );
+                            self.toplevel(connection, sender_id, toplevel).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_info_v1#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_info_v1#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A zcosmic_toplevel_handle_v1 object represents an open toplevel"]
@@ -2267,6 +2854,159 @@ pub mod cosmic_toplevel_info_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 workspace: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_handle_v1#{}.closed()", sender_id,);
+                            self.closed(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_toplevel_handle_v1#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let title = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.title(\"{}\")",
+                                sender_id,
+                                title
+                            );
+                            self.title(connection, sender_id, title).await
+                        }
+                        3u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.app_id(connection, sender_id, app_id).await
+                        }
+                        4u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.output_enter({})",
+                                sender_id,
+                                output
+                            );
+                            self.output_enter(connection, sender_id, output).await
+                        }
+                        5u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.output_leave({})",
+                                sender_id,
+                                output
+                            );
+                            self.output_leave(connection, sender_id, output).await
+                        }
+                        6u16 => {
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.workspace_enter({})",
+                                sender_id,
+                                workspace
+                            );
+                            self.workspace_enter(connection, sender_id, workspace).await
+                        }
+                        7u16 => {
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.workspace_leave({})",
+                                sender_id,
+                                workspace
+                            );
+                            self.workspace_leave(connection, sender_id, workspace).await
+                        }
+                        8u16 => {
+                            let state = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.state(array[{}])",
+                                sender_id,
+                                state.len()
+                            );
+                            self.state(connection, sender_id, state).await
+                        }
+                        9u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.geometry({}, {}, {}, {}, {})",
+                                sender_id,
+                                output,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.geometry(connection, sender_id, output, x, y, width, height)
+                                .await
+                        }
+                        10u16 => {
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.ext_workspace_enter({})",
+                                sender_id,
+                                workspace
+                            );
+                            self.ext_workspace_enter(connection, sender_id, workspace)
+                                .await
+                        }
+                        11u16 => {
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_handle_v1#{}.ext_workspace_leave({})",
+                                sender_id,
+                                workspace
+                            );
+                            self.ext_workspace_leave(connection, sender_id, workspace)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2800,6 +3540,30 @@ pub mod cosmic_toplevel_management_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 capabilities: Vec<u8>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let capabilities = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_toplevel_manager_v1#{}.capabilities(array[{}])",
+                                sender_id,
+                                capabilities.len()
+                            );
+                            self.capabilities(connection, sender_id, capabilities).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2919,6 +3683,46 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let workspace_group = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_manager_v1#{}.workspace_group({})",
+                                sender_id,
+                                workspace_group
+                            );
+                            self.workspace_group(connection, sender_id, workspace_group)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_manager_v1#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_manager_v1#{}.finished()",
+                                sender_id,
+                            );
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A zcosmic_workspace_group_handle_v1 object represents a a workspace group"]
@@ -3086,6 +3890,74 @@ pub mod cosmic_workspace_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let capabilities = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.capabilities(array[{}])",
+                                sender_id,
+                                capabilities.len()
+                            );
+                            self.capabilities(connection, sender_id, capabilities).await
+                        }
+                        1u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.output_enter({})",
+                                sender_id,
+                                output
+                            );
+                            self.output_enter(connection, sender_id, output).await
+                        }
+                        2u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.output_leave({})",
+                                sender_id,
+                                output
+                            );
+                            self.output_leave(connection, sender_id, output).await
+                        }
+                        3u16 => {
+                            let workspace = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.workspace({})",
+                                sender_id,
+                                workspace
+                            );
+                            self.workspace(connection, sender_id, workspace).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_group_handle_v1#{}.remove()",
+                                sender_id,
+                            );
+                            self.remove(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A zcosmic_workspace_handle_v1 object represents a a workspace that handles a"]
@@ -3436,6 +4308,78 @@ pub mod cosmic_workspace_unstable_v1 {
                 sender_id: waynest::ObjectId,
                 state: TilingState,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.name(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.name(connection, sender_id, name).await
+                        }
+                        1u16 => {
+                            let coordinates = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.coordinates(array[{}])",
+                                sender_id,
+                                coordinates.len()
+                            );
+                            self.coordinates(connection, sender_id, coordinates).await
+                        }
+                        2u16 => {
+                            let state = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.state(array[{}])",
+                                sender_id,
+                                state.len()
+                            );
+                            self.state(connection, sender_id, state).await
+                        }
+                        3u16 => {
+                            let capabilities = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.capabilities(array[{}])",
+                                sender_id,
+                                capabilities.len()
+                            );
+                            self.capabilities(connection, sender_id, capabilities).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zcosmic_workspace_handle_v1#{}.remove()", sender_id,);
+                            self.remove(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v1#{}.tiling_state({})",
+                                sender_id,
+                                state
+                            );
+                            self.tiling_state(connection, sender_id, state.try_into()?)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -3532,6 +4476,20 @@ pub mod cosmic_workspace_unstable_v2 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3851,6 +4809,52 @@ pub mod cosmic_workspace_unstable_v2 {
                 sender_id: waynest::ObjectId,
                 state: State,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let capabilities = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.capabilities({})",
+                                sender_id,
+                                capabilities
+                            );
+                            self.capabilities(connection, sender_id, capabilities.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.tiling_state({})",
+                                sender_id,
+                                state
+                            );
+                            self.tiling_state(connection, sender_id, state.try_into()?)
+                                .await
+                        }
+                        2u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zcosmic_workspace_handle_v2#{}.state({})",
+                                sender_id,
+                                state
+                            );
+                            self.state(connection, sender_id, state.try_into()?).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }

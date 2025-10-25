@@ -231,6 +231,41 @@ pub mod linux_dmabuf_v1 {
                 modifier_hi: u32,
                 modifier_lo: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let format = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_linux_dmabuf_v1#{}.format({})", sender_id, format);
+                            self.format(connection, sender_id, format).await
+                        }
+                        1u16 => {
+                            let format = message.uint()?;
+                            let modifier_hi = message.uint()?;
+                            let modifier_lo = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_v1#{}.modifier({}, {}, {})",
+                                sender_id,
+                                format,
+                                modifier_hi,
+                                modifier_lo
+                            );
+                            self.modifier(connection, sender_id, format, modifier_hi, modifier_lo)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This temporary object is a collection of dmabufs and other"]
@@ -578,6 +613,37 @@ pub mod linux_dmabuf_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_buffer_params_v1#{}.created({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.created(connection, sender_id, buffer).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_linux_buffer_params_v1#{}.failed()", sender_id,);
+                            self.failed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This object advertises dmabuf parameters feedback. This includes the"]
@@ -797,6 +863,87 @@ pub mod linux_dmabuf_v1 {
                 sender_id: waynest::ObjectId,
                 flags: TrancheFlags,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_linux_dmabuf_feedback_v1#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let fd = waynest::Connection::fd(connection)?;
+                            let size = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_feedback_v1#{}.format_table({}, {})",
+                                sender_id,
+                                std::os::fd::AsRawFd::as_raw_fd(&fd),
+                                size
+                            );
+                            self.format_table(connection, sender_id, fd, size).await
+                        }
+                        2u16 => {
+                            let device = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_feedback_v1#{}.main_device(array[{}])",
+                                sender_id,
+                                device.len()
+                            );
+                            self.main_device(connection, sender_id, device).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_feedback_v1#{}.tranche_done()",
+                                sender_id,
+                            );
+                            self.tranche_done(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let device = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_feedback_v1#{}.tranche_target_device(array[{}])",
+                                sender_id,
+                                device.len()
+                            );
+                            self.tranche_target_device(connection, sender_id, device)
+                                .await
+                        }
+                        5u16 => {
+                            let indices = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_feedback_v1#{}.tranche_formats(array[{}])",
+                                sender_id,
+                                indices.len()
+                            );
+                            self.tranche_formats(connection, sender_id, indices).await
+                        }
+                        6u16 => {
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_dmabuf_feedback_v1#{}.tranche_flags({})",
+                                sender_id,
+                                flags
+                            );
+                            self.tranche_flags(connection, sender_id, flags.try_into()?)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -956,6 +1103,26 @@ pub mod presentation_time {
                 sender_id: waynest::ObjectId,
                 clk_id: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let clk_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_presentation#{}.clock_id({})", sender_id, clk_id);
+                            self.clock_id(connection, sender_id, clk_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A presentation_feedback object returns an indication that a"]
@@ -1072,6 +1239,70 @@ pub mod presentation_time {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_presentation_feedback#{}.sync_output({})",
+                                sender_id,
+                                output
+                            );
+                            self.sync_output(connection, sender_id, output).await
+                        }
+                        1u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_nsec = message.uint()?;
+                            let refresh = message.uint()?;
+                            let seq_hi = message.uint()?;
+                            let seq_lo = message.uint()?;
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_presentation_feedback#{}.presented({}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec,
+                                refresh,
+                                seq_hi,
+                                seq_lo,
+                                flags
+                            );
+                            self.presented(
+                                connection,
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_nsec,
+                                refresh,
+                                seq_hi,
+                                seq_lo,
+                                flags.try_into()?,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wp_presentation_feedback#{}.discarded()", sender_id,);
+                            self.discarded(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -1216,6 +1447,20 @@ pub mod tablet_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "An object that provides access to the graphics tablets available on this"]
@@ -1287,6 +1532,48 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_seat_v2#{}.tablet_added({})",
+                                sender_id,
+                                id
+                            );
+                            self.tablet_added(connection, sender_id, id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_seat_v2#{}.tool_added({})", sender_id, id);
+                            self.tool_added(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_seat_v2#{}.pad_added({})", sender_id, id);
+                            self.pad_added(connection, sender_id, id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
@@ -1828,6 +2115,216 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 time: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let tool_type = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.type({})", sender_id, tool_type);
+                            self.r#type(connection, sender_id, tool_type.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            let hardware_serial_hi = message.uint()?;
+                            let hardware_serial_lo = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.hardware_serial({}, {})",
+                                sender_id,
+                                hardware_serial_hi,
+                                hardware_serial_lo
+                            );
+                            self.hardware_serial(
+                                connection,
+                                sender_id,
+                                hardware_serial_hi,
+                                hardware_serial_lo,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let hardware_id_hi = message.uint()?;
+                            let hardware_id_lo = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.hardware_id_wacom({}, {})",
+                                sender_id,
+                                hardware_id_hi,
+                                hardware_id_lo
+                            );
+                            self.hardware_id_wacom(
+                                connection,
+                                sender_id,
+                                hardware_id_hi,
+                                hardware_id_lo,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let capability = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.capability({})",
+                                sender_id,
+                                capability
+                            );
+                            self.capability(connection, sender_id, capability.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.removed()", sender_id,);
+                            self.removed(connection, sender_id).await
+                        }
+                        6u16 => {
+                            let serial = message.uint()?;
+                            let tablet = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.proximity_in({}, {}, {})",
+                                sender_id,
+                                serial,
+                                tablet,
+                                surface
+                            );
+                            self.proximity_in(connection, sender_id, serial, tablet, surface)
+                                .await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.proximity_out()", sender_id,);
+                            self.proximity_out(connection, sender_id).await
+                        }
+                        8u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.down({})", sender_id, serial);
+                            self.down(connection, sender_id, serial).await
+                        }
+                        9u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.up()", sender_id,);
+                            self.up(connection, sender_id).await
+                        }
+                        10u16 => {
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.motion({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.motion(connection, sender_id, x, y).await
+                        }
+                        11u16 => {
+                            let pressure = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.pressure({})",
+                                sender_id,
+                                pressure
+                            );
+                            self.pressure(connection, sender_id, pressure).await
+                        }
+                        12u16 => {
+                            let distance = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.distance({})",
+                                sender_id,
+                                distance
+                            );
+                            self.distance(connection, sender_id, distance).await
+                        }
+                        13u16 => {
+                            let tilt_x = message.fixed()?;
+                            let tilt_y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.tilt({}, {})",
+                                sender_id,
+                                tilt_x,
+                                tilt_y
+                            );
+                            self.tilt(connection, sender_id, tilt_x, tilt_y).await
+                        }
+                        14u16 => {
+                            let degrees = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.rotation({})",
+                                sender_id,
+                                degrees
+                            );
+                            self.rotation(connection, sender_id, degrees).await
+                        }
+                        15u16 => {
+                            let position = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.slider({})",
+                                sender_id,
+                                position
+                            );
+                            self.slider(connection, sender_id, position).await
+                        }
+                        16u16 => {
+                            let degrees = message.fixed()?;
+                            let clicks = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.wheel({}, {})",
+                                sender_id,
+                                degrees,
+                                clicks
+                            );
+                            self.wheel(connection, sender_id, degrees, clicks).await
+                        }
+                        17u16 => {
+                            let serial = message.uint()?;
+                            let button = message.uint()?;
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_tool_v2#{}.button({}, {}, {})",
+                                sender_id,
+                                serial,
+                                button,
+                                state
+                            );
+                            self.button(connection, sender_id, serial, button, state.try_into()?)
+                                .await
+                        }
+                        18u16 => {
+                            let time = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_tool_v2#{}.frame({})", sender_id, time);
+                            self.frame(connection, sender_id, time).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
@@ -1990,6 +2487,60 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 bustype: Bustype,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.name(\"{}\")", sender_id, name);
+                            self.name(connection, sender_id, name).await
+                        }
+                        1u16 => {
+                            let vid = message.uint()?;
+                            let pid = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.id({}, {})", sender_id, vid, pid);
+                            self.id(connection, sender_id, vid, pid).await
+                        }
+                        2u16 => {
+                            let path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.path(\"{}\")", sender_id, path);
+                            self.path(connection, sender_id, path).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.removed()", sender_id,);
+                            self.removed(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let bustype = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_v2#{}.bustype({})", sender_id, bustype);
+                            self.bustype(connection, sender_id, bustype.try_into()?)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
@@ -2165,6 +2716,51 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 time: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let source = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_ring_v2#{}.source({})",
+                                sender_id,
+                                source
+                            );
+                            self.source(connection, sender_id, source.try_into()?).await
+                        }
+                        1u16 => {
+                            let degrees = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_ring_v2#{}.angle({})",
+                                sender_id,
+                                degrees
+                            );
+                            self.angle(connection, sender_id, degrees).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_ring_v2#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let time = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_ring_v2#{}.frame({})", sender_id, time);
+                            self.frame(connection, sender_id, time).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
@@ -2342,6 +2938,55 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 time: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let source = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_strip_v2#{}.source({})",
+                                sender_id,
+                                source
+                            );
+                            self.source(connection, sender_id, source.try_into()?).await
+                        }
+                        1u16 => {
+                            let position = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_strip_v2#{}.position({})",
+                                sender_id,
+                                position
+                            );
+                            self.position(connection, sender_id, position).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_strip_v2#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let time = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_strip_v2#{}.frame({})",
+                                sender_id,
+                                time
+                            );
+                            self.frame(connection, sender_id, time).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A pad group describes a distinct (sub)set of buttons, rings and strips"]
@@ -2508,6 +3153,88 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 dial: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let buttons = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_group_v2#{}.buttons(array[{}])",
+                                sender_id,
+                                buttons.len()
+                            );
+                            self.buttons(connection, sender_id, buttons).await
+                        }
+                        1u16 => {
+                            let ring = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_group_v2#{}.ring({})", sender_id, ring);
+                            self.ring(connection, sender_id, ring).await
+                        }
+                        2u16 => {
+                            let strip = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_group_v2#{}.strip({})",
+                                sender_id,
+                                strip
+                            );
+                            self.strip(connection, sender_id, strip).await
+                        }
+                        3u16 => {
+                            let modes = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_group_v2#{}.modes({})",
+                                sender_id,
+                                modes
+                            );
+                            self.modes(connection, sender_id, modes).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_group_v2#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let time = message.uint()?;
+                            let serial = message.uint()?;
+                            let mode = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_group_v2#{}.mode_switch({}, {}, {})",
+                                sender_id,
+                                time,
+                                serial,
+                                mode
+                            );
+                            self.mode_switch(connection, sender_id, time, serial, mode)
+                                .await
+                        }
+                        6u16 => {
+                            let dial = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_group_v2#{}.dial({})", sender_id, dial);
+                            self.dial(connection, sender_id, dial).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A pad device is a set of buttons, rings, strips and dials"]
@@ -2733,6 +3460,100 @@ pub mod tablet_v2 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let pad_group = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_v2#{}.group({})", sender_id, pad_group);
+                            self.group(connection, sender_id, pad_group).await
+                        }
+                        1u16 => {
+                            let path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_v2#{}.path(\"{}\")", sender_id, path);
+                            self.path(connection, sender_id, path).await
+                        }
+                        2u16 => {
+                            let buttons = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_v2#{}.buttons({})", sender_id, buttons);
+                            self.buttons(connection, sender_id, buttons).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_v2#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let time = message.uint()?;
+                            let button = message.uint()?;
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_v2#{}.button({}, {}, {})",
+                                sender_id,
+                                time,
+                                button,
+                                state
+                            );
+                            self.button(connection, sender_id, time, button, state.try_into()?)
+                                .await
+                        }
+                        5u16 => {
+                            let serial = message.uint()?;
+                            let tablet = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_v2#{}.enter({}, {}, {})",
+                                sender_id,
+                                serial,
+                                tablet,
+                                surface
+                            );
+                            self.enter(connection, sender_id, serial, tablet, surface)
+                                .await
+                        }
+                        6u16 => {
+                            let serial = message.uint()?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_v2#{}.leave({}, {})",
+                                sender_id,
+                                serial,
+                                surface
+                            );
+                            self.leave(connection, sender_id, serial, surface).await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_v2#{}.removed()", sender_id,);
+                            self.removed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A rotary control, e.g. a dial or a wheel."]
@@ -2848,6 +3669,36 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 time: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let value120 = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_tablet_pad_dial_v2#{}.delta({})",
+                                sender_id,
+                                value120
+                            );
+                            self.delta(connection, sender_id, value120).await
+                        }
+                        1u16 => {
+                            let time = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_tablet_pad_dial_v2#{}.frame({})", sender_id, time);
+                            self.frame(connection, sender_id, time).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2946,6 +3797,20 @@ pub mod viewporter {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3151,6 +4016,20 @@ pub mod viewporter {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -3343,6 +4222,26 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_wm_base#{}.ping({})", sender_id, serial);
+                            self.ping(connection, sender_id, serial).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "The xdg_positioner provides a collection of rules for the placement of a"]
@@ -3806,6 +4705,20 @@ pub mod xdg_shell {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "An interface that may be implemented by a wl_surface, for"]
@@ -4138,6 +5051,26 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 serial: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let serial = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_surface#{}.configure({})", sender_id, serial);
+                            self.configure(connection, sender_id, serial).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface defines an xdg_surface role which allows a surface to,"]
@@ -5020,6 +5953,64 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 capabilities: Vec<u8>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let states = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.configure({}, {}, array[{}])",
+                                sender_id,
+                                width,
+                                height,
+                                states.len()
+                            );
+                            self.configure(connection, sender_id, width, height, states)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel#{}.close()", sender_id,);
+                            self.close(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.configure_bounds({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.configure_bounds(connection, sender_id, width, height)
+                                .await
+                        }
+                        3u16 => {
+                            let capabilities = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel#{}.wm_capabilities(array[{}])",
+                                sender_id,
+                                capabilities.len()
+                            );
+                            self.wm_capabilities(connection, sender_id, capabilities)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A popup surface is a short-lived, temporary surface. It can be used to"]
@@ -5266,6 +6257,48 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 token: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_popup#{}.configure({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.configure(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_popup#{}.popup_done()", sender_id,);
+                            self.popup_done(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let token = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_popup#{}.repositioned({})", sender_id, token);
+                            self.repositioned(connection, sender_id, token).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }

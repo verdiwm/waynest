@@ -48,6 +48,32 @@ pub mod ivi_application {
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_surface#{}.configure({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.configure(connection, sender_id, width, height).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface is exposed as a global singleton."]
@@ -142,6 +168,20 @@ pub mod ivi_application {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -280,6 +320,92 @@ pub mod ivi_input {
                 seat: String,
                 accepted: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let capabilities = message.uint()?;
+                            let is_default = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_input#{}.seat_created(\"{}\", {}, {})",
+                                sender_id,
+                                name,
+                                capabilities,
+                                is_default
+                            );
+                            self.seat_created(connection, sender_id, name, capabilities, is_default)
+                                .await
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let capabilities = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_input#{}.seat_capabilities(\"{}\", {})",
+                                sender_id,
+                                name,
+                                capabilities
+                            );
+                            self.seat_capabilities(connection, sender_id, name, capabilities)
+                                .await
+                        }
+                        2u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
+                            self.seat_destroyed(connection, sender_id, name).await
+                        }
+                        3u16 => {
+                            let surface = message.uint()?;
+                            let device = message.uint()?;
+                            let enabled = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_input#{}.input_focus({}, {}, {})",
+                                sender_id,
+                                surface,
+                                device,
+                                enabled
+                            );
+                            self.input_focus(connection, sender_id, surface, device, enabled)
+                                .await
+                        }
+                        4u16 => {
+                            let surface = message.uint()?;
+                            let seat = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let accepted = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_input#{}.input_acceptance({}, \"{}\", {})",
+                                sender_id,
+                                surface,
+                                seat,
+                                accepted
+                            );
+                            self.input_acceptance(connection, sender_id, surface, seat, accepted)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -490,6 +616,63 @@ pub mod ivi_wm {
                 error: u32,
                 message: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm_screen#{}.screen_id({})", sender_id, id);
+                            self.screen_id(connection, sender_id, id).await
+                        }
+                        1u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm_screen#{}.layer_added({})",
+                                sender_id,
+                                layer_id
+                            );
+                            self.layer_added(connection, sender_id, layer_id).await
+                        }
+                        2u16 => {
+                            let process_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm_screen#{}.connector_name(\"{}\")",
+                                sender_id,
+                                process_name
+                            );
+                            self.connector_name(connection, sender_id, process_name)
+                                .await
+                        }
+                        3u16 => {
+                            let error = message.uint()?;
+                            let message = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm_screen#{}.error({}, \"{}\")",
+                                sender_id,
+                                error,
+                                message
+                            );
+                            self.error(connection, sender_id, error, message).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "An ivi_screenshot object receives a single \"done\" or \"error\" event."]
@@ -565,6 +748,41 @@ pub mod ivi_wm {
                 error: Error,
                 message: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let timestamp = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_screenshot#{}.done({})", sender_id, timestamp);
+                            self.done(connection, sender_id, timestamp).await
+                        }
+                        1u16 => {
+                            let error = message.uint()?;
+                            let message = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_screenshot#{}.error({}, \"{}\")",
+                                sender_id,
+                                error,
+                                message
+                            );
+                            self.error(connection, sender_id, error.try_into()?, message)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -1556,6 +1774,263 @@ pub mod ivi_wm {
                 layer_id: u32,
                 surface_id: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let surface_id = message.uint()?;
+                            let visibility = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_visibility({}, {})",
+                                sender_id,
+                                surface_id,
+                                visibility
+                            );
+                            self.surface_visibility(connection, sender_id, surface_id, visibility)
+                                .await
+                        }
+                        1u16 => {
+                            let layer_id = message.uint()?;
+                            let visibility = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_visibility({}, {})",
+                                sender_id,
+                                layer_id,
+                                visibility
+                            );
+                            self.layer_visibility(connection, sender_id, layer_id, visibility)
+                                .await
+                        }
+                        2u16 => {
+                            let surface_id = message.uint()?;
+                            let opacity = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_opacity({}, {})",
+                                sender_id,
+                                surface_id,
+                                opacity
+                            );
+                            self.surface_opacity(connection, sender_id, surface_id, opacity)
+                                .await
+                        }
+                        3u16 => {
+                            let layer_id = message.uint()?;
+                            let opacity = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_opacity({}, {})",
+                                sender_id,
+                                layer_id,
+                                opacity
+                            );
+                            self.layer_opacity(connection, sender_id, layer_id, opacity)
+                                .await
+                        }
+                        4u16 => {
+                            let surface_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_source_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.surface_source_rectangle(
+                                connection, sender_id, surface_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        5u16 => {
+                            let layer_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_source_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                layer_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.layer_source_rectangle(
+                                connection, sender_id, layer_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        6u16 => {
+                            let surface_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_destination_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                surface_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.surface_destination_rectangle(
+                                connection, sender_id, surface_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        7u16 => {
+                            let layer_id = message.uint()?;
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_destination_rectangle({}, {}, {}, {}, {})",
+                                sender_id,
+                                layer_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.layer_destination_rectangle(
+                                connection, sender_id, layer_id, x, y, width, height,
+                            )
+                            .await
+                        }
+                        8u16 => {
+                            let surface_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm#{}.surface_created({})", sender_id, surface_id);
+                            self.surface_created(connection, sender_id, surface_id)
+                                .await
+                        }
+                        9u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm#{}.layer_created({})", sender_id, layer_id);
+                            self.layer_created(connection, sender_id, layer_id).await
+                        }
+                        10u16 => {
+                            let surface_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_destroyed({})",
+                                sender_id,
+                                surface_id
+                            );
+                            self.surface_destroyed(connection, sender_id, surface_id)
+                                .await
+                        }
+                        11u16 => {
+                            let layer_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
+                            self.layer_destroyed(connection, sender_id, layer_id).await
+                        }
+                        12u16 => {
+                            let object_id = message.uint()?;
+                            let error = message.uint()?;
+                            let message = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_error({}, {}, \"{}\")",
+                                sender_id,
+                                object_id,
+                                error,
+                                message
+                            );
+                            self.surface_error(connection, sender_id, object_id, error, message)
+                                .await
+                        }
+                        13u16 => {
+                            let object_id = message.uint()?;
+                            let error = message.uint()?;
+                            let message = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_error({}, {}, \"{}\")",
+                                sender_id,
+                                object_id,
+                                error,
+                                message
+                            );
+                            self.layer_error(connection, sender_id, object_id, error, message)
+                                .await
+                        }
+                        14u16 => {
+                            let surface_id = message.uint()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_size({}, {}, {})",
+                                sender_id,
+                                surface_id,
+                                width,
+                                height
+                            );
+                            self.surface_size(connection, sender_id, surface_id, width, height)
+                                .await
+                        }
+                        15u16 => {
+                            let surface_id = message.uint()?;
+                            let frame_count = message.uint()?;
+                            let pid = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.surface_stats({}, {}, {})",
+                                sender_id,
+                                surface_id,
+                                frame_count,
+                                pid
+                            );
+                            self.surface_stats(connection, sender_id, surface_id, frame_count, pid)
+                                .await
+                        }
+                        16u16 => {
+                            let layer_id = message.uint()?;
+                            let surface_id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_wm#{}.layer_surface_added({}, {})",
+                                sender_id,
+                                layer_id,
+                                surface_id
+                            );
+                            self.layer_surface_added(connection, sender_id, layer_id, surface_id)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }

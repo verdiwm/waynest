@@ -96,6 +96,40 @@ impl<'a> ProtocolGenerator<'a> {
                     quote! {}
                 };
 
+                let event_handler = if requests_body {
+                    let dispatchers = self.write_dispatchers(interface, &interface.events);
+
+                    let args = if dispatchers.is_empty() {
+                        quote! {
+                            _connection: &mut Self::Connection,
+                            _sender_id: waynest::ObjectId,
+                        }
+                    } else {
+                        quote! {
+                            connection: &mut Self::Connection,
+                            sender_id: waynest::ObjectId,
+                        }
+                    };
+
+                    quote! {
+                        fn handle_event(
+                            &self,
+                            #args
+                            message: &mut waynest::Message,
+                        ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send {
+                            async move {
+                                #[allow(clippy::match_single_binding)]
+                                match message.opcode() {
+                                    #(#dispatchers),*
+                                    opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    quote! {}
+                };
+
                 inner_modules.push(quote! {
                     #(#docs)*
                     #[allow(clippy::too_many_arguments)]
@@ -113,6 +147,7 @@ impl<'a> ProtocolGenerator<'a> {
                             #(#events)*
 
                             #request_handler
+                            #event_handler
                         }
                     }
                 });

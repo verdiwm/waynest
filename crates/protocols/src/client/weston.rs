@@ -490,6 +490,68 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 primaries: Primaries,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let render_intent = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_color_manager_v4#{}.supported_intent({})",
+                                sender_id,
+                                render_intent
+                            );
+                            self.supported_intent(connection, sender_id, render_intent.try_into()?)
+                                .await
+                        }
+                        1u16 => {
+                            let feature = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_color_manager_v4#{}.supported_feature({})",
+                                sender_id,
+                                feature
+                            );
+                            self.supported_feature(connection, sender_id, feature.try_into()?)
+                                .await
+                        }
+                        2u16 => {
+                            let tf = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_color_manager_v4#{}.supported_tf_named({})",
+                                sender_id,
+                                tf
+                            );
+                            self.supported_tf_named(connection, sender_id, tf.try_into()?)
+                                .await
+                        }
+                        3u16 => {
+                            let primaries = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_color_manager_v4#{}.supported_primaries_named({})",
+                                sender_id,
+                                primaries
+                            );
+                            self.supported_primaries_named(
+                                connection,
+                                sender_id,
+                                primaries.try_into()?,
+                            )
+                            .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A xx_color_management_output_v4 describes the color properties of an"]
@@ -597,6 +659,28 @@ pub mod color_management_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_color_management_output_v4#{}.image_description_changed()",
+                                sender_id,
+                            );
+                            self.image_description_changed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A xx_color_management_surface_v4 allows the client to set the color"]
@@ -744,6 +828,20 @@ pub mod color_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "A xx_color_management_feedback_surface_v4 allows the client to get the"]
@@ -881,6 +979,28 @@ pub mod color_management_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_color_management_feedback_surface_v4#{}.preferred_changed()",
+                                sender_id,
+                            );
+                            self.preferred_changed(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This type of object is used for collecting all the information required"]
@@ -1057,6 +1177,20 @@ pub mod color_management_v1 {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -1624,6 +1758,20 @@ pub mod color_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "An image description carries information about the color encoding used on"]
@@ -1823,6 +1971,45 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 identity: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let cause = message.uint()?;
+                            let msg = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_v4#{}.failed({}, \"{}\")",
+                                sender_id,
+                                cause,
+                                msg
+                            );
+                            self.failed(connection, sender_id, cause.try_into()?, msg)
+                                .await
+                        }
+                        1u16 => {
+                            let identity = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_v4#{}.ready({})",
+                                sender_id,
+                                identity
+                            );
+                            self.ready(connection, sender_id, identity).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Sends all matching events describing an image description object exactly"]
@@ -1987,6 +2174,170 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 max_fall: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_image_description_info_v4#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let icc = waynest::Connection::fd(connection)?;
+                            let icc_size = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.icc_file({}, {})",
+                                sender_id,
+                                std::os::fd::AsRawFd::as_raw_fd(&icc),
+                                icc_size
+                            );
+                            self.icc_file(connection, sender_id, icc, icc_size).await
+                        }
+                        2u16 => {
+                            let r_x = message.int()?;
+                            let r_y = message.int()?;
+                            let g_x = message.int()?;
+                            let g_y = message.int()?;
+                            let b_x = message.int()?;
+                            let b_y = message.int()?;
+                            let w_x = message.int()?;
+                            let w_y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
+                            self.primaries(
+                                connection, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            )
+                            .await
+                        }
+                        3u16 => {
+                            let primaries = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.primaries_named({})",
+                                sender_id,
+                                primaries
+                            );
+                            self.primaries_named(connection, sender_id, primaries.try_into()?)
+                                .await
+                        }
+                        4u16 => {
+                            let eexp = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.tf_power({})",
+                                sender_id,
+                                eexp
+                            );
+                            self.tf_power(connection, sender_id, eexp).await
+                        }
+                        5u16 => {
+                            let tf = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.tf_named({})",
+                                sender_id,
+                                tf
+                            );
+                            self.tf_named(connection, sender_id, tf.try_into()?).await
+                        }
+                        6u16 => {
+                            let min_lum = message.uint()?;
+                            let max_lum = message.uint()?;
+                            let reference_lum = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.luminances({}, {}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum,
+                                reference_lum
+                            );
+                            self.luminances(connection, sender_id, min_lum, max_lum, reference_lum)
+                                .await
+                        }
+                        7u16 => {
+                            let r_x = message.int()?;
+                            let r_y = message.int()?;
+                            let g_x = message.int()?;
+                            let g_y = message.int()?;
+                            let b_x = message.int()?;
+                            let b_y = message.int()?;
+                            let w_x = message.int()?;
+                            let w_y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.target_primaries({}, {}, {}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                r_x,
+                                r_y,
+                                g_x,
+                                g_y,
+                                b_x,
+                                b_y,
+                                w_x,
+                                w_y
+                            );
+                            self.target_primaries(
+                                connection, sender_id, r_x, r_y, g_x, g_y, b_x, b_y, w_x, w_y,
+                            )
+                            .await
+                        }
+                        8u16 => {
+                            let min_lum = message.uint()?;
+                            let max_lum = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.target_luminance({}, {})",
+                                sender_id,
+                                min_lum,
+                                max_lum
+                            );
+                            self.target_luminance(connection, sender_id, min_lum, max_lum)
+                                .await
+                        }
+                        9u16 => {
+                            let max_cll = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.target_max_cll({})",
+                                sender_id,
+                                max_cll
+                            );
+                            self.target_max_cll(connection, sender_id, max_cll).await
+                        }
+                        10u16 => {
+                            let max_fall = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_image_description_info_v4#{}.target_max_fall({})",
+                                sender_id,
+                                max_fall
+                            );
+                            self.target_max_fall(connection, sender_id, max_fall).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2040,6 +2391,32 @@ pub mod ivi_application {
                 width: i32,
                 height: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_surface#{}.configure({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.configure(connection, sender_id, width, height).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This interface is exposed as a global singleton."]
@@ -2134,6 +2511,20 @@ pub mod ivi_application {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -2329,6 +2720,31 @@ pub mod ivi_hmi_controller {
                 sender_id: waynest::ObjectId,
                 is_controlled: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let is_controlled = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "ivi_hmi_controller#{}.workspace_end_control({})",
+                                sender_id,
+                                is_controlled
+                            );
+                            self.workspace_end_control(connection, sender_id, is_controlled)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2373,6 +2789,20 @@ pub mod text_cursor_position {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -2515,6 +2945,20 @@ pub mod weston_content_protection {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -2764,6 +3208,30 @@ pub mod weston_content_protection {
                 sender_id: waynest::ObjectId,
                 r#type: Type,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let r#type = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_protected_surface#{}.status({})",
+                                sender_id,
+                                r#type
+                            );
+                            self.status(connection, sender_id, r#type.try_into()?).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -2869,6 +3337,37 @@ pub mod weston_debug {
                 name: String,
                 description: Option<String>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let description = message.string()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_debug_v1#{}.available(\"{}\", \"{}\")",
+                                sender_id,
+                                name,
+                                description
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.available(connection, sender_id, name, description)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Represents one subscribed debug stream, created with"]
@@ -2934,6 +3433,37 @@ pub mod weston_debug {
                 sender_id: waynest::ObjectId,
                 message: Option<String>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("weston_debug_stream_v1#{}.complete()", sender_id,);
+                            self.complete(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let message = message.string()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_debug_stream_v1#{}.failure(\"{}\")",
+                                sender_id,
+                                message
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.failure(connection, sender_id, message).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -3261,6 +3791,57 @@ pub mod weston_desktop {
                 sender_id: waynest::ObjectId,
                 cursor: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let edges = message.uint()?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_desktop_shell#{}.configure({}, {}, {}, {})",
+                                sender_id,
+                                edges,
+                                surface,
+                                width,
+                                height
+                            );
+                            self.configure(connection, sender_id, edges, surface, width, height)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_desktop_shell#{}.prepare_lock_surface()",
+                                sender_id,
+                            );
+                            self.prepare_lock_surface(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let cursor = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_desktop_shell#{}.grab_cursor({})",
+                                sender_id,
+                                cursor
+                            );
+                            self.grab_cursor(connection, sender_id, cursor).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "Only one client can bind this interface at a time."]
@@ -3302,6 +3883,20 @@ pub mod weston_desktop {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3398,6 +3993,20 @@ pub mod weston_direct_display {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3556,6 +4165,20 @@ pub mod weston_output_capture {
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
                 }
             }
         }
@@ -3740,6 +4363,62 @@ pub mod weston_output_capture {
                 sender_id: waynest::ObjectId,
                 msg: Option<String>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let drm_format = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_capture_source_v1#{}.format({})",
+                                sender_id,
+                                drm_format
+                            );
+                            self.format(connection, sender_id, drm_format).await
+                        }
+                        1u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_capture_source_v1#{}.size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.size(connection, sender_id, width, height).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("weston_capture_source_v1#{}.complete()", sender_id,);
+                            self.complete(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("weston_capture_source_v1#{}.retry()", sender_id,);
+                            self.retry(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let msg = message.string()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_capture_source_v1#{}.failed(\"{}\")",
+                                sender_id,
+                                msg.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.failed(connection, sender_id, msg).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -4145,6 +4824,32 @@ pub mod weston_test {
                 x: waynest::Fixed,
                 y: waynest::Fixed,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_test#{}.pointer_position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.pointer_position(connection, sender_id, x, y).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "This is a global singleton interface for Weston internal tests."]
@@ -4247,6 +4952,25 @@ pub mod weston_test {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("weston_test_runner#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
@@ -4446,6 +5170,36 @@ pub mod weston_touch_calibration {
                 device: String,
                 head: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let device = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let head = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibration#{}.touch_device(\"{}\", \"{}\")",
+                                sender_id,
+                                device,
+                                head
+                            );
+                            self.touch_device(connection, sender_id, device, head).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[doc = "On creation, this object is tied to a specific touch device. The"]
@@ -4688,6 +5442,102 @@ pub mod weston_touch_calibration {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibrator#{}.configure({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.configure(connection, sender_id, width, height).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibrator#{}.cancel_calibration()",
+                                sender_id,
+                            );
+                            self.cancel_calibration(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibrator#{}.invalid_touch()",
+                                sender_id,
+                            );
+                            self.invalid_touch(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let time = message.uint()?;
+                            let id = message.int()?;
+                            let x = message.uint()?;
+                            let y = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibrator#{}.down({}, {}, {}, {})",
+                                sender_id,
+                                time,
+                                id,
+                                x,
+                                y
+                            );
+                            self.down(connection, sender_id, time, id, x, y).await
+                        }
+                        4u16 => {
+                            let time = message.uint()?;
+                            let id = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibrator#{}.up({}, {})",
+                                sender_id,
+                                time,
+                                id
+                            );
+                            self.up(connection, sender_id, time, id).await
+                        }
+                        5u16 => {
+                            let time = message.uint()?;
+                            let id = message.int()?;
+                            let x = message.uint()?;
+                            let y = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_calibrator#{}.motion({}, {}, {}, {})",
+                                sender_id,
+                                time,
+                                id,
+                                x,
+                                y
+                            );
+                            self.motion(connection, sender_id, time, id, x, y).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("weston_touch_calibrator#{}.frame()", sender_id,);
+                            self.frame(connection, sender_id).await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("weston_touch_calibrator#{}.cancel()", sender_id,);
+                            self.cancel(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
     #[allow(clippy::too_many_arguments)]
@@ -4714,6 +5564,32 @@ pub mod weston_touch_calibration {
                 x: u32,
                 y: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let x = message.uint()?;
+                            let y = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "weston_touch_coordinate#{}.result({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.result(connection, sender_id, x, y).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
         }
     }
 }
