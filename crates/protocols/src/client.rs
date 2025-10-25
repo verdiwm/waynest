@@ -14,6 +14,9 @@ pub mod ivi;
 #[cfg(feature = "mesa")]
 #[cfg_attr(docsrs, doc(cfg(feature = "mesa")))]
 pub mod mesa;
+#[cfg(feature = "mutter")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mutter")))]
+pub mod mutter;
 #[cfg(feature = "plasma")]
 #[cfg_attr(docsrs, doc(cfg(feature = "plasma")))]
 pub mod plasma;

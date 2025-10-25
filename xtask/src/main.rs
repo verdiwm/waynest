@@ -27,7 +27,7 @@ fn main() -> Result<()> {
     }
 }
 
-const PROTOCOLS: [(&str, &str); 13] = [
+const PROTOCOLS: [(&str, &str); 14] = [
     ("core", "wayland/protocol"),
     ("stable", "wayland-protocols/stable"),
     ("staging", "wayland-protocols/staging"),
@@ -41,6 +41,7 @@ const PROTOCOLS: [(&str, &str); 13] = [
     ("hyprland", "hyprland-protocols/protocols"),
     ("mesa", "mesa/src/egl/wayland/wayland-drm"),
     ("treeland", "treeland-protocols/xml"),
+    ("mutter", "mutter/src/wayland/protocol"),
 ];
 
 const SKIP: [&str; 4] = [
