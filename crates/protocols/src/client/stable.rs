@@ -1313,19 +1313,19 @@ pub mod presentation_time {
 #[doc = "More than one tablet may exist, and device-specifics matter. Tablets are"]
 #[doc = "not represented by a single virtual device like wl_pointer. A client"]
 #[doc = "binds to the tablet manager object which is just a proxy object. From"]
-#[doc = "that, the client requests wp_tablet_manager.get_tablet_seat(wl_seat)"]
+#[doc = "that, the client requests zwp_tablet_manager_v2.get_tablet_seat(wl_seat)"]
 #[doc = "and that returns the actual interface that has all the tablets. With"]
-#[doc = "this indirection, we can avoid merging wp_tablet into the actual Wayland"]
+#[doc = "this indirection, we can avoid merging zwp_tablet_v2 into the actual Wayland"]
 #[doc = "protocol, a long-term benefit."]
 #[doc = ""]
-#[doc = "The wp_tablet_seat sends a \"tablet added\" event for each tablet"]
+#[doc = "The zwp_tablet_seat_v2 sends a \"tablet added\" event for each tablet"]
 #[doc = "connected. That event is followed by descriptive events about the"]
 #[doc = "hardware; currently that includes events for name, vid/pid and"]
-#[doc = "a wp_tablet.path event that describes a local path. This path can be"]
+#[doc = "a zwp_tablet_v2.path event that describes a local path. This path can be"]
 #[doc = "used to uniquely identify a tablet or get more information through"]
 #[doc = "libwacom. Emulated or nested tablets can skip any of those, e.g. a"]
 #[doc = "virtual tablet may not have a vid/pid. The sequence of descriptive"]
-#[doc = "events is terminated by a wp_tablet.done event to signal that a client"]
+#[doc = "events is terminated by a zwp_tablet_v2.done event to signal that a client"]
 #[doc = "may now finalize any initialization for that tablet."]
 #[doc = ""]
 #[doc = "Events from tablets require a tool in proximity. Tools are also managed"]
@@ -1333,15 +1333,15 @@ pub mod presentation_time {
 #[doc = "to the compositor. That event is followed by a number of descriptive"]
 #[doc = "events about the hardware; currently that includes capabilities,"]
 #[doc = "hardware id and serial number, and tool type. Similar to the tablet"]
-#[doc = "interface, a wp_tablet_tool.done event is sent to terminate that initial"]
+#[doc = "interface, a zwp_tablet_tool_v2.done event is sent to terminate that initial"]
 #[doc = "sequence."]
 #[doc = ""]
-#[doc = "Any event from a tool happens on the wp_tablet_tool interface. When the"]
+#[doc = "Any event from a tool happens on the zwp_tablet_tool_v2 interface. When the"]
 #[doc = "tool gets into proximity of the tablet, a proximity_in event is sent on"]
-#[doc = "the wp_tablet_tool interface, listing the tablet and the surface. That"]
+#[doc = "the zwp_tablet_tool_v2 interface, listing the tablet and the surface. That"]
 #[doc = "event is followed by a motion event with the coordinates. After that,"]
 #[doc = "it's the usual motion, axis, button, etc. events. The protocol's"]
-#[doc = "serialisation means events are grouped by wp_tablet_tool.frame events."]
+#[doc = "serialisation means events are grouped by zwp_tablet_tool_v2.frame events."]
 #[doc = ""]
 #[doc = "Two special events (that don't exist in X) are down and up. They signal"]
 #[doc = "\"tip touching the surface\". For tablets without real proximity"]
@@ -1373,7 +1373,7 @@ pub mod presentation_time {
 #[doc = ""]
 #[doc = "Since tablets work independently of the pointer controlled by the mouse,"]
 #[doc = "the focus handling is independent too and controlled by proximity."]
-#[doc = "The wp_tablet_tool.set_cursor request sets a tool-specific cursor."]
+#[doc = "The zwp_tablet_tool_v2.set_cursor request sets a tool-specific cursor."]
 #[doc = "This cursor surface may be the same as the mouse cursor, and it may be"]
 #[doc = "the same across tools but it is possible to be more fine-grained. For"]
 #[doc = "example, a client may set different cursors for the pen and eraser."]
@@ -1386,7 +1386,7 @@ pub mod presentation_time {
 pub mod tablet_v2 {
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "system. All tablets are associated with a seat, to get access to the"]
-    #[doc = "actual tablets, use wp_tablet_manager.get_tablet_seat."]
+    #[doc = "actual tablets, use zwp_tablet_manager_v2.get_tablet_seat."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_manager_v2 {
         #[doc = "Trait to implement the zwp_tablet_manager_v2 interface. See the module level documentation for more info"]
@@ -1397,7 +1397,7 @@ pub mod tablet_v2 {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_tablet_manager_v2";
             const VERSION: u32 = 2u32;
-            #[doc = "Get the wp_tablet_seat object for the given seat. This object"]
+            #[doc = "Get the zwp_tablet_seat_v2 object for the given seat. This object"]
             #[doc = "provides access to all graphics tablets in this seat."]
             fn get_tablet_seat(
                 &self,
@@ -1427,7 +1427,7 @@ pub mod tablet_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "Destroy the wp_tablet_manager object. Objects created from this"]
+            #[doc = "Destroy the zwp_tablet_manager_v2 object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
@@ -1465,7 +1465,7 @@ pub mod tablet_v2 {
     }
     #[doc = "An object that provides access to the graphics tablets available on this"]
     #[doc = "seat. After binding to this interface, the compositor sends a set of"]
-    #[doc = "wp_tablet_seat.tablet_added and wp_tablet_seat.tool_added events."]
+    #[doc = "zwp_tablet_seat_v2.tablet_added and zwp_tablet_seat_v2.tool_added events."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_seat_v2 {
         #[doc = "Trait to implement the zwp_tablet_seat_v2 interface. See the module level documentation for more info"]
@@ -1476,7 +1476,7 @@ pub mod tablet_v2 {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_tablet_seat_v2";
             const VERSION: u32 = 2u32;
-            #[doc = "Destroy the wp_tablet_seat object. Objects created from this"]
+            #[doc = "Destroy the zwp_tablet_seat_v2 object. Objects created from this"]
             #[doc = "object are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
@@ -1499,7 +1499,7 @@ pub mod tablet_v2 {
             #[doc = "This event is sent whenever a new tablet becomes available on this"]
             #[doc = "seat. This event only provides the object id of the tablet, any"]
             #[doc = "static information about the tablet (device name, vid/pid, etc.) is"]
-            #[doc = "sent through the wp_tablet interface."]
+            #[doc = "sent through the zwp_tablet_v2 interface."]
             fn tablet_added(
                 &self,
                 connection: &mut Self::Connection,
@@ -1509,7 +1509,7 @@ pub mod tablet_v2 {
             #[doc = "This event is sent whenever a tool that has not previously been used"]
             #[doc = "with a tablet comes into use. This event only provides the object id"]
             #[doc = "of the tool; any static information about the tool (capabilities,"]
-            #[doc = "type, etc.) is sent through the wp_tablet_tool interface."]
+            #[doc = "type, etc.) is sent through the zwp_tablet_tool_v2 interface."]
             fn tool_added(
                 &self,
                 connection: &mut Self::Connection,
@@ -1518,13 +1518,13 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent whenever a new pad is known to the system. Typically,"]
             #[doc = "pads are physically attached to tablets and a pad_added event is"]
-            #[doc = "sent immediately after the wp_tablet_seat.tablet_added."]
+            #[doc = "sent immediately after the zwp_tablet_seat_v2.tablet_added."]
             #[doc = "However, some standalone pad devices logically attach to tablets at"]
-            #[doc = "runtime, and the client must wait for wp_tablet_pad.enter to know"]
+            #[doc = "runtime, and the client must wait for zwp_tablet_pad_v2.enter to know"]
             #[doc = "the tablet a pad is attached to."]
             #[doc = ""]
             #[doc = "This event only provides the object id of the pad. All further"]
-            #[doc = "features (buttons, strips, rings) are sent through the wp_tablet_pad"]
+            #[doc = "features (buttons, strips, rings) are sent through the zwp_tablet_pad_v2"]
             #[doc = "interface."]
             fn pad_added(
                 &self,
@@ -1577,24 +1577,24 @@ pub mod tablet_v2 {
         }
     }
     #[doc = "An object that represents a physical tool that has been, or is"]
-    #[doc = "currently in use with a tablet in this seat. Each wp_tablet_tool"]
+    #[doc = "currently in use with a tablet in this seat. Each zwp_tablet_tool_v2"]
     #[doc = "object stays valid until the client destroys it; the compositor"]
-    #[doc = "reuses the wp_tablet_tool object to indicate that the object's"]
+    #[doc = "reuses the zwp_tablet_tool_v2 object to indicate that the object's"]
     #[doc = "respective physical tool has come into proximity of a tablet again."]
     #[doc = ""]
-    #[doc = "A wp_tablet_tool object's relation to a physical tool depends on the"]
+    #[doc = "A zwp_tablet_tool_v2 object's relation to a physical tool depends on the"]
     #[doc = "tablet's ability to report serial numbers. If the tablet supports"]
     #[doc = "this capability, then the object represents a specific physical tool"]
     #[doc = "and can be identified even when used on multiple tablets."]
     #[doc = ""]
     #[doc = "A tablet tool has a number of static characteristics, e.g. tool type,"]
     #[doc = "hardware_serial and capabilities. These capabilities are sent in an"]
-    #[doc = "event sequence after the wp_tablet_seat.tool_added event before any"]
+    #[doc = "event sequence after the zwp_tablet_seat_v2.tool_added event before any"]
     #[doc = "actual events from this tool. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet_tool.done event."]
+    #[doc = "terminated by a zwp_tablet_tool_v2.done event."]
     #[doc = ""]
-    #[doc = "Tablet tool events are grouped by wp_tablet_tool.frame events."]
-    #[doc = "Any events received before a wp_tablet_tool.frame event should be"]
+    #[doc = "Tablet tool events are grouped by zwp_tablet_tool_v2.frame events."]
+    #[doc = "Any events received before a zwp_tablet_tool_v2.frame event should be"]
     #[doc = "considered part of the same hardware state change."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_tool_v2 {
@@ -1788,9 +1788,9 @@ pub mod tablet_v2 {
             #[doc = "and pending input regions become undefined, and the wl_surface is"]
             #[doc = "unmapped."]
             #[doc = ""]
-            #[doc = "This request gives the surface the role of a wp_tablet_tool cursor. A"]
+            #[doc = "This request gives the surface the role of a zwp_tablet_tool_v2 cursor. A"]
             #[doc = "surface may only ever be used as the cursor surface for one"]
-            #[doc = "wp_tablet_tool. If the surface already has another role or has"]
+            #[doc = "zwp_tablet_tool_v2. If the surface already has another role or has"]
             #[doc = "previously been used as cursor surface for a different tool, a"]
             #[doc = "protocol error is raised."]
             fn set_cursor(
@@ -1852,7 +1852,7 @@ pub mod tablet_v2 {
             #[doc = "the interaction expected from this tool."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_tool.done event."]
+            #[doc = "zwp_tablet_tool_v2.done event."]
             fn r#type(
                 &self,
                 connection: &mut Self::Connection,
@@ -1869,11 +1869,11 @@ pub mod tablet_v2 {
             #[doc = "Otherwise, if the tool has no serial number and this event is"]
             #[doc = "missing, the tool is tied to the tablet it first comes into"]
             #[doc = "proximity with. Even if the physical tool is used on multiple"]
-            #[doc = "tablets, separate wp_tablet_tool objects will be created, one per"]
+            #[doc = "tablets, separate zwp_tablet_tool_v2 objects will be created, one per"]
             #[doc = "tablet."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_tool.done event."]
+            #[doc = "zwp_tablet_tool_v2.done event."]
             fn hardware_serial(
                 &self,
                 connection: &mut Self::Connection,
@@ -1890,7 +1890,7 @@ pub mod tablet_v2 {
             #[doc = "Pen (a stylus) is 0x802."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_tool.done event."]
+            #[doc = "zwp_tablet_tool_v2.done event."]
             fn hardware_id_wacom(
                 &self,
                 connection: &mut Self::Connection,
@@ -1904,7 +1904,7 @@ pub mod tablet_v2 {
             #[doc = "One event is sent for each extra capability available on this tool."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_tool.done event."]
+            #[doc = "zwp_tablet_tool_v2.done event."]
             fn capability(
                 &self,
                 connection: &mut Self::Connection,
@@ -1921,17 +1921,17 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event is sent when the tool is removed from the system and will"]
             #[doc = "send no further events. Should the physical tool come back into"]
-            #[doc = "proximity later, a new wp_tablet_tool object will be created."]
+            #[doc = "proximity later, a new zwp_tablet_tool_v2 object will be created."]
             #[doc = ""]
             #[doc = "It is compositor-dependent when a tool is removed. A compositor may"]
             #[doc = "remove a tool on proximity out, tablet removal or any other reason."]
             #[doc = "A compositor may also keep a tool alive until shutdown."]
             #[doc = ""]
             #[doc = "If the tool is currently in proximity, a proximity_out event will be"]
-            #[doc = "sent before the removed event. See wp_tablet_tool.proximity_out for"]
+            #[doc = "sent before the removed event. See zwp_tablet_tool_v2.proximity_out for"]
             #[doc = "the handling of any buttons logically down."]
             #[doc = ""]
-            #[doc = "When this event is received, the client must wp_tablet_tool.destroy"]
+            #[doc = "When this event is received, the client must zwp_tablet_tool_v2.destroy"]
             #[doc = "the object."]
             fn removed(
                 &self,
@@ -1961,7 +1961,7 @@ pub mod tablet_v2 {
             #[doc = "When the tablet tool leaves proximity of the tablet, button release"]
             #[doc = "events are sent for each button that was held down at the time of"]
             #[doc = "leaving proximity. These events are sent before the proximity_out"]
-            #[doc = "event but within the same wp_tablet.frame."]
+            #[doc = "event but within the same zwp_tablet_v2.frame."]
             #[doc = ""]
             #[doc = "If the tool stays within proximity of the tablet, but the focus"]
             #[doc = "changes from one surface to another, a button release event may not"]
@@ -1977,8 +1977,8 @@ pub mod tablet_v2 {
             #[doc = ""]
             #[doc = "If the tool is already in contact with the tablet when entering the"]
             #[doc = "input region, the client owning said region will receive a"]
-            #[doc = "wp_tablet.proximity_in event, followed by a wp_tablet.down"]
-            #[doc = "event and a wp_tablet.frame event."]
+            #[doc = "zwp_tablet_v2.proximity_in event, followed by a zwp_tablet_v2.down"]
+            #[doc = "event and a zwp_tablet_v2.frame event."]
             #[doc = ""]
             #[doc = "Note that this event describes logical contact, not physical"]
             #[doc = "contact. On some devices, a compositor may not consider a tool in"]
@@ -1997,8 +1997,8 @@ pub mod tablet_v2 {
             #[doc = "If the tablet tool moves out of the input region while in contact"]
             #[doc = "with the surface of the tablet and the compositor does not have an"]
             #[doc = "ongoing grab on the surface, the client owning said region will"]
-            #[doc = "receive a wp_tablet.up event, followed by a wp_tablet.proximity_out"]
-            #[doc = "event and a wp_tablet.frame event. If the compositor has an ongoing"]
+            #[doc = "receive a zwp_tablet_v2.up event, followed by a zwp_tablet_v2.proximity_out"]
+            #[doc = "event and a zwp_tablet_v2.frame event. If the compositor has an ongoing"]
             #[doc = "grab on this device, this event sequence is sent whenever the grab"]
             #[doc = "is dismissed in the future."]
             #[doc = ""]
@@ -2082,7 +2082,7 @@ pub mod tablet_v2 {
             #[doc = "Clients should choose either value and avoid mixing degrees and"]
             #[doc = "clicks. The compositor may accumulate values smaller than a logical"]
             #[doc = "click and emulate click events when a certain threshold is met."]
-            #[doc = "Thus, wl_tablet_tool.wheel events with non-zero clicks values may"]
+            #[doc = "Thus, zwp_tablet_tool_v2.wheel events with non-zero clicks values may"]
             #[doc = "have different degrees values."]
             fn wheel(
                 &self,
@@ -2095,7 +2095,7 @@ pub mod tablet_v2 {
             #[doc = ""]
             #[doc = "If a button is held down when the tool moves in or out of proximity,"]
             #[doc = "button events are generated by the compositor. See"]
-            #[doc = "wp_tablet_tool.proximity_in and wp_tablet_tool.proximity_out for"]
+            #[doc = "zwp_tablet_tool_v2.proximity_in and zwp_tablet_tool_v2.proximity_out for"]
             #[doc = "details."]
             fn button(
                 &self,
@@ -2327,14 +2327,14 @@ pub mod tablet_v2 {
             }
         }
     }
-    #[doc = "The wp_tablet interface represents one graphics tablet device. The"]
+    #[doc = "The zwp_tablet_v2 interface represents one graphics tablet device. The"]
     #[doc = "tablet interface itself does not generate events; all events are"]
-    #[doc = "generated by wp_tablet_tool objects when in proximity above a tablet."]
+    #[doc = "generated by zwp_tablet_tool_v2 objects when in proximity above a tablet."]
     #[doc = ""]
     #[doc = "A tablet has a number of static characteristics, e.g. device name and"]
     #[doc = "pid/vid. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.tablet_added event. This initial event sequence is"]
-    #[doc = "terminated by a wp_tablet.done event."]
+    #[doc = "zwp_tablet_seat_v2.tablet_added event. This initial event sequence is"]
+    #[doc = "terminated by a zwp_tablet_v2.done event."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_v2 {
         #[doc = "Describes the bus types this tablet is connected to."]
@@ -2408,7 +2408,7 @@ pub mod tablet_v2 {
             #[doc = "If the device has no descriptive name, this event is not sent."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet.done event."]
+            #[doc = "zwp_tablet_v2.done event."]
             fn name(
                 &self,
                 connection: &mut Self::Connection,
@@ -2417,16 +2417,16 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The vendor and product IDs for the tablet device."]
             #[doc = ""]
-            #[doc = "The interpretation of the id depends on the wp_tablet.bustype."]
+            #[doc = "The interpretation of the id depends on the zwp_tablet_v2.bustype."]
             #[doc = "Prior to version v2 of this protocol, the id was implied to be a USB"]
-            #[doc = "vendor and product ID. If no wp_tablet.bustype is sent, the ID"]
+            #[doc = "vendor and product ID. If no zwp_tablet_v2.bustype is sent, the ID"]
             #[doc = "is to be interpreted as USB vendor and product ID."]
             #[doc = ""]
             #[doc = "If the device has no vendor/product ID, this event is not sent."]
             #[doc = "This can happen for virtual devices or non-USB devices, for instance."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet.done event."]
+            #[doc = "zwp_tablet_v2.done event."]
             fn id(
                 &self,
                 connection: &mut Self::Connection,
@@ -2435,11 +2435,11 @@ pub mod tablet_v2 {
                 pid: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
-            #[doc = "this wp_tablet. This information may be used to gather additional"]
+            #[doc = "this zwp_tablet_v2. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
             #[doc = ""]
             #[doc = "A device may have more than one device path. If so, multiple"]
-            #[doc = "wp_tablet.path events are sent. A device may be emulated and not"]
+            #[doc = "zwp_tablet_v2.path events are sent. A device may be emulated and not"]
             #[doc = "have a device path, and in that case this event will not be sent."]
             #[doc = ""]
             #[doc = "The format of the path is unspecified, it may be a device node, a"]
@@ -2447,7 +2447,7 @@ pub mod tablet_v2 {
             #[doc = "identify the string provided."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet.done event."]
+            #[doc = "zwp_tablet_v2.done event."]
             fn path(
                 &self,
                 connection: &mut Self::Connection,
@@ -2466,7 +2466,7 @@ pub mod tablet_v2 {
             #[doc = "Sent when the tablet has been removed from the system. When a tablet"]
             #[doc = "is removed, some tools may be removed."]
             #[doc = ""]
-            #[doc = "When this event is received, the client must wp_tablet.destroy"]
+            #[doc = "When this event is received, the client must zwp_tablet_v2.destroy"]
             #[doc = "the object."]
             fn removed(
                 &self,
@@ -2480,7 +2480,7 @@ pub mod tablet_v2 {
             #[doc = "queried, this event is not sent."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet.done event."]
+            #[doc = "zwp_tablet_v2.done event."]
             fn bustype(
                 &self,
                 connection: &mut Self::Connection,
@@ -2546,7 +2546,7 @@ pub mod tablet_v2 {
     #[doc = "A circular interaction area, such as the touch ring on the Wacom Intuos"]
     #[doc = "Pro series tablets."]
     #[doc = ""]
-    #[doc = "Events on a ring are logically grouped by the wl_tablet_pad_ring.frame"]
+    #[doc = "Events on a ring are logically grouped by the zwp_tablet_pad_ring_v2.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_ring_v2 {
@@ -2590,9 +2590,9 @@ pub mod tablet_v2 {
             const VERSION: u32 = 2u32;
             #[doc = "Request that the compositor use the provided feedback string"]
             #[doc = "associated with this ring. This request should be issued immediately"]
-            #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
+            #[doc = "after a zwp_tablet_pad_group_v2.mode_switch event from the corresponding"]
             #[doc = "group is received, or whenever the ring is mapped to a different"]
-            #[doc = "action. See wp_tablet_pad_group.mode_switch for more details."]
+            #[doc = "action. See zwp_tablet_pad_group_v2.mode_switch for more details."]
             #[doc = ""]
             #[doc = "Clients are encouraged to provide context-aware descriptions for"]
             #[doc = "the actions associated with the ring; compositors may use this"]
@@ -2604,7 +2604,7 @@ pub mod tablet_v2 {
             #[doc = "internationalization rules apply."]
             #[doc = ""]
             #[doc = "The serial argument will be that of the last"]
-            #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
+            #[doc = "zwp_tablet_pad_group_v2.mode_switch event received for the group of this"]
             #[doc = "ring. Requests providing other serials than the most recent one will be"]
             #[doc = "ignored."]
             fn set_feedback(
@@ -2657,11 +2657,11 @@ pub mod tablet_v2 {
             #[doc = "Source information for ring events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
-            #[doc = "wp_tablet_pad_ring.frame event and carries the source information"]
+            #[doc = "zwp_tablet_pad_ring_v2.frame event and carries the source information"]
             #[doc = "for all events within that frame."]
             #[doc = ""]
             #[doc = "The source specifies how this event was generated. If the source is"]
-            #[doc = "wp_tablet_pad_ring.source.finger, a wp_tablet_pad_ring.stop event"]
+            #[doc = "zwp_tablet_pad_ring_v2.source.finger, a zwp_tablet_pad_ring_v2.stop event"]
             #[doc = "will be sent when the user lifts the finger off the device."]
             #[doc = ""]
             #[doc = "This event is optional. If the source is unknown for an interaction,"]
@@ -2684,13 +2684,13 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Stop notification for ring events."]
             #[doc = ""]
-            #[doc = "For some wp_tablet_pad_ring.source types, a wp_tablet_pad_ring.stop"]
+            #[doc = "For some zwp_tablet_pad_ring_v2.source types, a zwp_tablet_pad_ring_v2.stop"]
             #[doc = "event is sent to notify a client that the interaction with the ring"]
             #[doc = "has terminated. This enables the client to implement kinetic scrolling."]
-            #[doc = "See the wp_tablet_pad_ring.source documentation for information on"]
+            #[doc = "See the zwp_tablet_pad_ring_v2.source documentation for information on"]
             #[doc = "when this event may be generated."]
             #[doc = ""]
-            #[doc = "Any wp_tablet_pad_ring.angle events with the same source after this"]
+            #[doc = "Any zwp_tablet_pad_ring_v2.angle events with the same source after this"]
             #[doc = "event should be considered as the start of a new interaction."]
             fn stop(
                 &self,
@@ -2701,13 +2701,13 @@ pub mod tablet_v2 {
             #[doc = "together. A client is expected to accumulate the data in all events"]
             #[doc = "within the frame before proceeding."]
             #[doc = ""]
-            #[doc = "All wp_tablet_pad_ring events before a wp_tablet_pad_ring.frame event belong"]
+            #[doc = "All zwp_tablet_pad_ring_v2 events before a zwp_tablet_pad_ring_v2.frame event belong"]
             #[doc = "logically together. For example, on termination of a finger interaction"]
-            #[doc = "on a ring the compositor will send a wp_tablet_pad_ring.source event,"]
-            #[doc = "a wp_tablet_pad_ring.stop event and a wp_tablet_pad_ring.frame event."]
+            #[doc = "on a ring the compositor will send a zwp_tablet_pad_ring_v2.source event,"]
+            #[doc = "a zwp_tablet_pad_ring_v2.stop event and a zwp_tablet_pad_ring_v2.frame event."]
             #[doc = ""]
-            #[doc = "A wp_tablet_pad_ring.frame event is sent for every logical event"]
-            #[doc = "group, even if the group only contains a single wp_tablet_pad_ring"]
+            #[doc = "A zwp_tablet_pad_ring_v2.frame event is sent for every logical event"]
+            #[doc = "group, even if the group only contains a single zwp_tablet_pad_ring_v2"]
             #[doc = "event. Specifically, a client may get a sequence: angle, frame,"]
             #[doc = "angle, frame, etc."]
             fn frame(
@@ -2766,7 +2766,7 @@ pub mod tablet_v2 {
     #[doc = "A linear interaction area, such as the strips found in Wacom Cintiq"]
     #[doc = "models."]
     #[doc = ""]
-    #[doc = "Events on a strip are logically grouped by the wl_tablet_pad_strip.frame"]
+    #[doc = "Events on a strip are logically grouped by the zwp_tablet_pad_strip_v2.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_strip_v2 {
@@ -2810,9 +2810,9 @@ pub mod tablet_v2 {
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
             #[doc = "associated with this strip. This request should be issued immediately"]
-            #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
+            #[doc = "after a zwp_tablet_pad_group_v2.mode_switch event from the corresponding"]
             #[doc = "group is received, or whenever the strip is mapped to a different"]
-            #[doc = "action. See wp_tablet_pad_group.mode_switch for more details."]
+            #[doc = "action. See zwp_tablet_pad_group_v2.mode_switch for more details."]
             #[doc = ""]
             #[doc = "Clients are encouraged to provide context-aware descriptions for"]
             #[doc = "the actions associated with the strip, and compositors may use this"]
@@ -2824,7 +2824,7 @@ pub mod tablet_v2 {
             #[doc = "internationalization rules apply."]
             #[doc = ""]
             #[doc = "The serial argument will be that of the last"]
-            #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
+            #[doc = "zwp_tablet_pad_group_v2.mode_switch event received for the group of this"]
             #[doc = "strip. Requests providing other serials than the most recent one will be"]
             #[doc = "ignored."]
             fn set_feedback(
@@ -2877,11 +2877,11 @@ pub mod tablet_v2 {
             #[doc = "Source information for strip events."]
             #[doc = ""]
             #[doc = "This event does not occur on its own. It is sent before a"]
-            #[doc = "wp_tablet_pad_strip.frame event and carries the source information"]
+            #[doc = "zwp_tablet_pad_strip_v2.frame event and carries the source information"]
             #[doc = "for all events within that frame."]
             #[doc = ""]
             #[doc = "The source specifies how this event was generated. If the source is"]
-            #[doc = "wp_tablet_pad_strip.source.finger, a wp_tablet_pad_strip.stop event"]
+            #[doc = "zwp_tablet_pad_strip_v2.source.finger, a zwp_tablet_pad_strip_v2.stop event"]
             #[doc = "will be sent when the user lifts their finger off the device."]
             #[doc = ""]
             #[doc = "This event is optional. If the source is unknown for an interaction,"]
@@ -2905,13 +2905,13 @@ pub mod tablet_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Stop notification for strip events."]
             #[doc = ""]
-            #[doc = "For some wp_tablet_pad_strip.source types, a wp_tablet_pad_strip.stop"]
+            #[doc = "For some zwp_tablet_pad_strip_v2.source types, a zwp_tablet_pad_strip_v2.stop"]
             #[doc = "event is sent to notify a client that the interaction with the strip"]
             #[doc = "has terminated. This enables the client to implement kinetic"]
-            #[doc = "scrolling. See the wp_tablet_pad_strip.source documentation for"]
+            #[doc = "scrolling. See the zwp_tablet_pad_strip_v2.source documentation for"]
             #[doc = "information on when this event may be generated."]
             #[doc = ""]
-            #[doc = "Any wp_tablet_pad_strip.position events with the same source after this"]
+            #[doc = "Any zwp_tablet_pad_strip_v2.position events with the same source after this"]
             #[doc = "event should be considered as the start of a new interaction."]
             fn stop(
                 &self,
@@ -2922,14 +2922,14 @@ pub mod tablet_v2 {
             #[doc = "hardware strip event. A client is expected to accumulate the data"]
             #[doc = "in all events within the frame before proceeding."]
             #[doc = ""]
-            #[doc = "All wp_tablet_pad_strip events before a wp_tablet_pad_strip.frame event belong"]
+            #[doc = "All zwp_tablet_pad_strip_v2 events before a zwp_tablet_pad_strip_v2.frame event belong"]
             #[doc = "logically together. For example, on termination of a finger interaction"]
-            #[doc = "on a strip the compositor will send a wp_tablet_pad_strip.source event,"]
-            #[doc = "a wp_tablet_pad_strip.stop event and a wp_tablet_pad_strip.frame"]
+            #[doc = "on a strip the compositor will send a zwp_tablet_pad_strip_v2.source event,"]
+            #[doc = "a zwp_tablet_pad_strip_v2.stop event and a zwp_tablet_pad_strip_v2.frame"]
             #[doc = "event."]
             #[doc = ""]
-            #[doc = "A wp_tablet_pad_strip.frame event is sent for every logical event"]
-            #[doc = "group, even if the group only contains a single wp_tablet_pad_strip"]
+            #[doc = "A zwp_tablet_pad_strip_v2.frame event is sent for every logical event"]
+            #[doc = "group, even if the group only contains a single zwp_tablet_pad_strip_v2"]
             #[doc = "event. Specifically, a client may get a sequence: position, frame,"]
             #[doc = "position, frame, etc."]
             fn frame(
@@ -2996,20 +2996,20 @@ pub mod tablet_v2 {
     #[doc = "change on the fly."]
     #[doc = ""]
     #[doc = "Pad groups will announce their features during pad initialization. Between"]
-    #[doc = "the corresponding wp_tablet_pad.group event and wp_tablet_pad_group.done, the"]
+    #[doc = "the corresponding zwp_tablet_pad_v2.group event and zwp_tablet_pad_group_v2.done, the"]
     #[doc = "pad group will announce the buttons, rings and strips contained in it,"]
     #[doc = "plus the number of supported modes."]
     #[doc = ""]
     #[doc = "Modes are a mechanism to allow multiple groups of actions for every element"]
     #[doc = "in the pad group. The number of groups and available modes in each is"]
     #[doc = "persistent across device plugs. The current mode is user-switchable, it"]
-    #[doc = "will be announced through the wp_tablet_pad_group.mode_switch event both"]
-    #[doc = "whenever it is switched, and after wp_tablet_pad.enter."]
+    #[doc = "will be announced through the zwp_tablet_pad_group_v2.mode_switch event both"]
+    #[doc = "whenever it is switched, and after zwp_tablet_pad_v2.enter."]
     #[doc = ""]
     #[doc = "The current mode logically applies to all elements in the pad group,"]
     #[doc = "although it is at clients' discretion whether to actually perform different"]
     #[doc = "actions, and/or issue the respective .set_feedback requests to notify the"]
-    #[doc = "compositor. See the wp_tablet_pad_group.mode_switch event for more details."]
+    #[doc = "compositor. See the zwp_tablet_pad_group_v2.mode_switch event for more details."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_group_v2 {
         #[doc = "Trait to implement the zwp_tablet_pad_group_v2 interface. See the module level documentation for more info"]
@@ -3020,7 +3020,7 @@ pub mod tablet_v2 {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_tablet_pad_group_v2";
             const VERSION: u32 = 2u32;
-            #[doc = "Destroy the wp_tablet_pad_group object. Objects created from this object"]
+            #[doc = "Destroy the zwp_tablet_pad_group_v2 object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
@@ -3040,15 +3040,15 @@ pub mod tablet_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "Sent on wp_tablet_pad_group initialization to announce the available"]
+            #[doc = "Sent on zwp_tablet_pad_group_v2 initialization to announce the available"]
             #[doc = "buttons in the group. Button indices start at 0, a button may only be"]
             #[doc = "in one group at a time."]
             #[doc = ""]
             #[doc = "This event is first sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad_group.done event."]
+            #[doc = "zwp_tablet_pad_group_v2.done event."]
             #[doc = ""]
             #[doc = "Some buttons are reserved by the compositor. These buttons may not be"]
-            #[doc = "assigned to any wp_tablet_pad_group. Compositors may broadcast this"]
+            #[doc = "assigned to any zwp_tablet_pad_group_v2. Compositors may broadcast this"]
             #[doc = "event in the case of changes to the mapping of these reserved buttons."]
             #[doc = "If the compositor happens to reserve all buttons in a group, this event"]
             #[doc = "will be sent with an empty array."]
@@ -3058,39 +3058,39 @@ pub mod tablet_v2 {
                 sender_id: waynest::ObjectId,
                 buttons: Vec<u8>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sent on wp_tablet_pad_group initialization to announce available rings."]
+            #[doc = "Sent on zwp_tablet_pad_group_v2 initialization to announce available rings."]
             #[doc = "One event is sent for each ring available on this pad group."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad_group.done event."]
+            #[doc = "zwp_tablet_pad_group_v2.done event."]
             fn ring(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 ring: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sent on wp_tablet_pad initialization to announce available strips."]
+            #[doc = "Sent on zwp_tablet_pad_v2 initialization to announce available strips."]
             #[doc = "One event is sent for each strip available on this pad group."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad_group.done event."]
+            #[doc = "zwp_tablet_pad_group_v2.done event."]
             fn strip(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 strip: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sent on wp_tablet_pad_group initialization to announce that the pad"]
+            #[doc = "Sent on zwp_tablet_pad_group_v2 initialization to announce that the pad"]
             #[doc = "group may switch between modes. A client may use a mode to store a"]
             #[doc = "specific configuration for buttons, rings and strips and use the"]
-            #[doc = "wl_tablet_pad_group.mode_switch event to toggle between these"]
+            #[doc = "zwp_tablet_pad_group_v2.mode_switch event to toggle between these"]
             #[doc = "configurations. Mode indices start at 0."]
             #[doc = ""]
             #[doc = "Switching modes is compositor-dependent. See the"]
-            #[doc = "wp_tablet_pad_group.mode_switch event for more details."]
+            #[doc = "zwp_tablet_pad_group_v2.mode_switch event for more details."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad_group.done event. This event is only sent when more than"]
+            #[doc = "zwp_tablet_pad_group_v2.done event. This event is only sent when more than"]
             #[doc = "more than one mode is available."]
             fn modes(
                 &self,
@@ -3122,18 +3122,18 @@ pub mod tablet_v2 {
             #[doc = "Intuos Pro, the button inside the ring may be assigned to switch"]
             #[doc = "between modes."]
             #[doc = ""]
-            #[doc = "The compositor will also send this event after wp_tablet_pad.enter on"]
+            #[doc = "The compositor will also send this event after zwp_tablet_pad_v2.enter on"]
             #[doc = "each group in order to notify of the current mode. Groups that only"]
             #[doc = "feature one mode will use mode=0 when emitting this event."]
             #[doc = ""]
             #[doc = "If a button action in the new mode differs from the action in the"]
             #[doc = "previous mode, the client should immediately issue a"]
-            #[doc = "wp_tablet_pad.set_feedback request for each changed button."]
+            #[doc = "zwp_tablet_pad_v2.set_feedback request for each changed button."]
             #[doc = ""]
             #[doc = "If a ring, strip or dial action in the new mode differs from the action"]
             #[doc = "in the previous mode, the client should immediately issue a"]
-            #[doc = "wp_tablet_ring.set_feedback, wp_tablet_strip.set_feedback or"]
-            #[doc = "wp_tablet_dial.set_feedback request for each changed ring, strip or dial."]
+            #[doc = "zwp_tablet_ring_v2.set_feedback, zwp_tablet_strip_v2.set_feedback or"]
+            #[doc = "zwp_tablet_dial_v2.set_feedback request for each changed ring, strip or dial."]
             fn mode_switch(
                 &self,
                 connection: &mut Self::Connection,
@@ -3142,11 +3142,11 @@ pub mod tablet_v2 {
                 serial: u32,
                 mode: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sent on wp_tablet_pad initialization to announce available dials."]
+            #[doc = "Sent on zwp_tablet_pad_v2 initialization to announce available dials."]
             #[doc = "One event is sent for each dial available on this pad group."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad_group.done event."]
+            #[doc = "zwp_tablet_pad_group_v2.done event."]
             fn dial(
                 &self,
                 connection: &mut Self::Connection,
@@ -3247,14 +3247,14 @@ pub mod tablet_v2 {
     #[doc = ""]
     #[doc = "A pad device has a number of static characteristics, e.g. the number"]
     #[doc = "of rings. These capabilities are sent in an event sequence after the"]
-    #[doc = "wp_tablet_seat.pad_added event before any actual events from this pad."]
-    #[doc = "This initial event sequence is terminated by a wp_tablet_pad.done"]
+    #[doc = "zwp_tablet_seat_v2.pad_added event before any actual events from this pad."]
+    #[doc = "This initial event sequence is terminated by a zwp_tablet_pad_v2.done"]
     #[doc = "event."]
     #[doc = ""]
     #[doc = "All pad features (buttons, rings, strips and dials) are logically divided into"]
     #[doc = "groups and all pads have at least one group. The available groups are"]
-    #[doc = "notified through the wp_tablet_pad.group event; the compositor will"]
-    #[doc = "emit one event per group before emitting wp_tablet_pad.done."]
+    #[doc = "notified through the zwp_tablet_pad_v2.group event; the compositor will"]
+    #[doc = "emit one event per group before emitting zwp_tablet_pad_v2.done."]
     #[doc = ""]
     #[doc = "Groups may have multiple modes. Modes allow clients to map multiple"]
     #[doc = "actions to a single pad feature. Only one mode can be active per group,"]
@@ -3302,9 +3302,9 @@ pub mod tablet_v2 {
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
             #[doc = "associated with this button. This request should be issued immediately"]
-            #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
+            #[doc = "after a zwp_tablet_pad_group_v2.mode_switch event from the corresponding"]
             #[doc = "group is received, or whenever a button is mapped to a different"]
-            #[doc = "action. See wp_tablet_pad_group.mode_switch for more details."]
+            #[doc = "action. See zwp_tablet_pad_group_v2.mode_switch for more details."]
             #[doc = ""]
             #[doc = "Clients are encouraged to provide context-aware descriptions for"]
             #[doc = "the actions associated with each button, and compositors may use"]
@@ -3313,7 +3313,7 @@ pub mod tablet_v2 {
             #[doc = ""]
             #[doc = "Button indices start at 0. Setting the feedback string on a button"]
             #[doc = "that is reserved by the compositor (i.e. not belonging to any"]
-            #[doc = "wp_tablet_pad_group) does not generate an error but the compositor"]
+            #[doc = "zwp_tablet_pad_group_v2) does not generate an error but the compositor"]
             #[doc = "is free to ignore the request."]
             #[doc = ""]
             #[doc = "The provided string 'description' is a UTF-8 encoded string to be"]
@@ -3321,7 +3321,7 @@ pub mod tablet_v2 {
             #[doc = "internationalization rules apply."]
             #[doc = ""]
             #[doc = "The serial argument will be that of the last"]
-            #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
+            #[doc = "zwp_tablet_pad_group_v2.mode_switch event received for the group of this"]
             #[doc = "button. Requests providing other serials than the most recent one will"]
             #[doc = "be ignored."]
             fn set_feedback(
@@ -3355,7 +3355,7 @@ pub mod tablet_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "Destroy the wp_tablet_pad object. Objects created from this object"]
+            #[doc = "Destroy the zwp_tablet_pad_v2 object. Objects created from this object"]
             #[doc = "are unaffected and should be destroyed separately."]
             fn destroy(
                 &self,
@@ -3375,11 +3375,11 @@ pub mod tablet_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "Sent on wp_tablet_pad initialization to announce available groups."]
+            #[doc = "Sent on zwp_tablet_pad_v2 initialization to announce available groups."]
             #[doc = "One event is sent for each pad group available."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad.done event. At least one group will be announced."]
+            #[doc = "zwp_tablet_pad_v2.done event. At least one group will be announced."]
             fn group(
                 &self,
                 connection: &mut Self::Connection,
@@ -3387,7 +3387,7 @@ pub mod tablet_v2 {
                 pad_group: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "A system-specific device path that indicates which device is behind"]
-            #[doc = "this wp_tablet_pad. This information may be used to gather additional"]
+            #[doc = "this zwp_tablet_pad_v2. This information may be used to gather additional"]
             #[doc = "information about the device, e.g. through libwacom."]
             #[doc = ""]
             #[doc = "The format of the path is unspecified, it may be a device node, a"]
@@ -3395,18 +3395,18 @@ pub mod tablet_v2 {
             #[doc = "identify the string provided."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad.done event."]
+            #[doc = "zwp_tablet_pad_v2.done event."]
             fn path(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 path: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sent on wp_tablet_pad initialization to announce the available"]
+            #[doc = "Sent on zwp_tablet_pad_v2 initialization to announce the available"]
             #[doc = "buttons."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "wp_tablet_pad.done event. This event is only sent when at least one"]
+            #[doc = "zwp_tablet_pad_v2.done event. This event is only sent when at least one"]
             #[doc = "button is available."]
             fn buttons(
                 &self,
@@ -3453,7 +3453,7 @@ pub mod tablet_v2 {
             #[doc = "is removed its pad(s) will be removed too."]
             #[doc = ""]
             #[doc = "When this event is received, the client must destroy all rings, strips"]
-            #[doc = "and groups that were offered by this pad, and issue wp_tablet_pad.destroy"]
+            #[doc = "and groups that were offered by this pad, and issue zwp_tablet_pad_v2.destroy"]
             #[doc = "the pad itself."]
             fn removed(
                 &self,
@@ -3558,7 +3558,7 @@ pub mod tablet_v2 {
     }
     #[doc = "A rotary control, e.g. a dial or a wheel."]
     #[doc = ""]
-    #[doc = "Events on a dial are logically grouped by the wl_tablet_pad_dial.frame"]
+    #[doc = "Events on a dial are logically grouped by the zwp_tablet_pad_dial_v2.frame"]
     #[doc = "event."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_tablet_pad_dial_v2 {
@@ -3572,9 +3572,9 @@ pub mod tablet_v2 {
             const VERSION: u32 = 2u32;
             #[doc = "Requests the compositor to use the provided feedback string"]
             #[doc = "associated with this dial. This request should be issued immediately"]
-            #[doc = "after a wp_tablet_pad_group.mode_switch event from the corresponding"]
+            #[doc = "after a zwp_tablet_pad_group_v2.mode_switch event from the corresponding"]
             #[doc = "group is received, or whenever the dial is mapped to a different"]
-            #[doc = "action. See wp_tablet_pad_group.mode_switch for more details."]
+            #[doc = "action. See zwp_tablet_pad_group_v2.mode_switch for more details."]
             #[doc = ""]
             #[doc = "Clients are encouraged to provide context-aware descriptions for"]
             #[doc = "the actions associated with the dial, and compositors may use this"]
@@ -3586,7 +3586,7 @@ pub mod tablet_v2 {
             #[doc = "internationalization rules apply."]
             #[doc = ""]
             #[doc = "The serial argument will be that of the last"]
-            #[doc = "wp_tablet_pad_group.mode_switch event received for the group of this"]
+            #[doc = "zwp_tablet_pad_group_v2.mode_switch event received for the group of this"]
             #[doc = "dial. Requests providing other serials than the most recent one will be"]
             #[doc = "ignored."]
             fn set_feedback(
@@ -3656,11 +3656,11 @@ pub mod tablet_v2 {
             #[doc = "hardware dial event. A client is expected to accumulate the data"]
             #[doc = "in all events within the frame before proceeding."]
             #[doc = ""]
-            #[doc = "All wp_tablet_pad_dial events before a wp_tablet_pad_dial.frame event belong"]
+            #[doc = "All zwp_tablet_pad_dial_v2 events before a zwp_tablet_pad_dial_v2.frame event belong"]
             #[doc = "logically together."]
             #[doc = ""]
-            #[doc = "A wp_tablet_pad_dial.frame event is sent for every logical event"]
-            #[doc = "group, even if the group only contains a single wp_tablet_pad_dial"]
+            #[doc = "A zwp_tablet_pad_dial_v2.frame event is sent for every logical event"]
+            #[doc = "group, even if the group only contains a single zwp_tablet_pad_dial_v2"]
             #[doc = "event. Specifically, a client may get a sequence: delta, frame,"]
             #[doc = "delta, frame, etc."]
             fn frame(
@@ -4910,7 +4910,10 @@ pub mod xdg_shell {
             #[doc = "The window geometry of a surface is its \"visible bounds\" from the"]
             #[doc = "user's perspective. Client-side decorations often have invisible"]
             #[doc = "portions like drop-shadows which should be ignored for the"]
-            #[doc = "purposes of aligning, placing and constraining windows."]
+            #[doc = "purposes of aligning, placing and constraining windows. Note that"]
+            #[doc = "in some situations, compositors may clip rendering to the window"]
+            #[doc = "geometry, so the client should avoid putting functional elements"]
+            #[doc = "outside of it."]
             #[doc = ""]
             #[doc = "The window geometry is double-buffered state, see wl_surface.commit."]
             #[doc = ""]

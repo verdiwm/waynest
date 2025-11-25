@@ -202,9 +202,14 @@ pub mod alpha_modifier_v1 {
 }
 #[doc = "The aim of the color management extension is to allow clients to know"]
 #[doc = "the color properties of outputs, and to tell the compositor about the color"]
-#[doc = "properties of their content on surfaces. Doing this enables a compositor"]
-#[doc = "to perform automatic color management of content for different outputs"]
-#[doc = "according to how content is intended to look like."]
+#[doc = "properties of their content on surfaces. All surface contents must be"]
+#[doc = "readily intended for some display, but not necessarily for the display at"]
+#[doc = "hand. Doing this enables a compositor to perform automatic color management"]
+#[doc = "of content for different outputs according to how content is intended to"]
+#[doc = "look like."]
+#[doc = ""]
+#[doc = "For an introduction, see the section \"Color management\" in the Wayland"]
+#[doc = "documentation at https://wayland.freedesktop.org/docs/html/ ."]
 #[doc = ""]
 #[doc = "The color properties are represented as an image description object which"]
 #[doc = "is immutable after it has been created. A wl_output always has an"]
@@ -214,16 +219,17 @@ pub mod alpha_modifier_v1 {
 #[doc = "description on a wl_surface to denote the color characteristics of the"]
 #[doc = "surface contents."]
 #[doc = ""]
-#[doc = "An image description includes SDR and HDR colorimetry and encoding, HDR"]
-#[doc = "metadata, and viewing environment parameters. An image description does"]
-#[doc = "not include the properties set through color-representation extension."]
-#[doc = "It is expected that the color-representation extension is used in"]
-#[doc = "conjunction with the color management extension when necessary,"]
-#[doc = "particularly with the YUV family of pixel formats."]
+#[doc = "An image description essentially defines a display and (indirectly) its"]
+#[doc = "viewing environment. An image description includes SDR and HDR colorimetry"]
+#[doc = "and encoding, HDR metadata, and some parameters related to the viewing"]
+#[doc = "environment. An image description does not include the properties set"]
+#[doc = "through color-representation extension. It is expected that the"]
+#[doc = "color-representation extension is used in conjunction with the"]
+#[doc = "color-management extension when necessary, particularly with the YUV family"]
+#[doc = "of pixel formats."]
 #[doc = ""]
-#[doc = "Recommendation ITU-T H.273"]
-#[doc = "\"Coding-independent code points for video signal type identification\""]
-#[doc = "shall be referred to as simply H.273 here."]
+#[doc = "The normative appendix for this protocol is in the appendix.md file beside"]
+#[doc = "this XML file."]
 #[doc = ""]
 #[doc = "The color-and-hdr repository"]
 #[doc = "(https://gitlab.freedesktop.org/pq/color-and-hdr) contains"]
@@ -371,13 +377,9 @@ pub mod color_management_v1 {
                 (*self as u32).fmt(f)
             }
         }
-        #[doc = "Named color primaries used to encode well-known sets of primaries. H.273"]
-        #[doc = "is the authority, when it comes to the exact values of primaries and"]
-        #[doc = "authoritative specifications, where an equivalent code point exists."]
+        #[doc = "Named color primaries used to encode well-known sets of primaries."]
         #[doc = ""]
         #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
-        #[doc = ""]
-        #[doc = "Descriptions do list the specifications for convenience."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -422,13 +424,11 @@ pub mod color_management_v1 {
             }
         }
         #[doc = "Named transfer functions used to represent well-known transfer"]
-        #[doc = "characteristics. H.273 is the authority, when it comes to the exact"]
-        #[doc = "formulas and authoritative specifications, where an equivalent code"]
-        #[doc = "point exists."]
+        #[doc = "characteristics of displays."]
         #[doc = ""]
         #[doc = "A value of 0 is invalid and will never be present in the list of enums."]
         #[doc = ""]
-        #[doc = "Descriptions do list the specifications for convenience."]
+        #[doc = "See appendix.md for the formulae."]
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -1042,17 +1042,17 @@ pub mod color_management_v1 {
             #[doc = "All image descriptions which are ready (see wp_image_description_v1)"]
             #[doc = "are allowed and must always be accepted by the compositor."]
             #[doc = ""]
-            #[doc = "A rendering intent provides the client's preference on how content"]
-            #[doc = "colors should be mapped to each output. The render_intent value must"]
-            #[doc = "be one advertised by the compositor with"]
+            #[doc = "When an image description is set on a surface, it establishes an"]
+            #[doc = "explicit link between surface pixel values and surface colorimetry."]
+            #[doc = "This link may be undefined for some pixel values, see the image"]
+            #[doc = "description creator interfaces for the conditions. Non-finite"]
+            #[doc = "floating-point values (NaN, Inf) always have an undefined colorimetry."]
+            #[doc = ""]
+            #[doc = "A rendering intent provides the client's preference on how surface"]
+            #[doc = "colorimetry should be mapped to each output. The render_intent value"]
+            #[doc = "must be one advertised by the compositor with"]
             #[doc = "wp_color_manager_v1.render_intent event, otherwise the protocol error"]
             #[doc = "render_intent is raised."]
-            #[doc = ""]
-            #[doc = "When an image description is set on a surface, the Transfer"]
-            #[doc = "Characteristics of the image description defines the valid range of"]
-            #[doc = "the nominal (real-valued) color channel values. The processing of"]
-            #[doc = "out-of-range color channel values is undefined, but compositors are"]
-            #[doc = "recommended to clamp the values to the valid range when possible."]
             #[doc = ""]
             #[doc = "By default, a surface does not have an associated image description"]
             #[doc = "nor a rendering intent. The handling of color on such surfaces is"]
@@ -1337,6 +1337,10 @@ pub mod color_management_v1 {
     #[doc = "Once all properties have been set, the create request must be used to"]
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
+    #[doc = ""]
+    #[doc = "The link between a pixel value (a device value in ICC) and its respective"]
+    #[doc = "colorimetry is defined by the details of the particular ICC profile."]
+    #[doc = "Those details also determine when colorimetry becomes undefined."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_creator_icc_v1 {
         #[repr(u32)]
@@ -1527,6 +1531,20 @@ pub mod color_management_v1 {
     #[doc = "Once all properties have been set, the create request must be used to"]
     #[doc = "create the image description object, destroying the creator in the"]
     #[doc = "process."]
+    #[doc = ""]
+    #[doc = "A viewer, who is viewing the display defined by the resulting image"]
+    #[doc = "description (the viewing environment included), is assumed to be fully"]
+    #[doc = "adapted to the primary color volume's white point."]
+    #[doc = ""]
+    #[doc = "Any of the following conditions will cause the colorimetry of a pixel"]
+    #[doc = "to become undefined:"]
+    #[doc = "- Values outside of the defined range of the transfer characteristic."]
+    #[doc = "- Tristimulus that exceeds the target color volume."]
+    #[doc = "- If extended_target_volume is not supported: tristimulus that exceeds"]
+    #[doc = "the primary color volume."]
+    #[doc = ""]
+    #[doc = "The closest correspondence to an image description created through this"]
+    #[doc = "interface is the Display class of profiles in ICC."]
     #[allow(clippy::too_many_arguments)]
     pub mod wp_image_description_creator_params_v1 {
         #[repr(u32)]
@@ -1616,7 +1634,7 @@ pub mod color_management_v1 {
             #[doc = "functions."]
             #[doc = ""]
             #[doc = "When the resulting image description is attached to an image, the"]
-            #[doc = "content should be encoded and decoded according to the industry standard"]
+            #[doc = "content should be decoded according to the industry standard"]
             #[doc = "practices for the transfer characteristic."]
             #[doc = ""]
             #[doc = "Only names advertised with wp_color_manager_v1 event supported_tf_named"]
@@ -1635,9 +1653,6 @@ pub mod color_management_v1 {
             #[doc = "positive half of the curve through the origin. The valid domain and"]
             #[doc = "range of the curve are all finite real numbers. This curve represents"]
             #[doc = "the conversion from electrical to optical color channel values."]
-            #[doc = ""]
-            #[doc = "When the resulting image description is attached to an image, the"]
-            #[doc = "content should be encoded with the inverse of the power curve."]
             #[doc = ""]
             #[doc = "The curve exponent shall be multiplied by 10000 to get the argument eexp"]
             #[doc = "value to carry the precision of 4 decimals."]
@@ -1700,8 +1715,8 @@ pub mod color_management_v1 {
                 w_y: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sets the primary color volume luminance range and the reference white"]
-            #[doc = "luminance level. These values include the minimum display emission"]
-            #[doc = "and ambient flare luminances, assumed to be optically additive and have"]
+            #[doc = "luminance level. These values include the minimum display emission, but"]
+            #[doc = "not external flare. The minimum display emission is assumed to have"]
             #[doc = "the chromaticity of the primary color volume white point."]
             #[doc = ""]
             #[doc = "The default luminances from"]
@@ -2042,11 +2057,13 @@ pub mod color_management_v1 {
             }
         }
     }
-    #[doc = "An image description carries information about the color encoding used on"]
-    #[doc = "a surface when attached to a wl_surface via"]
+    #[doc = "An image description carries information about the pixel color encoding"]
+    #[doc = "and its intended display and viewing environment. The image description is"]
+    #[doc = "attached to a wl_surface via"]
     #[doc = "wp_color_management_surface_v1.set_image_description. A compositor can use"]
     #[doc = "this information to decode pixel values into colorimetrically meaningful"]
-    #[doc = "quantities."]
+    #[doc = "quantities, which allows the compositor to transform the surface contents"]
+    #[doc = "to become suitable for various displays and viewing environments."]
     #[doc = ""]
     #[doc = "Note, that the wp_image_description_v1 object is not ready to be used"]
     #[doc = "immediately after creation. The object eventually delivers either the"]
@@ -2936,6 +2953,8 @@ pub mod color_representation_v1 {
             PixelFormat = 3u32,
             #[doc = "forbidden request on inert object"]
             Inert = 4u32,
+            #[doc = "invalid chroma location"]
+            ChromaLocation = 5u32,
         }
         impl From<Error> for u32 {
             fn from(value: Error) -> Self {
@@ -2950,6 +2969,7 @@ pub mod color_representation_v1 {
                     2u32 => Ok(Self::Coefficients),
                     3u32 => Ok(Self::PixelFormat),
                     4u32 => Ok(Self::Inert),
+                    5u32 => Ok(Self::ChromaLocation),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -3184,6 +3204,9 @@ pub mod color_representation_v1 {
             #[doc = "Set the chroma location type which defines the position of downsampled"]
             #[doc = "chroma samples, corresponding to Chroma420SampleLocType code points in"]
             #[doc = "H.273."]
+            #[doc = ""]
+            #[doc = "An invalid chroma location enum value raises the \"chroma_location\""]
+            #[doc = "protocol error."]
             #[doc = ""]
             #[doc = "A call to wl_surface.commit verifies that the pixel format and chroma"]
             #[doc = "location type in the committed surface contents are compatible, if"]
@@ -4713,7 +4736,7 @@ pub mod ext_background_effect_v1 {
                 (*self as u32).fmt(f)
             }
         }
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the compositor supports applying blur"] const Blur = 0u32 ; } }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "the compositor supports applying blur"] const Blur = 1u32 ; } }
         impl From<Capability> for u32 {
             fn from(value: Capability) -> Self {
                 value.bits()
