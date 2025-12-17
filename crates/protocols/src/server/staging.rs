@@ -308,6 +308,7 @@ pub mod color_management_v1 {
             Absolute = 3u32,
             #[doc = "media-relative colorimetric + black point compensation"]
             RelativeBpc = 4u32,
+            AbsoluteNoAdaptation = 5u32,
         }
         impl From<RenderIntent> for u32 {
             fn from(value: RenderIntent) -> Self {
@@ -323,6 +324,7 @@ pub mod color_management_v1 {
                     2u32 => Ok(Self::Saturation),
                     3u32 => Ok(Self::Absolute),
                     4u32 => Ok(Self::RelativeBpc),
+                    5u32 => Ok(Self::AbsoluteNoAdaptation),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -446,6 +448,7 @@ pub mod color_management_v1 {
             St2084Pq = 11u32,
             St428 = 12u32,
             Hlg = 13u32,
+            CompoundPower24 = 14u32,
         }
         impl From<TransferFunction> for u32 {
             fn from(value: TransferFunction) -> Self {
@@ -469,6 +472,7 @@ pub mod color_management_v1 {
                     11u32 => Ok(Self::St2084Pq),
                     12u32 => Ok(Self::St428),
                     13u32 => Ok(Self::Hlg),
+                    14u32 => Ok(Self::CompoundPower24),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -485,7 +489,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_manager_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
             #[doc = "objects in any way."]
             fn destroy(
@@ -608,8 +612,22 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This request retrieves the image description backing a reference."]
+            #[doc = ""]
+            #[doc = "The get_information request can be used if and only if the request that"]
+            #[doc = "creates the reference allows it."]
+            fn get_image_description(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                image_description: waynest::ObjectId,
+                reference: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
+            #[doc = ""]
+            #[doc = "A compositor must not advertise intents that are deprecated in the"]
+            #[doc = "bound version of the interface."]
             fn supported_intent(
                 &self,
                 connection: &mut Self::Connection,
@@ -637,6 +655,9 @@ pub mod color_management_v1 {
             }
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each compositor supported feature listed in the enumeration."]
+            #[doc = ""]
+            #[doc = "A compositor must not advertise features that are deprecated in the"]
+            #[doc = "bound version of the interface."]
             fn supported_feature(
                 &self,
                 connection: &mut Self::Connection,
@@ -665,6 +686,9 @@ pub mod color_management_v1 {
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named transfer function the compositor supports with the"]
             #[doc = "parametric image description creator."]
+            #[doc = ""]
+            #[doc = "A compositor must not advertise transfer functions that are deprecated"]
+            #[doc = "in the bound version of the interface."]
             fn supported_tf_named(
                 &self,
                 connection: &mut Self::Connection,
@@ -691,6 +715,9 @@ pub mod color_management_v1 {
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each named set of primaries the compositor supports with the"]
             #[doc = "parametric image description creator."]
+            #[doc = ""]
+            #[doc = "A compositor must not advertise names that are deprecated in the"]
+            #[doc = "bound version of the interface."]
             fn supported_primaries_named(
                 &self,
                 connection: &mut Self::Connection,
@@ -838,6 +865,28 @@ pub mod color_management_v1 {
                             self.create_windows_scrgb(connection, sender_id, image_description)
                                 .await
                         }
+                        7u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let reference = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.get_image_description({}, {})",
+                                sender_id,
+                                image_description,
+                                reference
+                            );
+                            self.get_image_description(
+                                connection,
+                                sender_id,
+                                image_description,
+                                reference,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -860,7 +909,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_management_output_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
             fn destroy(
@@ -1016,7 +1065,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_management_surface_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
             #[doc = "unset_image_description."]
             fn destroy(
@@ -1176,7 +1225,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
             fn destroy(
                 &self,
@@ -1234,22 +1283,8 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The preferred image description is the one which likely has the most"]
-            #[doc = "performance and/or quality benefits for the compositor if used by the"]
-            #[doc = "client for its wl_surface contents. This event is sent whenever the"]
-            #[doc = "compositor changes the wl_surface's preferred image description."]
-            #[doc = ""]
-            #[doc = "This event sends the identity of the new preferred state as the argument,"]
-            #[doc = "so clients who are aware of the image description already can reuse it."]
-            #[doc = "Otherwise, if the client client wants to know what the preferred image"]
-            #[doc = "description is, it shall use the get_preferred request."]
-            #[doc = ""]
-            #[doc = "The preferred image description is not automatically used for anything."]
-            #[doc = "It is only a hint, and clients may set any valid image description with"]
-            #[doc = "set_image_description, but there might be performance and color accuracy"]
-            #[doc = "improvements by providing the wl_surface contents in the preferred"]
-            #[doc = "image description. Therefore clients that can, should render according"]
-            #[doc = "to the preferred image description"]
+            #[doc = "Starting from interface version 2, 'preferred_changed2' is sent instead"]
+            #[doc = "of this event. See the 'preferred_changed2' event for the definition."]
             fn preferred_changed(
                 &self,
                 connection: &mut Self::Connection,
@@ -1268,6 +1303,50 @@ pub mod color_management_v1 {
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The preferred image description is the one which likely has the most"]
+            #[doc = "performance and/or quality benefits for the compositor if used by the"]
+            #[doc = "client for its wl_surface contents. This event is sent whenever the"]
+            #[doc = "compositor changes the wl_surface's preferred image description."]
+            #[doc = ""]
+            #[doc = "This event sends the identity of the new preferred state as the argument,"]
+            #[doc = "so clients who are aware of the image description already can reuse it."]
+            #[doc = "Otherwise, if the client client wants to know what the preferred image"]
+            #[doc = "description is, it shall use the get_preferred request."]
+            #[doc = ""]
+            #[doc = "The preferred image description is not automatically used for anything."]
+            #[doc = "It is only a hint, and clients may set any valid image description with"]
+            #[doc = "set_image_description, but there might be performance and color accuracy"]
+            #[doc = "improvements by providing the wl_surface contents in the preferred"]
+            #[doc = "image description. Therefore clients that can, should render according"]
+            #[doc = "to the preferred image description"]
+            fn preferred_changed2(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                identity_hi: u32,
+                identity_lo: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_color_management_surface_feedback_v1#{}.preferred_changed2({}, {})",
+                        sender_id,
+                        identity_hi,
+                        identity_lo
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(identity_hi)
+                        .put_uint(identity_lo)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1388,7 +1467,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Create an image description object based on the ICC information"]
             #[doc = "previously set on this object. A compositor must parse the ICC data in"]
             #[doc = "some undefined but finite amount of time."]
@@ -1595,7 +1674,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Create an image description object based on the parameters previously"]
             #[doc = "set on this object."]
             #[doc = ""]
@@ -1603,14 +1682,16 @@ pub mod color_management_v1 {
             #[doc = "complete, the protocol error incomplete_set is raised. For the"]
             #[doc = "definition of a complete set, see the description of this interface."]
             #[doc = ""]
-            #[doc = "The protocol error invalid_luminance is raised if any of the following"]
-            #[doc = "requirements is not met:"]
+            #[doc = "When both max_cll and max_fall are set, max_fall must be less or equal"]
+            #[doc = "to max_cll otherwise the invalid_luminance protocol error is raised."]
+            #[doc = ""]
+            #[doc = "In version 1, these following conditions also result in the"]
+            #[doc = "invalid_luminance protocol error. Version 2 and later do not have this"]
+            #[doc = "requirement."]
             #[doc = "- When max_cll is set, it must be greater than min L and less or equal"]
             #[doc = "to max L of the mastering luminance range."]
             #[doc = "- When max_fall is set, it must be greater than min L and less or equal"]
             #[doc = "to max L of the mastering luminance range."]
-            #[doc = "- When both max_cll and max_fall are set, max_fall must be less or equal"]
-            #[doc = "to max_cll."]
             #[doc = ""]
             #[doc = "If the particular combination of the parameter set is not supported"]
             #[doc = "by the compositor, the resulting image description object shall"]
@@ -2151,7 +2232,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
             #[doc = ""]
             #[doc = "Destroying a wp_image_description_v1 object has no side-effects, not"]
@@ -2213,33 +2294,16 @@ pub mod color_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
-            #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
-            #[doc = "used through other interfaces."]
+            #[doc = "Starting from interface version 2, the 'ready2' event is sent instead"]
+            #[doc = "of this event."]
             #[doc = ""]
-            #[doc = "Every ready wp_image_description_v1 protocol object refers to an"]
-            #[doc = "underlying image description record in the compositor. Multiple protocol"]
-            #[doc = "objects may end up referring to the same record. Clients may identify"]
-            #[doc = "these \"copies\" by comparing their id numbers: if the numbers from two"]
-            #[doc = "protocol objects are identical, the protocol objects refer to the same"]
-            #[doc = "image description record. Two different image description records"]
-            #[doc = "cannot have the same id number simultaneously. The id number does not"]
-            #[doc = "change during the lifetime of the image description record."]
+            #[doc = "For the definition of this event, see the 'ready2' event. The"]
+            #[doc = "difference to this event is as follows."]
             #[doc = ""]
             #[doc = "The id number is valid only as long as the protocol object is alive. If"]
             #[doc = "all protocol objects referring to the same image description record are"]
             #[doc = "destroyed, the id number may be recycled for a different image"]
             #[doc = "description record."]
-            #[doc = ""]
-            #[doc = "Image description id number is not a protocol object id. Zero is"]
-            #[doc = "reserved as an invalid id number. It shall not be possible for a client"]
-            #[doc = "to refer to an image description by its id number in protocol. The id"]
-            #[doc = "numbers might not be portable between Wayland connections. A compositor"]
-            #[doc = "shall not send an invalid id number."]
-            #[doc = ""]
-            #[doc = "This identity allows clients to de-duplicate image description records"]
-            #[doc = "and avoid get_information request if they already have the image"]
-            #[doc = "description information."]
             fn ready(
                 &self,
                 connection: &mut Self::Connection,
@@ -2258,6 +2322,58 @@ pub mod color_management_v1 {
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Once this event has been sent, the wp_image_description_v1 object is"]
+            #[doc = "deemed \"ready\". Ready objects can be used to send requests and can be"]
+            #[doc = "used through other interfaces."]
+            #[doc = ""]
+            #[doc = "Every ready wp_image_description_v1 protocol object refers to an"]
+            #[doc = "underlying image description record in the compositor. Multiple protocol"]
+            #[doc = "objects may end up referring to the same record. Clients may identify"]
+            #[doc = "these \"copies\" by comparing their id numbers: if the numbers from two"]
+            #[doc = "protocol objects are identical, the protocol objects refer to the same"]
+            #[doc = "image description record. Two different image description records"]
+            #[doc = "cannot have the same id number simultaneously. The id number does not"]
+            #[doc = "change during the lifetime of the image description record."]
+            #[doc = ""]
+            #[doc = "Image description id number is not a protocol object id. Zero is"]
+            #[doc = "reserved as an invalid id number. It shall not be possible for a client"]
+            #[doc = "to refer to an image description by its id number in protocol. The id"]
+            #[doc = "numbers might not be portable between Wayland connections. A compositor"]
+            #[doc = "shall not send an invalid id number."]
+            #[doc = ""]
+            #[doc = "Compositors must not recycle image description id numbers."]
+            #[doc = ""]
+            #[doc = "This identity allows clients to de-duplicate image description records"]
+            #[doc = "and avoid get_information request if they already have the image"]
+            #[doc = "description information."]
+            fn ready2(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                identity_hi: u32,
+                identity_lo: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> wp_image_description_v1#{}.ready2({}, {})",
+                        sender_id,
+                        identity_hi,
+                        identity_lo
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(identity_hi)
+                        .put_uint(identity_lo)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2328,7 +2444,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_info_v1";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Signals the end of information events and destroys the object."]
             fn done(
                 &self,
@@ -2719,6 +2835,53 @@ pub mod color_management_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "This object is a reference to an image description. This interface is"]
+    #[doc = "frozen at version 1 to allow other protocols to create"]
+    #[doc = "wp_image_description_v1 objects."]
+    #[doc = ""]
+    #[doc = "The wp_color_manager_v1.get_image_description request can be used to"]
+    #[doc = "retrieve the underlying image description."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod wp_image_description_reference_v1 {
+        #[doc = "Trait to implement the wp_image_description_reference_v1 interface. See the module level documentation for more info"]
+        pub trait WpImageDescriptionReferenceV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "wp_image_description_reference_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy this object. This has no effect on the referenced image"]
+            #[doc = "description."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_image_description_reference_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
