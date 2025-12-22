@@ -44,10 +44,10 @@ const PROTOCOLS: [(&str, &str); 14] = [
     ("mutter", "mutter/src/wayland/protocol"),
 ];
 
-const SKIP: [&str; 4] = [
+const SKIP: [&str; 3] = [
     "tests.xml",
     "cosmic-image-source-unstable-v1.xml",
-    "treeland-personalization-manager-v1.xml",
+    // "treeland-personalization-manager-v1.xml",
     "treeland-capture-unstable-v1.xml",
 ];
 
