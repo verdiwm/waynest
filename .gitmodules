@@ -45,3 +45,6 @@
 [submodule "external/protocols/mutter"]
 	path = external/protocols/mutter
 	url = https://gitlab.gnome.org/GNOME/mutter.git
+[submodule "external/protocols/river"]
+	path = external/protocols/river
+	url = https://codeberg.org/river/river.git
