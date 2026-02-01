@@ -1,96 +1,149 @@
 #[allow(clippy::module_inception)]
-pub mod treeland_ddm {
-    #[doc = "This object is primarily used for establish connection between"]
-    #[doc = "treeland and ddm."]
+pub mod treeland_app_id_resolver_v1 {
+    #[doc = "Create a resolver object. Typically exactly one privileged helper"]
+    #[doc = "(a Wayland client with DBus access) binds this interface and serves"]
+    #[doc = "identification requests coming from the compositor."]
     #[allow(clippy::too_many_arguments)]
-    pub mod treeland_ddm {
-        #[doc = "Trait to implement the treeland_ddm interface. See the module level documentation for more info"]
-        pub trait TreelandDdm
+    pub mod treeland_app_id_resolver_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "A resolver is already registered in this session with the manager"]
+            ResolverAlreadyExists = 1u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::ResolverAlreadyExists),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_app_id_resolver_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandAppIdResolverManagerV1
         where
             Self: std::marker::Sync,
         {
             type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_ddm";
+            const INTERFACE: &'static str = "treeland_app_id_resolver_manager_v1";
             const VERSION: u32 = 1u32;
-            #[doc = "Send treeland to Greeter mode."]
-            fn switch_to_greeter(
+            fn destroy(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Set lockscreen user to username. Ignore when username is \"ddm\"."]
-            fn switch_to_user(
+            #[doc = "Create or bind a resolver object. Only one resolver may be registered"]
+            #[doc = "per session. Treeland is a multi-user compositor; different user"]
+            #[doc = "sessions may each register their own resolver. If a resolver is"]
+            #[doc = "already bound in the same session, the compositor will report an"]
+            #[doc = "error on the manager and will NOT create a new resolver object for"]
+            #[doc = "this request."]
+            fn get_resolver(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                username: String,
+                id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Activate treeland session. This will makes treeland try to take"]
-            #[doc = "control of screen."]
-            fn activate_session(
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_app_id_resolver_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_app_id_resolver_manager_v1#{}.get_resolver({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_resolver(connection, sender_id, id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The compositor sends identify_request with a unique request_id and a pidfd."]
+    #[doc = "The client must answer exactly once via respond(request_id, app_id). If"]
+    #[doc = "resolution fails respond with an empty string."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_app_id_resolver_v1 {
+        #[doc = "Trait to implement the treeland_app_id_resolver_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandAppIdResolverV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_app_id_resolver_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Respond to an identify_request. The sandbox_engine_name must be provided and"]
+            #[doc = "matches the context in which the process is running (container, sandbox, etc)."]
+            #[doc = "If resolution fails, respond with an empty app_id."]
+            fn respond(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                request_id: u32,
+                app_id: String,
+                sandbox_engine_name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn destroy(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Deactivate treeland session. This will release control of the"]
-            #[doc = "screen, but not to close the current seats."]
-            fn deactivate_session(
+            fn identify_request(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Enable treeland rendering. This is primarily called after"]
-            #[doc = "disable_render to resume treeland."]
-            fn enable_render(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Disable treeland rendering. This will prevent treeland from"]
-            #[doc = "output to DRM device."]
-            fn disable_render(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                callback: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Call ddm to switch current virtual terminal to vtnr. ddm should"]
-            #[doc = "take care of the switch and call ioctl respectively."]
-            fn switch_to_vt(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                vtnr: i32,
+                request_id: u32,
+                pidfd: std::os::fd::BorrowedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_ddm#{}.switch_to_vt({})", sender_id, vtnr);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(vtnr).build();
+                    tracing::debug!(
+                        "-> treeland_app_id_resolver_v1#{}.identify_request({}, {})",
+                        sender_id,
+                        request_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&pidfd)
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(request_id)
+                        .put_fd(pidfd)
+                        .build();
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Call ddm to acquire control of VT at vtnr. ddm should call"]
-            #[doc = "VT_SETMODE respectively."]
-            fn acquire_vt(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                vtnr: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_ddm#{}.acquire_vt({})", sender_id, vtnr);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(vtnr).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -107,48 +160,34 @@ pub mod treeland_ddm {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
                         0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_ddm#{}.switch_to_greeter()", sender_id,);
-                            self.switch_to_greeter(connection, sender_id).await
-                        }
-                        1u16 => {
-                            let username = message
+                            let request_id = message.uint()?;
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let sandbox_engine_name = message
                                 .string()?
                                 .ok_or(waynest::ProtocolError::MalformedPayload)?;
                             #[cfg(feature = "tracing")]
                             tracing::debug!(
-                                "treeland_ddm#{}.switch_to_user(\"{}\")",
+                                "treeland_app_id_resolver_v1#{}.respond({}, \"{}\", \"{}\")",
                                 sender_id,
-                                username
+                                request_id,
+                                app_id,
+                                sandbox_engine_name
                             );
-                            self.switch_to_user(connection, sender_id, username).await
-                        }
-                        2u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_ddm#{}.activate_session()", sender_id,);
-                            self.activate_session(connection, sender_id).await
-                        }
-                        3u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_ddm#{}.deactivate_session()", sender_id,);
-                            self.deactivate_session(connection, sender_id).await
-                        }
-                        4u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_ddm#{}.enable_render()", sender_id,);
-                            self.enable_render(connection, sender_id).await
-                        }
-                        5u16 => {
-                            let callback = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_ddm#{}.disable_render({})",
+                            self.respond(
+                                connection,
                                 sender_id,
-                                callback
-                            );
-                            self.disable_render(connection, sender_id, callback).await
+                                request_id,
+                                app_id,
+                                sandbox_engine_name,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_app_id_resolver_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -1040,1740 +1079,6 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                                 sender_id,
                             );
                             self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod treeland_shortcut_manager_v1 {
-    #[doc = "This interface allows a client to get some shell's info."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_shortcut_manager_v1 {
-        #[doc = "Trait to implement the treeland_shortcut_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutManagerV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_shortcut_manager_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
-            #[doc = "If the format is wrong, the synthesizer will give a \"format error\". If the shortcut"]
-            #[doc = "key is already registered,"]
-            #[doc = "the compositor will give a \"register error\" and issue a destruction to the context."]
-            fn register_shortcut_context(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                key: String,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let key = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_shortcut_manager_v1#{}.register_shortcut_context(\"{}\", {})",
-                                sender_id,
-                                key,
-                                id
-                            );
-                            self.register_shortcut_context(connection, sender_id, key, id)
-                                .await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "This interface allows a client to listen a shortcut action."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_shortcut_context_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "shortcut register failed"]
-            RegisterFailed = 1u32,
-        }
-        impl From<Error> for u32 {
-            fn from(value: Error) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Error {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::RegisterFailed),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_shortcut_context_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandShortcutContextV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_shortcut_context_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "Destroy the context object."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn shortcut(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_shortcut_context_v1#{}.shortcut()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_shortcut_context_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod treeland_virtual_output_manager_v1 {
-    #[doc = "This interface is a manager that allows the creation of copied output."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_virtual_output_manager_v1 {
-        #[doc = "Trait to implement the treeland_virtual_output_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputManagerV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_virtual_output_manager_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "Create virtual output that can be used when setting screen copy mode for use"]
-            #[doc = "on multiple screens. Virtual outputs are created to mirror multiple wl_output"]
-            #[doc = "outputs."]
-            #[doc = ""]
-            #[doc = "The element of the array is the name of the screen."]
-            #[doc = ""]
-            #[doc = "The first element of the array outputs is the screen to be copied, and"]
-            #[doc = "the subsequent elements are the screens to be mirrored."]
-            #[doc = ""]
-            #[doc = "The client calling this interface will not generate an additional wl_output"]
-            #[doc = "object on the client."]
-            fn create_virtual_output(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-                name: String,
-                outputs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Gets a list of virtual output names."]
-            fn get_virtual_output_list(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The client obtains the corresponding virtual_output_v1 object"]
-            #[doc = "through the virtual output name."]
-            fn get_virtual_output(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                name: String,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sends a list of virtual output names to the client."]
-            fn virtual_output_list(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                names: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_virtual_output_manager_v1#{}.virtual_output_list(array[{}])",
-                        sender_id,
-                        names.len()
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(names).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let outputs = message.array()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_virtual_output_manager_v1#{}.create_virtual_output({}, \"{}\", array[{}])",
-                                sender_id,
-                                id,
-                                name,
-                                outputs.len()
-                            );
-                            self.create_virtual_output(connection, sender_id, id, name, outputs)
-                                .await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_virtual_output_manager_v1#{}.get_virtual_output_list()",
-                                sender_id,
-                            );
-                            self.get_virtual_output_list(connection, sender_id).await
-                        }
-                        2u16 => {
-                            let name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_virtual_output_manager_v1#{}.get_virtual_output(\"{}\", {})",
-                                sender_id,
-                                name,
-                                id
-                            );
-                            self.get_virtual_output(connection, sender_id, name, id)
-                                .await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_virtual_output_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "Group name is empty"]
-            InvalidGroupName = 0u32,
-            #[doc = "The number of screens applying for copy mode is less than 2"]
-            InvalidScreenNumber = 1u32,
-            #[doc = "Output does not exist"]
-            InvalidOutput = 2u32,
-        }
-        impl From<Error> for u32 {
-            fn from(value: Error) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Error {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::InvalidGroupName),
-                    1u32 => Ok(Self::InvalidScreenNumber),
-                    2u32 => Ok(Self::InvalidOutput),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_virtual_output_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandVirtualOutputV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_virtual_output_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "Destroy the output."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event is sent to the client when any screen in the array changes."]
-            #[doc = ""]
-            #[doc = "The element of the array is the name of the screen."]
-            #[doc = ""]
-            #[doc = "The first element of the array outputs is the screen to be copied, and"]
-            #[doc = "the subsequent elements are the screens to be mirrored."]
-            #[doc = ""]
-            #[doc = "When the primary screen (the screen being copied) is removed, a successor"]
-            #[doc = "is selected from the queue as the primary screen, and the queue information"]
-            #[doc = "is updated."]
-            fn outputs(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                name: String,
-                outputs: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_virtual_output_v1#{}.outputs(\"{}\", array[{}])",
-                        sender_id,
-                        name,
-                        outputs.len()
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_string(Some(name))
-                        .put_array(outputs)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "When an error occurs, an error event is emitted, terminating the replication"]
-            #[doc = "mode request issued by the client."]
-            fn error(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                code: u32,
-                message: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_virtual_output_v1#{}.error({}, \"{}\")",
-                        sender_id,
-                        code,
-                        message
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(code)
-                        .put_string(Some(message))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_virtual_output_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod treeland_wallpaper_color_v1 {
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_wallpaper_color_manager_v1 {
-        #[doc = "Trait to implement the treeland_wallpaper_color_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWallpaperColorManagerV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_wallpaper_color_manager_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "Monitor the wallpaper color of a given screen."]
-            fn watch(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                output: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Stop monitor the wallpaper color for the given screen."]
-            fn unwatch(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                output: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The client no longer cares about wallpaper_color."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Tell the client that the wallpaper color of the screen it is monitoring has changed."]
-            #[doc = "This event will also be sent immediately when the client requests a watch."]
-            fn output_color(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                output: String,
-                isdark: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_wallpaper_color_manager_v1#{}.output_color(\"{}\", {})",
-                        sender_id,
-                        output,
-                        isdark
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_string(Some(output))
-                        .put_uint(isdark)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let output = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_wallpaper_color_manager_v1#{}.watch(\"{}\")",
-                                sender_id,
-                                output
-                            );
-                            self.watch(connection, sender_id, output).await
-                        }
-                        1u16 => {
-                            let output = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_wallpaper_color_manager_v1#{}.unwatch(\"{}\")",
-                                sender_id,
-                                output
-                            );
-                            self.unwatch(connection, sender_id, output).await
-                        }
-                        2u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_wallpaper_color_manager_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod treeland_window_management_v1 {
-    #[doc = "This interface manages application windows."]
-    #[doc = "It provides requests to show and hide the desktop and emits"]
-    #[doc = "an event every time a window is created so that the client can"]
-    #[doc = "use it to manage the window."]
-    #[doc = ""]
-    #[doc = "Only one client can bind this interface at a time."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_window_management_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum DesktopState {
-            Normal = 0u32,
-            Show = 1u32,
-            PreviewShow = 2u32,
-        }
-        impl From<DesktopState> for u32 {
-            fn from(value: DesktopState) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for DesktopState {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::Show),
-                    2u32 => Ok(Self::PreviewShow),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for DesktopState {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_window_management_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowManagementV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_window_management_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "Tell the compositor to show/hide the desktop."]
-            fn set_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                state: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is"]
-            #[doc = "entered"]
-            #[doc = "or left."]
-            #[doc = ""]
-            #[doc = "On binding the interface the current state is sent."]
-            fn show_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                state: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_window_management_v1#{}.show_desktop({})",
-                        sender_id,
-                        state
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let state = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_window_management_v1#{}.set_desktop({})",
-                                sender_id,
-                                state
-                            );
-                            self.set_desktop(connection, sender_id, state).await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_window_management_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod treeland_app_id_resolver_v1 {
-    #[doc = "Create a resolver object. Typically exactly one privileged helper"]
-    #[doc = "(a Wayland client with DBus access) binds this interface and serves"]
-    #[doc = "identification requests coming from the compositor."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_app_id_resolver_manager_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "A resolver is already registered in this session with the manager"]
-            ResolverAlreadyExists = 1u32,
-        }
-        impl From<Error> for u32 {
-            fn from(value: Error) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Error {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::ResolverAlreadyExists),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_app_id_resolver_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandAppIdResolverManagerV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_app_id_resolver_manager_v1";
-            const VERSION: u32 = 1u32;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Create or bind a resolver object. Only one resolver may be registered"]
-            #[doc = "per session. Treeland is a multi-user compositor; different user"]
-            #[doc = "sessions may each register their own resolver. If a resolver is"]
-            #[doc = "already bound in the same session, the compositor will report an"]
-            #[doc = "error on the manager and will NOT create a new resolver object for"]
-            #[doc = "this request."]
-            fn get_resolver(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_app_id_resolver_manager_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            self.destroy(connection, sender_id).await
-                        }
-                        1u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_app_id_resolver_manager_v1#{}.get_resolver({})",
-                                sender_id,
-                                id
-                            );
-                            self.get_resolver(connection, sender_id, id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "The compositor sends identify_request with a unique request_id and a pidfd."]
-    #[doc = "The client must answer exactly once via respond(request_id, app_id). If"]
-    #[doc = "resolution fails respond with an empty string."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_app_id_resolver_v1 {
-        #[doc = "Trait to implement the treeland_app_id_resolver_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandAppIdResolverV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_app_id_resolver_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "Respond to an identify_request. The sandbox_engine_name must be provided and"]
-            #[doc = "matches the context in which the process is running (container, sandbox, etc)."]
-            #[doc = "If resolution fails, respond with an empty app_id."]
-            fn respond(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                request_id: u32,
-                app_id: String,
-                sandbox_engine_name: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn identify_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                request_id: u32,
-                pidfd: std::os::fd::BorrowedFd,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_app_id_resolver_v1#{}.identify_request({}, {})",
-                        sender_id,
-                        request_id,
-                        std::os::fd::AsRawFd::as_raw_fd(&pidfd)
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(request_id)
-                        .put_fd(pidfd)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let request_id = message.uint()?;
-                            let app_id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let sandbox_engine_name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_app_id_resolver_v1#{}.respond({}, \"{}\", \"{}\")",
-                                sender_id,
-                                request_id,
-                                app_id,
-                                sandbox_engine_name
-                            );
-                            self.respond(
-                                connection,
-                                sender_id,
-                                request_id,
-                                app_id,
-                                sandbox_engine_name,
-                            )
-                            .await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_app_id_resolver_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod treeland_dde_shell_v1 {
-    #[doc = "This interface allows DDE change some treeland function."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_dde_shell_manager_v1 {
-        #[doc = "Trait to implement the treeland_dde_shell_manager_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellManagerV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_dde_shell_manager_v1";
-            const VERSION: u32 = 1u32;
-            fn get_window_overlap_checker(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Create a shell surface for an existing wl_surface."]
-            #[doc = ""]
-            #[doc = "Only one shell surface can be associated with a given surface."]
-            #[doc = ""]
-            #[doc = "Recommended for use with xdg_surface."]
-            fn get_shell_surface(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-                surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Create a new dde active for a given seat."]
-            fn get_treeland_dde_active(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-                seat: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Create a new multitaskview context for toggle."]
-            fn get_treeland_multitaskview(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Create a new window picker to pick window."]
-            fn get_treeland_window_picker(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Create a new lockscreen context for toggle."]
-            fn get_treeland_lockscreen(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_manager_v1#{}.get_window_overlap_checker({})",
-                                sender_id,
-                                id
-                            );
-                            self.get_window_overlap_checker(connection, sender_id, id)
-                                .await
-                        }
-                        1u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let surface = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_manager_v1#{}.get_shell_surface({}, {})",
-                                sender_id,
-                                id,
-                                surface
-                            );
-                            self.get_shell_surface(connection, sender_id, id, surface)
-                                .await
-                        }
-                        2u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let seat = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_manager_v1#{}.get_treeland_dde_active({}, {})",
-                                sender_id,
-                                id,
-                                seat
-                            );
-                            self.get_treeland_dde_active(connection, sender_id, id, seat)
-                                .await
-                        }
-                        3u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_manager_v1#{}.get_treeland_multitaskview({})",
-                                sender_id,
-                                id
-                            );
-                            self.get_treeland_multitaskview(connection, sender_id, id)
-                                .await
-                        }
-                        4u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_manager_v1#{}.get_treeland_window_picker({})",
-                                sender_id,
-                                id
-                            );
-                            self.get_treeland_window_picker(connection, sender_id, id)
-                                .await
-                        }
-                        5u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_manager_v1#{}.get_treeland_lockscreen({})",
-                                sender_id,
-                                id
-                            );
-                            self.get_treeland_lockscreen(connection, sender_id, id)
-                                .await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "A treeland_dde_shell_handle_v1 object represents an opened toplevel window. Each"]
-    #[doc = "app may have multiple opened toplevels."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is currently in the testing"]
-    #[doc = "phase. Backward compatible changes may be added together with the"]
-    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
-    #[doc = "only be done by creating a new major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_window_overlap_checker {
-        bitflags::bitflags! { # [doc = "same layershell"] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
-        impl From<Anchor> for u32 {
-            fn from(value: Anchor) -> Self {
-                value.bits()
-            }
-        }
-        impl TryFrom<u32> for Anchor {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for Anchor {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_window_overlap_checker interface. See the module level documentation for more info"]
-        pub trait TreelandWindowOverlapChecker
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_window_overlap_checker";
-            const VERSION: u32 = 1u32;
-            #[doc = "This interface is used to receive the detected surface."]
-            #[doc = "When the xdgshell window in the workspace overlaps with the detected window,"]
-            #[doc = "an event will be sent to notify the client to process it."]
-            #[doc = "The window position will only be recorded when this interface is called."]
-            #[doc = "If the window moves, this interface needs to be called again."]
-            fn update(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                width: i32,
-                height: i32,
-                anchor: Anchor,
-                output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Destroys the treeland_window_overlap_checker object."]
-            #[doc = ""]
-            #[doc = "This request should be called either when the client does not want to"]
-            #[doc = "use the toplevel anymore or after the closed event to finalize the"]
-            #[doc = "destruction of the object."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event is sent when windows overlapped."]
-            #[doc = "This event is sent only once."]
-            fn enter(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_window_overlap_checker#{}.enter()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "This event is sent when windows not overlapped."]
-            #[doc = "This event is sent only once."]
-            fn leave(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_window_overlap_checker#{}.leave()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let width = message.int()?;
-                            let height = message.int()?;
-                            let anchor = message.uint()?;
-                            let output = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_window_overlap_checker#{}.update({}, {}, {}, {})",
-                                sender_id,
-                                width,
-                                height,
-                                anchor,
-                                output
-                            );
-                            self.update(
-                                connection,
-                                sender_id,
-                                width,
-                                height,
-                                anchor.try_into()?,
-                                output,
-                            )
-                            .await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_window_overlap_checker#{}.destroy()",
-                                sender_id,
-                            );
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "An interface that may be implemented by a wl_surface, for"]
-    #[doc = "implementations that provide the shell user interface."]
-    #[doc = ""]
-    #[doc = "It provides requests to set surface role, set skip, set the position"]
-    #[doc = "set auto placement in output coordinates."]
-    #[doc = ""]
-    #[doc = "On the server side the object is automatically destroyed when"]
-    #[doc = "the related wl_surface is destroyed.  On client side,"]
-    #[doc = "treeland_dde_shell_surface_v1.destroy() must be called before"]
-    #[doc = "destroying the wl_surface object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_dde_shell_surface_v1 {
-        #[doc = "These values indicate which roles a surface can be rendered in, They"]
-        #[doc = "are ordered by z depth."]
-        #[doc = ""]
-        #[doc = "Displayed below wlr-layer-shell, at the overlay level of the workspace."]
-        #[doc = ""]
-        #[doc = "Multiple surfaces can share a single role, and ordering within a single"]
-        #[doc = "role is undefined."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Role {
-            Overlay = 1u32,
-        }
-        impl From<Role> for u32 {
-            fn from(value: Role) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Role {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::Overlay),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Role {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_dde_shell_surface_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeShellSurfaceV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_dde_shell_surface_v1";
-            const VERSION: u32 = 1u32;
-            #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
-            #[doc = "wl_surface object that was turned into a shell surface with the"]
-            #[doc = "treeland_shell_v1.get_treeland_dde_shell_surface request."]
-            #[doc = ""]
-            #[doc = "The shell surface role is lost and wl_surface is unmapped."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Move the surface to new coordinates."]
-            #[doc = ""]
-            #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
-            #[doc = "is 1970,50 in global coordinates space."]
-            fn set_surface_position(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                x: i32,
-                y: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Assign a role to a shell surface."]
-            fn set_role(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                role : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_shell_surface_v1 :: Role,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Set the vertical alignment of the surface within the cursor width."]
-            #[doc = ""]
-            #[doc = "Do not use it together with set_surface_position to avoid exceptions."]
-            #[doc = ""]
-            #[doc = "The position of the surface will be controlled by the compositor after the"]
-            #[doc = "request, including preventing it from being displayed beyond the edge of"]
-            #[doc = "the output."]
-            fn set_auto_placement(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                y_offset: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
-            fn set_skip_switcher(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                skip: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a dock preview."]
-            fn set_skip_dock_preview(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                skip: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a mutitask view."]
-            fn set_skip_muti_task_view(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                skip: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Setting this will determine whether the surface can receive keyboard focus."]
-            #[doc = "When set to 0, the surface will not receive keyboard focus even when clicked or activated."]
-            #[doc = "When set to 1 (default), the surface will receive keyboard focus normally."]
-            fn set_accept_keyboard_focus(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                accept: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.destroy()",
-                                sender_id,
-                            );
-                            self.destroy(connection, sender_id).await
-                        }
-                        1u16 => {
-                            let x = message.int()?;
-                            let y = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_surface_position({}, {})",
-                                sender_id,
-                                x,
-                                y
-                            );
-                            self.set_surface_position(connection, sender_id, x, y).await
-                        }
-                        2u16 => {
-                            let role = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_role({})",
-                                sender_id,
-                                role
-                            );
-                            self.set_role(connection, sender_id, role.try_into()?).await
-                        }
-                        3u16 => {
-                            let y_offset = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_auto_placement({})",
-                                sender_id,
-                                y_offset
-                            );
-                            self.set_auto_placement(connection, sender_id, y_offset)
-                                .await
-                        }
-                        4u16 => {
-                            let skip = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_skip_switcher({})",
-                                sender_id,
-                                skip
-                            );
-                            self.set_skip_switcher(connection, sender_id, skip).await
-                        }
-                        5u16 => {
-                            let skip = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_skip_dock_preview({})",
-                                sender_id,
-                                skip
-                            );
-                            self.set_skip_dock_preview(connection, sender_id, skip)
-                                .await
-                        }
-                        6u16 => {
-                            let skip = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_skip_muti_task_view({})",
-                                sender_id,
-                                skip
-                            );
-                            self.set_skip_muti_task_view(connection, sender_id, skip)
-                                .await
-                        }
-                        7u16 => {
-                            let accept = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_dde_shell_surface_v1#{}.set_accept_keyboard_focus({})",
-                                sender_id,
-                                accept
-                            );
-                            self.set_accept_keyboard_focus(connection, sender_id, accept)
-                                .await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "An interface used to monitor special events."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_dde_active_v1 {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Reason {
-            Mouse = 0u32,
-            Wheel = 1u32,
-        }
-        impl From<Reason> for u32 {
-            fn from(value: Reason) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Reason {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Mouse),
-                    1u32 => Ok(Self::Wheel),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Reason {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the treeland_dde_active_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandDdeActiveV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_dde_active_v1";
-            const VERSION: u32 = 1u32;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn active_in(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_dde_active_v1#{}.active_in({})",
-                        sender_id,
-                        reason
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(reason.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn active_out(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> treeland_dde_active_v1#{}.active_out({})",
-                        sender_id,
-                        reason
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(reason.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn start_drag(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_dde_active_v1#{}.start_drag()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn drop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_dde_active_v1#{}.drop()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_dde_active_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "An interface used to control multitaskview."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_multitaskview_v1 {
-        #[doc = "Trait to implement the treeland_multitaskview_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandMultitaskviewV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_multitaskview_v1";
-            const VERSION: u32 = 1u32;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Show or hide the multitaskview."]
-            fn toggle(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_multitaskview_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_multitaskview_v1#{}.toggle()", sender_id,);
-                            self.toggle(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "An interface used to pick window and return credentials."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_window_picker_v1 {
-        #[doc = "Trait to implement the treeland_window_picker_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandWindowPickerV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_window_picker_v1";
-            const VERSION: u32 = 1u32;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Pick a window to get information."]
-            fn pick(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                hint: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Picked window information."]
-            fn window(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                pid: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> treeland_window_picker_v1#{}.window({})", sender_id, pid);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(pid).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_window_picker_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        1u16 => {
-                            let hint = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "treeland_window_picker_v1#{}.pick(\"{}\")",
-                                sender_id,
-                                hint
-                            );
-                            self.pick(connection, sender_id, hint).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "An interface used to operate lockscreen."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod treeland_lockscreen_v1 {
-        #[doc = "Trait to implement the treeland_lockscreen_v1 interface. See the module level documentation for more info"]
-        pub trait TreelandLockscreenV1
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_lockscreen_v1";
-            const VERSION: u32 = 1u32;
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Lock the screen."]
-            fn lock(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Show shutdown."]
-            fn shutdown(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Switch user."]
-            fn switch_user(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_request(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_lockscreen_v1#{}.destroy()", sender_id,);
-                            self.destroy(connection, sender_id).await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_lockscreen_v1#{}.lock()", sender_id,);
-                            self.lock(connection, sender_id).await
-                        }
-                        2u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_lockscreen_v1#{}.shutdown()", sender_id,);
-                            self.shutdown(connection, sender_id).await
-                        }
-                        3u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_lockscreen_v1#{}.switch_user()", sender_id,);
-                            self.switch_user(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -4663,8 +2968,2508 @@ pub mod treeland_prelaunch_splash_v1 {
     }
 }
 #[allow(clippy::module_inception)]
-pub mod treeland_screensaver {
-    #[doc = "This object implements a simple idle inhibit protocol."]
+pub mod treeland_shortcut_manager_v1 {
+    #[doc = "This interface allows a client to get some shell's info."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_shortcut_manager_v1 {
+        #[doc = "Trait to implement the treeland_shortcut_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandShortcutManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_shortcut_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "The format of the shortcut key is 'Modify+Key', such as 'Ctrl+Alt+T'."]
+            #[doc = "If the format is wrong, the synthesizer will give a \"format error\". If the shortcut"]
+            #[doc = "key is already registered,"]
+            #[doc = "the compositor will give a \"register error\" and issue a destruction to the context."]
+            fn register_shortcut_context(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                key: String,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let key = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_shortcut_manager_v1#{}.register_shortcut_context(\"{}\", {})",
+                                sender_id,
+                                key,
+                                id
+                            );
+                            self.register_shortcut_context(connection, sender_id, key, id)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "This interface allows a client to listen a shortcut action."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_shortcut_context_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "shortcut register failed"]
+            RegisterFailed = 1u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::RegisterFailed),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_shortcut_context_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandShortcutContextV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_shortcut_context_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the context object."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn shortcut(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_shortcut_context_v1#{}.shortcut()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_shortcut_context_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_virtual_output_manager_v1 {
+    #[doc = "This interface is a manager that allows the creation of copied output."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_virtual_output_manager_v1 {
+        #[doc = "Trait to implement the treeland_virtual_output_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandVirtualOutputManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_virtual_output_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Create virtual output that can be used when setting screen copy mode for use"]
+            #[doc = "on multiple screens. Virtual outputs are created to mirror multiple wl_output"]
+            #[doc = "outputs."]
+            #[doc = ""]
+            #[doc = "The element of the array is the name of the screen."]
+            #[doc = ""]
+            #[doc = "The first element of the array outputs is the screen to be copied, and"]
+            #[doc = "the subsequent elements are the screens to be mirrored."]
+            #[doc = ""]
+            #[doc = "The client calling this interface will not generate an additional wl_output"]
+            #[doc = "object on the client."]
+            fn create_virtual_output(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                name: String,
+                outputs: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Gets a list of virtual output names."]
+            fn get_virtual_output_list(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The client obtains the corresponding virtual_output_v1 object"]
+            #[doc = "through the virtual output name."]
+            fn get_virtual_output(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                name: String,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Sends a list of virtual output names to the client."]
+            fn virtual_output_list(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                names: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_virtual_output_manager_v1#{}.virtual_output_list(array[{}])",
+                        sender_id,
+                        names.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(names).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let outputs = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_virtual_output_manager_v1#{}.create_virtual_output({}, \"{}\", array[{}])",
+                                sender_id,
+                                id,
+                                name,
+                                outputs.len()
+                            );
+                            self.create_virtual_output(connection, sender_id, id, name, outputs)
+                                .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_virtual_output_manager_v1#{}.get_virtual_output_list()",
+                                sender_id,
+                            );
+                            self.get_virtual_output_list(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_virtual_output_manager_v1#{}.get_virtual_output(\"{}\", {})",
+                                sender_id,
+                                name,
+                                id
+                            );
+                            self.get_virtual_output(connection, sender_id, name, id)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "A treeland_virtual_output_v1 represents a set virtual screen output object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_virtual_output_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "Group name is empty"]
+            InvalidGroupName = 0u32,
+            #[doc = "The number of screens applying for copy mode is less than 2"]
+            InvalidScreenNumber = 1u32,
+            #[doc = "Output does not exist"]
+            InvalidOutput = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidGroupName),
+                    1u32 => Ok(Self::InvalidScreenNumber),
+                    2u32 => Ok(Self::InvalidOutput),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_virtual_output_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandVirtualOutputV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_virtual_output_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the output."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event is sent to the client when any screen in the array changes."]
+            #[doc = ""]
+            #[doc = "The element of the array is the name of the screen."]
+            #[doc = ""]
+            #[doc = "The first element of the array outputs is the screen to be copied, and"]
+            #[doc = "the subsequent elements are the screens to be mirrored."]
+            #[doc = ""]
+            #[doc = "When the primary screen (the screen being copied) is removed, a successor"]
+            #[doc = "is selected from the queue as the primary screen, and the queue information"]
+            #[doc = "is updated."]
+            fn outputs(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                name: String,
+                outputs: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_virtual_output_v1#{}.outputs(\"{}\", array[{}])",
+                        sender_id,
+                        name,
+                        outputs.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(name))
+                        .put_array(outputs)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "When an error occurs, an error event is emitted, terminating the replication"]
+            #[doc = "mode request issued by the client."]
+            fn error(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                code: u32,
+                message: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_virtual_output_v1#{}.error({}, \"{}\")",
+                        sender_id,
+                        code,
+                        message
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(code)
+                        .put_string(Some(message))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_virtual_output_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_wallpaper_color_v1 {
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_wallpaper_color_manager_v1 {
+        #[doc = "Trait to implement the treeland_wallpaper_color_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWallpaperColorManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_wallpaper_color_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Monitor the wallpaper color of a given screen."]
+            fn watch(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Stop monitor the wallpaper color for the given screen."]
+            fn unwatch(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The client no longer cares about wallpaper_color."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Tell the client that the wallpaper color of the screen it is monitoring has changed."]
+            #[doc = "This event will also be sent immediately when the client requests a watch."]
+            fn output_color(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output: String,
+                isdark: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_color_manager_v1#{}.output_color(\"{}\", {})",
+                        sender_id,
+                        output,
+                        isdark
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(output))
+                        .put_uint(isdark)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let output = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_color_manager_v1#{}.watch(\"{}\")",
+                                sender_id,
+                                output
+                            );
+                            self.watch(connection, sender_id, output).await
+                        }
+                        1u16 => {
+                            let output = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_color_manager_v1#{}.unwatch(\"{}\")",
+                                sender_id,
+                                output
+                            );
+                            self.unwatch(connection, sender_id, output).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_color_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_window_management_v1 {
+    #[doc = "This interface manages application windows."]
+    #[doc = "It provides requests to show and hide the desktop and emits"]
+    #[doc = "an event every time a window is created so that the client can"]
+    #[doc = "use it to manage the window."]
+    #[doc = ""]
+    #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_window_management_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum DesktopState {
+            Normal = 0u32,
+            Show = 1u32,
+            PreviewShow = 2u32,
+        }
+        impl From<DesktopState> for u32 {
+            fn from(value: DesktopState) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for DesktopState {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Normal),
+                    1u32 => Ok(Self::Show),
+                    2u32 => Ok(Self::PreviewShow),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for DesktopState {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_window_management_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWindowManagementV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_window_management_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Tell the compositor to show/hide the desktop."]
+            fn set_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                state: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is"]
+            #[doc = "entered"]
+            #[doc = "or left."]
+            #[doc = ""]
+            #[doc = "On binding the interface the current state is sent."]
+            fn show_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                state: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_window_management_v1#{}.show_desktop({})",
+                        sender_id,
+                        state
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_management_v1#{}.set_desktop({})",
+                                sender_id,
+                                state
+                            );
+                            self.set_desktop(connection, sender_id, state).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_management_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[doc = "This protocol allows authorized application to capture output contents or window"]
+#[doc = "contents(useful for window streaming)."]
+#[allow(clippy::module_inception)]
+pub mod treeland_capture_unstable_v1 {
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_capture_session_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum CancelReason {
+            #[doc = "temporary error, source will produce more frames"]
+            Temporary = 0u32,
+            #[doc = "fatal error, source will not produce frames"]
+            Permanent = 1u32,
+            #[doc = "temporary error, source will produce more frames"]
+            Resizing = 2u32,
+        }
+        impl From<CancelReason> for u32 {
+            fn from(value: CancelReason) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for CancelReason {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Temporary),
+                    1u32 => Ok(Self::Permanent),
+                    2u32 => Ok(Self::Resizing),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for CancelReason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "clients should copy frame before processing"] const Transient = 1u32 ; } }
+        impl From<Flags> for u32 {
+            fn from(value: Flags) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for Flags {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_capture_session_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandCaptureSessionV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_capture_session_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Unreferences the frame. This request must be called as soon as it's no longer valid."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Start session and keeps sending frame."]
+            fn start(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This is the ACK to the current \"ready\" event. The next \"frame\" event will be sent only when current"]
+            #[doc = "\"ready\" event is acknowledged. The timestamp should be the same as the one sent in \"ready\" event."]
+            #[doc = "If the frame has the \"transient\" flag, all objects sent before become invalid after this event."]
+            fn frame_done(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_usec: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Main event supplying the client with information about the frame. If the capture didn't fail, this event is always"]
+            #[doc = "emitted first before any other events."]
+            #[doc = "When mask is provided, x and y should be offset relative to mask surface origin. Otherwise offset_x and offset_y should always"]
+            #[doc = "be zero."]
+            fn frame(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                offset_x: i32,
+                offset_y: i32,
+                width: u32,
+                height: u32,
+                buffer_flags: u32,
+                flags : super :: super :: super :: treeland :: treeland_capture_unstable_v1 :: treeland_capture_session_v1 :: Flags,
+                format: u32,
+                mod_high: u32,
+                mod_low: u32,
+                num_objects: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_session_v1#{}.frame({}, {}, {}, {}, {}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        offset_x,
+                        offset_y,
+                        width,
+                        height,
+                        buffer_flags,
+                        flags,
+                        format,
+                        mod_high,
+                        mod_low,
+                        num_objects
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(offset_x)
+                        .put_int(offset_y)
+                        .put_uint(width)
+                        .put_uint(height)
+                        .put_uint(buffer_flags)
+                        .put_uint(flags.into())
+                        .put_uint(format)
+                        .put_uint(mod_high)
+                        .put_uint(mod_low)
+                        .put_uint(num_objects)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn object(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                index: u32,
+                fd: std::os::fd::BorrowedFd,
+                size: u32,
+                offset: u32,
+                stride: u32,
+                plane_index: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_session_v1#{}.object({}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        index,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd),
+                        size,
+                        offset,
+                        stride,
+                        plane_index
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(index)
+                        .put_fd(fd)
+                        .put_uint(size)
+                        .put_uint(offset)
+                        .put_uint(stride)
+                        .put_uint(plane_index)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event is sent as soon as the frame is presented, indicating it is available for reading. This event"]
+            #[doc = "includes the time at which presentation happened at."]
+            fn ready(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                tv_sec_hi: u32,
+                tv_sec_lo: u32,
+                tv_nsec: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_session_v1#{}.ready({}, {}, {})",
+                        sender_id,
+                        tv_sec_hi,
+                        tv_sec_lo,
+                        tv_nsec
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(tv_sec_hi)
+                        .put_uint(tv_sec_lo)
+                        .put_uint(tv_nsec)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "If the capture failed or if the frame is no longer valid after the \"frame\" event has been emitted, this"]
+            #[doc = "event will be used to inform the client to scrap the frame."]
+            fn cancel(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                reason : super :: super :: super :: treeland :: treeland_capture_unstable_v1 :: treeland_capture_session_v1 :: CancelReason,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_session_v1#{}.cancel({})",
+                        sender_id,
+                        reason
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(reason.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_session_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_session_v1#{}.start()", sender_id,);
+                            self.start(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let tv_sec_hi = message.uint()?;
+                            let tv_sec_lo = message.uint()?;
+                            let tv_usec = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_session_v1#{}.frame_done({}, {}, {})",
+                                sender_id,
+                                tv_sec_hi,
+                                tv_sec_lo,
+                                tv_usec
+                            );
+                            self.frame_done(connection, sender_id, tv_sec_hi, tv_sec_lo, tv_usec)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_capture_frame_v1 {
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Flags : u32 { # [doc = "contents are y-inverted"] const YInverted = 1u32 ; } }
+        impl From<Flags> for u32 {
+            fn from(value: Flags) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for Flags {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_capture_frame_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandCaptureFrameV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_capture_frame_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroys the context. This request can be sent at any time by the client."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Copy capture contents to provided buffer"]
+            fn copy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                buffer: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Inform client to prepare buffer."]
+            fn buffer(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                format: super::super::super::core::wayland::wl_shm::Format,
+                width: u32,
+                height: u32,
+                stride: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_frame_v1#{}.buffer({}, {}, {}, {})",
+                        sender_id,
+                        format,
+                        width,
+                        height,
+                        stride
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(format.into())
+                        .put_uint(width)
+                        .put_uint(height)
+                        .put_uint(stride)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Inform client that all buffer formats supported are emitted."]
+            fn buffer_done(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_capture_frame_v1#{}.buffer_done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Provides flags about the frame. This event is sent once before the"]
+            #[doc = "\"ready\" event."]
+            fn flags(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                flags : super :: super :: super :: treeland :: treeland_capture_unstable_v1 :: treeland_capture_frame_v1 :: Flags,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_frame_v1#{}.flags({})",
+                        sender_id,
+                        flags
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(flags.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Inform that buffer is ready for reading"]
+            fn ready(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_capture_frame_v1#{}.ready()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Inform that frame copy fails."]
+            fn failed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_capture_frame_v1#{}.failed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_frame_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let buffer = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_frame_v1#{}.copy({})",
+                                sender_id,
+                                buffer
+                            );
+                            self.copy(connection, sender_id, buffer).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_capture_context_v1 {
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct SourceType : u32 { # [doc = "output source type"] const Output = 1u32 ; # [doc = "window source type"] const Window = 2u32 ; # [doc = "region source type"] const Region = 4u32 ; } }
+        impl From<SourceType> for u32 {
+            fn from(value: SourceType) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for SourceType {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for SourceType {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum SourceFailure {
+            #[doc = "selector is occupied by other context"]
+            SelectorBusy = 1u32,
+            #[doc = "User cancel this context from compositor"]
+            UserCancel = 2u32,
+            #[doc = "Source has been destroyed"]
+            SourceDestroyed = 3u32,
+            #[doc = "other failure"]
+            Other = 4u32,
+        }
+        impl From<SourceFailure> for u32 {
+            fn from(value: SourceFailure) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for SourceFailure {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::SelectorBusy),
+                    2u32 => Ok(Self::UserCancel),
+                    3u32 => Ok(Self::SourceDestroyed),
+                    4u32 => Ok(Self::Other),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for SourceFailure {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_capture_context_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandCaptureContextV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_capture_context_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroys the context. This request can be sent at any time by the client."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Selector is provided by compositor. Client can provide source hint to hint compositor"]
+            #[doc = "to provide certain kinds of source."]
+            fn select_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                source_hint: SourceType,
+                freeze: u32,
+                with_cursor: u32,
+                mask: Option<waynest::ObjectId>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event can be called just once. A second call might result in a protocol error cause"]
+            #[doc = "we just provide transient"]
+            fn capture(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                frame: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Often used by a screen recorder."]
+            fn create_session(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                session: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event supplies the client some information about the capture source, including"]
+            #[doc = "the capture region relative to mask and source type."]
+            fn source_ready(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                region_x: i32,
+                region_y: i32,
+                region_width: u32,
+                region_height: u32,
+                source_type: SourceType,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_context_v1#{}.source_ready({}, {}, {}, {}, {})",
+                        sender_id,
+                        region_x,
+                        region_y,
+                        region_width,
+                        region_height,
+                        source_type
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(region_x)
+                        .put_int(region_y)
+                        .put_uint(region_width)
+                        .put_uint(region_height)
+                        .put_uint(source_type.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "There could a lot of reasons but the most common one is that selector is busy"]
+            fn source_failed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                reason: SourceFailure,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_capture_context_v1#{}.source_failed({})",
+                        sender_id,
+                        reason
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(reason.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_context_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let source_hint = message.uint()?;
+                            let freeze = message.uint()?;
+                            let with_cursor = message.uint()?;
+                            let mask = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_context_v1#{}.select_source({}, {}, {}, {})",
+                                sender_id,
+                                source_hint,
+                                freeze,
+                                with_cursor,
+                                mask.as_ref().map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.select_source(
+                                connection,
+                                sender_id,
+                                source_hint.try_into()?,
+                                freeze,
+                                with_cursor,
+                                mask,
+                            )
+                            .await
+                        }
+                        2u16 => {
+                            let frame = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_context_v1#{}.capture({})",
+                                sender_id,
+                                frame
+                            );
+                            self.capture(connection, sender_id, frame).await
+                        }
+                        3u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_context_v1#{}.create_session({})",
+                                sender_id,
+                                session
+                            );
+                            self.create_session(connection, sender_id, session).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_capture_manager_v1 {
+        #[doc = "Trait to implement the treeland_capture_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandCaptureManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_capture_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the treeland_capture_manager_v1 object."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn get_context(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                context: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_capture_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let context = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_capture_manager_v1#{}.get_context({})",
+                                sender_id,
+                                context
+                            );
+                            self.get_context(connection, sender_id, context).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_dde_shell_v1 {
+    #[doc = "This interface allows DDE change some treeland function."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_dde_shell_manager_v1 {
+        #[doc = "Trait to implement the treeland_dde_shell_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandDdeShellManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_dde_shell_manager_v1";
+            const VERSION: u32 = 1u32;
+            fn get_window_overlap_checker(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a shell surface for an existing wl_surface."]
+            #[doc = ""]
+            #[doc = "Only one shell surface can be associated with a given surface."]
+            #[doc = ""]
+            #[doc = "Recommended for use with xdg_surface."]
+            fn get_shell_surface(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new dde active for a given seat."]
+            fn get_treeland_dde_active(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                seat: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new multitaskview context for toggle."]
+            fn get_treeland_multitaskview(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new window picker to pick window."]
+            fn get_treeland_window_picker(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new lockscreen context for toggle."]
+            fn get_treeland_lockscreen(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Move the top-left point of a XWayland surface"]
+            #[doc = "specified with Window ID, to a position that has"]
+            #[doc = "(dx, dy) offset from the top-left point of a wl_surface"]
+            #[doc = ""]
+            #[doc = "Once the server finished process it send \"done\" to the"]
+            #[doc = "callback. The callback data 0 means no error occured,"]
+            #[doc = "1 means something went wrong and the move cannot be"]
+            #[doc = "done."]
+            fn set_xwindow_position_relative(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                callback: waynest::ObjectId,
+                wid: u32,
+                anchor: waynest::ObjectId,
+                dx: waynest::Fixed,
+                dy: waynest::Fixed,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_window_overlap_checker({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_window_overlap_checker(connection, sender_id, id)
+                                .await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_shell_surface({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_shell_surface(connection, sender_id, id, surface)
+                                .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_dde_active({}, {})",
+                                sender_id,
+                                id,
+                                seat
+                            );
+                            self.get_treeland_dde_active(connection, sender_id, id, seat)
+                                .await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_multitaskview({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_treeland_multitaskview(connection, sender_id, id)
+                                .await
+                        }
+                        4u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_window_picker({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_treeland_window_picker(connection, sender_id, id)
+                                .await
+                        }
+                        5u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.get_treeland_lockscreen({})",
+                                sender_id,
+                                id
+                            );
+                            self.get_treeland_lockscreen(connection, sender_id, id)
+                                .await
+                        }
+                        6u16 => {
+                            let callback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let wid = message.uint()?;
+                            let anchor = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let dx = message.fixed()?;
+                            let dy = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_manager_v1#{}.set_xwindow_position_relative({}, {}, {}, {}, {})",
+                                sender_id,
+                                callback,
+                                wid,
+                                anchor,
+                                dx,
+                                dy
+                            );
+                            self.set_xwindow_position_relative(
+                                connection, sender_id, callback, wid, anchor, dx, dy,
+                            )
+                            .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "A treeland_dde_shell_handle_v1 object represents an opened toplevel window. Each"]
+    #[doc = "app may have multiple opened toplevels."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is currently in the testing"]
+    #[doc = "phase. Backward compatible changes may be added together with the"]
+    #[doc = "corresponding interface version bump. Backward incompatible changes can"]
+    #[doc = "only be done by creating a new major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_window_overlap_checker {
+        bitflags::bitflags! { # [doc = "same layershell"] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Anchor : u32 { # [doc = "the top edge of the anchor rectangle"] const Top = 1u32 ; # [doc = "the bottom edge of the anchor rectangle"] const Bottom = 2u32 ; # [doc = "the left edge of the anchor rectangle"] const Left = 4u32 ; # [doc = "the right edge of the anchor rectangle"] const Right = 8u32 ; } }
+        impl From<Anchor> for u32 {
+            fn from(value: Anchor) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for Anchor {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Anchor {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_window_overlap_checker interface. See the module level documentation for more info"]
+        pub trait TreelandWindowOverlapChecker
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_window_overlap_checker";
+            const VERSION: u32 = 1u32;
+            #[doc = "This interface is used to receive the detected surface."]
+            #[doc = "When the xdgshell window in the workspace overlaps with the detected window,"]
+            #[doc = "an event will be sent to notify the client to process it."]
+            #[doc = "The window position will only be recorded when this interface is called."]
+            #[doc = "If the window moves, this interface needs to be called again."]
+            fn update(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                width: i32,
+                height: i32,
+                anchor: Anchor,
+                output: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Destroys the treeland_window_overlap_checker object."]
+            #[doc = ""]
+            #[doc = "This request should be called either when the client does not want to"]
+            #[doc = "use the toplevel anymore or after the closed event to finalize the"]
+            #[doc = "destruction of the object."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event is sent when windows overlapped."]
+            #[doc = "This event is sent only once."]
+            fn enter(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_window_overlap_checker#{}.enter()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event is sent when windows not overlapped."]
+            #[doc = "This event is sent only once."]
+            fn leave(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_window_overlap_checker#{}.leave()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            let anchor = message.uint()?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_overlap_checker#{}.update({}, {}, {}, {})",
+                                sender_id,
+                                width,
+                                height,
+                                anchor,
+                                output
+                            );
+                            self.update(
+                                connection,
+                                sender_id,
+                                width,
+                                height,
+                                anchor.try_into()?,
+                                output,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_overlap_checker#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An interface that may be implemented by a wl_surface, for"]
+    #[doc = "implementations that provide the shell user interface."]
+    #[doc = ""]
+    #[doc = "It provides requests to set surface role, set skip, set the position"]
+    #[doc = "set auto placement in output coordinates."]
+    #[doc = ""]
+    #[doc = "On the server side the object is automatically destroyed when"]
+    #[doc = "the related wl_surface is destroyed.  On client side,"]
+    #[doc = "treeland_dde_shell_surface_v1.destroy() must be called before"]
+    #[doc = "destroying the wl_surface object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_dde_shell_surface_v1 {
+        #[doc = "These values indicate which roles a surface can be rendered in, They"]
+        #[doc = "are ordered by z depth."]
+        #[doc = ""]
+        #[doc = "Displayed below wlr-layer-shell, at the overlay level of the workspace."]
+        #[doc = ""]
+        #[doc = "Multiple surfaces can share a single role, and ordering within a single"]
+        #[doc = "role is undefined."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Role {
+            Overlay = 1u32,
+        }
+        impl From<Role> for u32 {
+            fn from(value: Role) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Role {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Overlay),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Role {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_dde_shell_surface_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandDdeShellSurfaceV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_dde_shell_surface_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "The treeland_dde_shell_surface_v1 interface is removed from the"]
+            #[doc = "wl_surface object that was turned into a shell surface with the"]
+            #[doc = "treeland_shell_v1.get_treeland_dde_shell_surface request."]
+            #[doc = ""]
+            #[doc = "The shell surface role is lost and wl_surface is unmapped."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Move the surface to new coordinates."]
+            #[doc = ""]
+            #[doc = "Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output"]
+            #[doc = "is 1970,50 in global coordinates space."]
+            fn set_surface_position(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Assign a role to a shell surface."]
+            fn set_role(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                role : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_shell_surface_v1 :: Role,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Set the vertical alignment of the surface within the cursor width."]
+            #[doc = ""]
+            #[doc = "Do not use it together with set_surface_position to avoid exceptions."]
+            #[doc = ""]
+            #[doc = "The position of the surface will be controlled by the compositor after the"]
+            #[doc = "request, including preventing it from being displayed beyond the edge of"]
+            #[doc = "the output."]
+            fn set_auto_placement(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                y_offset: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a switcher."]
+            fn set_skip_switcher(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                skip: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a dock preview."]
+            fn set_skip_dock_preview(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                skip: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Setting this bit will indicate that the window prefers not to be listed in a mutitask view."]
+            fn set_skip_muti_task_view(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                skip: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Setting this will determine whether the surface can receive keyboard focus."]
+            #[doc = "When set to 0, the surface will not receive keyboard focus even when clicked or activated."]
+            #[doc = "When set to 1 (default), the surface will receive keyboard focus normally."]
+            fn set_accept_keyboard_focus(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                accept: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_surface_position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.set_surface_position(connection, sender_id, x, y).await
+                        }
+                        2u16 => {
+                            let role = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_role({})",
+                                sender_id,
+                                role
+                            );
+                            self.set_role(connection, sender_id, role.try_into()?).await
+                        }
+                        3u16 => {
+                            let y_offset = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_auto_placement({})",
+                                sender_id,
+                                y_offset
+                            );
+                            self.set_auto_placement(connection, sender_id, y_offset)
+                                .await
+                        }
+                        4u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_skip_switcher({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_switcher(connection, sender_id, skip).await
+                        }
+                        5u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_skip_dock_preview({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_dock_preview(connection, sender_id, skip)
+                                .await
+                        }
+                        6u16 => {
+                            let skip = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_skip_muti_task_view({})",
+                                sender_id,
+                                skip
+                            );
+                            self.set_skip_muti_task_view(connection, sender_id, skip)
+                                .await
+                        }
+                        7u16 => {
+                            let accept = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_dde_shell_surface_v1#{}.set_accept_keyboard_focus({})",
+                                sender_id,
+                                accept
+                            );
+                            self.set_accept_keyboard_focus(connection, sender_id, accept)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An interface used to monitor special events."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_dde_active_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Reason {
+            Mouse = 0u32,
+            Wheel = 1u32,
+        }
+        impl From<Reason> for u32 {
+            fn from(value: Reason) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Reason {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Mouse),
+                    1u32 => Ok(Self::Wheel),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Reason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_dde_active_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandDdeActiveV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_dde_active_v1";
+            const VERSION: u32 = 1u32;
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn active_in(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_active_v1#{}.active_in({})",
+                        sender_id,
+                        reason
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(reason.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn active_out(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                reason : super :: super :: super :: treeland :: treeland_dde_shell_v1 :: treeland_dde_active_v1 :: Reason,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_dde_active_v1#{}.active_out({})",
+                        sender_id,
+                        reason
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(reason.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn start_drag(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_dde_active_v1#{}.start_drag()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn drop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_dde_active_v1#{}.drop()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_dde_active_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An interface used to control multitaskview."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_multitaskview_v1 {
+        #[doc = "Trait to implement the treeland_multitaskview_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandMultitaskviewV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_multitaskview_v1";
+            const VERSION: u32 = 1u32;
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Show or hide the multitaskview."]
+            fn toggle(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_multitaskview_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_multitaskview_v1#{}.toggle()", sender_id,);
+                            self.toggle(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An interface used to pick window and return credentials."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_window_picker_v1 {
+        #[doc = "Trait to implement the treeland_window_picker_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWindowPickerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_window_picker_v1";
+            const VERSION: u32 = 1u32;
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Pick a window to get information."]
+            fn pick(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                hint: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Picked window information."]
+            fn window(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                pid: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_window_picker_v1#{}.window({})", sender_id, pid);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(pid).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_window_picker_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let hint = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_window_picker_v1#{}.pick(\"{}\")",
+                                sender_id,
+                                hint
+                            );
+                            self.pick(connection, sender_id, hint).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An interface used to operate lockscreen."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_lockscreen_v1 {
+        #[doc = "Trait to implement the treeland_lockscreen_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandLockscreenV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_lockscreen_v1";
+            const VERSION: u32 = 1u32;
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Lock the screen."]
+            fn lock(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Show shutdown."]
+            fn shutdown(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Switch user."]
+            fn switch_user(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.lock()", sender_id,);
+                            self.lock(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.shutdown()", sender_id,);
+                            self.shutdown(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_lockscreen_v1#{}.switch_user()", sender_id,);
+                            self.switch_user(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_ddm_v1 {
+    #[doc = "This is the treeland - ddm private communication protocol."]
+    #[doc = ""]
+    #[doc = "This object is primarily used for establish connection between"]
+    #[doc = "treeland and ddm."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_ddm_v1 {
+        #[doc = "Trait to implement the treeland_ddm_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandDdmV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_ddm_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Send treeland to Greeter mode."]
+            fn switch_to_greeter(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Set lockscreen user to username. Ignore when username is \"ddm\"."]
+            fn switch_to_user(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                username: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Activate treeland session. This will makes treeland try to take"]
+            #[doc = "control of screen."]
+            fn activate_session(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Deactivate treeland session. This will release control of the"]
+            #[doc = "screen, but not to close the current seats."]
+            fn deactivate_session(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Enable treeland rendering. This is primarily called after"]
+            #[doc = "disable_render to resume treeland."]
+            fn enable_render(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Disable treeland rendering. This will prevent treeland from"]
+            #[doc = "output to DRM device."]
+            fn disable_render(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                callback: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Call ddm to switch current virtual terminal to vtnr. ddm should"]
+            #[doc = "take care of the switch and call ioctl respectively."]
+            fn switch_to_vt(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                vtnr: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm_v1#{}.switch_to_vt({})", sender_id, vtnr);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(vtnr).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Call ddm to acquire control of VT at vtnr. ddm should call"]
+            #[doc = "VT_SETMODE respectively."]
+            fn acquire_vt(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                vtnr: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_ddm_v1#{}.acquire_vt({})", sender_id, vtnr);
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(vtnr).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm_v1#{}.switch_to_greeter()", sender_id,);
+                            self.switch_to_greeter(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let username = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_ddm_v1#{}.switch_to_user(\"{}\")",
+                                sender_id,
+                                username
+                            );
+                            self.switch_to_user(connection, sender_id, username).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm_v1#{}.activate_session()", sender_id,);
+                            self.activate_session(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm_v1#{}.deactivate_session()", sender_id,);
+                            self.deactivate_session(connection, sender_id).await
+                        }
+                        4u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_ddm_v1#{}.enable_render()", sender_id,);
+                            self.enable_render(connection, sender_id).await
+                        }
+                        5u16 => {
+                            let callback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_ddm_v1#{}.disable_render({})",
+                                sender_id,
+                                callback
+                            );
+                            self.disable_render(connection, sender_id, callback).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_screensaver_v1 {
+    #[doc = "This object implements a simple idle inhibit protocol used"]
+    #[doc = "to implement org.freedesktop.ScreenSaver D-Bus interface."]
     #[doc = ""]
     #[doc = "Call inhibit to prevent treeland from entering idle state."]
     #[doc = "Call uninhibit or disconnect from the global to release"]
@@ -4684,7 +5489,7 @@ pub mod treeland_screensaver {
     #[doc = "bump. Backward incompatible changes can only be done by"]
     #[doc = "creating a new major version of the extension."]
     #[allow(clippy::too_many_arguments)]
-    pub mod treeland_screensaver {
+    pub mod treeland_screensaver_v1 {
         #[repr(u32)]
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
@@ -4714,13 +5519,13 @@ pub mod treeland_screensaver {
                 (*self as u32).fmt(f)
             }
         }
-        #[doc = "Trait to implement the treeland_screensaver interface. See the module level documentation for more info"]
-        pub trait TreelandScreensaver
+        #[doc = "Trait to implement the treeland_screensaver_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandScreensaverV1
         where
             Self: std::marker::Sync,
         {
             type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "treeland_screensaver";
+            const INTERFACE: &'static str = "treeland_screensaver_v1";
             const VERSION: u32 = 1u32;
             #[doc = "Inhibit idleness with given application_name and reason_for_inhibit."]
             fn inhibit(
@@ -4755,7 +5560,7 @@ pub mod treeland_screensaver {
                                 .ok_or(waynest::ProtocolError::MalformedPayload)?;
                             #[cfg(feature = "tracing")]
                             tracing::debug!(
-                                "treeland_screensaver#{}.inhibit(\"{}\", \"{}\")",
+                                "treeland_screensaver_v1#{}.inhibit(\"{}\", \"{}\")",
                                 sender_id,
                                 application_name,
                                 reason_for_inhibit
@@ -4770,7 +5575,7 @@ pub mod treeland_screensaver {
                         }
                         1u16 => {
                             #[cfg(feature = "tracing")]
-                            tracing::debug!("treeland_screensaver#{}.uninhibit()", sender_id,);
+                            tracing::debug!("treeland_screensaver_v1#{}.uninhibit()", sender_id,);
                             self.uninhibit(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
@@ -4906,34 +5711,21 @@ pub mod treeland_shortcut_manager_v2 {
                 (*self as u32).fmt(f)
             }
         }
-        #[doc = "Keybinding modes."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum KeybindMode {
-            KeyRelease = 1u32,
-            KeyPress = 2u32,
-            KeyPressRepeat = 3u32,
-        }
-        impl From<KeybindMode> for u32 {
-            fn from(value: KeybindMode) -> Self {
-                value as u32
+        bitflags::bitflags! { # [doc = "Flags to specify the keybinding mode."] # [doc = "with key_press, the action is triggered on key press."] # [doc = "with key_release, the action is triggered on key release."] # [doc = "with repeat, the action is repeatedly triggered if the key is held down."] # [doc = ""] # [doc = "Examples:"] # [doc = "key_press | repeat: the action is triggered on key press, and repeatedly"] # [doc = "triggered if the key is held down."] # [doc = "key_press | key_release: the action is triggered on both key press and"] # [doc = "key release, auto-repeated events are ignored."] # [doc = "key_press | key_release | repeat: note that treeland repeats both key"] # [doc = "press and key release events."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct KeybindFlag : u32 { # [doc = "bind key press events"] const KeyPress = 1u32 ; # [doc = "bind key release events"] const KeyRelease = 2u32 ; # [doc = "bind autorepeat events."] const Repeat = 4u32 ; } }
+        impl From<KeybindFlag> for u32 {
+            fn from(value: KeybindFlag) -> Self {
+                value.bits()
             }
         }
-        impl TryFrom<u32> for KeybindMode {
+        impl TryFrom<u32> for KeybindFlag {
             type Error = waynest::ProtocolError;
             fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::KeyRelease),
-                    2u32 => Ok(Self::KeyPress),
-                    3u32 => Ok(Self::KeyPressRepeat),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
             }
         }
-        impl std::fmt::Display for KeybindMode {
+        impl std::fmt::Display for KeybindFlag {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
+                self.bits().fmt(f)
             }
         }
         #[doc = "Error codes indicating the reason of a binding failure."]
@@ -5004,7 +5796,7 @@ pub mod treeland_shortcut_manager_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "treeland_shortcut_manager_v2";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 2u32;
             #[doc = "Destroy the shortcut manager."]
             #[doc = "Existing shortcuts created through this interface remain valid."]
             fn destroy(
@@ -5038,14 +5830,11 @@ pub mod treeland_shortcut_manager_v2 {
             #[doc = "The action argument specifies the compositor action to be executed"]
             #[doc = "when the key sequence is activated."]
             #[doc = ""]
-            #[doc = "The protocol provides three keybinding modes:"]
-            #[doc = "- key_release: the action is triggered when the key sequence is released."]
-            #[doc = "- key_press: the action is triggered when the key sequence is pressed."]
-            #[doc = "- key_press_repeat: the action is triggered when the key sequence is pressed,"]
-            #[doc = "and repeatedly triggered if the key sequence is held down."]
+            #[doc = "Each keybind has a flags argument to specify the exact condition of triggering,"]
+            #[doc = "see documentation of keybind_flag enum for details."]
             #[doc = ""]
             #[doc = "If a binding with the same key sequence and action already exists,"]
-            #[doc = "the bind_key request will fail."]
+            #[doc = "its flags will be updated to the new value."]
             #[doc = ""]
             #[doc = "Note that the binding will not take effect until a commit request is sent."]
             fn bind_key(
@@ -5054,7 +5843,7 @@ pub mod treeland_shortcut_manager_v2 {
                 sender_id: waynest::ObjectId,
                 name: String,
                 key: String,
-                mode: KeybindMode,
+                flags: KeybindFlag,
                 action: Action,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Bind a swipe gesture to a compositor action."]
@@ -5138,13 +5927,13 @@ pub mod treeland_shortcut_manager_v2 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event is emitted when a binding registered with action `notify` is activated."]
             #[doc = ""]
-            #[doc = "If the binding is activated due to auto-repeat, the repeat argument will be non-zero."]
+            #[doc = "the flags argument indicates the type of key event as defined in keybind_flag enum."]
             fn activated(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 name: String,
-                repeat: u32,
+                flags: KeybindFlag,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -5153,11 +5942,11 @@ pub mod treeland_shortcut_manager_v2 {
                         "-> treeland_shortcut_manager_v2#{}.activated(\"{}\", {})",
                         sender_id,
                         name,
-                        repeat
+                        flags
                     );
                     let (payload, fds) = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
-                        .put_uint(repeat)
+                        .put_uint(flags.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
@@ -5249,7 +6038,7 @@ pub mod treeland_shortcut_manager_v2 {
                             let key = message
                                 .string()?
                                 .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let mode = message.uint()?;
+                            let flags = message.uint()?;
                             let action = message.uint()?;
                             #[cfg(feature = "tracing")]
                             tracing::debug!(
@@ -5257,7 +6046,7 @@ pub mod treeland_shortcut_manager_v2 {
                                 sender_id,
                                 name,
                                 key,
-                                mode,
+                                flags,
                                 action
                             );
                             self.bind_key(
@@ -5265,7 +6054,7 @@ pub mod treeland_shortcut_manager_v2 {
                                 sender_id,
                                 name,
                                 key,
-                                mode.try_into()?,
+                                flags.try_into()?,
                                 action.try_into()?,
                             )
                             .await
@@ -5335,6 +6124,896 @@ pub mod treeland_shortcut_manager_v2 {
                                 name
                             );
                             self.unbind(connection, sender_id, name).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_wallpaper_manager_unstable_v1 {
+    #[doc = "The treeland_wallpaper_manager_v1 interface is a global object used to"]
+    #[doc = "create wallpaper objects for specific outputs."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_wallpaper_manager_v1 {
+        #[doc = "Trait to implement the treeland_wallpaper_manager_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWallpaperManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_wallpaper_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy this treeland_wallpaper_manager_v1 object."]
+            #[doc = ""]
+            #[doc = "Destroying a bound treeland_wallpaper_manager_v1 object while there"]
+            #[doc = "are wallpapers still alive created by this treeland_wallpaper_manager_v1"]
+            #[doc = "object instance is illegal and will result in a protocol error."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Creates a treeland_wallpaper_v1 object bound to the specified wl_output."]
+            #[doc = ""]
+            #[doc = "The compositor may enforce that only one wallpaper exists for a given"]
+            #[doc = "(output, role) combination."]
+            #[doc = ""]
+            #[doc = "When a surface is associated, the compositor will track the workspace"]
+            #[doc = "the surface belongs to. Whenever the workspace changes, the compositor"]
+            #[doc = "may notify the client of the current wallpaper file path used by that"]
+            #[doc = "workspace."]
+            #[doc = ""]
+            #[doc = "Note: The treeland_wallpaper_v1 object must be destroyed before"]
+            #[doc = "the associated wl_surface is destroyed."]
+            fn get_treeland_wallpaper(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                output: waynest::ObjectId,
+                surface: Option<waynest::ObjectId>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_manager_v1#{}.get_treeland_wallpaper({}, {}, {})",
+                                sender_id,
+                                id,
+                                output,
+                                surface
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.get_treeland_wallpaper(connection, sender_id, id, output, surface)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The treeland_wallpaper_v1 interface represents a wallpaper instance"]
+    #[doc = "created by the compositor for a specific output, role."]
+    #[doc = ""]
+    #[doc = "The wallpaper source provided by the client is stored and managed on"]
+    #[doc = "the compositor side. Once a wallpaper source has been set,"]
+    #[doc = "the compositor may cache, reuse, or persist the source independently"]
+    #[doc = "of the client."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_wallpaper_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "wallpaper file has already been used and is cached on the wallpaper side"]
+            AlreadyUsed = 0u32,
+            #[doc = "The specified wallpaper source is invalid, unsupported, or failed to load."]
+            InvalidSource = 1u32,
+            #[doc = "Permission denied when opening the specified wallpaper source"]
+            PermissionDenied = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyUsed),
+                    1u32 => Ok(Self::InvalidSource),
+                    2u32 => Ok(Self::PermissionDenied),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum WallpaperSourceType {
+            #[doc = "The wallpaper source is an image"]
+            Image = 0u32,
+            #[doc = "The wallpaper source is a video"]
+            Video = 1u32,
+        }
+        impl From<WallpaperSourceType> for u32 {
+            fn from(value: WallpaperSourceType) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for WallpaperSourceType {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Image),
+                    1u32 => Ok(Self::Video),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for WallpaperSourceType {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum WallpaperRole {
+            #[doc = "Wallpaper for the desktop environment"]
+            Desktop = 1u32,
+            #[doc = "Wallpaper for the lock screen"]
+            Lockscreen = 2u32,
+        }
+        impl From<WallpaperRole> for u32 {
+            fn from(value: WallpaperRole) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for WallpaperRole {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Desktop),
+                    2u32 => Ok(Self::Lockscreen),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for WallpaperRole {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_wallpaper_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWallpaperV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_wallpaper_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroys the treeland_wallpaper_v1 object and releases all resources"]
+            #[doc = "associated with it on the compositor side."]
+            #[doc = ""]
+            #[doc = "After calling this request, the client must not use the wallpaper"]
+            #[doc = "object anymore."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Sets an image as the wallpaper source, apply to the current"]
+            #[doc = "wl_output and the active workspace. except for lockscreen"]
+            #[doc = "wallpapers, only one wallpaper can be set per wl_output."]
+            #[doc = "Supported formats:"]
+            #[doc = ""]
+            #[doc = "- JPG / JPEG (Joint Photographic Experts Group)"]
+            #[doc = ""]
+            #[doc = "The compositor will attempt to load and display the specified image"]
+            #[doc = "file. If the file cannot be accessed, decoded, or is in an unsupported"]
+            #[doc = "format, the compositor will emit a failed event with an appropriate"]
+            #[doc = "error code."]
+            #[doc = ""]
+            #[doc = "Access Control: This protocol accepts file_source such"]
+            #[doc = "as /usr/share/wallpapers/xxx  or /var/cache/wallpapers/xxxx provided"]
+            #[doc = "by the client. the compositor will perform file verification."]
+            fn set_image_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                file_source: String,
+                role: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Sets a video file as the wallpaper source, apply to the current"]
+            #[doc = "wl_output and the active workspace. except for lockscreen"]
+            #[doc = "wallpapers, only one wallpaper can be set per wl_output."]
+            #[doc = "Supported formats:"]
+            #[doc = ""]
+            #[doc = "- MP4"]
+            #[doc = "- AVI"]
+            #[doc = "- MOV"]
+            #[doc = ""]
+            #[doc = "The compositor is responsible for decoding and presenting the video."]
+            #[doc = "Playback behavior such as looping, synchronization, and performance"]
+            #[doc = "characteristics are compositor-defined."]
+            #[doc = ""]
+            #[doc = "If the video source cannot be opened or decoded, a failed event"]
+            #[doc = "will be emitted."]
+            #[doc = ""]
+            #[doc = "Access Control: This protocol accepts file_source such"]
+            #[doc = "as /usr/share/wallpapers/xxx or /var/cache/wallpapers/xxxx provided"]
+            #[doc = "by the client. the compositor will perform file verification."]
+            fn set_video_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                file_source: String,
+                role: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event is emitted when a wallpaper-related request fails."]
+            #[doc = ""]
+            #[doc = "The failure may occur during source loading, validation, or runtime"]
+            #[doc = "setup. The error code provides additional information about the cause"]
+            #[doc = "of the failure."]
+            #[doc = ""]
+            #[doc = "Possible error values include:"]
+            #[doc = "- already_used: The wallpaper source is already configured. This is"]
+            #[doc = "not a fatal error and serves as a notification to the client."]
+            #[doc = "- invalid_source: The specified wallpaper source is invalid,"]
+            #[doc = "unsupported, or could not be processed. This is a fatal error and"]
+            #[doc = "the client should verify the source before retrying."]
+            #[doc = "- Permission denied, check file permissions."]
+            fn failed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                file_source: String,
+                error: Error,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_v1#{}.failed(\"{}\", {})",
+                        sender_id,
+                        file_source,
+                        error
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(file_source))
+                        .put_uint(error.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event is emitted by the compositor to notify the client that the"]
+            #[doc = "wallpaper source associated with this treeland_wallpaper_v1 object"]
+            #[doc = "has changed."]
+            #[doc = ""]
+            #[doc = "The event may be emitted during initial object setup or when the"]
+            #[doc = "wallpaper is changed due to external factors not initiated by this"]
+            #[doc = "client, such as compositor policy decisions, workspace switches"]
+            #[doc = "(except for lockscreen wallpapers) that affect the active"]
+            #[doc = "wallpaper, or other system components."]
+            #[doc = ""]
+            #[doc = "Because the desktop wallpaper is designed to support different"]
+            #[doc = "workspaces. if the client is a surface, changes to its displayed"]
+            #[doc = "workspace will also send (reference set_reference_surface)."]
+            #[doc = ""]
+            #[doc = "The event provides the current wallpaper source type and the"]
+            #[doc = "corresponding source file path."]
+            fn changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                role: WallpaperRole,
+                source_type: WallpaperSourceType,
+                file_source: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_v1#{}.changed({}, {}, \"{}\")",
+                        sender_id,
+                        role,
+                        source_type,
+                        file_source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(role.into())
+                        .put_uint(source_type.into())
+                        .put_string(Some(file_source))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_wallpaper_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let file_source = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let role = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_v1#{}.set_image_source(\"{}\", {})",
+                                sender_id,
+                                file_source,
+                                role
+                            );
+                            self.set_image_source(connection, sender_id, file_source, role)
+                                .await
+                        }
+                        2u16 => {
+                            let file_source = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let role = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_v1#{}.set_video_source(\"{}\", {})",
+                                sender_id,
+                                file_source,
+                                role
+                            );
+                            self.set_video_source(connection, sender_id, file_source, role)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod treeland_wallpaper_shell_unstable_v1 {
+    #[doc = "The treeland_wallpaper_notifier_v1 interface provides notifications"]
+    #[doc = "about the availability and lifetime of wallpaper sources managed by"]
+    #[doc = "the compositor."]
+    #[doc = ""]
+    #[doc = "This interface is purely event-driven. Clients receive events when"]
+    #[doc = "wallpaper sources are added, become active, or are removed, and may"]
+    #[doc = "update their internal state or user interface accordingly."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_wallpaper_notifier_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum WallpaperSourceType {
+            #[doc = "The wallpaper source is an image"]
+            Image = 0u32,
+            #[doc = "The wallpaper source is a video"]
+            Video = 1u32,
+        }
+        impl From<WallpaperSourceType> for u32 {
+            fn from(value: WallpaperSourceType) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for WallpaperSourceType {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Image),
+                    1u32 => Ok(Self::Video),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for WallpaperSourceType {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_wallpaper_notifier_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWallpaperNotifierV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_wallpaper_notifier_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroys this treeland_wallpaper_notifier_v1 object."]
+            #[doc = ""]
+            #[doc = "Destroying a bound treeland_wallpaper_notifier_v1 object while"]
+            #[doc = "wallpaper surface objects created from it are still alive is"]
+            #[doc = "illegal and will result in a protocol error."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event is sent by the compositor when a new wallpaper source"]
+            #[doc = "is added or becomes active."]
+            #[doc = ""]
+            #[doc = "The source_type argument describes the type of the wallpaper"]
+            #[doc = "source. The meaning of the file_source argument depends on the"]
+            #[doc = "reported source_type."]
+            fn add(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                source_type: WallpaperSourceType,
+                file_source: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_notifier_v1#{}.add({}, \"{}\")",
+                        sender_id,
+                        source_type,
+                        file_source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(source_type.into())
+                        .put_string(Some(file_source))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event indicates that the wallpaper source identified by"]
+            #[doc = "file_source is no longer available."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should discard any internal"]
+            #[doc = "state associated with the wallpaper source and must not reference"]
+            #[doc = "it anymore."]
+            fn remove(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                file_source: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_notifier_v1#{}.remove(\"{}\")",
+                        sender_id,
+                        file_source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(file_source))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_notifier_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The treeland_wallpaper_shell_v1 interface is a global object exposed by"]
+    #[doc = "the compositor that allows a client to assign the wallpaper role to"]
+    #[doc = "a wl_surface and create wallpaper surface objects."]
+    #[doc = ""]
+    #[doc = "A wallpaper surface represents content intended to be displayed as"]
+    #[doc = "the desktop wallpaper, such as a static image or a dynamic media"]
+    #[doc = "source, and is associated with exactly one wl_surface."]
+    #[doc = ""]
+    #[doc = "This interface follows the shell pattern used by other Wayland"]
+    #[doc = "protocols: it assigns a specific role to a wl_surface and manages"]
+    #[doc = "the lifetime and behavior of wallpaper surfaces."]
+    #[doc = ""]
+    #[doc = "This interface is a singleton. At most one client may bind to"]
+    #[doc = "treeland_wallpaper_shell_v1 at any given time."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_wallpaper_shell_v1 {
+        #[doc = "Trait to implement the treeland_wallpaper_shell_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWallpaperShellV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_wallpaper_shell_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroys this treeland_wallpaper_shell_v1 object."]
+            #[doc = ""]
+            #[doc = "Destroying a bound treeland_wallpaper_shell_v1 object while there"]
+            #[doc = "are still treeland_wallpaper_surface_v1 objects created from it"]
+            #[doc = "is illegal and will result in a protocol error."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Creates a treeland_wallpaper_surface_v1 object and assigns the"]
+            #[doc = "wallpaper role to the given wl_surface."]
+            #[doc = ""]
+            #[doc = "The provided wl_surface must not already have a role, and while"]
+            #[doc = "it is used as a wallpaper surface, it must not be assigned any"]
+            #[doc = "other role."]
+            #[doc = ""]
+            #[doc = "The file_source argument specifies the initial wallpaper source"]
+            #[doc = "identifier. Its interpretation depends on the wallpaper source"]
+            #[doc = "type selected by the compositor."]
+            fn get_treeland_wallpaper_surface(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+                file_source: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("treeland_wallpaper_shell_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let file_source = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_shell_v1#{}.get_treeland_wallpaper_surface({}, {}, \"{}\")",
+                                sender_id,
+                                id,
+                                surface,
+                                file_source
+                            );
+                            self.get_treeland_wallpaper_surface(
+                                connection,
+                                sender_id,
+                                id,
+                                surface,
+                                file_source,
+                            )
+                            .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The treeland_wallpaper_surface_v1 interface controls the behavior of a"]
+    #[doc = "wallpaper surface."]
+    #[doc = ""]
+    #[doc = "A wallpaper surface is bound to exactly one wl_surface and defines how"]
+    #[doc = "that surface should be sized, positioned, and synchronized with the"]
+    #[doc = "compositor's wallpaper management logic."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod treeland_wallpaper_surface_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "The specified wallpaper source is invalid, unsupported, or failed to load."]
+            InvalidSource = 1u32,
+            #[doc = "Permission denied when opening the specified wallpaper source"]
+            PermissionDenied = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidSource),
+                    2u32 => Ok(Self::PermissionDenied),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the treeland_wallpaper_surface_v1 interface. See the module level documentation for more info"]
+        pub trait TreelandWallpaperSurfaceV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "treeland_wallpaper_surface_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the wallpaper surface object and release its association with"]
+            #[doc = "the underlying wl_surface."]
+            #[doc = ""]
+            #[doc = "After calling this request, the wallpaper surface object becomes"]
+            #[doc = "invalid and must not be used again."]
+            #[doc = ""]
+            #[doc = "This request should only be sent when the client intends to"]
+            #[doc = "permanently stop using the wallpaper surface, such as when the"]
+            #[doc = "client is shutting down or after receiving the"]
+            #[doc = "treeland_wallpaper_produce_v1.removed event for this surface."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Reports to the compositor that a wallpaper-related operation has"]
+            #[doc = "failed on the client side."]
+            #[doc = ""]
+            #[doc = "This request may be sent by the client when it fails to open,"]
+            #[doc = "load, or otherwise process the configured wallpaper source."]
+            #[doc = "The compositor may use this information for diagnostics, policy"]
+            #[doc = "decisions, or to adjust internal state."]
+            #[doc = ""]
+            #[doc = "Possible error values include:"]
+            #[doc = "- invalid_source: The specified wallpaper source is invalid,"]
+            #[doc = "unsupported, or could not be processed. This is a fatal error and"]
+            #[doc = "indicates that the source should be verified before retrying."]
+            #[doc = "- permission_denied: The client does not have permission to access"]
+            #[doc = "the specified wallpaper source."]
+            fn source_failed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                error: Error,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event provides a position value associated with the wallpaper."]
+            #[doc = ""]
+            #[doc = "The semantic meaning of the position value is compositor-defined."]
+            #[doc = "It may represent a scroll offset, animation progress, or playback"]
+            #[doc = "position. The value is expressed as a fixed-point number[0, 1.0]."]
+            fn position(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                position: waynest::Fixed,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_surface_v1#{}.position({})",
+                        sender_id,
+                        position
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(position).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event instructs the client to pause wallpaper updates or"]
+            #[doc = "animations."]
+            #[doc = ""]
+            #[doc = "After receiving this event, the client should stop advancing any"]
+            #[doc = "time-based or animated wallpaper content until a play event is"]
+            #[doc = "received."]
+            fn pause(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_wallpaper_surface_v1#{}.pause()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the playback speed of the wallpaper content."]
+            #[doc = ""]
+            #[doc = "A rate of 1.0 represents normal speed."]
+            #[doc = "A rate of 0.0 represents a paused state."]
+            fn set_playback_rate(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                rate: waynest::Fixed,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_surface_v1#{}.set_playback_rate({})",
+                        sender_id,
+                        rate
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(rate).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event instructs the client to resume wallpaper updates or"]
+            #[doc = "animations after a pause."]
+            fn play(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> treeland_wallpaper_surface_v1#{}.play()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event instructs the client to progressively reduce the playback"]
+            #[doc = "or animation update rate of the wallpaper content until it comes to"]
+            #[doc = "a complete stop."]
+            #[doc = ""]
+            #[doc = "The slowdown should be smooth and continuous rather than abrupt."]
+            #[doc = ""]
+            #[doc = "The duration argument specifies the amount of time, in milliseconds,"]
+            #[doc = "over which the slowdown should occur. After this duration has elapsed,"]
+            #[doc = "the client should consider the wallpaper paused."]
+            #[doc = ""]
+            #[doc = "A duration of 0 means the client should pause immediately."]
+            fn slow_down(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                duration: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> treeland_wallpaper_surface_v1#{}.slow_down({})",
+                        sender_id,
+                        duration
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(duration).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_surface_v1#{}.destroy()",
+                                sender_id,
+                            );
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let error = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "treeland_wallpaper_surface_v1#{}.source_failed({})",
+                                sender_id,
+                                error
+                            );
+                            self.source_failed(connection, sender_id, error.try_into()?)
+                                .await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }

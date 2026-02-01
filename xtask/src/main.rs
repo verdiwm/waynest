@@ -45,11 +45,9 @@ const PROTOCOLS: [(&str, &str); 15] = [
     ("river", "river/protocol"),
 ];
 
-const SKIP: [(&str, &str); 5] = [
+const SKIP: [(&str, &str); 4] = [
     ("core", "tests.xml"),
     ("cosmic", "cosmic-image-source-unstable-v1.xml"),
-    // "treeland-personalization-manager-v1.xml",
-    ("treeland", "treeland-capture-unstable-v1.xml"),
     ("river", "wlr-layer-shell-unstable-v1.xml"),
     ("river", "wlr-output-power-management-unstable-v1.xml"),
 ];

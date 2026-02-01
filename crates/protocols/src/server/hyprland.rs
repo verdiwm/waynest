@@ -1692,3 +1692,318 @@ pub mod hyprland_toplevel_mapping_v1 {
         }
     }
 }
+#[doc = "This protocol is a bridge of the XDG input capture to the compositor."]
+#[allow(clippy::module_inception)]
+pub mod hyprland_input_capture_v1 {
+    #[doc = "This interface allows to create an input capture session."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_input_capture_manager_v1 {
+        #[doc = "Trait to implement the hyprland_input_capture_manager_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandInputCaptureManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "hyprland_input_capture_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Create a input capture session."]
+            fn create_session(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                session: waynest::ObjectId,
+                handle: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let session = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let handle = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_input_capture_manager_v1#{}.create_session({}, \"{}\")",
+                                sender_id,
+                                session,
+                                handle
+                            );
+                            self.create_session(connection, sender_id, session, handle)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "Interface that is used to create barrier, and trigger capture and release of the pointer."]
+    #[doc = "The inputs are sent through an EIS socket, when the cursor hit a barrier."]
+    #[doc = "Barriers can only be placed on screen edges and need to be a straight line that cover one corner to another."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod hyprland_input_capture_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "The barrier id already exist"]
+            InvalidBarrierId = 0u32,
+            #[doc = "The barrier coordinates are invalid"]
+            InvalidBarrier = 1u32,
+            #[doc = "The activation id provided is invalid"]
+            InvalidActivationId = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidBarrierId),
+                    1u32 => Ok(Self::InvalidBarrier),
+                    2u32 => Ok(Self::InvalidActivationId),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the hyprland_input_capture_v1 interface. See the module level documentation for more info"]
+        pub trait HyprlandInputCaptureV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "hyprland_input_capture_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Remove every barriers from the session, new barriers need to be send before calling enable again."]
+            fn clear_barriers(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Add one barrier to the current session, the barrier need to a line placed on the edge of the screen, and is a straight line from one corner to another."]
+            fn add_barrier(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                zone_set: u32,
+                id: u32,
+                x1: u32,
+                y1: u32,
+                x2: u32,
+                y2: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Enable the input capturing to be triggered by the cursor crossing a barrier."]
+            fn enable(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Disable input capturing, the crossing of a barrier will not trigger anymore input capture."]
+            fn disable(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Release input capturing, the input are not intercepted anymore and barrier crossing will activate it again."]
+            #[doc = "If x != -1 and y != -1 then the cursor is warped to the x and y coordinates."]
+            fn release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                activation_id: u32,
+                x: waynest::Fixed,
+                y: waynest::Fixed,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event provide the file descriptor of an eis socket where inputs will be sent when input capturing is active"]
+            fn eis_fd(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                fd: std::os::fd::BorrowedFd,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_input_capture_v1#{}.eis_fd({})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd)
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_fd(fd).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Called when the application will not receive captured input. The application can call enable to request future input capturing"]
+            fn disabled(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> hyprland_input_capture_v1#{}.disabled()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Called when the application is about to receive inputs"]
+            fn activated(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                activation_id: u32,
+                x: waynest::Fixed,
+                y: waynest::Fixed,
+                barrier_id: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_input_capture_v1#{}.activated({}, {}, {}, {})",
+                        sender_id,
+                        activation_id,
+                        x,
+                        y,
+                        barrier_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(activation_id)
+                        .put_fixed(x)
+                        .put_fixed(y)
+                        .put_uint(barrier_id)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Called when input capture is stopped, and inputs are no longer sent to the application"]
+            fn deactivated(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                activation_id: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> hyprland_input_capture_v1#{}.deactivated({})",
+                        sender_id,
+                        activation_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(activation_id)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_input_capture_v1#{}.clear_barriers()",
+                                sender_id,
+                            );
+                            self.clear_barriers(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let zone_set = message.uint()?;
+                            let id = message.uint()?;
+                            let x1 = message.uint()?;
+                            let y1 = message.uint()?;
+                            let x2 = message.uint()?;
+                            let y2 = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_input_capture_v1#{}.add_barrier({}, {}, {}, {}, {}, {})",
+                                sender_id,
+                                zone_set,
+                                id,
+                                x1,
+                                y1,
+                                x2,
+                                y2
+                            );
+                            self.add_barrier(connection, sender_id, zone_set, id, x1, y1, x2, y2)
+                                .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_input_capture_v1#{}.enable()", sender_id,);
+                            self.enable(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("hyprland_input_capture_v1#{}.disable()", sender_id,);
+                            self.disable(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let activation_id = message.uint()?;
+                            let x = message.fixed()?;
+                            let y = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "hyprland_input_capture_v1#{}.release({}, {}, {})",
+                                sender_id,
+                                activation_id,
+                                x,
+                                y
+                            );
+                            self.release(connection, sender_id, activation_id, x, y)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}

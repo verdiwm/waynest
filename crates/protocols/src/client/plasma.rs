@@ -1,158 +1,4 @@
 #[allow(clippy::module_inception)]
-pub mod appmenu {
-    #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
-    #[doc = "interface registered on DBus."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_appmenu_manager {
-        #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenuManager
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
-            const VERSION: u32 = 2u32;
-            fn create(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-                surface: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_appmenu_manager#{}.create({}, {})",
-                        sender_id,
-                        id,
-                        surface
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .put_object(Some(surface))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn release(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_appmenu_manager#{}.release()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_event(
-                &self,
-                _connection: &mut Self::Connection,
-                _sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "The DBus service name and object path where the appmenu interface is present"]
-    #[doc = "The object should be registered on the session bus before sending this request."]
-    #[doc = "If not applicable, clients should remove this object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_kwin_appmenu {
-        #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
-        pub trait OrgKdeKwinAppmenu
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_kwin_appmenu";
-            const VERSION: u32 = 2u32;
-            #[doc = "Set or update the service name and object path."]
-            #[doc = "Strings should be formatted in Latin-1 matching the relevant DBus specifications."]
-            fn set_address(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                service_name: String,
-                object_path: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_kwin_appmenu#{}.set_address(\"{}\", \"{}\")",
-                        sender_id,
-                        service_name,
-                        object_path
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_string(Some(service_name))
-                        .put_string(Some(object_path))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn release(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_kwin_appmenu#{}.release()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_event(
-                &self,
-                _connection: &mut Self::Connection,
-                _sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
 pub mod blur {
     #[allow(clippy::too_many_arguments)]
     pub mod org_kde_kwin_blur_manager {
@@ -2199,2376 +2045,6 @@ pub mod kde_lockscreen_overlay_v1 {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_output_device_v2 {
-    #[doc = "An output device describes a display device available to the compositor."]
-    #[doc = "output_device is similar to wl_output, but focuses on output"]
-    #[doc = "configuration management."]
-    #[doc = ""]
-    #[doc = "A client can query all global output_device objects to enlist all"]
-    #[doc = "available display devices, even those that may currently not be"]
-    #[doc = "represented by the compositor as a wl_output."]
-    #[doc = ""]
-    #[doc = "The client sends configuration changes to the server through the"]
-    #[doc = "outputconfiguration interface, and the server applies the configuration"]
-    #[doc = "changes to the hardware and signals changes to the output devices"]
-    #[doc = "accordingly."]
-    #[doc = ""]
-    #[doc = "This object is published as global during start up for every available"]
-    #[doc = "display devices, or when one later becomes available, for example by"]
-    #[doc = "being hotplugged via a physical connector."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_device_v2 {
-        #[doc = "This enumeration describes how the physical pixels on an output are"]
-        #[doc = "laid out."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Subpixel {
-            Unknown = 0u32,
-            None = 1u32,
-            HorizontalRgb = 2u32,
-            HorizontalBgr = 3u32,
-            VerticalRgb = 4u32,
-            VerticalBgr = 5u32,
-        }
-        impl From<Subpixel> for u32 {
-            fn from(value: Subpixel) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Subpixel {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Unknown),
-                    1u32 => Ok(Self::None),
-                    2u32 => Ok(Self::HorizontalRgb),
-                    3u32 => Ok(Self::HorizontalBgr),
-                    4u32 => Ok(Self::VerticalRgb),
-                    5u32 => Ok(Self::VerticalBgr),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Subpixel {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "This describes the transform, that a compositor will apply to a"]
-        #[doc = "surface to compensate for the rotation or mirroring of an"]
-        #[doc = "output device."]
-        #[doc = ""]
-        #[doc = "The flipped values correspond to an initial flip around a"]
-        #[doc = "vertical axis followed by rotation."]
-        #[doc = ""]
-        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
-        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
-        #[doc = "compositor is still able to scan out directly client surfaces."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Transform {
-            Normal = 0u32,
-            _90 = 1u32,
-            _180 = 2u32,
-            _270 = 3u32,
-            Flipped = 4u32,
-            Flipped90 = 5u32,
-            Flipped180 = 6u32,
-            Flipped270 = 7u32,
-        }
-        impl From<Transform> for u32 {
-            fn from(value: Transform) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Transform {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Normal),
-                    1u32 => Ok(Self::_90),
-                    2u32 => Ok(Self::_180),
-                    3u32 => Ok(Self::_270),
-                    4u32 => Ok(Self::Flipped),
-                    5u32 => Ok(Self::Flipped90),
-                    6u32 => Ok(Self::Flipped180),
-                    7u32 => Ok(Self::Flipped270),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Transform {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; # [doc = "if this outputdevice supports the sharpness setting"] const Sharpness = 4096u32 ; } }
-        impl From<Capability> for u32 {
-            fn from(value: Capability) -> Self {
-                value.bits()
-            }
-        }
-        impl TryFrom<u32> for Capability {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
-            }
-        }
-        impl std::fmt::Display for Capability {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                self.bits().fmt(f)
-            }
-        }
-        #[doc = "Describes when the compositor may employ variable refresh rate"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum VrrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-            Automatic = 2u32,
-        }
-        impl From<VrrPolicy> for u32 {
-            fn from(value: VrrPolicy) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for VrrPolicy {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    2u32 => Ok(Self::Automatic),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for VrrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Whether full or limited color range should be used"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum RgbRange {
-            Automatic = 0u32,
-            Full = 1u32,
-            Limited = 2u32,
-        }
-        impl From<RgbRange> for u32 {
-            fn from(value: RgbRange) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for RgbRange {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Automatic),
-                    1u32 => Ok(Self::Full),
-                    2u32 => Ok(Self::Limited),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for RgbRange {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AutoRotatePolicy {
-            Never = 0u32,
-            InTabletMode = 1u32,
-            Always = 2u32,
-        }
-        impl From<AutoRotatePolicy> for u32 {
-            fn from(value: AutoRotatePolicy) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for AutoRotatePolicy {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::InTabletMode),
-                    2u32 => Ok(Self::Always),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for AutoRotatePolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorProfileSource {
-            SRgb = 0u32,
-            Icc = 1u32,
-            Edid = 2u32,
-        }
-        impl From<ColorProfileSource> for u32 {
-            fn from(value: ColorProfileSource) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for ColorProfileSource {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::SRgb),
-                    1u32 => Ok(Self::Icc),
-                    2u32 => Ok(Self::Edid),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorProfileSource {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "The compositor can do a lot of things that trade between"]
-        #[doc = "performance, power and color accuracy. This setting describes"]
-        #[doc = "a high level preference from the user about in which direction"]
-        #[doc = "that tradeoff should be made."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorPowerTradeoff {
-            #[doc = "prefer efficiency and performance"]
-            Efficiency = 0u32,
-            #[doc = "prefer accuracy"]
-            Accuracy = 1u32,
-        }
-        impl From<ColorPowerTradeoff> for u32 {
-            fn from(value: ColorPowerTradeoff) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for ColorPowerTradeoff {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Efficiency),
-                    1u32 => Ok(Self::Accuracy),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorPowerTradeoff {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum EdrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-        }
-        impl From<EdrPolicy> for u32 {
-            fn from(value: EdrPolicy) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for EdrPolicy {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for EdrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceV2
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 17u32;
-            #[doc = "The geometry event describes geometric properties of the output."]
-            #[doc = "The event is sent when binding to the output object and whenever"]
-            #[doc = "any of the properties change."]
-            fn geometry(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                x: i32,
-                y: i32,
-                physical_width: i32,
-                physical_height: i32,
-                subpixel: i32,
-                make: String,
-                model: String,
-                transform: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event describes the mode currently in use for this head. It is only"]
-            #[doc = "sent if the output is enabled."]
-            fn current_mode(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The mode event describes an available mode for the output."]
-            #[doc = ""]
-            #[doc = "When the client binds to the output_device object, the server sends this"]
-            #[doc = "event once for every available mode the output_device can be operated by."]
-            #[doc = ""]
-            #[doc = "There will always be at least one event sent out on initial binding,"]
-            #[doc = "which represents the current mode."]
-            #[doc = ""]
-            #[doc = "Later if an output changes, its mode event is sent again for the"]
-            #[doc = "eventual added modes and lastly the current mode. In other words, the"]
-            #[doc = "current mode is always represented by the latest event sent with the current"]
-            #[doc = "flag set."]
-            #[doc = ""]
-            #[doc = "The size of a mode is given in physical hardware units of the output device."]
-            #[doc = "This is not necessarily the same as the output size in the global compositor"]
-            #[doc = "space. For instance, the output may be scaled, as described in"]
-            #[doc = "kde_output_device_v2.scale, or transformed, as described in"]
-            #[doc = "kde_output_device_v2.transform."]
-            fn mode(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event is sent after all other properties have been"]
-            #[doc = "sent on binding to the output object as well as after any"]
-            #[doc = "other output property change have been applied later on."]
-            #[doc = "This allows to see changes to the output properties as atomic,"]
-            #[doc = "even if multiple events successively announce them."]
-            fn done(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event contains scaling geometry information"]
-            #[doc = "that is not in the geometry event. It may be sent after"]
-            #[doc = "binding the output object or if the output scale changes"]
-            #[doc = "later. If it is not sent, the client should assume a"]
-            #[doc = "scale of 1."]
-            #[doc = ""]
-            #[doc = "A scale larger than 1 means that the compositor will"]
-            #[doc = "automatically scale surface buffers by this amount"]
-            #[doc = "when rendering. This is used for high resolution"]
-            #[doc = "displays where applications rendering at the native"]
-            #[doc = "resolution would be too small to be legible."]
-            #[doc = ""]
-            #[doc = "It is intended that scaling aware clients track the"]
-            #[doc = "current output of a surface, and if it is on a scaled"]
-            #[doc = "output it should use wl_surface.set_buffer_scale with"]
-            #[doc = "the scale of the output. That way the compositor can"]
-            #[doc = "avoid scaling the surface, and the client can supply"]
-            #[doc = "a higher detail image."]
-            fn scale(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                factor: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
-            #[doc = ""]
-            #[doc = "The event is sent when binding to the output object. The EDID"]
-            #[doc = "data may be empty, in which case this event is sent anyway."]
-            #[doc = "If the EDID information is empty, you can fall back to the name"]
-            #[doc = "et al. properties of the outputdevice."]
-            fn edid(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                raw: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The enabled event notifies whether this output is currently"]
-            #[doc = "enabled and used for displaying content by the server."]
-            #[doc = "The event is sent when binding to the output object and"]
-            #[doc = "whenever later on an output changes its state by becoming"]
-            #[doc = "enabled or disabled."]
-            fn enabled(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                enabled: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The uuid can be used to identify the output. It's controlled by"]
-            #[doc = "the server entirely. The server should make sure the uuid is"]
-            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
-            fn uuid(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                uuid: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
-            fn serial_number(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                serial_number: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
-            fn eisa_id(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                eisa_id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "What capabilities this device has, sent on startup before the first"]
-            #[doc = "done event."]
-            fn capabilities(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                flags: Capability,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
-            #[doc = "first done event."]
-            fn overscan(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                overscan: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "What policy the compositor will employ regarding its use of variable"]
-            #[doc = "refresh rate."]
-            fn vrr_policy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                vrr_policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "What rgb range the compositor is using for this output"]
-            fn rgb_range(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                rgb_range: RgbRange,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
-            fn name(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                name: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Whether or not high dynamic range is enabled for this output"]
-            fn high_dynamic_range(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                hdr_enabled: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
-            #[doc = "that's in standard dynamic range format. Note that while the value is in nits, that"]
-            #[doc = "doesn't necessarily translate to the same brightness on the screen."]
-            fn sdr_brightness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                sdr_brightness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
-            fn wide_color_gamut(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                wcg_enabled: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn auto_rotate_policy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                policy: AutoRotatePolicy,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn icc_profile_path(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                profile_path: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn brightness_metadata(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                max_peak_brightness: u32,
-                max_frame_average_brightness: u32,
-                min_brightness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn brightness_overrides(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                max_peak_brightness: i32,
-                max_average_brightness: i32,
-                min_brightness: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
-            #[doc = "default experience on many modern sRGB screens."]
-            fn sdr_gamut_wideness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                gamut_wideness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn color_profile_source(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                source: ColorProfileSource,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This is the brightness modifier of the output. It doesn't specify"]
-            #[doc = "any absolute values, but is merely a multiplier on top of other"]
-            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
-            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
-            #[doc = "the maximum brightness."]
-            #[doc = "This is currently only supported / meaningful while HDR is active."]
-            fn brightness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                brightness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn color_power_tradeoff(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                preference: ColorPowerTradeoff,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This is the dimming multiplier of the output. This is similar to"]
-            #[doc = "the brightness setting, except it's meant to be a temporary setting"]
-            #[doc = "only, not persistent and may be implemented differently depending"]
-            #[doc = "on the display."]
-            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
-            #[doc = "means the output is not dimmed."]
-            fn dimming(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                multiplier: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn replication_source(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                source: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "If the ddc_ci capability is present, this determines if settings"]
-            #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
-            fn ddc_ci_allowed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                allowed: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This limits the amount of bits per color that are sent to the display."]
-            fn max_bits_per_color(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                max_bpc: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn max_bits_per_color_range(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                min_value: u32,
-                max_value: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn automatic_max_bits_per_color_limit(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                max_bpc_limit: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
-            #[doc = "the user-specified setting, in order to present HDR content on displays"]
-            #[doc = "without native HDR support."]
-            #[doc = "This will usually result in better visuals, but also increases battery"]
-            #[doc = "usage."]
-            fn edr_policy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                policy: EdrPolicy,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This is the sharpness modifier of the output."]
-            #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
-            fn sharpness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                sharpness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let x = message.int()?;
-                            let y = message.int()?;
-                            let physical_width = message.int()?;
-                            let physical_height = message.int()?;
-                            let subpixel = message.int()?;
-                            let make = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let model = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let transform = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
-                                sender_id,
-                                x,
-                                y,
-                                physical_width,
-                                physical_height,
-                                subpixel,
-                                make,
-                                model,
-                                transform
-                            );
-                            self.geometry(
-                                connection,
-                                sender_id,
-                                x,
-                                y,
-                                physical_width,
-                                physical_height,
-                                subpixel,
-                                make,
-                                model,
-                                transform,
-                            )
-                            .await
-                        }
-                        1u16 => {
-                            let mode = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.current_mode({})",
-                                sender_id,
-                                mode
-                            );
-                            self.current_mode(connection, sender_id, mode).await
-                        }
-                        2u16 => {
-                            let mode = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_device_v2#{}.mode({})", sender_id, mode);
-                            self.mode(connection, sender_id, mode).await
-                        }
-                        3u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_device_v2#{}.done()", sender_id,);
-                            self.done(connection, sender_id).await
-                        }
-                        4u16 => {
-                            let factor = message.fixed()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_device_v2#{}.scale({})", sender_id, factor);
-                            self.scale(connection, sender_id, factor).await
-                        }
-                        5u16 => {
-                            let raw = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
-                            self.edid(connection, sender_id, raw).await
-                        }
-                        6u16 => {
-                            let enabled = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.enabled({})",
-                                sender_id,
-                                enabled
-                            );
-                            self.enabled(connection, sender_id, enabled).await
-                        }
-                        7u16 => {
-                            let uuid = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.uuid(\"{}\")",
-                                sender_id,
-                                uuid
-                            );
-                            self.uuid(connection, sender_id, uuid).await
-                        }
-                        8u16 => {
-                            let serial_number = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.serial_number(\"{}\")",
-                                sender_id,
-                                serial_number
-                            );
-                            self.serial_number(connection, sender_id, serial_number)
-                                .await
-                        }
-                        9u16 => {
-                            let eisa_id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.eisa_id(\"{}\")",
-                                sender_id,
-                                eisa_id
-                            );
-                            self.eisa_id(connection, sender_id, eisa_id).await
-                        }
-                        10u16 => {
-                            let flags = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.capabilities({})",
-                                sender_id,
-                                flags
-                            );
-                            self.capabilities(connection, sender_id, flags.try_into()?)
-                                .await
-                        }
-                        11u16 => {
-                            let overscan = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.overscan({})",
-                                sender_id,
-                                overscan
-                            );
-                            self.overscan(connection, sender_id, overscan).await
-                        }
-                        12u16 => {
-                            let vrr_policy = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.vrr_policy({})",
-                                sender_id,
-                                vrr_policy
-                            );
-                            self.vrr_policy(connection, sender_id, vrr_policy.try_into()?)
-                                .await
-                        }
-                        13u16 => {
-                            let rgb_range = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.rgb_range({})",
-                                sender_id,
-                                rgb_range
-                            );
-                            self.rgb_range(connection, sender_id, rgb_range.try_into()?)
-                                .await
-                        }
-                        14u16 => {
-                            let name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.name(\"{}\")",
-                                sender_id,
-                                name
-                            );
-                            self.name(connection, sender_id, name).await
-                        }
-                        15u16 => {
-                            let hdr_enabled = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.high_dynamic_range({})",
-                                sender_id,
-                                hdr_enabled
-                            );
-                            self.high_dynamic_range(connection, sender_id, hdr_enabled)
-                                .await
-                        }
-                        16u16 => {
-                            let sdr_brightness = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.sdr_brightness({})",
-                                sender_id,
-                                sdr_brightness
-                            );
-                            self.sdr_brightness(connection, sender_id, sdr_brightness)
-                                .await
-                        }
-                        17u16 => {
-                            let wcg_enabled = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.wide_color_gamut({})",
-                                sender_id,
-                                wcg_enabled
-                            );
-                            self.wide_color_gamut(connection, sender_id, wcg_enabled)
-                                .await
-                        }
-                        18u16 => {
-                            let policy = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.auto_rotate_policy({})",
-                                sender_id,
-                                policy
-                            );
-                            self.auto_rotate_policy(connection, sender_id, policy.try_into()?)
-                                .await
-                        }
-                        19u16 => {
-                            let profile_path = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.icc_profile_path(\"{}\")",
-                                sender_id,
-                                profile_path
-                            );
-                            self.icc_profile_path(connection, sender_id, profile_path)
-                                .await
-                        }
-                        20u16 => {
-                            let max_peak_brightness = message.uint()?;
-                            let max_frame_average_brightness = message.uint()?;
-                            let min_brightness = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
-                                sender_id,
-                                max_peak_brightness,
-                                max_frame_average_brightness,
-                                min_brightness
-                            );
-                            self.brightness_metadata(
-                                connection,
-                                sender_id,
-                                max_peak_brightness,
-                                max_frame_average_brightness,
-                                min_brightness,
-                            )
-                            .await
-                        }
-                        21u16 => {
-                            let max_peak_brightness = message.int()?;
-                            let max_average_brightness = message.int()?;
-                            let min_brightness = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
-                                sender_id,
-                                max_peak_brightness,
-                                max_average_brightness,
-                                min_brightness
-                            );
-                            self.brightness_overrides(
-                                connection,
-                                sender_id,
-                                max_peak_brightness,
-                                max_average_brightness,
-                                min_brightness,
-                            )
-                            .await
-                        }
-                        22u16 => {
-                            let gamut_wideness = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.sdr_gamut_wideness({})",
-                                sender_id,
-                                gamut_wideness
-                            );
-                            self.sdr_gamut_wideness(connection, sender_id, gamut_wideness)
-                                .await
-                        }
-                        23u16 => {
-                            let source = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.color_profile_source({})",
-                                sender_id,
-                                source
-                            );
-                            self.color_profile_source(connection, sender_id, source.try_into()?)
-                                .await
-                        }
-                        24u16 => {
-                            let brightness = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.brightness({})",
-                                sender_id,
-                                brightness
-                            );
-                            self.brightness(connection, sender_id, brightness).await
-                        }
-                        25u16 => {
-                            let preference = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.color_power_tradeoff({})",
-                                sender_id,
-                                preference
-                            );
-                            self.color_power_tradeoff(connection, sender_id, preference.try_into()?)
-                                .await
-                        }
-                        26u16 => {
-                            let multiplier = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.dimming({})",
-                                sender_id,
-                                multiplier
-                            );
-                            self.dimming(connection, sender_id, multiplier).await
-                        }
-                        27u16 => {
-                            let source = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.replication_source(\"{}\")",
-                                sender_id,
-                                source
-                            );
-                            self.replication_source(connection, sender_id, source).await
-                        }
-                        28u16 => {
-                            let allowed = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.ddc_ci_allowed({})",
-                                sender_id,
-                                allowed
-                            );
-                            self.ddc_ci_allowed(connection, sender_id, allowed).await
-                        }
-                        29u16 => {
-                            let max_bpc = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.max_bits_per_color({})",
-                                sender_id,
-                                max_bpc
-                            );
-                            self.max_bits_per_color(connection, sender_id, max_bpc)
-                                .await
-                        }
-                        30u16 => {
-                            let min_value = message.uint()?;
-                            let max_value = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.max_bits_per_color_range({}, {})",
-                                sender_id,
-                                min_value,
-                                max_value
-                            );
-                            self.max_bits_per_color_range(
-                                connection, sender_id, min_value, max_value,
-                            )
-                            .await
-                        }
-                        31u16 => {
-                            let max_bpc_limit = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.automatic_max_bits_per_color_limit({})",
-                                sender_id,
-                                max_bpc_limit
-                            );
-                            self.automatic_max_bits_per_color_limit(
-                                connection,
-                                sender_id,
-                                max_bpc_limit,
-                            )
-                            .await
-                        }
-                        32u16 => {
-                            let policy = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.edr_policy({})",
-                                sender_id,
-                                policy
-                            );
-                            self.edr_policy(connection, sender_id, policy.try_into()?)
-                                .await
-                        }
-                        33u16 => {
-                            let sharpness = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_v2#{}.sharpness({})",
-                                sender_id,
-                                sharpness
-                            );
-                            self.sharpness(connection, sender_id, sharpness).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "This object describes an output mode."]
-    #[doc = ""]
-    #[doc = "Some heads don't support output modes, in which case modes won't be"]
-    #[doc = "advertised."]
-    #[doc = ""]
-    #[doc = "Properties sent via this interface are applied atomically via the"]
-    #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
-    #[doc = "in which properties are sent."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_device_mode_v2 {
-        #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputDeviceModeV2
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "kde_output_device_mode_v2";
-            const VERSION: u32 = 1u32;
-            #[doc = "This event describes the mode size. The size is given in physical"]
-            #[doc = "hardware units of the output device. This is not necessarily the same as"]
-            #[doc = "the output size in the global compositor space. For instance, the output"]
-            #[doc = "may be scaled or transformed."]
-            fn size(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                width: i32,
-                height: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
-            #[doc = "sent if the mode has a fixed refresh rate."]
-            fn refresh(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                refresh: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event advertises this mode as preferred."]
-            fn preferred(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "The compositor will destroy the object immediately after sending this"]
-            #[doc = "event, so it will become invalid and the client should release any"]
-            #[doc = "resources associated with it."]
-            fn removed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let width = message.int()?;
-                            let height = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_mode_v2#{}.size({}, {})",
-                                sender_id,
-                                width,
-                                height
-                            );
-                            self.size(connection, sender_id, width, height).await
-                        }
-                        1u16 => {
-                            let refresh = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_device_mode_v2#{}.refresh({})",
-                                sender_id,
-                                refresh
-                            );
-                            self.refresh(connection, sender_id, refresh).await
-                        }
-                        2u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_device_mode_v2#{}.preferred()", sender_id,);
-                            self.preferred(connection, sender_id).await
-                        }
-                        3u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_device_mode_v2#{}.removed()", sender_id,);
-                            self.removed(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod kde_output_management_v2 {
-    #[doc = "This interface enables clients to set properties of output devices for screen"]
-    #[doc = "configuration purposes via the server. To this end output devices are referenced"]
-    #[doc = "by global kde_output_device_v2 objects."]
-    #[doc = ""]
-    #[doc = "outputmanagement (wl_global)"]
-    #[doc = "--------------------------"]
-    #[doc = "request:"]
-    #[doc = "* create_configuration -> outputconfiguration (wl_resource)"]
-    #[doc = ""]
-    #[doc = "outputconfiguration (wl_resource)"]
-    #[doc = "--------------------------"]
-    #[doc = "requests:"]
-    #[doc = "* enable(outputdevice, bool)"]
-    #[doc = "* mode(outputdevice, mode)"]
-    #[doc = "* transformation(outputdevice, flag)"]
-    #[doc = "* position(outputdevice, x, y)"]
-    #[doc = "* apply"]
-    #[doc = ""]
-    #[doc = "events:"]
-    #[doc = "* applied"]
-    #[doc = "* failed"]
-    #[doc = ""]
-    #[doc = "The server registers one outputmanagement object as a global object. In order"]
-    #[doc = "to configure outputs a client requests create_configuration, which provides a"]
-    #[doc = "resource referencing an outputconfiguration for one-time configuration. That"]
-    #[doc = "way the server knows which requests belong together and can group them by that."]
-    #[doc = ""]
-    #[doc = "On the outputconfiguration object the client calls for each output whether the"]
-    #[doc = "output should be enabled, which mode should be set (by referencing the mode from"]
-    #[doc = "the list of announced modes) and the output's global position. Once all outputs"]
-    #[doc = "are configured that way, the client calls apply."]
-    #[doc = "At that point and not earlier the server should try to apply the configuration."]
-    #[doc = "If this succeeds the server emits the applied signal, otherwise the failed"]
-    #[doc = "signal, such that the configuring client is noticed about the success of its"]
-    #[doc = "configuration request."]
-    #[doc = ""]
-    #[doc = "Through this design the interface enables atomic output configuration changes if"]
-    #[doc = "internally supported by the server."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment implementation"]
-    #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
-    #[doc = "changes may be added without bumping the major version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_management_v2 {
-        #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputManagementV2
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "kde_output_management_v2";
-            const VERSION: u32 = 17u32;
-            #[doc = "Request an outputconfiguration object through which the client can configure"]
-            #[doc = "output devices."]
-            fn create_configuration(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_management_v2#{}.create_configuration({})",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_object(Some(id)).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn handle_event(
-                &self,
-                _connection: &mut Self::Connection,
-                _sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
-    #[doc = "the server to apply changes to available output devices."]
-    #[doc = ""]
-    #[doc = "The client receives a list of output devices from the registry. When it wants"]
-    #[doc = "to apply new settings, it creates a configuration object from the"]
-    #[doc = "outputmanagement global, writes changes through this object's enable, scale,"]
-    #[doc = "transform and mode calls. It then asks the server to apply these settings in"]
-    #[doc = "an atomic fashion, for example through Linux' DRM interface."]
-    #[doc = ""]
-    #[doc = "The server signals back whether the new settings have applied successfully"]
-    #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
-    #[doc = "applied to the hardware and before the server side sends the applied event."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod kde_output_configuration_v2 {
-        #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum Error {
-            #[doc = "the config is already applied"]
-            AlreadyApplied = 0u32,
-        }
-        impl From<Error> for u32 {
-            fn from(value: Error) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for Error {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::AlreadyApplied),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for Error {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Describes when the compositor may employ variable refresh rate"]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum VrrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-            Automatic = 2u32,
-        }
-        impl From<VrrPolicy> for u32 {
-            fn from(value: VrrPolicy) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for VrrPolicy {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    2u32 => Ok(Self::Automatic),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for VrrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Whether this output should use full or limited rgb."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum RgbRange {
-            Automatic = 0u32,
-            Full = 1u32,
-            Limited = 2u32,
-        }
-        impl From<RgbRange> for u32 {
-            fn from(value: RgbRange) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for RgbRange {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Automatic),
-                    1u32 => Ok(Self::Full),
-                    2u32 => Ok(Self::Limited),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for RgbRange {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum AutoRotatePolicy {
-            Never = 0u32,
-            InTabletMode = 1u32,
-            Always = 2u32,
-        }
-        impl From<AutoRotatePolicy> for u32 {
-            fn from(value: AutoRotatePolicy) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for AutoRotatePolicy {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::InTabletMode),
-                    2u32 => Ok(Self::Always),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for AutoRotatePolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorProfileSource {
-            SRgb = 0u32,
-            Icc = 1u32,
-            Edid = 2u32,
-        }
-        impl From<ColorProfileSource> for u32 {
-            fn from(value: ColorProfileSource) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for ColorProfileSource {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::SRgb),
-                    1u32 => Ok(Self::Icc),
-                    2u32 => Ok(Self::Edid),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorProfileSource {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "The compositor can do a lot of things that trade between"]
-        #[doc = "performance, power and color accuracy. This setting describes"]
-        #[doc = "a high level preference from the user about in which direction"]
-        #[doc = "that tradeoff should be made."]
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ColorPowerTradeoff {
-            #[doc = "prefer efficiency and performance"]
-            Efficiency = 0u32,
-            #[doc = "prefer accuracy"]
-            Accuracy = 1u32,
-        }
-        impl From<ColorPowerTradeoff> for u32 {
-            fn from(value: ColorPowerTradeoff) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for ColorPowerTradeoff {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Efficiency),
-                    1u32 => Ok(Self::Accuracy),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ColorPowerTradeoff {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum EdrPolicy {
-            Never = 0u32,
-            Always = 1u32,
-        }
-        impl From<EdrPolicy> for u32 {
-            fn from(value: EdrPolicy) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for EdrPolicy {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Never),
-                    1u32 => Ok(Self::Always),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for EdrPolicy {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
-        pub trait KdeOutputConfigurationV2
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "kde_output_configuration_v2";
-            const VERSION: u32 = 17u32;
-            #[doc = "Mark the output as enabled or disabled."]
-            fn enable(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                enable: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.enable({}, {})",
-                        sender_id,
-                        outputdevice,
-                        enable
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_int(enable)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets the mode for a given output."]
-            fn mode(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                mode: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.mode({}, {})",
-                        sender_id,
-                        outputdevice,
-                        mode
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_object(Some(mode))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets the transformation for a given output."]
-            fn transform(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                transform: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.transform({}, {})",
-                        sender_id,
-                        outputdevice,
-                        transform
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_int(transform)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
-            #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
-            #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
-            #[doc = "does not define a single one the top output."]
-            #[doc = ""]
-            #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
-            #[doc = "stacked horizontally, vertically, or both on each other."]
-            fn position(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                x: i32,
-                y: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.position({}, {}, {})",
-                        sender_id,
-                        outputdevice,
-                        x,
-                        y
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_int(x)
-                        .put_int(y)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets the scaling factor for this output device."]
-            fn scale(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                scale: waynest::Fixed,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.scale({}, {})",
-                        sender_id,
-                        outputdevice,
-                        scale
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_fixed(scale)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
-            #[doc = "object to all outputs on the server side."]
-            #[doc = ""]
-            #[doc = "The output configuration can be applied only once. The already_applied protocol error"]
-            #[doc = "will be posted if the apply request is called the second time."]
-            fn apply(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_configuration_v2#{}.apply()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> kde_output_configuration_v2#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Set the overscan value of this output device with a value in percent."]
-            fn overscan(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                overscan: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.overscan({}, {})",
-                        sender_id,
-                        outputdevice,
-                        overscan
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(overscan)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Set what policy the compositor should employ regarding its use of"]
-            #[doc = "variable refresh rate."]
-            fn set_vrr_policy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                policy: VrrPolicy,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_vrr_policy({}, {})",
-                        sender_id,
-                        outputdevice,
-                        policy
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(policy.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Whether full or limited color range should be used"]
-            fn set_rgb_range(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                rgb_range: RgbRange,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_rgb_range({}, {})",
-                        sender_id,
-                        outputdevice,
-                        rgb_range
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(rgb_range.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 9u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_primary_output(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_primary_output({})",
-                        sender_id,
-                        output
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 10u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "The order of outputs can be used to assign desktop environment components to a specific screen,"]
-            #[doc = "see kde_output_order_v1 for details. The priority is 1-based for outputs that will be enabled after"]
-            #[doc = "this changeset is applied, all outputs that are disabled need to have the index set to zero."]
-            fn set_priority(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                priority: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_priority({}, {})",
-                        sender_id,
-                        outputdevice,
-                        priority
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(priority)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 11u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets whether or not the output should be set to HDR mode."]
-            fn set_high_dynamic_range(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                enable_hdr: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_high_dynamic_range({}, {})",
-                        sender_id,
-                        outputdevice,
-                        enable_hdr
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(enable_hdr)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 12u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
-            #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
-            fn set_sdr_brightness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                sdr_brightness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_sdr_brightness({}, {})",
-                        sender_id,
-                        outputdevice,
-                        sdr_brightness
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(sdr_brightness)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 13u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Whether or not the output should use a wide color gamut"]
-            fn set_wide_color_gamut(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                enable_wcg: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_wide_color_gamut({}, {})",
-                        sender_id,
-                        outputdevice,
-                        enable_wcg
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(enable_wcg)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 14u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_auto_rotate_policy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                policy: AutoRotatePolicy,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_auto_rotate_policy({}, {})",
-                        sender_id,
-                        outputdevice,
-                        policy
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(policy.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 15u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_icc_profile_path(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                profile_path: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_icc_profile_path({}, \"{}\")",
-                        sender_id,
-                        outputdevice,
-                        profile_path
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_string(Some(profile_path))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 16u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_brightness_overrides(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                max_peak_brightness: i32,
-                max_frame_average_brightness: i32,
-                min_brightness: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})",
-                        sender_id,
-                        outputdevice,
-                        max_peak_brightness,
-                        max_frame_average_brightness,
-                        min_brightness
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_int(max_peak_brightness)
-                        .put_int(max_frame_average_brightness)
-                        .put_int(min_brightness)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 17u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
-            #[doc = "default experience on many modern sRGB screens."]
-            fn set_sdr_gamut_wideness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                gamut_wideness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_sdr_gamut_wideness({}, {})",
-                        sender_id,
-                        outputdevice,
-                        gamut_wideness
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(gamut_wideness)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 18u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_color_profile_source(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                color_profile_source: ColorProfileSource,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_color_profile_source({}, {})",
-                        sender_id,
-                        outputdevice,
-                        color_profile_source
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(color_profile_source.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 19u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Set the brightness modifier of the output. It doesn't specify"]
-            #[doc = "any absolute values, but is merely a multiplier on top of other"]
-            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
-            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
-            #[doc = "the maximum brightness."]
-            #[doc = "This is supported while HDR is active in versions 8 and below,"]
-            #[doc = "or when the device supports the \"brightness\" capability in"]
-            #[doc = "versions 9 and above."]
-            fn set_brightness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                brightness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_brightness({}, {})",
-                        sender_id,
-                        outputdevice,
-                        brightness
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(brightness)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 20u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_color_power_tradeoff(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                preference: ColorPowerTradeoff,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_color_power_tradeoff({}, {})",
-                        sender_id,
-                        outputdevice,
-                        preference
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(preference.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 21u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Set the dimming multiplier of the output. This is similar to the"]
-            #[doc = "brightness setting, except it's meant to be a temporary setting"]
-            #[doc = "only, not persistent and may be implemented differently depending"]
-            #[doc = "on the display."]
-            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
-            #[doc = "means the output is not dimmed."]
-            #[doc = ""]
-            #[doc = "This is supported only when the \"brightness\" capability is"]
-            #[doc = "also supported."]
-            fn set_dimming(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                multiplier: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_dimming({}, {})",
-                        sender_id,
-                        outputdevice,
-                        multiplier
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(multiplier)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 22u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Set the source output that the outputdevice should mirror its"]
-            #[doc = "viewport from."]
-            fn set_replication_source(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                source: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_replication_source({}, \"{}\")",
-                        sender_id,
-                        outputdevice,
-                        source
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_string(Some(source))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 23u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn set_ddc_ci_allowed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                allowed: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_ddc_ci_allowed({}, {})",
-                        sender_id,
-                        outputdevice,
-                        allowed
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(allowed)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 24u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "This limits the amount of bits per color that are sent to the display."]
-            fn set_max_bits_per_color(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                max_bpc: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_max_bits_per_color({}, {})",
-                        sender_id,
-                        outputdevice,
-                        max_bpc
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(max_bpc)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 25u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
-            #[doc = "the user-specified setting, in order to present HDR content on displays"]
-            #[doc = "without native HDR support."]
-            #[doc = "This will usually result in better visuals, but also increases battery"]
-            #[doc = "usage."]
-            fn set_edr_policy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                policy: EdrPolicy,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_edr_policy({}, {})",
-                        sender_id,
-                        outputdevice,
-                        policy
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(policy.into())
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 26u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "This is the sharpness modifier of the output."]
-            #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
-            fn set_sharpness(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                outputdevice: waynest::ObjectId,
-                sharpness: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> kde_output_configuration_v2#{}.set_sharpness({}, {})",
-                        sender_id,
-                        outputdevice,
-                        sharpness
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(outputdevice))
-                        .put_uint(sharpness)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 27u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sent after the server has successfully applied the changes."]
-            #[doc = "."]
-            fn applied(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Sent if the server rejects the changes or failed to apply them."]
-            fn failed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "Describes why applying the output configuration failed. Is only"]
-            #[doc = "sent before the failure event."]
-            fn failure_reason(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                reason: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_configuration_v2#{}.applied()", sender_id,);
-                            self.applied(connection, sender_id).await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("kde_output_configuration_v2#{}.failed()", sender_id,);
-                            self.failed(connection, sender_id).await
-                        }
-                        2u16 => {
-                            let reason = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "kde_output_configuration_v2#{}.failure_reason(\"{}\")",
-                                sender_id,
-                                reason
-                            );
-                            self.failure_reason(connection, sender_id, reason).await
-                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -7253,1332 +4729,6 @@ pub mod plasma_shell {
                                 sender_id,
                             );
                             self.auto_hidden_panel_shown(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-}
-#[allow(clippy::module_inception)]
-pub mod plasma_window_management {
-    #[doc = "This interface manages application windows."]
-    #[doc = "It provides requests to show and hide the desktop and emits"]
-    #[doc = "an event every time a window is created so that the client can"]
-    #[doc = "use it to manage the window."]
-    #[doc = ""]
-    #[doc = "Only one client can bind this interface at a time."]
-    #[doc = ""]
-    #[doc = "Warning! The protocol described in this file is a desktop environment"]
-    #[doc = "implementation detail. Regular clients must not use this protocol."]
-    #[doc = "Backward incompatible changes may be added without bumping the major"]
-    #[doc = "version of the extension."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_window_management {
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum State {
-            Active = 1u32,
-            Minimized = 2u32,
-            Maximized = 4u32,
-            Fullscreen = 8u32,
-            KeepAbove = 16u32,
-            KeepBelow = 32u32,
-            OnAllDesktops = 64u32,
-            DemandsAttention = 128u32,
-            Closeable = 256u32,
-            Minimizable = 512u32,
-            Maximizable = 1024u32,
-            Fullscreenable = 2048u32,
-            Skiptaskbar = 4096u32,
-            Shadeable = 8192u32,
-            Shaded = 16384u32,
-            Movable = 32768u32,
-            Resizable = 65536u32,
-            VirtualDesktopChangeable = 131072u32,
-            Skipswitcher = 262144u32,
-            NoBorder = 524288u32,
-            CanSetNoBorder = 1048576u32,
-        }
-        impl From<State> for u32 {
-            fn from(value: State) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for State {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    1u32 => Ok(Self::Active),
-                    2u32 => Ok(Self::Minimized),
-                    4u32 => Ok(Self::Maximized),
-                    8u32 => Ok(Self::Fullscreen),
-                    16u32 => Ok(Self::KeepAbove),
-                    32u32 => Ok(Self::KeepBelow),
-                    64u32 => Ok(Self::OnAllDesktops),
-                    128u32 => Ok(Self::DemandsAttention),
-                    256u32 => Ok(Self::Closeable),
-                    512u32 => Ok(Self::Minimizable),
-                    1024u32 => Ok(Self::Maximizable),
-                    2048u32 => Ok(Self::Fullscreenable),
-                    4096u32 => Ok(Self::Skiptaskbar),
-                    8192u32 => Ok(Self::Shadeable),
-                    16384u32 => Ok(Self::Shaded),
-                    32768u32 => Ok(Self::Movable),
-                    65536u32 => Ok(Self::Resizable),
-                    131072u32 => Ok(Self::VirtualDesktopChangeable),
-                    262144u32 => Ok(Self::Skipswitcher),
-                    524288u32 => Ok(Self::NoBorder),
-                    1048576u32 => Ok(Self::CanSetNoBorder),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for State {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[repr(u32)]
-        #[non_exhaustive]
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
-        pub enum ShowDesktop {
-            Disabled = 0u32,
-            Enabled = 1u32,
-        }
-        impl From<ShowDesktop> for u32 {
-            fn from(value: ShowDesktop) -> Self {
-                value as u32
-            }
-        }
-        impl TryFrom<u32> for ShowDesktop {
-            type Error = waynest::ProtocolError;
-            fn try_from(v: u32) -> Result<Self, Self::Error> {
-                match v {
-                    0u32 => Ok(Self::Disabled),
-                    1u32 => Ok(Self::Enabled),
-                    _ => Err(waynest::ProtocolError::MalformedPayload),
-                }
-            }
-        }
-        impl std::fmt::Display for ShowDesktop {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                (*self as u32).fmt(f)
-            }
-        }
-        #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindowManagement
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_plasma_window_management";
-            const VERSION: u32 = 19u32;
-            #[doc = "Tell the compositor to show/hide the desktop."]
-            fn show_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                state: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.show_desktop({})",
-                        sender_id,
-                        state
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Deprecated: use get_window_by_uuid"]
-            fn get_window(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-                internal_window_id: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.get_window({}, {})",
-                        sender_id,
-                        id,
-                        internal_window_id
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .put_uint(internal_window_id)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn get_window_by_uuid(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-                internal_window_uuid: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
-                        sender_id,
-                        id,
-                        internal_window_uuid
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(id))
-                        .put_string(Some(internal_window_uuid))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn get_stacking_order(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                stacking_order: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window_management#{}.get_stacking_order({})",
-                        sender_id,
-                        stacking_order
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(stacking_order))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
-            #[doc = "or left."]
-            #[doc = ""]
-            #[doc = "On binding the interface the current state is sent."]
-            fn show_desktop_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                state: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent immediately after a window is mapped."]
-            fn window(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when stacking order changed and on bind."]
-            #[doc = ""]
-            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
-            fn stacking_order_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                ids: Vec<u8>,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when stacking order changed and on bind."]
-            #[doc = ""]
-            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
-            fn stacking_order_uuid_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                uuids: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent immediately after a window is mapped."]
-            fn window_with_uuid(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: u32,
-                uuid: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when stacking order changed."]
-            fn stacking_order_changed_2(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let state = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window_management#{}.show_desktop_changed({})",
-                                sender_id,
-                                state
-                            );
-                            self.show_desktop_changed(connection, sender_id, state)
-                                .await
-                        }
-                        1u16 => {
-                            let id = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window_management#{}.window({})",
-                                sender_id,
-                                id
-                            );
-                            self.window(connection, sender_id, id).await
-                        }
-                        2u16 => {
-                            let ids = message.array()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
-                                sender_id,
-                                ids.len()
-                            );
-                            self.stacking_order_changed(connection, sender_id, ids)
-                                .await
-                        }
-                        3u16 => {
-                            let uuids = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
-                                sender_id,
-                                uuids
-                            );
-                            self.stacking_order_uuid_changed(connection, sender_id, uuids)
-                                .await
-                        }
-                        4u16 => {
-                            let id = message.uint()?;
-                            let uuid = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
-                                sender_id,
-                                id,
-                                uuid
-                            );
-                            self.window_with_uuid(connection, sender_id, id, uuid).await
-                        }
-                        5u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window_management#{}.stacking_order_changed_2()",
-                                sender_id,
-                            );
-                            self.stacking_order_changed_2(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "Manages and control an application window."]
-    #[doc = ""]
-    #[doc = "Only one client can bind this interface at a time."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_window {
-        #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaWindow
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_plasma_window";
-            const VERSION: u32 = 18u32;
-            #[doc = "Set window state."]
-            #[doc = ""]
-            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state"]
-            #[doc = "and can be used together in a bitfield. The flags bitfield describes which flags are"]
-            #[doc = "supposed to be set, the state bitfield the value for the set flags"]
-            fn set_state(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                flags: u32,
-                state: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.set_state({}, {})",
-                        sender_id,
-                        flags,
-                        state
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(flags)
-                        .put_uint(state)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Deprecated: use enter_virtual_desktop"]
-            #[doc = "Maps the window to a different virtual desktop."]
-            #[doc = ""]
-            #[doc = "To show the window on all virtual desktops, call the"]
-            #[doc = "org_kde_plasma_window.set_state request and specify a on_all_desktops"]
-            #[doc = "state in the bitfield."]
-            fn set_virtual_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                number: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.set_virtual_desktop({})",
-                        sender_id,
-                        number
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(number).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Sets the geometry of the taskbar entry for this window."]
-            #[doc = "The geometry is relative to a panel in particular."]
-            fn set_minimized_geometry(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                panel: waynest::ObjectId,
-                x: u32,
-                y: u32,
-                width: u32,
-                height: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
-                        sender_id,
-                        panel,
-                        x,
-                        y,
-                        width,
-                        height
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(panel))
-                        .put_uint(x)
-                        .put_uint(y)
-                        .put_uint(width)
-                        .put_uint(height)
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Remove the task geometry information for a particular panel."]
-            fn unset_minimized_geometry(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                panel: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.unset_minimized_geometry({})",
-                        sender_id,
-                        panel
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(panel))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Close this window."]
-            fn close(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.close()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Request an interactive move for this window."]
-            fn request_move(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.request_move()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Request an interactive resize for this window."]
-            fn request_resize(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.request_resize()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Removes the resource bound for this org_kde_plasma_window."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_window#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "The compositor will write the window icon into the provided file descriptor."]
-            #[doc = "The data is a serialized QIcon with QDataStream."]
-            fn get_icon(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                fd: std::os::fd::BorrowedFd,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.get_icon({})",
-                        sender_id,
-                        std::os::fd::AsRawFd::as_raw_fd(&fd)
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_fd(fd).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Make the window enter a virtual desktop. A window can enter more"]
-            #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
-            fn request_enter_virtual_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.request_enter_virtual_desktop(\"{}\")",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 9u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
-            #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
-            #[doc = "it will create a new virtual desktop and assign the window to it."]
-            fn request_enter_new_virtual_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
-                        sender_id,
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 10u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
-            fn request_leave_virtual_desktop(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.request_leave_virtual_desktop(\"{}\")",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 11u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
-            fn request_enter_activity(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.request_enter_activity(\"{}\")",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 12u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
-            fn request_leave_activity(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.request_leave_activity(\"{}\")",
-                        sender_id,
-                        id
-                    );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 13u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Requests this window to be displayed in a specific output."]
-            fn send_to_output(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                output: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_window#{}.send_to_output({})",
-                        sender_id,
-                        output
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_object(Some(output))
-                        .build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 14u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "This event will be sent as soon as the window title is changed."]
-            fn title_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                title: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent as soon as the application"]
-            #[doc = "identifier is changed."]
-            fn app_id_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                app_id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent as soon as the window state changes."]
-            #[doc = ""]
-            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
-            fn state_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                flags: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
-            #[doc = "This event will be sent when a window is moved to another"]
-            #[doc = "virtual desktop."]
-            #[doc = ""]
-            #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
-            fn virtual_desktop_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                number: i32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
-            fn themed_icon_name_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                name: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent immediately after the window is closed"]
-            #[doc = "and its surface is unmapped."]
-            fn unmapped(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent immediately after all initial state been sent to the client."]
-            #[doc = "If the Plasma window is already unmapped, the unmapped event will be sent before the"]
-            #[doc = "initial_state event."]
-            fn initial_state(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
-            #[doc = "The passed parent is another org_kde_plasma_window and this org_kde_plasma_window is a"]
-            #[doc = "transient window to the parent window. If the parent argument is null, this"]
-            #[doc = "org_kde_plasma_window does not have a parent window."]
-            fn parent_window(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                parent: Option<waynest::ObjectId>,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
-            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
-            fn geometry(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                x: i32,
-                y: i32,
-                width: u32,
-                height: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
-            #[doc = "icon name. Common examples are Xwayland windows which have a pixmap based icon."]
-            #[doc = ""]
-            #[doc = "The client can request the icon using get_icon."]
-            fn icon_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
-            #[doc = "This should be set once before the initial_state is sent."]
-            fn pid_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                pid: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
-            fn virtual_desktop_entered(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
-            #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
-            fn virtual_desktop_left(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                is: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent after the application menu"]
-            #[doc = "for the window has changed."]
-            fn application_menu(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                service_name: String,
-                object_path: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
-            fn activity_entered(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
-            #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
-            fn activity_left(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent when the X11 resource name of the window has changed."]
-            #[doc = "This is only set for XWayland windows."]
-            fn resource_name_changed(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                resource_name: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
-            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
-            fn client_geometry(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                x: i32,
-                y: i32,
-                width: u32,
-                height: u32,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let title = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.title_changed(\"{}\")",
-                                sender_id,
-                                title
-                            );
-                            self.title_changed(connection, sender_id, title).await
-                        }
-                        1u16 => {
-                            let app_id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.app_id_changed(\"{}\")",
-                                sender_id,
-                                app_id
-                            );
-                            self.app_id_changed(connection, sender_id, app_id).await
-                        }
-                        2u16 => {
-                            let flags = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.state_changed({})",
-                                sender_id,
-                                flags
-                            );
-                            self.state_changed(connection, sender_id, flags).await
-                        }
-                        3u16 => {
-                            let number = message.int()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.virtual_desktop_changed({})",
-                                sender_id,
-                                number
-                            );
-                            self.virtual_desktop_changed(connection, sender_id, number)
-                                .await
-                        }
-                        4u16 => {
-                            let name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
-                                sender_id,
-                                name
-                            );
-                            self.themed_icon_name_changed(connection, sender_id, name)
-                                .await
-                        }
-                        5u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("org_kde_plasma_window#{}.unmapped()", sender_id,);
-                            self.unmapped(connection, sender_id).await
-                        }
-                        6u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("org_kde_plasma_window#{}.initial_state()", sender_id,);
-                            self.initial_state(connection, sender_id).await
-                        }
-                        7u16 => {
-                            let parent = message.object()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.parent_window({})",
-                                sender_id,
-                                parent
-                                    .as_ref()
-                                    .map_or("null".to_string(), |v| v.to_string())
-                            );
-                            self.parent_window(connection, sender_id, parent).await
-                        }
-                        8u16 => {
-                            let x = message.int()?;
-                            let y = message.int()?;
-                            let width = message.uint()?;
-                            let height = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
-                                sender_id,
-                                x,
-                                y,
-                                width,
-                                height
-                            );
-                            self.geometry(connection, sender_id, x, y, width, height)
-                                .await
-                        }
-                        9u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("org_kde_plasma_window#{}.icon_changed()", sender_id,);
-                            self.icon_changed(connection, sender_id).await
-                        }
-                        10u16 => {
-                            let pid = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.pid_changed({})",
-                                sender_id,
-                                pid
-                            );
-                            self.pid_changed(connection, sender_id, pid).await
-                        }
-                        11u16 => {
-                            let id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
-                                sender_id,
-                                id
-                            );
-                            self.virtual_desktop_entered(connection, sender_id, id)
-                                .await
-                        }
-                        12u16 => {
-                            let is = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
-                                sender_id,
-                                is
-                            );
-                            self.virtual_desktop_left(connection, sender_id, is).await
-                        }
-                        13u16 => {
-                            let service_name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            let object_path = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
-                                sender_id,
-                                service_name,
-                                object_path
-                            );
-                            self.application_menu(connection, sender_id, service_name, object_path)
-                                .await
-                        }
-                        14u16 => {
-                            let id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.activity_entered(\"{}\")",
-                                sender_id,
-                                id
-                            );
-                            self.activity_entered(connection, sender_id, id).await
-                        }
-                        15u16 => {
-                            let id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.activity_left(\"{}\")",
-                                sender_id,
-                                id
-                            );
-                            self.activity_left(connection, sender_id, id).await
-                        }
-                        16u16 => {
-                            let resource_name = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
-                                sender_id,
-                                resource_name
-                            );
-                            self.resource_name_changed(connection, sender_id, resource_name)
-                                .await
-                        }
-                        17u16 => {
-                            let x = message.int()?;
-                            let y = message.int()?;
-                            let width = message.uint()?;
-                            let height = message.uint()?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
-                                sender_id,
-                                x,
-                                y,
-                                width,
-                                height
-                            );
-                            self.client_geometry(connection, sender_id, x, y, width, height)
-                                .await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "The activation manager interface provides a way to get notified"]
-    #[doc = "when an application is about to be activated."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_activation_feedback {
-        #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivationFeedback
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
-            const VERSION: u32 = 1u32;
-            #[doc = "Destroy the activation manager object. The activation objects introduced"]
-            #[doc = "by this manager object will be unaffected."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!(
-                        "-> org_kde_plasma_activation_feedback#{}.destroy()",
-                        sender_id,
-                    );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            #[doc = "Will be issued when an app is set to be activated. It offers"]
-            #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
-            #[doc = "and the extent of the activation."]
-            fn activation(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let id = message
-                                .object()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_activation_feedback#{}.activation({})",
-                                sender_id,
-                                id
-                            );
-                            self.activation(connection, sender_id, id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_activation {
-        #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaActivation
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_plasma_activation";
-            const VERSION: u32 = 1u32;
-            #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
-            #[doc = "longer be used."]
-            fn destroy(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[cfg(feature = "tracing")]
-                    tracing::debug!("-> org_kde_plasma_activation#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
-                    futures_util::SinkExt::send(
-                        connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
-                    )
-                    .await
-                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
-                }
-            }
-            fn app_id(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                app_id: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn finished(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let app_id = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_activation#{}.app_id(\"{}\")",
-                                sender_id,
-                                app_id
-                            );
-                            self.app_id(connection, sender_id, app_id).await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("org_kde_plasma_activation#{}.finished()", sender_id,);
-                            self.finished(connection, sender_id).await
-                        }
-                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
-                    }
-                }
-            }
-        }
-    }
-    #[doc = "When this object is created, the compositor sends a window event for"]
-    #[doc = "each window in the stacking order, and afterwards sends the done event"]
-    #[doc = "and destroys this object."]
-    #[allow(clippy::too_many_arguments)]
-    pub mod org_kde_plasma_stacking_order {
-        #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
-        pub trait OrgKdePlasmaStackingOrder
-        where
-            Self: std::marker::Sync,
-        {
-            type Connection: waynest::Connection;
-            const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
-            const VERSION: u32 = 17u32;
-            fn window(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                uuid: String,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn done(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            fn handle_event(
-                &self,
-                connection: &mut Self::Connection,
-                sender_id: waynest::ObjectId,
-                message: &mut waynest::Message,
-            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
-            {
-                async move {
-                    #[allow(clippy::match_single_binding)]
-                    match message.opcode() {
-                        0u16 => {
-                            let uuid = message
-                                .string()?
-                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!(
-                                "org_kde_plasma_stacking_order#{}.window(\"{}\")",
-                                sender_id,
-                                uuid
-                            );
-                            self.window(connection, sender_id, uuid).await
-                        }
-                        1u16 => {
-                            #[cfg(feature = "tracing")]
-                            tracing::debug!("org_kde_plasma_stacking_order#{}.done()", sender_id,);
-                            self.done(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -12670,6 +8820,4221 @@ pub mod zkde_screencast_unstable_v1 {
                                 error
                             );
                             self.failed(connection, sender_id, error).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod appmenu {
+    #[doc = "This interface allows a client to link a window (or wl_surface) to an com.canonical.dbusmenu"]
+    #[doc = "interface registered on DBus."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_appmenu_manager {
+        #[doc = "Trait to implement the org_kde_kwin_appmenu_manager interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinAppmenuManager
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_kwin_appmenu_manager";
+            const VERSION: u32 = 2u32;
+            fn create(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_appmenu_manager#{}.create({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_appmenu_manager#{}.release()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The DBus service name and object path where the appmenu interface is present"]
+    #[doc = "The object should be registered on the session bus before sending this request."]
+    #[doc = "If not applicable, clients should remove this object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_kwin_appmenu {
+        #[doc = "Trait to implement the org_kde_kwin_appmenu interface. See the module level documentation for more info"]
+        pub trait OrgKdeKwinAppmenu
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_kwin_appmenu";
+            const VERSION: u32 = 2u32;
+            #[doc = "Set or update the service name and object path."]
+            #[doc = "Strings should be formatted in Latin-1 matching the relevant DBus specifications."]
+            fn set_address(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                service_name: String,
+                object_path: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_kwin_appmenu#{}.set_address(\"{}\", \"{}\")",
+                        sender_id,
+                        service_name,
+                        object_path
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(service_name))
+                        .put_string(Some(object_path))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_kwin_appmenu#{}.release()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_output_device_v2 {
+    #[doc = "An output device describes a display device available to the compositor."]
+    #[doc = "output_device is similar to wl_output, but focuses on output"]
+    #[doc = "configuration management."]
+    #[doc = ""]
+    #[doc = "A client can query all global output_device objects to enlist all"]
+    #[doc = "available display devices, even those that may currently not be"]
+    #[doc = "represented by the compositor as a wl_output."]
+    #[doc = ""]
+    #[doc = "The client sends configuration changes to the server through the"]
+    #[doc = "outputconfiguration interface, and the server applies the configuration"]
+    #[doc = "changes to the hardware and signals changes to the output devices"]
+    #[doc = "accordingly."]
+    #[doc = ""]
+    #[doc = "This object is published as global during start up for every available"]
+    #[doc = "display devices, or when one later becomes available, for example by"]
+    #[doc = "being hotplugged via a physical connector."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_device_v2 {
+        #[doc = "This enumeration describes how the physical pixels on an output are"]
+        #[doc = "laid out."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Subpixel {
+            Unknown = 0u32,
+            None = 1u32,
+            HorizontalRgb = 2u32,
+            HorizontalBgr = 3u32,
+            VerticalRgb = 4u32,
+            VerticalBgr = 5u32,
+        }
+        impl From<Subpixel> for u32 {
+            fn from(value: Subpixel) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Subpixel {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Unknown),
+                    1u32 => Ok(Self::None),
+                    2u32 => Ok(Self::HorizontalRgb),
+                    3u32 => Ok(Self::HorizontalBgr),
+                    4u32 => Ok(Self::VerticalRgb),
+                    5u32 => Ok(Self::VerticalBgr),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Subpixel {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "This describes the transform, that a compositor will apply to a"]
+        #[doc = "surface to compensate for the rotation or mirroring of an"]
+        #[doc = "output device."]
+        #[doc = ""]
+        #[doc = "The flipped values correspond to an initial flip around a"]
+        #[doc = "vertical axis followed by rotation."]
+        #[doc = ""]
+        #[doc = "The purpose is mainly to allow clients to render accordingly and"]
+        #[doc = "tell the compositor, so that for fullscreen surfaces, the"]
+        #[doc = "compositor is still able to scan out directly client surfaces."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Transform {
+            Normal = 0u32,
+            _90 = 1u32,
+            _180 = 2u32,
+            _270 = 3u32,
+            Flipped = 4u32,
+            Flipped90 = 5u32,
+            Flipped180 = 6u32,
+            Flipped270 = 7u32,
+        }
+        impl From<Transform> for u32 {
+            fn from(value: Transform) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Transform {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Normal),
+                    1u32 => Ok(Self::_90),
+                    2u32 => Ok(Self::_180),
+                    3u32 => Ok(Self::_270),
+                    4u32 => Ok(Self::Flipped),
+                    5u32 => Ok(Self::Flipped90),
+                    6u32 => Ok(Self::Flipped180),
+                    7u32 => Ok(Self::Flipped270),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Transform {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; # [doc = "if this outputdevice supports the sharpness setting"] const Sharpness = 4096u32 ; # [doc = "if this outputdevice supports custom modes"] const CustomModes = 8192u32 ; const AutoBrightness = 16384u32 ; } }
+        impl From<Capability> for u32 {
+            fn from(value: Capability) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for Capability {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for Capability {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "Describes when the compositor may employ variable refresh rate"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum VrrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+            Automatic = 2u32,
+        }
+        impl From<VrrPolicy> for u32 {
+            fn from(value: VrrPolicy) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for VrrPolicy {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    2u32 => Ok(Self::Automatic),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Whether full or limited color range should be used"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum RgbRange {
+            Automatic = 0u32,
+            Full = 1u32,
+            Limited = 2u32,
+        }
+        impl From<RgbRange> for u32 {
+            fn from(value: RgbRange) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for RgbRange {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Automatic),
+                    1u32 => Ok(Self::Full),
+                    2u32 => Ok(Self::Limited),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AutoRotatePolicy {
+            Never = 0u32,
+            InTabletMode = 1u32,
+            Always = 2u32,
+        }
+        impl From<AutoRotatePolicy> for u32 {
+            fn from(value: AutoRotatePolicy) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for AutoRotatePolicy {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::InTabletMode),
+                    2u32 => Ok(Self::Always),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorProfileSource {
+            SRgb = 0u32,
+            Icc = 1u32,
+            Edid = 2u32,
+        }
+        impl From<ColorProfileSource> for u32 {
+            fn from(value: ColorProfileSource) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ColorProfileSource {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SRgb),
+                    1u32 => Ok(Self::Icc),
+                    2u32 => Ok(Self::Edid),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "The compositor can do a lot of things that trade between"]
+        #[doc = "performance, power and color accuracy. This setting describes"]
+        #[doc = "a high level preference from the user about in which direction"]
+        #[doc = "that tradeoff should be made."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorPowerTradeoff {
+            #[doc = "prefer efficiency and performance"]
+            Efficiency = 0u32,
+            #[doc = "prefer accuracy"]
+            Accuracy = 1u32,
+        }
+        impl From<ColorPowerTradeoff> for u32 {
+            fn from(value: ColorPowerTradeoff) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ColorPowerTradeoff {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Efficiency),
+                    1u32 => Ok(Self::Accuracy),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorPowerTradeoff {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum EdrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+        }
+        impl From<EdrPolicy> for u32 {
+            fn from(value: EdrPolicy) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for EdrPolicy {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for EdrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_output_device_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputDeviceV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "kde_output_device_v2";
+            const VERSION: u32 = 20u32;
+            #[doc = "The geometry event describes geometric properties of the output."]
+            #[doc = "The event is sent when binding to the output object and whenever"]
+            #[doc = "any of the properties change."]
+            fn geometry(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+                physical_width: i32,
+                physical_height: i32,
+                subpixel: i32,
+                make: String,
+                model: String,
+                transform: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event describes the mode currently in use for this head. It is only"]
+            #[doc = "sent if the output is enabled."]
+            fn current_mode(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                mode: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The mode event describes an available mode for the output."]
+            #[doc = ""]
+            #[doc = "When the client binds to the output_device object, the server sends this"]
+            #[doc = "event once for every available mode the output_device can be operated by."]
+            #[doc = ""]
+            #[doc = "There will always be at least one event sent out on initial binding,"]
+            #[doc = "which represents the current mode."]
+            #[doc = ""]
+            #[doc = "Later if an output changes, its mode event is sent again for the"]
+            #[doc = "eventual added modes and lastly the current mode. In other words, the"]
+            #[doc = "current mode is always represented by the latest event sent with the current"]
+            #[doc = "flag set."]
+            #[doc = ""]
+            #[doc = "The size of a mode is given in physical hardware units of the output device."]
+            #[doc = "This is not necessarily the same as the output size in the global compositor"]
+            #[doc = "space. For instance, the output may be scaled, as described in"]
+            #[doc = "kde_output_device_v2.scale, or transformed, as described in"]
+            #[doc = "kde_output_device_v2.transform."]
+            fn mode(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                mode: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event is sent after all other properties have been"]
+            #[doc = "sent on binding to the output object as well as after any"]
+            #[doc = "other output property change have been applied later on."]
+            #[doc = "This allows to see changes to the output properties as atomic,"]
+            #[doc = "even if multiple events successively announce them."]
+            fn done(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event contains scaling geometry information"]
+            #[doc = "that is not in the geometry event. It may be sent after"]
+            #[doc = "binding the output object or if the output scale changes"]
+            #[doc = "later. If it is not sent, the client should assume a"]
+            #[doc = "scale of 1."]
+            #[doc = ""]
+            #[doc = "A scale larger than 1 means that the compositor will"]
+            #[doc = "automatically scale surface buffers by this amount"]
+            #[doc = "when rendering. This is used for high resolution"]
+            #[doc = "displays where applications rendering at the native"]
+            #[doc = "resolution would be too small to be legible."]
+            #[doc = ""]
+            #[doc = "It is intended that scaling aware clients track the"]
+            #[doc = "current output of a surface, and if it is on a scaled"]
+            #[doc = "output it should use wl_surface.set_buffer_scale with"]
+            #[doc = "the scale of the output. That way the compositor can"]
+            #[doc = "avoid scaling the surface, and the client can supply"]
+            #[doc = "a higher detail image."]
+            fn scale(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                factor: waynest::Fixed,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The edid event encapsulates the EDID data for the outputdevice."]
+            #[doc = ""]
+            #[doc = "The event is sent when binding to the output object. The EDID"]
+            #[doc = "data may be empty, in which case this event is sent anyway."]
+            #[doc = "If the EDID information is empty, you can fall back to the name"]
+            #[doc = "et al. properties of the outputdevice."]
+            fn edid(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                raw: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The enabled event notifies whether this output is currently"]
+            #[doc = "enabled and used for displaying content by the server."]
+            #[doc = "The event is sent when binding to the output object and"]
+            #[doc = "whenever later on an output changes its state by becoming"]
+            #[doc = "enabled or disabled."]
+            fn enabled(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                enabled: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The uuid can be used to identify the output. It's controlled by"]
+            #[doc = "the server entirely. The server should make sure the uuid is"]
+            #[doc = "persistent across restarts. An empty uuid is considered invalid."]
+            fn uuid(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                uuid: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Serial ID of the monitor, sent on startup before the first done event."]
+            fn serial_number(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                serial_number: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "EISA ID of the monitor, sent on startup before the first done event."]
+            fn eisa_id(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                eisa_id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "What capabilities this device has, sent on startup before the first"]
+            #[doc = "done event."]
+            fn capabilities(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                flags: Capability,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Overscan value of the monitor in percent, sent on startup before the"]
+            #[doc = "first done event."]
+            fn overscan(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                overscan: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "What policy the compositor will employ regarding its use of variable"]
+            #[doc = "refresh rate."]
+            fn vrr_policy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                vrr_policy: VrrPolicy,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "What rgb range the compositor is using for this output"]
+            fn rgb_range(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                rgb_range: RgbRange,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Name of the output, it's useful to cross-reference to an zxdg_output_v1 and ultimately QScreen"]
+            fn name(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Whether or not high dynamic range is enabled for this output"]
+            fn high_dynamic_range(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                hdr_enabled: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "If high dynamic range is used, this value defines the brightness in nits for content"]
+            #[doc = "that's in standard dynamic range format. Note that while the value is in nits, that"]
+            #[doc = "doesn't necessarily translate to the same brightness on the screen."]
+            fn sdr_brightness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                sdr_brightness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Whether or not the use of a wide color gamut is enabled for this output"]
+            fn wide_color_gamut(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                wcg_enabled: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn auto_rotate_policy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                policy: AutoRotatePolicy,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn icc_profile_path(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                profile_path: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn brightness_metadata(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                max_peak_brightness: u32,
+                max_frame_average_brightness: u32,
+                min_brightness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn brightness_overrides(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                max_peak_brightness: i32,
+                max_average_brightness: i32,
+                min_brightness: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
+            #[doc = "default experience on many modern sRGB screens."]
+            fn sdr_gamut_wideness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                gamut_wideness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn color_profile_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                source: ColorProfileSource,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This is the brightness modifier of the output. It doesn't specify"]
+            #[doc = "any absolute values, but is merely a multiplier on top of other"]
+            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
+            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
+            #[doc = "the maximum brightness."]
+            #[doc = "This is currently only supported / meaningful while HDR is active."]
+            fn brightness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                brightness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn color_power_tradeoff(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                preference: ColorPowerTradeoff,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This is the dimming multiplier of the output. This is similar to"]
+            #[doc = "the brightness setting, except it's meant to be a temporary setting"]
+            #[doc = "only, not persistent and may be implemented differently depending"]
+            #[doc = "on the display."]
+            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
+            #[doc = "means the output is not dimmed."]
+            fn dimming(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                multiplier: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn replication_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                source: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "If the ddc_ci capability is present, this determines if settings"]
+            #[doc = "such as brightness, contrast or others should be set using DDC/CI."]
+            fn ddc_ci_allowed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                allowed: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This limits the amount of bits per color that are sent to the display."]
+            fn max_bits_per_color(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                max_bpc: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn max_bits_per_color_range(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                min_value: u32,
+                max_value: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn automatic_max_bits_per_color_limit(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                max_bpc_limit: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
+            #[doc = "the user-specified setting, in order to present HDR content on displays"]
+            #[doc = "without native HDR support."]
+            #[doc = "This will usually result in better visuals, but also increases battery"]
+            #[doc = "usage."]
+            fn edr_policy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                policy: EdrPolicy,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This is the sharpness modifier of the output."]
+            #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
+            fn sharpness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                sharpness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Describes the position of the output in the output order list,"]
+            #[doc = "with lower values being earlier in the list. There's no specific"]
+            #[doc = "value the list has to start at, this value is only used in sorting"]
+            #[doc = "outputs."]
+            #[doc = ""]
+            #[doc = "Note that the output order protocol is not sufficient for this,"]
+            #[doc = "as an output may not be in the output order if it's disabled or"]
+            #[doc = "mirroring another screen."]
+            fn priority(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                priority: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn auto_brightness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                enabled: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let physical_width = message.int()?;
+                            let physical_height = message.int()?;
+                            let subpixel = message.int()?;
+                            let make = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let model = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let transform = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.geometry({}, {}, {}, {}, {}, \"{}\", \"{}\", {})",
+                                sender_id,
+                                x,
+                                y,
+                                physical_width,
+                                physical_height,
+                                subpixel,
+                                make,
+                                model,
+                                transform
+                            );
+                            self.geometry(
+                                connection,
+                                sender_id,
+                                x,
+                                y,
+                                physical_width,
+                                physical_height,
+                                subpixel,
+                                make,
+                                model,
+                                transform,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            let mode = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.current_mode({})",
+                                sender_id,
+                                mode
+                            );
+                            self.current_mode(connection, sender_id, mode).await
+                        }
+                        2u16 => {
+                            let mode = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_v2#{}.mode({})", sender_id, mode);
+                            self.mode(connection, sender_id, mode).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_v2#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let factor = message.fixed()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_v2#{}.scale({})", sender_id, factor);
+                            self.scale(connection, sender_id, factor).await
+                        }
+                        5u16 => {
+                            let raw = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_v2#{}.edid(\"{}\")", sender_id, raw);
+                            self.edid(connection, sender_id, raw).await
+                        }
+                        6u16 => {
+                            let enabled = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.enabled({})",
+                                sender_id,
+                                enabled
+                            );
+                            self.enabled(connection, sender_id, enabled).await
+                        }
+                        7u16 => {
+                            let uuid = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.uuid(\"{}\")",
+                                sender_id,
+                                uuid
+                            );
+                            self.uuid(connection, sender_id, uuid).await
+                        }
+                        8u16 => {
+                            let serial_number = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.serial_number(\"{}\")",
+                                sender_id,
+                                serial_number
+                            );
+                            self.serial_number(connection, sender_id, serial_number)
+                                .await
+                        }
+                        9u16 => {
+                            let eisa_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.eisa_id(\"{}\")",
+                                sender_id,
+                                eisa_id
+                            );
+                            self.eisa_id(connection, sender_id, eisa_id).await
+                        }
+                        10u16 => {
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.capabilities({})",
+                                sender_id,
+                                flags
+                            );
+                            self.capabilities(connection, sender_id, flags.try_into()?)
+                                .await
+                        }
+                        11u16 => {
+                            let overscan = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.overscan({})",
+                                sender_id,
+                                overscan
+                            );
+                            self.overscan(connection, sender_id, overscan).await
+                        }
+                        12u16 => {
+                            let vrr_policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.vrr_policy({})",
+                                sender_id,
+                                vrr_policy
+                            );
+                            self.vrr_policy(connection, sender_id, vrr_policy.try_into()?)
+                                .await
+                        }
+                        13u16 => {
+                            let rgb_range = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.rgb_range({})",
+                                sender_id,
+                                rgb_range
+                            );
+                            self.rgb_range(connection, sender_id, rgb_range.try_into()?)
+                                .await
+                        }
+                        14u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.name(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.name(connection, sender_id, name).await
+                        }
+                        15u16 => {
+                            let hdr_enabled = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.high_dynamic_range({})",
+                                sender_id,
+                                hdr_enabled
+                            );
+                            self.high_dynamic_range(connection, sender_id, hdr_enabled)
+                                .await
+                        }
+                        16u16 => {
+                            let sdr_brightness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.sdr_brightness({})",
+                                sender_id,
+                                sdr_brightness
+                            );
+                            self.sdr_brightness(connection, sender_id, sdr_brightness)
+                                .await
+                        }
+                        17u16 => {
+                            let wcg_enabled = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.wide_color_gamut({})",
+                                sender_id,
+                                wcg_enabled
+                            );
+                            self.wide_color_gamut(connection, sender_id, wcg_enabled)
+                                .await
+                        }
+                        18u16 => {
+                            let policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.auto_rotate_policy({})",
+                                sender_id,
+                                policy
+                            );
+                            self.auto_rotate_policy(connection, sender_id, policy.try_into()?)
+                                .await
+                        }
+                        19u16 => {
+                            let profile_path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.icc_profile_path(\"{}\")",
+                                sender_id,
+                                profile_path
+                            );
+                            self.icc_profile_path(connection, sender_id, profile_path)
+                                .await
+                        }
+                        20u16 => {
+                            let max_peak_brightness = message.uint()?;
+                            let max_frame_average_brightness = message.uint()?;
+                            let min_brightness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.brightness_metadata({}, {}, {})",
+                                sender_id,
+                                max_peak_brightness,
+                                max_frame_average_brightness,
+                                min_brightness
+                            );
+                            self.brightness_metadata(
+                                connection,
+                                sender_id,
+                                max_peak_brightness,
+                                max_frame_average_brightness,
+                                min_brightness,
+                            )
+                            .await
+                        }
+                        21u16 => {
+                            let max_peak_brightness = message.int()?;
+                            let max_average_brightness = message.int()?;
+                            let min_brightness = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.brightness_overrides({}, {}, {})",
+                                sender_id,
+                                max_peak_brightness,
+                                max_average_brightness,
+                                min_brightness
+                            );
+                            self.brightness_overrides(
+                                connection,
+                                sender_id,
+                                max_peak_brightness,
+                                max_average_brightness,
+                                min_brightness,
+                            )
+                            .await
+                        }
+                        22u16 => {
+                            let gamut_wideness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.sdr_gamut_wideness({})",
+                                sender_id,
+                                gamut_wideness
+                            );
+                            self.sdr_gamut_wideness(connection, sender_id, gamut_wideness)
+                                .await
+                        }
+                        23u16 => {
+                            let source = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.color_profile_source({})",
+                                sender_id,
+                                source
+                            );
+                            self.color_profile_source(connection, sender_id, source.try_into()?)
+                                .await
+                        }
+                        24u16 => {
+                            let brightness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.brightness({})",
+                                sender_id,
+                                brightness
+                            );
+                            self.brightness(connection, sender_id, brightness).await
+                        }
+                        25u16 => {
+                            let preference = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.color_power_tradeoff({})",
+                                sender_id,
+                                preference
+                            );
+                            self.color_power_tradeoff(connection, sender_id, preference.try_into()?)
+                                .await
+                        }
+                        26u16 => {
+                            let multiplier = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.dimming({})",
+                                sender_id,
+                                multiplier
+                            );
+                            self.dimming(connection, sender_id, multiplier).await
+                        }
+                        27u16 => {
+                            let source = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.replication_source(\"{}\")",
+                                sender_id,
+                                source
+                            );
+                            self.replication_source(connection, sender_id, source).await
+                        }
+                        28u16 => {
+                            let allowed = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.ddc_ci_allowed({})",
+                                sender_id,
+                                allowed
+                            );
+                            self.ddc_ci_allowed(connection, sender_id, allowed).await
+                        }
+                        29u16 => {
+                            let max_bpc = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.max_bits_per_color({})",
+                                sender_id,
+                                max_bpc
+                            );
+                            self.max_bits_per_color(connection, sender_id, max_bpc)
+                                .await
+                        }
+                        30u16 => {
+                            let min_value = message.uint()?;
+                            let max_value = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.max_bits_per_color_range({}, {})",
+                                sender_id,
+                                min_value,
+                                max_value
+                            );
+                            self.max_bits_per_color_range(
+                                connection, sender_id, min_value, max_value,
+                            )
+                            .await
+                        }
+                        31u16 => {
+                            let max_bpc_limit = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.automatic_max_bits_per_color_limit({})",
+                                sender_id,
+                                max_bpc_limit
+                            );
+                            self.automatic_max_bits_per_color_limit(
+                                connection,
+                                sender_id,
+                                max_bpc_limit,
+                            )
+                            .await
+                        }
+                        32u16 => {
+                            let policy = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.edr_policy({})",
+                                sender_id,
+                                policy
+                            );
+                            self.edr_policy(connection, sender_id, policy.try_into()?)
+                                .await
+                        }
+                        33u16 => {
+                            let sharpness = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.sharpness({})",
+                                sender_id,
+                                sharpness
+                            );
+                            self.sharpness(connection, sender_id, sharpness).await
+                        }
+                        34u16 => {
+                            let priority = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.priority({})",
+                                sender_id,
+                                priority
+                            );
+                            self.priority(connection, sender_id, priority).await
+                        }
+                        35u16 => {
+                            let enabled = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_v2#{}.auto_brightness({})",
+                                sender_id,
+                                enabled
+                            );
+                            self.auto_brightness(connection, sender_id, enabled).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "This object describes an output mode."]
+    #[doc = ""]
+    #[doc = "Some heads don't support output modes, in which case modes won't be"]
+    #[doc = "advertised."]
+    #[doc = ""]
+    #[doc = "Properties sent via this interface are applied atomically via the"]
+    #[doc = "kde_output_device.done event. No guarantees are made regarding the order"]
+    #[doc = "in which properties are sent."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_device_mode_v2 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Flags {
+            Custom = 1u32,
+            ReducedBlanking = 2u32,
+        }
+        impl From<Flags> for u32 {
+            fn from(value: Flags) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Flags {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Custom),
+                    2u32 => Ok(Self::ReducedBlanking),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Flags {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_output_device_mode_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputDeviceModeV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "kde_output_device_mode_v2";
+            const VERSION: u32 = 20u32;
+            #[doc = "This event describes the mode size. The size is given in physical"]
+            #[doc = "hardware units of the output device. This is not necessarily the same as"]
+            #[doc = "the output size in the global compositor space. For instance, the output"]
+            #[doc = "may be scaled or transformed."]
+            fn size(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                width: i32,
+                height: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event describes the mode's fixed vertical refresh rate. It is only"]
+            #[doc = "sent if the mode has a fixed refresh rate."]
+            fn refresh(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                refresh: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event advertises this mode as preferred."]
+            fn preferred(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The compositor will destroy the object immediately after sending this"]
+            #[doc = "event, so it will become invalid and the client should release any"]
+            #[doc = "resources associated with it."]
+            fn removed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event describes the mode's flags."]
+            fn flags(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                flags: Flags,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_mode_v2#{}.size({}, {})",
+                                sender_id,
+                                width,
+                                height
+                            );
+                            self.size(connection, sender_id, width, height).await
+                        }
+                        1u16 => {
+                            let refresh = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_mode_v2#{}.refresh({})",
+                                sender_id,
+                                refresh
+                            );
+                            self.refresh(connection, sender_id, refresh).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_mode_v2#{}.preferred()", sender_id,);
+                            self.preferred(connection, sender_id).await
+                        }
+                        3u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_mode_v2#{}.removed()", sender_id,);
+                            self.removed(connection, sender_id).await
+                        }
+                        4u16 => {
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_device_mode_v2#{}.flags({})",
+                                sender_id,
+                                flags
+                            );
+                            self.flags(connection, sender_id, flags.try_into()?).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod kde_output_management_v2 {
+    #[doc = "This interface enables clients to set properties of output devices for screen"]
+    #[doc = "configuration purposes via the server. To this end output devices are referenced"]
+    #[doc = "by global kde_output_device_v2 objects."]
+    #[doc = ""]
+    #[doc = "outputmanagement (wl_global)"]
+    #[doc = "--------------------------"]
+    #[doc = "request:"]
+    #[doc = "* create_configuration -> outputconfiguration (wl_resource)"]
+    #[doc = ""]
+    #[doc = "outputconfiguration (wl_resource)"]
+    #[doc = "--------------------------"]
+    #[doc = "requests:"]
+    #[doc = "* enable(outputdevice, bool)"]
+    #[doc = "* mode(outputdevice, mode)"]
+    #[doc = "* transformation(outputdevice, flag)"]
+    #[doc = "* position(outputdevice, x, y)"]
+    #[doc = "* apply"]
+    #[doc = ""]
+    #[doc = "events:"]
+    #[doc = "* applied"]
+    #[doc = "* failed"]
+    #[doc = ""]
+    #[doc = "The server registers one outputmanagement object as a global object. In order"]
+    #[doc = "to configure outputs a client requests create_configuration, which provides a"]
+    #[doc = "resource referencing an outputconfiguration for one-time configuration. That"]
+    #[doc = "way the server knows which requests belong together and can group them by that."]
+    #[doc = ""]
+    #[doc = "On the outputconfiguration object the client calls for each output whether the"]
+    #[doc = "output should be enabled, which mode should be set (by referencing the mode from"]
+    #[doc = "the list of announced modes) and the output's global position. Once all outputs"]
+    #[doc = "are configured that way, the client calls apply."]
+    #[doc = "At that point and not earlier the server should try to apply the configuration."]
+    #[doc = "If this succeeds the server emits the applied signal, otherwise the failed"]
+    #[doc = "signal, such that the configuring client is noticed about the success of its"]
+    #[doc = "configuration request."]
+    #[doc = ""]
+    #[doc = "Through this design the interface enables atomic output configuration changes if"]
+    #[doc = "internally supported by the server."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment implementation"]
+    #[doc = "detail. Regular clients must not use this protocol. Backward incompatible"]
+    #[doc = "changes may be added without bumping the major version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_management_v2 {
+        #[doc = "Trait to implement the kde_output_management_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputManagementV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "kde_output_management_v2";
+            const VERSION: u32 = 19u32;
+            #[doc = "Request an outputconfiguration object through which the client can configure"]
+            #[doc = "output devices."]
+            fn create_configuration(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_management_v2#{}.create_configuration({})",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_object(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "For details, see the description of kde_mode_list_v2 and"]
+            #[doc = "kde_output_configuration_v2.set_custom_modes."]
+            fn create_mode_list(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_management_v2#{}.create_mode_list({})",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_object(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "outputconfiguration is a client-specific resource that can be used to ask"]
+    #[doc = "the server to apply changes to available output devices."]
+    #[doc = ""]
+    #[doc = "The client receives a list of output devices from the registry. When it wants"]
+    #[doc = "to apply new settings, it creates a configuration object from the"]
+    #[doc = "outputmanagement global, writes changes through this object's enable, scale,"]
+    #[doc = "transform and mode calls. It then asks the server to apply these settings in"]
+    #[doc = "an atomic fashion, for example through Linux' DRM interface."]
+    #[doc = ""]
+    #[doc = "The server signals back whether the new settings have applied successfully"]
+    #[doc = "or failed to apply. outputdevice objects are updated after the changes have been"]
+    #[doc = "applied to the hardware and before the server side sends the applied event."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_configuration_v2 {
+        #[doc = "These error can be emitted in response to kde_output_configuration_v2 requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the config is already applied"]
+            AlreadyApplied = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::AlreadyApplied),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Describes when the compositor may employ variable refresh rate"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum VrrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+            Automatic = 2u32,
+        }
+        impl From<VrrPolicy> for u32 {
+            fn from(value: VrrPolicy) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for VrrPolicy {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    2u32 => Ok(Self::Automatic),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for VrrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Whether this output should use full or limited rgb."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum RgbRange {
+            Automatic = 0u32,
+            Full = 1u32,
+            Limited = 2u32,
+        }
+        impl From<RgbRange> for u32 {
+            fn from(value: RgbRange) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for RgbRange {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Automatic),
+                    1u32 => Ok(Self::Full),
+                    2u32 => Ok(Self::Limited),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for RgbRange {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum AutoRotatePolicy {
+            Never = 0u32,
+            InTabletMode = 1u32,
+            Always = 2u32,
+        }
+        impl From<AutoRotatePolicy> for u32 {
+            fn from(value: AutoRotatePolicy) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for AutoRotatePolicy {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::InTabletMode),
+                    2u32 => Ok(Self::Always),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for AutoRotatePolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorProfileSource {
+            SRgb = 0u32,
+            Icc = 1u32,
+            Edid = 2u32,
+        }
+        impl From<ColorProfileSource> for u32 {
+            fn from(value: ColorProfileSource) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ColorProfileSource {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::SRgb),
+                    1u32 => Ok(Self::Icc),
+                    2u32 => Ok(Self::Edid),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorProfileSource {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "The compositor can do a lot of things that trade between"]
+        #[doc = "performance, power and color accuracy. This setting describes"]
+        #[doc = "a high level preference from the user about in which direction"]
+        #[doc = "that tradeoff should be made."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ColorPowerTradeoff {
+            #[doc = "prefer efficiency and performance"]
+            Efficiency = 0u32,
+            #[doc = "prefer accuracy"]
+            Accuracy = 1u32,
+        }
+        impl From<ColorPowerTradeoff> for u32 {
+            fn from(value: ColorPowerTradeoff) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ColorPowerTradeoff {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Efficiency),
+                    1u32 => Ok(Self::Accuracy),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ColorPowerTradeoff {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum EdrPolicy {
+            Never = 0u32,
+            Always = 1u32,
+        }
+        impl From<EdrPolicy> for u32 {
+            fn from(value: EdrPolicy) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for EdrPolicy {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Never),
+                    1u32 => Ok(Self::Always),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for EdrPolicy {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_output_configuration_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputConfigurationV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "kde_output_configuration_v2";
+            const VERSION: u32 = 19u32;
+            #[doc = "Mark the output as enabled or disabled."]
+            fn enable(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                enable: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.enable({}, {})",
+                        sender_id,
+                        outputdevice,
+                        enable
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_int(enable)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the mode for a given output."]
+            fn mode(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                mode: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.mode({}, {})",
+                        sender_id,
+                        outputdevice,
+                        mode
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_object(Some(mode))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the transformation for a given output."]
+            fn transform(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                transform: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.transform({}, {})",
+                        sender_id,
+                        outputdevice,
+                        transform
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_int(transform)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the position for this output device. (x,y) describe the top-left corner"]
+            #[doc = "of the output in global space, whereby the origin (0,0) of the global space"]
+            #[doc = "has to be aligned with the top-left corner of the most left and in case this"]
+            #[doc = "does not define a single one the top output."]
+            #[doc = ""]
+            #[doc = "There may be no gaps or overlaps between outputs, i.e. the outputs are"]
+            #[doc = "stacked horizontally, vertically, or both on each other."]
+            fn position(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.position({}, {}, {})",
+                        sender_id,
+                        outputdevice,
+                        x,
+                        y
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_int(x)
+                        .put_int(y)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the scaling factor for this output device."]
+            fn scale(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                scale: waynest::Fixed,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.scale({}, {})",
+                        sender_id,
+                        outputdevice,
+                        scale
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_fixed(scale)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Asks the server to apply property changes requested through this outputconfiguration"]
+            #[doc = "object to all outputs on the server side."]
+            #[doc = ""]
+            #[doc = "The output configuration can be applied only once. The already_applied protocol error"]
+            #[doc = "will be posted if the apply request is called the second time."]
+            fn apply(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_configuration_v2#{}.apply()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_configuration_v2#{}.destroy()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the overscan value of this output device with a value in percent."]
+            fn overscan(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                overscan: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.overscan({}, {})",
+                        sender_id,
+                        outputdevice,
+                        overscan
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(overscan)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set what policy the compositor should employ regarding its use of"]
+            #[doc = "variable refresh rate."]
+            fn set_vrr_policy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                policy: VrrPolicy,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_vrr_policy({}, {})",
+                        sender_id,
+                        outputdevice,
+                        policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(policy.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Whether full or limited color range should be used"]
+            fn set_rgb_range(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                rgb_range: RgbRange,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_rgb_range({}, {})",
+                        sender_id,
+                        outputdevice,
+                        rgb_range
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(rgb_range.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_primary_output(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_primary_output({})",
+                        sender_id,
+                        output
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(output))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the position of the output in the output order list, with lower values"]
+            #[doc = "being earlier in the list. There's no specific value the list has to start"]
+            #[doc = "at, this value is only used in sorting outputs."]
+            #[doc = ""]
+            #[doc = "The order of outputs can be used to assign desktop environment components"]
+            #[doc = "to a specific screen, see kde_output_order_v1 and kde-output-device-v2 for"]
+            #[doc = "details. Note that for consistent behavior, the priority value needs to be"]
+            #[doc = "unique among all enabled outputs."]
+            fn set_priority(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                priority: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_priority({}, {})",
+                        sender_id,
+                        outputdevice,
+                        priority
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(priority)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets whether or not the output should be set to HDR mode."]
+            fn set_high_dynamic_range(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                enable_hdr: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_high_dynamic_range({}, {})",
+                        sender_id,
+                        outputdevice,
+                        enable_hdr
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(enable_hdr)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the brightness of standard dynamic range content in nits. Only has an effect while the output is in HDR mode."]
+            #[doc = "Note that while the value is in nits, that doesn't necessarily translate to the same brightness on the screen."]
+            fn set_sdr_brightness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                sdr_brightness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_sdr_brightness({}, {})",
+                        sender_id,
+                        outputdevice,
+                        sdr_brightness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(sdr_brightness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Whether or not the output should use a wide color gamut"]
+            fn set_wide_color_gamut(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                enable_wcg: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_wide_color_gamut({}, {})",
+                        sender_id,
+                        outputdevice,
+                        enable_wcg
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(enable_wcg)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_auto_rotate_policy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                policy: AutoRotatePolicy,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_auto_rotate_policy({}, {})",
+                        sender_id,
+                        outputdevice,
+                        policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(policy.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 15u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_icc_profile_path(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                profile_path: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_icc_profile_path({}, \"{}\")",
+                        sender_id,
+                        outputdevice,
+                        profile_path
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_string(Some(profile_path))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 16u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_brightness_overrides(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                max_peak_brightness: i32,
+                max_frame_average_brightness: i32,
+                min_brightness: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_brightness_overrides({}, {}, {}, {})",
+                        sender_id,
+                        outputdevice,
+                        max_peak_brightness,
+                        max_frame_average_brightness,
+                        min_brightness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_int(max_peak_brightness)
+                        .put_int(max_frame_average_brightness)
+                        .put_int(min_brightness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 17u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This can be used to provide the colors users assume sRGB applications should have based on the"]
+            #[doc = "default experience on many modern sRGB screens."]
+            fn set_sdr_gamut_wideness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                gamut_wideness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_sdr_gamut_wideness({}, {})",
+                        sender_id,
+                        outputdevice,
+                        gamut_wideness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(gamut_wideness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 18u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_color_profile_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                color_profile_source: ColorProfileSource,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_color_profile_source({}, {})",
+                        sender_id,
+                        outputdevice,
+                        color_profile_source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(color_profile_source.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 19u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the brightness modifier of the output. It doesn't specify"]
+            #[doc = "any absolute values, but is merely a multiplier on top of other"]
+            #[doc = "brightness values, like sdr_brightness and brightness_metadata."]
+            #[doc = "0 is the minimum brightness (not completely dark) and 10000 is"]
+            #[doc = "the maximum brightness."]
+            #[doc = "This is supported while HDR is active in versions 8 and below,"]
+            #[doc = "or when the device supports the \"brightness\" capability in"]
+            #[doc = "versions 9 and above."]
+            fn set_brightness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                brightness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_brightness({}, {})",
+                        sender_id,
+                        outputdevice,
+                        brightness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(brightness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 20u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_color_power_tradeoff(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                preference: ColorPowerTradeoff,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_color_power_tradeoff({}, {})",
+                        sender_id,
+                        outputdevice,
+                        preference
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(preference.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 21u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the dimming multiplier of the output. This is similar to the"]
+            #[doc = "brightness setting, except it's meant to be a temporary setting"]
+            #[doc = "only, not persistent and may be implemented differently depending"]
+            #[doc = "on the display."]
+            #[doc = "0 is the minimum dimming factor (not completely dark) and 10000"]
+            #[doc = "means the output is not dimmed."]
+            #[doc = ""]
+            #[doc = "This is supported only when the \"brightness\" capability is"]
+            #[doc = "also supported."]
+            fn set_dimming(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                multiplier: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_dimming({}, {})",
+                        sender_id,
+                        outputdevice,
+                        multiplier
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(multiplier)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 22u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the source output that the outputdevice should mirror its"]
+            #[doc = "viewport from."]
+            fn set_replication_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                source: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_replication_source({}, \"{}\")",
+                        sender_id,
+                        outputdevice,
+                        source
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_string(Some(source))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 23u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_ddc_ci_allowed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                allowed: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_ddc_ci_allowed({}, {})",
+                        sender_id,
+                        outputdevice,
+                        allowed
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(allowed)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 24u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This limits the amount of bits per color that are sent to the display."]
+            fn set_max_bits_per_color(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                max_bpc: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_max_bits_per_color({}, {})",
+                        sender_id,
+                        outputdevice,
+                        max_bpc
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(max_bpc)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 25u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "When EDR is enabled, the compositor may increase the backlight beyond"]
+            #[doc = "the user-specified setting, in order to present HDR content on displays"]
+            #[doc = "without native HDR support."]
+            #[doc = "This will usually result in better visuals, but also increases battery"]
+            #[doc = "usage."]
+            fn set_edr_policy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                policy: EdrPolicy,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_edr_policy({}, {})",
+                        sender_id,
+                        outputdevice,
+                        policy
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(policy.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 26u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This is the sharpness modifier of the output."]
+            #[doc = "0 is sharpness disabled and 10000 is the maximum sharpness"]
+            fn set_sharpness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                sharpness: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_sharpness({}, {})",
+                        sender_id,
+                        outputdevice,
+                        sharpness
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(sharpness)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 27u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the list of custom modes for this output. The compositor"]
+            #[doc = "will in response generate the requested modes and add them to"]
+            #[doc = "the output (or delete ones no longer in the list)."]
+            #[doc = "This can be useful for overclocking displays, or for working"]
+            #[doc = "around broken EDIDs."]
+            #[doc = "Note that there is no guarantee for any custom mode to"]
+            #[doc = "actually work, or even to leave the display undamaged (in the"]
+            #[doc = "case of CRTs). It's entirely the responsibility of the user"]
+            #[doc = "to ensure each added mode is the right one for their display."]
+            fn set_custom_modes(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                modes: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_custom_modes({}, {})",
+                        sender_id,
+                        outputdevice,
+                        modes
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_object(Some(modes))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 28u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_auto_brightness(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                enabled: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_configuration_v2#{}.set_auto_brightness({}, {})",
+                        sender_id,
+                        outputdevice,
+                        enabled
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(outputdevice))
+                        .put_uint(enabled)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 29u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sent after the server has successfully applied the changes."]
+            #[doc = "."]
+            fn applied(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Sent if the server rejects the changes or failed to apply them."]
+            fn failed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Describes why applying the output configuration failed. Is only"]
+            #[doc = "sent before the failure event."]
+            fn failure_reason(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                reason: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_configuration_v2#{}.applied()", sender_id,);
+                            self.applied(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_configuration_v2#{}.failed()", sender_id,);
+                            self.failed(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let reason = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.failure_reason(\"{}\")",
+                                sender_id,
+                                reason
+                            );
+                            self.failure_reason(connection, sender_id, reason).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "This list is populated by first setting each relevant property,"]
+    #[doc = "and then calling add_mode to add a mode with these properties."]
+    #[doc = "One would for example call"]
+    #[doc = "- set_resolution"]
+    #[doc = "- set_refresh_rate"]
+    #[doc = "- set_reduced_blanking"]
+    #[doc = "- add_mode"]
+    #[doc = ""]
+    #[doc = "add_mode does not reset the properties that were previously set,"]
+    #[doc = "they are valid until the object is destroyed."]
+    #[doc = "The compositor may additionally have sensible defaults for some"]
+    #[doc = "properties like reduced_blanking, but for consistent results,"]
+    #[doc = "it's best to always set each known property every time."]
+    #[doc = ""]
+    #[doc = "The parameters resolution and refresh rate are required, if they"]
+    #[doc = "are not set, the missing_parameters error will be emitted."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_mode_list_v2 {
+        #[doc = "These errors can be emitted in response to add_mode requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "a required parameter wasn't set"]
+            MissingParameters = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::MissingParameters),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_mode_list_v2 interface. See the module level documentation for more info"]
+        pub trait KdeModeListV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "kde_mode_list_v2";
+            const VERSION: u32 = 18u32;
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_mode_list_v2#{}.destroy()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn add_mode(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_mode_list_v2#{}.add_mode()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_resolution(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                width: u32,
+                height: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_mode_list_v2#{}.set_resolution({}, {})",
+                        sender_id,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(width)
+                        .put_uint(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn set_refresh_rate(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                rate: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_mode_list_v2#{}.set_refresh_rate({})",
+                        sender_id,
+                        rate
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(rate).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Reduced blanking is an optimization that can reduce bandwidth / timing"]
+            #[doc = "requirements for a display mode by reducing the time vblank takes."]
+            #[doc = "As not all displays support it, it may be desired to still turn it off"]
+            #[doc = "though (like with CRTs, where full blanking is required)."]
+            fn set_reduced_blanking(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                reduced: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_mode_list_v2#{}.set_reduced_blanking({})",
+                        sender_id,
+                        reduced
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(reduced).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod plasma_window_management {
+    #[doc = "This interface manages application windows."]
+    #[doc = "It provides requests to show and hide the desktop and emits"]
+    #[doc = "an event every time a window is created so that the client can"]
+    #[doc = "use it to manage the window."]
+    #[doc = ""]
+    #[doc = "Only one client can bind this interface at a time."]
+    #[doc = ""]
+    #[doc = "Warning! The protocol described in this file is a desktop environment"]
+    #[doc = "implementation detail. Regular clients must not use this protocol."]
+    #[doc = "Backward incompatible changes may be added without bumping the major"]
+    #[doc = "version of the extension."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_window_management {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum State {
+            Active = 1u32,
+            Minimized = 2u32,
+            Maximized = 4u32,
+            Fullscreen = 8u32,
+            KeepAbove = 16u32,
+            KeepBelow = 32u32,
+            OnAllDesktops = 64u32,
+            DemandsAttention = 128u32,
+            Closeable = 256u32,
+            Minimizable = 512u32,
+            Maximizable = 1024u32,
+            Fullscreenable = 2048u32,
+            Skiptaskbar = 4096u32,
+            Shadeable = 8192u32,
+            Shaded = 16384u32,
+            Movable = 32768u32,
+            Resizable = 65536u32,
+            VirtualDesktopChangeable = 131072u32,
+            Skipswitcher = 262144u32,
+            NoBorder = 524288u32,
+            CanSetNoBorder = 1048576u32,
+            ExcludeFromCapture = 2097152u32,
+        }
+        impl From<State> for u32 {
+            fn from(value: State) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for State {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Active),
+                    2u32 => Ok(Self::Minimized),
+                    4u32 => Ok(Self::Maximized),
+                    8u32 => Ok(Self::Fullscreen),
+                    16u32 => Ok(Self::KeepAbove),
+                    32u32 => Ok(Self::KeepBelow),
+                    64u32 => Ok(Self::OnAllDesktops),
+                    128u32 => Ok(Self::DemandsAttention),
+                    256u32 => Ok(Self::Closeable),
+                    512u32 => Ok(Self::Minimizable),
+                    1024u32 => Ok(Self::Maximizable),
+                    2048u32 => Ok(Self::Fullscreenable),
+                    4096u32 => Ok(Self::Skiptaskbar),
+                    8192u32 => Ok(Self::Shadeable),
+                    16384u32 => Ok(Self::Shaded),
+                    32768u32 => Ok(Self::Movable),
+                    65536u32 => Ok(Self::Resizable),
+                    131072u32 => Ok(Self::VirtualDesktopChangeable),
+                    262144u32 => Ok(Self::Skipswitcher),
+                    524288u32 => Ok(Self::NoBorder),
+                    1048576u32 => Ok(Self::CanSetNoBorder),
+                    2097152u32 => Ok(Self::ExcludeFromCapture),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for State {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ShowDesktop {
+            Disabled = 0u32,
+            Enabled = 1u32,
+        }
+        impl From<ShowDesktop> for u32 {
+            fn from(value: ShowDesktop) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ShowDesktop {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Disabled),
+                    1u32 => Ok(Self::Enabled),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ShowDesktop {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the org_kde_plasma_window_management interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaWindowManagement
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_plasma_window_management";
+            const VERSION: u32 = 20u32;
+            #[doc = "Tell the compositor to show/hide the desktop."]
+            fn show_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                state: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.show_desktop({})",
+                        sender_id,
+                        state
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Deprecated: use get_window_by_uuid"]
+            fn get_window(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                internal_window_id: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.get_window({}, {})",
+                        sender_id,
+                        id,
+                        internal_window_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_uint(internal_window_id)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn get_window_by_uuid(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                internal_window_uuid: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.get_window_by_uuid({}, \"{}\")",
+                        sender_id,
+                        id,
+                        internal_window_uuid
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_string(Some(internal_window_uuid))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn get_stacking_order(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                stacking_order: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window_management#{}.get_stacking_order({})",
+                        sender_id,
+                        stacking_order
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(stacking_order))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event will be sent whenever the show desktop mode changes. E.g. when it is entered"]
+            #[doc = "or left."]
+            #[doc = ""]
+            #[doc = "On binding the interface the current state is sent."]
+            fn show_desktop_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                state: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent immediately after a window is mapped."]
+            fn window(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when stacking order changed and on bind."]
+            #[doc = ""]
+            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
+            fn stacking_order_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                ids: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when stacking order changed and on bind."]
+            #[doc = ""]
+            #[doc = "With version 17 this event is deprecated and will no longer be sent."]
+            fn stacking_order_uuid_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                uuids: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent immediately after a window is mapped."]
+            fn window_with_uuid(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: u32,
+                uuid: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when stacking order changed."]
+            fn stacking_order_changed_2(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let state = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.show_desktop_changed({})",
+                                sender_id,
+                                state
+                            );
+                            self.show_desktop_changed(connection, sender_id, state)
+                                .await
+                        }
+                        1u16 => {
+                            let id = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.window({})",
+                                sender_id,
+                                id
+                            );
+                            self.window(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            let ids = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.stacking_order_changed(array[{}])",
+                                sender_id,
+                                ids.len()
+                            );
+                            self.stacking_order_changed(connection, sender_id, ids)
+                                .await
+                        }
+                        3u16 => {
+                            let uuids = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.stacking_order_uuid_changed(\"{}\")",
+                                sender_id,
+                                uuids
+                            );
+                            self.stacking_order_uuid_changed(connection, sender_id, uuids)
+                                .await
+                        }
+                        4u16 => {
+                            let id = message.uint()?;
+                            let uuid = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.window_with_uuid({}, \"{}\")",
+                                sender_id,
+                                id,
+                                uuid
+                            );
+                            self.window_with_uuid(connection, sender_id, id, uuid).await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window_management#{}.stacking_order_changed_2()",
+                                sender_id,
+                            );
+                            self.stacking_order_changed_2(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "Manages and control an application window."]
+    #[doc = ""]
+    #[doc = "Only one client can bind this interface at a time."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_window {
+        #[doc = "Trait to implement the org_kde_plasma_window interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaWindow
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_plasma_window";
+            const VERSION: u32 = 20u32;
+            #[doc = "Set window state."]
+            #[doc = ""]
+            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state"]
+            #[doc = "and can be used together in a bitfield. The flags bitfield describes which flags are"]
+            #[doc = "supposed to be set, the state bitfield the value for the set flags"]
+            fn set_state(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                flags: u32,
+                state: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.set_state({}, {})",
+                        sender_id,
+                        flags,
+                        state
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(flags)
+                        .put_uint(state)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Deprecated: use enter_virtual_desktop"]
+            #[doc = "Maps the window to a different virtual desktop."]
+            #[doc = ""]
+            #[doc = "To show the window on all virtual desktops, call the"]
+            #[doc = "org_kde_plasma_window.set_state request and specify a on_all_desktops"]
+            #[doc = "state in the bitfield."]
+            fn set_virtual_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                number: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.set_virtual_desktop({})",
+                        sender_id,
+                        number
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(number).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Sets the geometry of the taskbar entry for this window."]
+            #[doc = "The geometry is relative to a panel in particular."]
+            fn set_minimized_geometry(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                panel: waynest::ObjectId,
+                x: u32,
+                y: u32,
+                width: u32,
+                height: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.set_minimized_geometry({}, {}, {}, {}, {})",
+                        sender_id,
+                        panel,
+                        x,
+                        y,
+                        width,
+                        height
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(panel))
+                        .put_uint(x)
+                        .put_uint(y)
+                        .put_uint(width)
+                        .put_uint(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Remove the task geometry information for a particular panel."]
+            fn unset_minimized_geometry(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                panel: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.unset_minimized_geometry({})",
+                        sender_id,
+                        panel
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(panel))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Close this window."]
+            fn close(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.close()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Request an interactive move for this window."]
+            fn request_move(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.request_move()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Request an interactive resize for this window."]
+            fn request_resize(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.request_resize()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Removes the resource bound for this org_kde_plasma_window."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_window#{}.destroy()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The compositor will write the window icon into the provided file descriptor."]
+            #[doc = "The data is a serialized QIcon with QDataStream."]
+            fn get_icon(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                fd: std::os::fd::BorrowedFd,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.get_icon({})",
+                        sender_id,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd)
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().put_fd(fd).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Make the window enter a virtual desktop. A window can enter more"]
+            #[doc = "than one virtual desktop. if the id is empty or invalid, no action will be performed."]
+            fn request_enter_virtual_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.request_enter_virtual_desktop(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "RFC: do this with an empty id to request_enter_virtual_desktop?"]
+            #[doc = "Make the window enter a new virtual desktop. If the server consents the request,"]
+            #[doc = "it will create a new virtual desktop and assign the window to it."]
+            fn request_enter_new_virtual_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.request_enter_new_virtual_desktop()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Make the window exit a virtual desktop. If it exits all desktops it will be considered on all of them."]
+            fn request_leave_virtual_desktop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.request_leave_virtual_desktop(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Make the window enter an activity. A window can enter more activity. If the id is empty or invalid, no action will be performed."]
+            fn request_enter_activity(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.request_enter_activity(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Make the window exit a an activity. If it exits all activities it will be considered on all of them."]
+            fn request_leave_activity(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.request_leave_activity(\"{}\")",
+                        sender_id,
+                        id
+                    );
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_string(Some(id)).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Requests this window to be displayed in a specific output."]
+            fn send_to_output(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_window#{}.send_to_output({})",
+                        sender_id,
+                        output
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(output))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event will be sent as soon as the window title is changed."]
+            fn title_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                title: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent as soon as the application"]
+            #[doc = "identifier is changed."]
+            fn app_id_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                app_id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent as soon as the window state changes."]
+            #[doc = ""]
+            #[doc = "Values for state argument are described by org_kde_plasma_window_management.state."]
+            fn state_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                flags: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "DEPRECATED: use virtual_desktop_entered and virtual_desktop_left instead"]
+            #[doc = "This event will be sent when a window is moved to another"]
+            #[doc = "virtual desktop."]
+            #[doc = ""]
+            #[doc = "It is not sent if it becomes visible on all virtual desktops though."]
+            fn virtual_desktop_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                number: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent whenever the themed icon name changes. May be null."]
+            fn themed_icon_name_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent immediately after the window is closed"]
+            #[doc = "and its surface is unmapped."]
+            fn unmapped(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent immediately after all initial state been sent to the client."]
+            #[doc = "If the Plasma window is already unmapped, the unmapped event will be sent before the"]
+            #[doc = "initial_state event."]
+            fn initial_state(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent whenever the parent window of this org_kde_plasma_window changes."]
+            #[doc = "The passed parent is another org_kde_plasma_window and this org_kde_plasma_window is a"]
+            #[doc = "transient window to the parent window. If the parent argument is null, this"]
+            #[doc = "org_kde_plasma_window does not have a parent window."]
+            fn parent_window(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                parent: Option<waynest::ObjectId>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            fn geometry(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent whenever the icon of the window changes, but there is no themed"]
+            #[doc = "icon name. Common examples are Xwayland windows which have a pixmap based icon."]
+            #[doc = ""]
+            #[doc = "The client can request the icon using get_icon."]
+            fn icon_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when the compositor has set the process id this window belongs to."]
+            #[doc = "This should be set once before the initial_state is sent."]
+            fn pid_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                pid: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when the window has entered a new virtual desktop. The window can be on more than one desktop, or none: then is considered on all of them."]
+            fn virtual_desktop_entered(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when the window left a virtual desktop. If the window leaves all desktops, it can be considered on all."]
+            #[doc = "If the window gets manually added on all desktops, the server has to send virtual_desktop_left for every previous desktop it was in for the window to be really considered on all desktops."]
+            fn virtual_desktop_left(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                is: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent after the application menu"]
+            #[doc = "for the window has changed."]
+            fn application_menu(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                service_name: String,
+                object_path: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when the window has entered an activity. The window can be on more than one activity, or none: then is considered on all of them."]
+            fn activity_entered(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when the window left an activity. If the window leaves all activities, it will be considered on all."]
+            #[doc = "If the window gets manually added on all activities, the server has to send activity_left for every previous activity it was in for the window to be really considered on all activities."]
+            fn activity_left(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent when the X11 resource name of the window has changed."]
+            #[doc = "This is only set for XWayland windows."]
+            fn resource_name_changed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                resource_name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event will be sent whenever the window geometry of this org_kde_plasma_window changes."]
+            #[doc = "The coordinates are in absolute coordinates of the windowing system."]
+            fn client_geometry(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+                width: u32,
+                height: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let title = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.title_changed(\"{}\")",
+                                sender_id,
+                                title
+                            );
+                            self.title_changed(connection, sender_id, title).await
+                        }
+                        1u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.app_id_changed(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.app_id_changed(connection, sender_id, app_id).await
+                        }
+                        2u16 => {
+                            let flags = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.state_changed({})",
+                                sender_id,
+                                flags
+                            );
+                            self.state_changed(connection, sender_id, flags).await
+                        }
+                        3u16 => {
+                            let number = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.virtual_desktop_changed({})",
+                                sender_id,
+                                number
+                            );
+                            self.virtual_desktop_changed(connection, sender_id, number)
+                                .await
+                        }
+                        4u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.themed_icon_name_changed(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.themed_icon_name_changed(connection, sender_id, name)
+                                .await
+                        }
+                        5u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.unmapped()", sender_id,);
+                            self.unmapped(connection, sender_id).await
+                        }
+                        6u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.initial_state()", sender_id,);
+                            self.initial_state(connection, sender_id).await
+                        }
+                        7u16 => {
+                            let parent = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.parent_window({})",
+                                sender_id,
+                                parent
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.parent_window(connection, sender_id, parent).await
+                        }
+                        8u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.geometry({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.geometry(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        9u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_window#{}.icon_changed()", sender_id,);
+                            self.icon_changed(connection, sender_id).await
+                        }
+                        10u16 => {
+                            let pid = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.pid_changed({})",
+                                sender_id,
+                                pid
+                            );
+                            self.pid_changed(connection, sender_id, pid).await
+                        }
+                        11u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.virtual_desktop_entered(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.virtual_desktop_entered(connection, sender_id, id)
+                                .await
+                        }
+                        12u16 => {
+                            let is = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.virtual_desktop_left(\"{}\")",
+                                sender_id,
+                                is
+                            );
+                            self.virtual_desktop_left(connection, sender_id, is).await
+                        }
+                        13u16 => {
+                            let service_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let object_path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.application_menu(\"{}\", \"{}\")",
+                                sender_id,
+                                service_name,
+                                object_path
+                            );
+                            self.application_menu(connection, sender_id, service_name, object_path)
+                                .await
+                        }
+                        14u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.activity_entered(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.activity_entered(connection, sender_id, id).await
+                        }
+                        15u16 => {
+                            let id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.activity_left(\"{}\")",
+                                sender_id,
+                                id
+                            );
+                            self.activity_left(connection, sender_id, id).await
+                        }
+                        16u16 => {
+                            let resource_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.resource_name_changed(\"{}\")",
+                                sender_id,
+                                resource_name
+                            );
+                            self.resource_name_changed(connection, sender_id, resource_name)
+                                .await
+                        }
+                        17u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.uint()?;
+                            let height = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_window#{}.client_geometry({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.client_geometry(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The activation manager interface provides a way to get notified"]
+    #[doc = "when an application is about to be activated."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_activation_feedback {
+        #[doc = "Trait to implement the org_kde_plasma_activation_feedback interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaActivationFeedback
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_plasma_activation_feedback";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the activation manager object. The activation objects introduced"]
+            #[doc = "by this manager object will be unaffected."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_activation_feedback#{}.destroy()",
+                        sender_id,
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Will be issued when an app is set to be activated. It offers"]
+            #[doc = "an instance of org_kde_plasma_activation that will tell us the app_id"]
+            #[doc = "and the extent of the activation."]
+            fn activation(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_activation_feedback#{}.activation({})",
+                                sender_id,
+                                id
+                            );
+                            self.activation(connection, sender_id, id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_activation {
+        #[doc = "Trait to implement the org_kde_plasma_activation interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaActivation
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_plasma_activation";
+            const VERSION: u32 = 1u32;
+            #[doc = "Notify the compositor that the org_kde_plasma_activation object will no"]
+            #[doc = "longer be used."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> org_kde_plasma_activation#{}.destroy()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn app_id(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                app_id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn finished(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let app_id = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_activation#{}.app_id(\"{}\")",
+                                sender_id,
+                                app_id
+                            );
+                            self.app_id(connection, sender_id, app_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_activation#{}.finished()", sender_id,);
+                            self.finished(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "When this object is created, the compositor sends a window event for"]
+    #[doc = "each window in the stacking order, and afterwards sends the done event"]
+    #[doc = "and destroys this object."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod org_kde_plasma_stacking_order {
+        #[doc = "Trait to implement the org_kde_plasma_stacking_order interface. See the module level documentation for more info"]
+        pub trait OrgKdePlasmaStackingOrder
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "org_kde_plasma_stacking_order";
+            const VERSION: u32 = 17u32;
+            fn window(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                uuid: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn done(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let uuid = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_stacking_order#{}.window(\"{}\")",
+                                sender_id,
+                                uuid
+                            );
+                            self.window(connection, sender_id, uuid).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("org_kde_plasma_stacking_order#{}.done()", sender_id,);
+                            self.done(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
