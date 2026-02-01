@@ -26,6 +26,7 @@ hyprland = []
 mesa = []
 treeland = []
 mutter = []
+river = []
 
 tracing = ["dep:tracing"]
 

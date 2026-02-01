@@ -20,6 +20,9 @@ pub mod mutter;
 #[cfg(feature = "plasma")]
 #[cfg_attr(docsrs, doc(cfg(feature = "plasma")))]
 pub mod plasma;
+#[cfg(feature = "river")]
+#[cfg_attr(docsrs, doc(cfg(feature = "river")))]
+pub mod river;
 #[cfg(feature = "stable")]
 #[cfg_attr(docsrs, doc(cfg(feature = "stable")))]
 pub mod stable;

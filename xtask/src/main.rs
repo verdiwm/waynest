@@ -27,7 +27,7 @@ fn main() -> Result<()> {
     }
 }
 
-const PROTOCOLS: [(&str, &str); 14] = [
+const PROTOCOLS: [(&str, &str); 15] = [
     ("core", "wayland/protocol"),
     ("stable", "wayland-protocols/stable"),
     ("staging", "wayland-protocols/staging"),
@@ -42,13 +42,16 @@ const PROTOCOLS: [(&str, &str); 14] = [
     ("mesa", "mesa/src/egl/wayland/wayland-drm"),
     ("treeland", "treeland-protocols/xml"),
     ("mutter", "mutter/src/wayland/protocol"),
+    ("river", "river/protocol"),
 ];
 
-const SKIP: [&str; 3] = [
-    "tests.xml",
-    "cosmic-image-source-unstable-v1.xml",
+const SKIP: [(&str, &str); 5] = [
+    ("core", "tests.xml"),
+    ("cosmic", "cosmic-image-source-unstable-v1.xml"),
     // "treeland-personalization-manager-v1.xml",
-    "treeland-capture-unstable-v1.xml",
+    ("treeland", "treeland-capture-unstable-v1.xml"),
+    ("river", "wlr-layer-shell-unstable-v1.xml"),
+    ("river", "wlr-output-power-management-unstable-v1.xml"),
 ];
 
 fn generate() -> Result<()> {
@@ -63,7 +66,9 @@ fn generate() -> Result<()> {
             if entry.file_type().is_file()
                 && let Some(extension) = entry.path().extension()
                 && extension == OsStr::new("xml")
-                && !SKIP.map(OsStr::new).contains(&entry.file_name())
+                && !SKIP
+                    .map(|(p, f)| (p, OsStr::new(f)))
+                    .contains(&(module, entry.file_name()))
             {
                 protos.push(Protocol::from_path(entry.path())?);
             }
