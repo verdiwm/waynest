@@ -8,7 +8,7 @@ repository = "https://github.com/verdiwm/waynest"
 
 [dependencies]
 anyhow = "1.0.100"
-quote = "1.0.40"
+quote = "1.0.44"
 sap = "0.0.7"
 walkdir = "2.5.0"
 waynest-gen = { path = "../crates/gen" }

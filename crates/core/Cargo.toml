@@ -14,11 +14,11 @@ include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 fuzz = ["dep:arbitrary"]
 
 [dependencies]
-bytes = "1.10.1"
+bytes = "1.11.1"
 pin-project-lite = "0.2.16"
-rustix = { version = "1.1.2", features = ["net"] }
-tokio = { version = "1.47.1", features = ["net"] }
-tokio-util = { version = "0.7.16", features = ["codec"] }
+rustix = { version = "1.1.3", features = ["net"] }
+tokio = { version = "1.49.0", features = ["net"] }
+tokio-util = { version = "0.7.18", features = ["codec"] }
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
 

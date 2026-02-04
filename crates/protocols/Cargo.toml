@@ -31,11 +31,11 @@ river = []
 tracing = ["dep:tracing"]
 
 [dependencies]
-bitflags = { version = "2.9.4", features = ["std"] }
+bitflags = { version = "2.10.0", features = ["std"] }
 futures-core = "0.3.31"
 futures-sink = "0.3.31"
 futures-util = { version = "0.3.31", default-features = false, features = [
     "sink",
 ], optional = true }
-tracing = { version = "0.1.41", optional = true }
+tracing = { version = "0.1.44", optional = true }
 waynest = { version = "0.1", path = "../core" }

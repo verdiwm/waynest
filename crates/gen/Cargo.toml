@@ -11,7 +11,7 @@ include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [dependencies]
 heck = "0.5.0"
-proc-macro2 = { version = "1.0.101", default-features = false }
-quick-xml = { version = "0.38.3", features = ["serialize", "overlapped-lists"] }
-quote = { version = "1.0.40", default-features = false }
-serde = { version = "1.0.219", features = ["derive"] }
+proc-macro2 = { version = "1.0.106", default-features = false }
+quick-xml = { version = "0.39.0", features = ["serialize", "overlapped-lists"] }
+quote = { version = "1.0.44", default-features = false }
+serde = { version = "1.0.228", features = ["derive"] }

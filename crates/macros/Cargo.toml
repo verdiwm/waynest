@@ -13,9 +13,9 @@ include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 gen = ["dep:waynest-gen"]
 
 [dependencies]
-darling = "0.21.3"
-quote = "1.0.37"
-syn = { version = "2.0.89", features = ["full"] }
+darling = "0.23.0"
+quote = "1.0.44"
+syn = { version = "2.0.114", features = ["full"] }
 waynest-gen = { version = "0.1", path = "../gen", optional = true }
 
 [lib]
