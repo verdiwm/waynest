@@ -58,7 +58,7 @@ fn generate() -> Result<()> {
     for (module, protocol) in PROTOCOLS {
         let mut protos = Vec::new();
 
-        for entry in WalkDir::new(format!("external/protocols/{protocol}")) {
+        for entry in WalkDir::new(format!("external/protocols/{protocol}")).sort_by_file_name() {
             let entry = entry?;
 
             if entry.file_type().is_file()
