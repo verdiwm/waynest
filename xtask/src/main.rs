@@ -17,7 +17,7 @@ fn main() -> Result<()> {
                 command = Some(c.into_owned());
                 break;
             }
-            arg => Err(arg.into_error(None))?,
+            arg => Err(arg.unexpected())?,
         }
     }
 

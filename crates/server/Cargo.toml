@@ -1,20 +1,20 @@
 [package]
 name = "waynest-server"
+version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-version = "0.1.0"
 description = "Server library for waynest"
 documentation = "https://docs.rs/waynest-server"
 include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [dependencies]
 async-trait = "0.1.89"
-futures-core = "0.3.31"
-futures-sink = "0.3.31"
-pin-project-lite = "0.2.16"
-tokio = { version = "1.49.0", features = ["net"] }
+futures-core = "0.3.32"
+futures-sink = "0.3.32"
+pin-project-lite = "0.2.17"
+tokio = { version = "1.50.0", features = ["net"] }
 tokio-stream = "0.1.18"
-waynest = { version = "0.1.0", path = "../core" }
-waynest-macros = { version = "0.1.0", path = "../macros" }
+waynest = { workspace = true }
+waynest-macros = { workspace = true }

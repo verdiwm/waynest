@@ -1,14 +1,14 @@
 [package]
 name = "waynest-client"
+version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-version = "0.1.0"
 description = "Client library for waynest"
 documentation = "https://docs.rs/waynest-client"
 include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 
 [dependencies]
-waynest = { version = "0.1.0", path = "../core" }
-waynest-macros = { version = "0.1.0", path = "../macros" }
+waynest = { workspace = true }
+waynest-macros = { workspace = true }

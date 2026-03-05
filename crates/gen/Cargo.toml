@@ -1,10 +1,10 @@
 [package]
 name = "waynest-gen"
+version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
-version = "0.1.0"
 description = "Codegen glue for waynest"
 documentation = "https://docs.rs/waynest-gen"
 include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
@@ -12,6 +12,6 @@ include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
 [dependencies]
 heck = "0.5.0"
 proc-macro2 = { version = "1.0.106", default-features = false }
-quick-xml = { version = "0.39.0", features = ["serialize", "overlapped-lists"] }
-quote = { version = "1.0.44", default-features = false }
+quick-xml = { version = "0.39.2", features = ["serialize", "overlapped-lists"] }
+quote = { version = "1.0.45", default-features = false }
 serde = { version = "1.0.228", features = ["derive"] }
