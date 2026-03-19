@@ -30,6 +30,8 @@ pub struct Interface {
     pub name: String,
     #[serde(rename(deserialize = "@version"))]
     pub version: u32,
+    #[serde(rename(deserialize = "@frozen"))]
+    pub frozen: Option<bool>, // TODO: figure out if we have a reason to use this
     pub description: Option<String>,
     #[serde(default, rename(deserialize = "request"))]
     pub requests: Vec<Message>,
