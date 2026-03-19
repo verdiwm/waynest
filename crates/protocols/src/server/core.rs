@@ -367,7 +367,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_compositor";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             #[doc = "Ask the compositor to create a new surface."]
             fn create_surface(
                 &self,
@@ -381,6 +381,12 @@ pub mod wayland {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This request destroys the wl_compositor. This has no effect on any other objects."]
+            fn release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
@@ -407,6 +413,11 @@ pub mod wayland {
                             #[cfg(feature = "tracing")]
                             tracing::debug!("wl_compositor#{}.create_region({})", sender_id, id);
                             self.create_region(connection, sender_id, id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_compositor#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -590,7 +601,8 @@ pub mod wayland {
         #[doc = ""]
         #[doc = "The drm format codes match the macros defined in drm_fourcc.h, except"]
         #[doc = "argb8888 and xrgb8888. The formats actually supported by the compositor"]
-        #[doc = "will be reported by the format event."]
+        #[doc = "will be reported by the format event. See drm_fourcc.h for more detailed"]
+        #[doc = "format descriptions."]
         #[doc = ""]
         #[doc = "For all wl_shm formats and unless specified in another protocol"]
         #[doc = "extension, pre-multiplied alpha is used for pixel values."]
@@ -832,6 +844,46 @@ pub mod wayland {
             Xvuy8888 = 1498764888u32,
             #[doc = "2x2 subsampled Cr:Cb plane 10 bits per channel packed"]
             P030 = 808661072u32,
+            #[doc = "[47:0] R:G:B 16:16:16 little endian"]
+            Rgb161616 = 942950226u32,
+            #[doc = "[47:0] B:G:R 16:16:16 little endian"]
+            Bgr161616 = 942950210u32,
+            #[doc = "[15:0] R 16 little endian"]
+            R16f = 1210064978u32,
+            #[doc = "[31:0] G:R 16:16 little endian"]
+            Gr1616f = 1210077767u32,
+            #[doc = "[47:0] B:G:R 16:16:16 little endian"]
+            Bgr161616f = 1213351746u32,
+            #[doc = "[31:0] R 32 little endian"]
+            R32f = 1176510546u32,
+            #[doc = "[63:0] R:G 32:32 little endian"]
+            Gr3232f = 1176523335u32,
+            #[doc = "[95:0] R:G:B 32:32:32 little endian"]
+            Bgr323232f = 1179797314u32,
+            #[doc = "[127:0] R:G:B:A 32:32:32:32 little endian"]
+            Abgr32323232f = 1178092097u32,
+            #[doc = "2x1 subsampled Cr:Cb plane"]
+            Nv20 = 808605262u32,
+            #[doc = "non-subsampled Cr:Cb plane"]
+            Nv30 = 808670798u32,
+            #[doc = "2x2 subsampled Cb (1) and Cr (2) planes 10 bits per channel"]
+            S010 = 808530003u32,
+            #[doc = "2x1 subsampled Cb (1) and Cr (2) planes 10 bits per channel"]
+            S210 = 808530515u32,
+            #[doc = "non-subsampled Cb (1) and Cr (2) planes 10 bits per channel"]
+            S410 = 808531027u32,
+            #[doc = "2x2 subsampled Cb (1) and Cr (2) planes 12 bits per channel"]
+            S012 = 842084435u32,
+            #[doc = "2x1 subsampled Cb (1) and Cr (2) planes 12 bits per channel"]
+            S212 = 842084947u32,
+            #[doc = "non-subsampled Cb (1) and Cr (2) planes 12 bits per channel"]
+            S412 = 842085459u32,
+            #[doc = "2x2 subsampled Cb (1) and Cr (2) planes 16 bits per channel"]
+            S016 = 909193299u32,
+            #[doc = "2x1 subsampled Cb (1) and Cr (2) planes 16 bits per channel"]
+            S216 = 909193811u32,
+            #[doc = "non-subsampled Cb (1) and Cr (2) planes 16 bits per channel"]
+            S416 = 909194323u32,
         }
         impl From<Format> for u32 {
             fn from(value: Format) -> Self {
@@ -965,6 +1017,26 @@ pub mod wayland {
                     1498764865u32 => Ok(Self::Avuy8888),
                     1498764888u32 => Ok(Self::Xvuy8888),
                     808661072u32 => Ok(Self::P030),
+                    942950226u32 => Ok(Self::Rgb161616),
+                    942950210u32 => Ok(Self::Bgr161616),
+                    1210064978u32 => Ok(Self::R16f),
+                    1210077767u32 => Ok(Self::Gr1616f),
+                    1213351746u32 => Ok(Self::Bgr161616f),
+                    1176510546u32 => Ok(Self::R32f),
+                    1176523335u32 => Ok(Self::Gr3232f),
+                    1179797314u32 => Ok(Self::Bgr323232f),
+                    1178092097u32 => Ok(Self::Abgr32323232f),
+                    808605262u32 => Ok(Self::Nv20),
+                    808670798u32 => Ok(Self::Nv30),
+                    808530003u32 => Ok(Self::S010),
+                    808530515u32 => Ok(Self::S210),
+                    808531027u32 => Ok(Self::S410),
+                    842084435u32 => Ok(Self::S012),
+                    842084947u32 => Ok(Self::S212),
+                    842085459u32 => Ok(Self::S412),
+                    909193299u32 => Ok(Self::S016),
+                    909193811u32 => Ok(Self::S216),
+                    909194323u32 => Ok(Self::S416),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -1007,6 +1079,10 @@ pub mod wayland {
             #[doc = "Informs the client about a valid pixel format that"]
             #[doc = "can be used for buffers. Known formats include"]
             #[doc = "argb8888 and xrgb8888."]
+            #[doc = ""]
+            #[doc = "Extensions to drm_fourcc.h (or the format enum) do not require"]
+            #[doc = "increasing the wl_shm version; as a result, clients may receive format"]
+            #[doc = "codes which were not in the list at the time the client was made."]
             fn format(
                 &self,
                 connection: &mut Self::Connection,
@@ -1202,7 +1278,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_data_offer";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "Indicate that the client can accept the given mime type, or"]
             #[doc = "NULL for not accepted."]
             #[doc = ""]
@@ -1531,7 +1607,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_data_source";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request adds a mime type to the set of mime types"]
             #[doc = "advertised to targets.  Can be called several times to offer"]
             #[doc = "multiple types."]
@@ -1849,7 +1925,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_data_device";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request asks the compositor to start a drag-and-drop"]
             #[doc = "operation on behalf of the client."]
             #[doc = ""]
@@ -2192,7 +2268,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_data_device_manager";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "Create a new data source."]
             fn create_data_source(
                 &self,
@@ -2207,6 +2283,13 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
                 seat: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This request destroys the wl_data_device_manager. This has no effect on any other"]
+            #[doc = "objects."]
+            fn release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_request(
                 &self,
@@ -2245,6 +2328,11 @@ pub mod wayland {
                                 seat
                             );
                             self.get_data_device(connection, sender_id, id, seat).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_data_device_manager#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -2938,6 +3026,8 @@ pub mod wayland {
             InvalidOffset = 3u32,
             #[doc = "surface was destroyed before its role object"]
             DefunctRoleObject = 4u32,
+            #[doc = "no buffer was attached"]
+            NoBuffer = 5u32,
         }
         impl From<Error> for u32 {
             fn from(value: Error) -> Self {
@@ -2953,6 +3043,7 @@ pub mod wayland {
                     2u32 => Ok(Self::InvalidSize),
                     3u32 => Ok(Self::InvalidOffset),
                     4u32 => Ok(Self::DefunctRoleObject),
+                    5u32 => Ok(Self::NoBuffer),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -2969,7 +3060,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_surface";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             #[doc = "Deletes the surface and invalidates its object ID."]
             fn destroy(
                 &self,
@@ -3020,9 +3111,11 @@ pub mod wayland {
             #[doc = "If a pending wl_buffer has been committed to more than one wl_surface,"]
             #[doc = "the delivery of wl_buffer.release events becomes undefined. A well"]
             #[doc = "behaved client should not rely on wl_buffer.release events in this"]
-            #[doc = "case. Alternatively, a client could create multiple wl_buffer objects"]
-            #[doc = "from the same backing storage or use a protocol extension providing"]
-            #[doc = "per-commit release notifications."]
+            #[doc = "case. Instead, clients hitting this case should use"]
+            #[doc = "wl_surface.get_release or use a protocol extension providing per-commit"]
+            #[doc = "release notifications (if none of these options are available, a"]
+            #[doc = "fallback can be implemented by creating multiple wl_buffer objects from"]
+            #[doc = "the same backing storage)."]
             #[doc = ""]
             #[doc = "Destroying the wl_buffer after wl_buffer.release does not change"]
             #[doc = "the surface contents. Destroying the wl_buffer before wl_buffer.release"]
@@ -3179,21 +3272,48 @@ pub mod wayland {
             #[doc = "etc.) is double-buffered. Protocol requests modify the pending state,"]
             #[doc = "as opposed to the active state in use by the compositor."]
             #[doc = ""]
-            #[doc = "A commit request atomically creates a content update from the pending"]
-            #[doc = "state, even if the pending state has not been touched. The content"]
-            #[doc = "update is placed in a queue until it becomes active. After commit, the"]
-            #[doc = "new pending state is as documented for each related request."]
-            #[doc = ""]
-            #[doc = "When the content update is applied, the wl_buffer is applied before all"]
-            #[doc = "other state. This means that all coordinates in double-buffered state"]
-            #[doc = "are relative to the newly attached wl_buffers, except for"]
-            #[doc = "wl_surface.attach itself. If there is no newly attached wl_buffer, the"]
-            #[doc = "coordinates are relative to the previous content update."]
-            #[doc = ""]
             #[doc = "All requests that need a commit to become effective are documented"]
             #[doc = "to affect double-buffered state."]
             #[doc = ""]
             #[doc = "Other interfaces may add further double-buffered surface state."]
+            #[doc = ""]
+            #[doc = "A commit request atomically creates a Content Update (CU) from the"]
+            #[doc = "pending state, even if the pending state has not been touched. The"]
+            #[doc = "content update is placed at the end of a per-surface queue until it"]
+            #[doc = "becomes active. After commit, the new pending state is as documented for"]
+            #[doc = "each related request."]
+            #[doc = ""]
+            #[doc = "A CU is either a Desync Content Update (DCU) or a Sync Content Update"]
+            #[doc = "(SCU). If the surface is effectively synchronized at the commit request,"]
+            #[doc = "it is a SCU, otherwise a DCU."]
+            #[doc = ""]
+            #[doc = "When a surface transitions from effectively synchronized to effectively"]
+            #[doc = "desynchronized, all SCUs in its queue which are not reachable by any"]
+            #[doc = "DCU become DCUs and dependency edges from outside the queue to these CUs"]
+            #[doc = "are removed."]
+            #[doc = ""]
+            #[doc = "See wl_subsurface for the definition of 'effectively synchronized' and"]
+            #[doc = "'effectively desynchronized'."]
+            #[doc = ""]
+            #[doc = "When a CU is placed in the queue, the CU has a dependency on the CU in"]
+            #[doc = "front of it and to the SCU at end of the queue of every direct child"]
+            #[doc = "surface if that SCU exists and does not have another dependent. This can"]
+            #[doc = "form a directed acyclic graph of CUs with dependencies as edges."]
+            #[doc = ""]
+            #[doc = "In addition to surface state, the CU can have constraints that must be"]
+            #[doc = "satisfied before it can be applied. Other interfaces may add CU"]
+            #[doc = "constraints."]
+            #[doc = ""]
+            #[doc = "All DCUs which do not have a SCU in front of themselves in their queue,"]
+            #[doc = "are candidates. If the graph that's reachable by a candidate does not"]
+            #[doc = "have any unsatisfied constraints, the entire graph must be applied"]
+            #[doc = "atomically."]
+            #[doc = ""]
+            #[doc = "When a CU is applied, the wl_buffer is applied before all other state."]
+            #[doc = "This means that all coordinates in double-buffered state are relative to"]
+            #[doc = "the newly attached wl_buffers, except for wl_surface.attach itself. If"]
+            #[doc = "there is no newly attached wl_buffer, the coordinates are relative to"]
+            #[doc = "the previous content update."]
             fn commit(
                 &self,
                 connection: &mut Self::Connection,
@@ -3327,6 +3447,30 @@ pub mod wayland {
                 sender_id: waynest::ObjectId,
                 x: i32,
                 y: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a callback for the release of the buffer attached by the client"]
+            #[doc = "with wl_surface.attach."]
+            #[doc = ""]
+            #[doc = "The compositor will release the buffer when it has finished its usage of"]
+            #[doc = "the underlying storage for the relevant commit. Once the client receives"]
+            #[doc = "this event, and assuming the associated buffer is not pending release"]
+            #[doc = "from other wl_surface.commit requests, the client can safely re-use the"]
+            #[doc = "buffer."]
+            #[doc = ""]
+            #[doc = "Release callbacks are double-buffered state, and will be associated"]
+            #[doc = "with the pending buffer at wl_surface.commit time."]
+            #[doc = ""]
+            #[doc = "The callback_data passed in the wl_callback.done event is unused and"]
+            #[doc = "is always zero."]
+            #[doc = ""]
+            #[doc = "Sending this request without attaching a non-null buffer in the same"]
+            #[doc = "content update is a protocol error. The compositor will send the"]
+            #[doc = "no_buffer error in this case."]
+            fn get_release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                callback: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This is emitted whenever a surface's creation, movement, or resizing"]
             #[doc = "results in some part of it being within the scanout region of an"]
@@ -3578,6 +3722,14 @@ pub mod wayland {
                             #[cfg(feature = "tracing")]
                             tracing::debug!("wl_surface#{}.offset({}, {})", sender_id, x, y);
                             self.offset(connection, sender_id, x, y).await
+                        }
+                        11u16 => {
+                            let callback = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("wl_surface#{}.get_release({})", sender_id, callback);
+                            self.get_release(connection, sender_id, callback).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -5754,7 +5906,7 @@ pub mod wayland {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wl_region";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 7u32;
             #[doc = "Destroy the region.  This will invalidate the object ID."]
             fn destroy(
                 &self,
@@ -5982,23 +6134,9 @@ pub mod wayland {
     #[doc = "hidden, or if a NULL wl_buffer is applied. These rules apply"]
     #[doc = "recursively through the tree of surfaces."]
     #[doc = ""]
-    #[doc = "The behaviour of a wl_surface.commit request on a sub-surface"]
-    #[doc = "depends on the sub-surface's mode. The possible modes are"]
-    #[doc = "synchronized and desynchronized, see methods"]
-    #[doc = "wl_subsurface.set_sync and wl_subsurface.set_desync. Synchronized"]
-    #[doc = "mode caches the wl_surface state to be applied when the parent's"]
-    #[doc = "state gets applied, and desynchronized mode applies the pending"]
-    #[doc = "wl_surface state directly. A sub-surface is initially in the"]
-    #[doc = "synchronized mode."]
-    #[doc = ""]
-    #[doc = "Sub-surfaces also have another kind of state, which is managed by"]
-    #[doc = "wl_subsurface requests, as opposed to wl_surface requests. This"]
-    #[doc = "state includes the sub-surface position relative to the parent"]
-    #[doc = "surface (wl_subsurface.set_position), and the stacking order of"]
-    #[doc = "the parent and its sub-surfaces (wl_subsurface.place_above and"]
-    #[doc = ".place_below). This state is applied when the parent surface's"]
-    #[doc = "wl_surface state is applied, regardless of the sub-surface's mode."]
-    #[doc = "As the exception, set_sync and set_desync are effective immediately."]
+    #[doc = "A sub-surface can be in one of two modes. The possible modes are"]
+    #[doc = "synchronized and desynchronized, see methods wl_subsurface.set_sync and"]
+    #[doc = "wl_subsurface.set_desync."]
     #[doc = ""]
     #[doc = "The main surface can be thought to be always in desynchronized mode,"]
     #[doc = "since it does not have a parent in the sub-surfaces sense."]
@@ -6009,6 +6147,15 @@ pub mod wayland {
     #[doc = "tree of surfaces. This means, that one can set a sub-surface into"]
     #[doc = "synchronized mode, and then assume that all its child and grand-child"]
     #[doc = "sub-surfaces are synchronized, too, without explicitly setting them."]
+    #[doc = ""]
+    #[doc = "If a surface behaves as in synchronized mode, it is effectively"]
+    #[doc = "synchronized, otherwise it is effectively desynchronized."]
+    #[doc = ""]
+    #[doc = "A sub-surface is initially in the synchronized mode."]
+    #[doc = ""]
+    #[doc = "The wl_subsurface interface has requests which modify double-buffered"]
+    #[doc = "state of the parent surface (wl_subsurface.set_position, .place_above and"]
+    #[doc = ".place_below)."]
     #[doc = ""]
     #[doc = "Destroying a sub-surface takes effect immediately. If you need to"]
     #[doc = "synchronize the removal of a sub-surface to the parent surface update,"]
@@ -6067,20 +6214,18 @@ pub mod wayland {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This schedules a sub-surface position change."]
+            #[doc = "This sets the position of the sub-surface, relative to the parent"]
+            #[doc = "surface."]
+            #[doc = ""]
             #[doc = "The sub-surface will be moved so that its origin (top left"]
             #[doc = "corner pixel) will be at the location x, y of the parent surface"]
             #[doc = "coordinate system. The coordinates are not restricted to the parent"]
             #[doc = "surface area. Negative values are allowed."]
             #[doc = ""]
-            #[doc = "The scheduled coordinates will take effect whenever the state of the"]
-            #[doc = "parent surface is applied."]
-            #[doc = ""]
-            #[doc = "If more than one set_position request is invoked by the client before"]
-            #[doc = "the commit of the parent surface, the position of a new request always"]
-            #[doc = "replaces the scheduled position from any previous request."]
-            #[doc = ""]
             #[doc = "The initial position is 0, 0."]
+            #[doc = ""]
+            #[doc = "Position is double-buffered state on the parent surface, see"]
+            #[doc = "wl_subsurface and wl_surface.commit for more information."]
             fn set_position(
                 &self,
                 connection: &mut Self::Connection,
@@ -6094,13 +6239,11 @@ pub mod wayland {
             #[doc = "parent surface. Using any other surface, including this sub-surface,"]
             #[doc = "will cause a protocol error."]
             #[doc = ""]
-            #[doc = "The z-order is double-buffered. Requests are handled in order and"]
-            #[doc = "applied immediately to a pending state. The final pending state is"]
-            #[doc = "copied to the active state the next time the state of the parent"]
-            #[doc = "surface is applied."]
-            #[doc = ""]
             #[doc = "A new sub-surface is initially added as the top-most in the stack"]
             #[doc = "of its siblings and parent."]
+            #[doc = ""]
+            #[doc = "Z-order is double-buffered state on the parent surface, see"]
+            #[doc = "wl_subsurface and wl_surface.commit for more information."]
             fn place_above(
                 &self,
                 connection: &mut Self::Connection,
@@ -6108,6 +6251,7 @@ pub mod wayland {
                 sibling: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The sub-surface is placed just below the reference surface."]
+            #[doc = ""]
             #[doc = "See wl_subsurface.place_above."]
             fn place_below(
                 &self,
@@ -6116,42 +6260,18 @@ pub mod wayland {
                 sibling: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Change the commit behaviour of the sub-surface to synchronized"]
-            #[doc = "mode, also described as the parent dependent mode."]
+            #[doc = "mode."]
             #[doc = ""]
-            #[doc = "In synchronized mode, wl_surface.commit on a sub-surface will"]
-            #[doc = "accumulate the committed state in a cache, but the state will"]
-            #[doc = "not be applied and hence will not change the compositor output."]
-            #[doc = "The cached state is applied to the sub-surface immediately after"]
-            #[doc = "the parent surface's state is applied. This ensures atomic"]
-            #[doc = "updates of the parent and all its synchronized sub-surfaces."]
-            #[doc = "Applying the cached state will invalidate the cache, so further"]
-            #[doc = "parent surface commits do not (re-)apply old state."]
-            #[doc = ""]
-            #[doc = "See wl_subsurface for the recursive effect of this mode."]
+            #[doc = "See wl_subsurface and wl_surface.commit for more information."]
             fn set_sync(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Change the commit behaviour of the sub-surface to desynchronized"]
-            #[doc = "mode, also described as independent or freely running mode."]
+            #[doc = "mode."]
             #[doc = ""]
-            #[doc = "In desynchronized mode, wl_surface.commit on a sub-surface will"]
-            #[doc = "apply the pending state directly, without caching, as happens"]
-            #[doc = "normally with a wl_surface. Calling wl_surface.commit on the"]
-            #[doc = "parent surface has no effect on the sub-surface's wl_surface"]
-            #[doc = "state. This mode allows a sub-surface to be updated on its own."]
-            #[doc = ""]
-            #[doc = "If cached state exists when wl_surface.commit is called in"]
-            #[doc = "desynchronized mode, the pending state is added to the cached"]
-            #[doc = "state, and applied as a whole. This invalidates the cache."]
-            #[doc = ""]
-            #[doc = "Note: even if a sub-surface is set to desynchronized, a parent"]
-            #[doc = "sub-surface may override it to behave as synchronized. For details,"]
-            #[doc = "see wl_subsurface."]
-            #[doc = ""]
-            #[doc = "If a surface's parent surface behaves as desynchronized, then"]
-            #[doc = "the cached state is applied on set_desync."]
+            #[doc = "See wl_subsurface and wl_surface.commit for more information."]
             fn set_desync(
                 &self,
                 connection: &mut Self::Connection,
