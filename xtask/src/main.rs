@@ -27,11 +27,12 @@ fn main() -> Result<()> {
     }
 }
 
-const PROTOCOLS: [(&str, &str); 15] = [
+const PROTOCOLS: [(&str, &str); 16] = [
     ("core", "wayland/protocol"),
     ("stable", "wayland-protocols/stable"),
     ("staging", "wayland-protocols/staging"),
     ("unstable", "wayland-protocols/unstable"),
+    ("experimental", "wayland-protocols/experimental"),
     ("wlr", "wlr-protocols/unstable"),
     ("plasma", "plasma-wayland-protocols/src/protocols"),
     ("weston", "weston/protocol"),
