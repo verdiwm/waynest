@@ -2677,9 +2677,7 @@ pub mod color_management_v1 {
             #[doc = "SMPTE ST 2086 definition of HDR static metadata for mastering displays."]
             #[doc = ""]
             #[doc = "While primary color volume is about how color is encoded, the target"]
-            #[doc = "color volume is the actually displayable color volume. If target color"]
-            #[doc = "volume is equal to the primary color volume, then this event is not"]
-            #[doc = "sent."]
+            #[doc = "color volume is the actually displayable color volume."]
             #[doc = ""]
             #[doc = "Each coordinate value is multiplied by 1 million to get the argument"]
             #[doc = "value to carry precision of 6 decimals."]
@@ -6005,7 +6003,7 @@ pub mod ext_foreign_toplevel_list_v1 {
             #[doc = ""]
             #[doc = "The compositor must only send this event when the handle is created."]
             #[doc = ""]
-            #[doc = "The identifier must be unique per toplevel and it's handles. Two different"]
+            #[doc = "The identifier must be unique per toplevel and its handles. Two different"]
             #[doc = "toplevels must not have the same identifier. The identifier is only valid"]
             #[doc = "as long as the toplevel is mapped. If the toplevel is unmapped the identifier"]
             #[doc = "must not be reused. An identifier must not be reused by the compositor to"]
@@ -8595,7 +8593,7 @@ pub mod ext_workspace_v1 {
             }
             #[doc = "This event is emitted whenever a workspace is assigned to this group."]
             #[doc = "A workspace may only ever be assigned to a single group at a single point"]
-            #[doc = "in time, but can be re-assigned during it's lifetime."]
+            #[doc = "in time, but can be re-assigned during its lifetime."]
             fn workspace_enter(
                 &self,
                 connection: &mut Self::Connection,
@@ -8818,10 +8816,10 @@ pub mod ext_workspace_v1 {
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "If this event is emitted, it will be send immediately after the"]
             #[doc = "ext_workspace_handle_v1 is created or when an id is assigned to"]
-            #[doc = "a workspace (at most once during it's lifetime)."]
+            #[doc = "a workspace (at most once during its lifetime)."]
             #[doc = ""]
             #[doc = "An id will never change during the lifetime of the `ext_workspace_handle_v1`"]
-            #[doc = "and is guaranteed to be unique during it's lifetime."]
+            #[doc = "and is guaranteed to be unique during its lifetime."]
             #[doc = ""]
             #[doc = "Ids are not human-readable and shouldn't be displayed, use `name` for that purpose."]
             #[doc = ""]
@@ -11165,6 +11163,592 @@ pub mod xdg_dialog_v1 {
         }
     }
 }
+#[doc = "This description provides a high-level overview of the interplay between"]
+#[doc = "the interfaces defined this protocol. For details, see the protocol"]
+#[doc = "specification."]
+#[doc = ""]
+#[doc = "The xdg_session_manager protocol declares interfaces necessary to"]
+#[doc = "allow clients to restore toplevel state from previous executions. The"]
+#[doc = "xdg_session_manager_v1.get_session request can be used to obtain a"]
+#[doc = "xdg_session_v1 resource representing the state of a set of toplevels."]
+#[doc = ""]
+#[doc = "Clients may obtain the session string to use in future calls through"]
+#[doc = "the xdg_session_v1.created event. Compositors will use this string"]
+#[doc = "as an identifiable token for future runs, possibly storing data about"]
+#[doc = "the related toplevels in persistent storage. Clients that wish to"]
+#[doc = "track sessions in multiple environments may use the $XDG_CURRENT_DESKTOP"]
+#[doc = "environment variable."]
+#[doc = ""]
+#[doc = "Toplevels are managed through the xdg_session_v1.add_toplevel and"]
+#[doc = "xdg_session_v1.remove_toplevel pair of requests. Clients will explicitly"]
+#[doc = "request a toplevel to be restored according to prior state through the"]
+#[doc = "xdg_session_v1.restore_toplevel request before the toplevel is mapped."]
+#[doc = ""]
+#[doc = "Compositors may store session information up to any arbitrary level, and"]
+#[doc = "apply any limits and policies to the amount of data stored and its lifetime."]
+#[doc = "Clients must account for missing sessions and partial session restoration."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod xdg_session_management_v1 {
+    #[doc = "The xdg_session_manager_v1 interface defines base requests for creating and"]
+    #[doc = "managing a session for an application. Sessions persist across application"]
+    #[doc = "and compositor restarts unless explicitly destroyed. A session is created"]
+    #[doc = "for the purpose of maintaining an application's xdg_toplevel surfaces"]
+    #[doc = "across compositor or application restarts. The compositor should remember"]
+    #[doc = "as many states as possible for surfaces in a given session, but there is"]
+    #[doc = "no requirement for which states must be remembered."]
+    #[doc = ""]
+    #[doc = "Policies such as cache eviction are declared an implementation detail of"]
+    #[doc = "the compositor. Clients should account for no longer existing sessions."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_session_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "a requested session is already in use"]
+            InUse = 1u32,
+            #[doc = "invalid session identifier"]
+            InvalidSessionId = 2u32,
+            #[doc = "invalid reason"]
+            InvalidReason = 3u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InUse),
+                    2u32 => Ok(Self::InvalidSessionId),
+                    3u32 => Ok(Self::InvalidReason),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "The reason may determine in what way a session restores the window"]
+        #[doc = "management state of associated toplevels."]
+        #[doc = ""]
+        #[doc = "For example newly launched applications might be launched on the active"]
+        #[doc = "workspace with restored size and position, while a recovered"]
+        #[doc = "application might restore additional state such as active workspace and"]
+        #[doc = "stacking order."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Reason {
+            Launch = 1u32,
+            Recover = 2u32,
+            SessionRestore = 3u32,
+        }
+        impl From<Reason> for u32 {
+            fn from(value: Reason) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Reason {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Launch),
+                    2u32 => Ok(Self::Recover),
+                    3u32 => Ok(Self::SessionRestore),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Reason {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xdg_session_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XdgSessionManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xdg_session_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the manager object. The existing session objects will be"]
+            #[doc = "unaffected."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a session object corresponding to either an existing session"]
+            #[doc = "identified by the given session identifier string or a new session."]
+            #[doc = "While the session object exists, the session is considered to be \"in"]
+            #[doc = "use\"."]
+            #[doc = ""]
+            #[doc = "If an identifier string represents a session that is currently actively"]
+            #[doc = "in use by the the same client, an 'in_use' error is raised. If some"]
+            #[doc = "other client is currently using the same session, the new session will"]
+            #[doc = "replace managing the associated state."]
+            #[doc = ""]
+            #[doc = "If the reason is not a valid enum entry, the 'invalid_reason' protocol"]
+            #[doc = "error is raised."]
+            #[doc = ""]
+            #[doc = "NULL is passed to initiate a new session. If a session_id is passed"]
+            #[doc = "which does not represent a valid session, the compositor treats it as if"]
+            #[doc = "NULL had been passed."]
+            #[doc = ""]
+            #[doc = "The session id string must be UTF-8 encoded. It is also limited by the"]
+            #[doc = "maximum length of wayland messages (around 4KB). The 'invalid_session_id'"]
+            #[doc = "protocol error will be raised if an invalid string is provided."]
+            #[doc = ""]
+            #[doc = "A client is allowed to have any number of in use sessions at the same"]
+            #[doc = "time."]
+            fn get_session(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                reason: Reason,
+                session_id: Option<String>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_session_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let reason = message.uint()?;
+                            let session_id = message.string()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_session_manager_v1#{}.get_session({}, {}, \"{}\")",
+                                sender_id,
+                                id,
+                                reason,
+                                session_id
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.get_session(
+                                connection,
+                                sender_id,
+                                id,
+                                reason.try_into()?,
+                                session_id,
+                            )
+                            .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "A xdg_session_v1 object represents a session for an application. While the"]
+    #[doc = "object exists, all surfaces which have been added to the session will"]
+    #[doc = "have states stored by the compositor which can be reapplied at a later"]
+    #[doc = "time. Two sessions cannot exist for the same identifier string."]
+    #[doc = ""]
+    #[doc = "States for surfaces added to a session are automatically updated by the"]
+    #[doc = "compositor when they are changed."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_session_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "toplevel name is already in use"]
+            NameInUse = 1u32,
+            #[doc = "toplevel was already mapped when restored"]
+            AlreadyMapped = 2u32,
+            #[doc = "provided toplevel name is invalid"]
+            InvalidName = 3u32,
+            #[doc = "toplevel already added"]
+            AlreadyAdded = 4u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::NameInUse),
+                    2u32 => Ok(Self::AlreadyMapped),
+                    3u32 => Ok(Self::InvalidName),
+                    4u32 => Ok(Self::AlreadyAdded),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xdg_session_v1 interface. See the module level documentation for more info"]
+        pub trait XdgSessionV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xdg_session_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy a session object, preserving the current state but not continuing"]
+            #[doc = "to make further updates if state changes occur. This makes the associated"]
+            #[doc = "xdg_toplevel_session_v1 objects inert."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Remove the session, making it no longer available for restoration. A"]
+            #[doc = "compositor should in response to this request remove the data related to"]
+            #[doc = "this session from its storage."]
+            fn remove(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Attempt to add a given surface to the session. The passed name is used"]
+            #[doc = "to identify what window is being restored, and may be used to store"]
+            #[doc = "window specific state within the session."]
+            #[doc = ""]
+            #[doc = "The name given to the toplevel must not correspond to any previously"]
+            #[doc = "existing toplevel names in the session. If the name matches an already"]
+            #[doc = "known toplevel name in the session, a 'name_in_use' protocol error will"]
+            #[doc = "be raised."]
+            #[doc = ""]
+            #[doc = "The toplevel object must not be added more than once to any session"]
+            #[doc = "created by the client, otherwise the 'already_added' protocol error"]
+            #[doc = "will be raised."]
+            #[doc = ""]
+            #[doc = "This request will return a xdg_toplevel_session_v1 for later"]
+            #[doc = "manipulation. As this resource is created from an empty initial state,"]
+            #[doc = "compositors must not emit a xdg_toplevel_session_v1.restored event for"]
+            #[doc = "resources created through this request."]
+            #[doc = ""]
+            #[doc = "The name string must be UTF-8 encoded. It is also limited by the maximum"]
+            #[doc = "length of wayland messages (around 4KB). The 'invalid_name' protocol"]
+            #[doc = "error will be raised if an invalid string is provided."]
+            fn add_toplevel(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                toplevel: waynest::ObjectId,
+                name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Inform the compositor that the toplevel associated with the passed name"]
+            #[doc = "should have its window management state restored."]
+            #[doc = ""]
+            #[doc = "If the toplevel name was previously granted to another xdg_toplevel,"]
+            #[doc = "the 'name_in_use' protocol error will be raised."]
+            #[doc = ""]
+            #[doc = "The toplevel object must not be added more than once to any session"]
+            #[doc = "created by the client, otherwise the 'already_added' protocol error"]
+            #[doc = "will be raised."]
+            #[doc = ""]
+            #[doc = "This request must be called prior to the first commit on the associated"]
+            #[doc = "wl_surface after creating the toplevel, otherwise an 'already_mapped'"]
+            #[doc = "error is raised."]
+            #[doc = ""]
+            #[doc = "As part of the initial configure sequence, if the toplevel was"]
+            #[doc = "successfully restored, a xdg_toplevel_session_v1.restored event is"]
+            #[doc = "emitted. If the toplevel name was not known in the session, this request"]
+            #[doc = "will be equivalent to the xdg_toplevel_session_v1.add_toplevel request,"]
+            #[doc = "and no such event will be emitted. See the xdg_toplevel_session_v1.restored"]
+            #[doc = "event for further details."]
+            #[doc = ""]
+            #[doc = "The name string must be UTF-8 encoded. It is also limited by the maximum"]
+            #[doc = "length of wayland messages (around 4KB). The 'invalid_name' protocol"]
+            #[doc = "error will be raised if an invalid string is provided."]
+            fn restore_toplevel(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                toplevel: waynest::ObjectId,
+                name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Remove a specified surface from the session and render any related"]
+            #[doc = "xdg_toplevel_session_v1 object inert. The compositor should remove any"]
+            #[doc = "data related to the toplevel in the corresponding session from its internal"]
+            #[doc = "storage."]
+            #[doc = ""]
+            #[doc = "The window is specified by its name in the session. The name string"]
+            #[doc = "must be encoded in UTF-8, and it is limited in size by the maximum"]
+            #[doc = "length of wayland messages (around 4KB)."]
+            fn remove_toplevel(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Emitted at most once some time after getting a new session object. It"]
+            #[doc = "means that no previous state was restored, and a new session was created."]
+            #[doc = "The passed id can be persistently stored and used to restore previous"]
+            #[doc = "sessions."]
+            fn created(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                session_id: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xdg_session_v1#{}.created(\"{}\")",
+                        sender_id,
+                        session_id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(session_id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Emitted at most once some time after getting a new session object. It"]
+            #[doc = "means that previous state was at least partially restored. The same id"]
+            #[doc = "can again be used to restore previous sessions."]
+            fn restored(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_session_v1#{}.restored()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Emitted at most once, if the session was taken over by some other"]
+            #[doc = "client. When this happens, the session and all its toplevel session"]
+            #[doc = "objects become inert, and should be destroyed."]
+            fn replaced(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_session_v1#{}.replaced()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_session_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_session_v1#{}.remove()", sender_id,);
+                            self.remove(connection, sender_id).await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_session_v1#{}.add_toplevel({}, {}, \"{}\")",
+                                sender_id,
+                                id,
+                                toplevel,
+                                name
+                            );
+                            self.add_toplevel(connection, sender_id, id, toplevel, name)
+                                .await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_session_v1#{}.restore_toplevel({}, {}, \"{}\")",
+                                sender_id,
+                                id,
+                                toplevel,
+                                name
+                            );
+                            self.restore_toplevel(connection, sender_id, id, toplevel, name)
+                                .await
+                        }
+                        4u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_session_v1#{}.remove_toplevel(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.remove_toplevel(connection, sender_id, name).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "A xdg_toplevel_session_v1 resource acts as a handle for the given"]
+    #[doc = "toplevel in the session. It allows for receiving events after a"]
+    #[doc = "toplevel state was restored, and has the requests to manage them."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xdg_toplevel_session_v1 {
+        #[doc = "Trait to implement the xdg_toplevel_session_v1 interface. See the module level documentation for more info"]
+        pub trait XdgToplevelSessionV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xdg_toplevel_session_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroy the object. This has no effect over window management of the"]
+            #[doc = "associated toplevel."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Renames the toplevel session. The new name can be used in subsequent requests"]
+            #[doc = "to identify this session object. The state associated with this toplevel"]
+            #[doc = "session will be preserved."]
+            #[doc = ""]
+            #[doc = "If the xdg_session_v1 already contains a toplevel with the specified name,"]
+            #[doc = "the 'name_in_use' protocol error will be raised."]
+            fn rename(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The \"restored\" event is emitted prior to the first"]
+            #[doc = "xdg_toplevel.configure for the toplevel. It will only be emitted after"]
+            #[doc = "xdg_session_v1.restore_toplevel, and the initial empty surface state has"]
+            #[doc = "been applied, and it indicates that the surface's session is being"]
+            #[doc = "restored with this configure event."]
+            fn restored(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xdg_toplevel_session_v1#{}.restored()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xdg_toplevel_session_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xdg_toplevel_session_v1#{}.rename(\"{}\")",
+                                sender_id,
+                                name
+                            );
+                            self.rename(connection, sender_id, name).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
 #[allow(clippy::module_inception)]
 pub mod xdg_system_bell_v1 {
     #[doc = "This global interface enables clients to ring the system bell."]
@@ -11724,7 +12308,7 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "fall back to using pixel buffer data instead."]
             #[doc = ""]
             #[doc = "If this request is made after the icon has been assigned to a toplevel"]
-            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            #[doc = "via 'set_icon', an 'immutable' error must be raised."]
             #[doc = ""]
             #[doc = "[1]: https://specifications.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html"]
             fn set_name(
@@ -11756,7 +12340,7 @@ pub mod xdg_toplevel_icon_v1 {
             #[doc = "request is sent. The wl_buffer.release event is unused."]
             #[doc = ""]
             #[doc = "If this request is made after the icon has been assigned to a toplevel"]
-            #[doc = "via 'set_icon', a 'immutable' error must be raised."]
+            #[doc = "via 'set_icon', an 'immutable' error must be raised."]
             fn add_buffer(
                 &self,
                 connection: &mut Self::Connection,

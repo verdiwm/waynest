@@ -3090,7 +3090,7 @@ pub mod tablet_v2 {
             #[doc = "zwp_tablet_pad_group_v2.mode_switch event for more details."]
             #[doc = ""]
             #[doc = "This event is sent in the initial burst of events before the"]
-            #[doc = "zwp_tablet_pad_group_v2.done event. This event is only sent when more than"]
+            #[doc = "zwp_tablet_pad_group_v2.done event. This event is only sent when"]
             #[doc = "more than one mode is available."]
             fn modes(
                 &self,

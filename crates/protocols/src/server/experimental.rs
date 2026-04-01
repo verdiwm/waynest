@@ -1,3 +1,413 @@
+#[doc = "This protocol describes the areas of a toplevel that are cut out"]
+#[doc = "of the available surface area by hardware elements present in the"]
+#[doc = "physical display. This allows clients to avoid placing user interface"]
+#[doc = "elements in those areas."]
+#[doc = ""]
+#[doc = "Typical cutout areas are notches (i.e. embedding a camera) or"]
+#[doc = "\"waterfall\" display edges. In the case of a notch the compositor"]
+#[doc = "would usually supply the bounding box of the notch or an"]
+#[doc = "approximation by multiple rectangles. Thus a single physical"]
+#[doc = "element in the display can correspond to multiple cutout events in"]
+#[doc = "the protocol."]
+#[doc = ""]
+#[doc = "The protocol currently supports xdg_toplevel surfaces but is meant"]
+#[doc = "to be extended to other surfaces (like layer surfaces) in the"]
+#[doc = "future."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is experimental and"]
+#[doc = "backward incompatible changes may be made. Backward compatible"]
+#[doc = "changes may be added together with the corresponding interface"]
+#[doc = "version bump. Backward incompatible changes can only be done by"]
+#[doc = "creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod xx_cutouts_unstable_v1 {
+    #[doc = "This interface allows a compositor to announce support for"]
+    #[doc = "supplying cutout information to the client."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_cutouts_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "given wl_surface has incorrect role"]
+            InvalidRole = 0u32,
+            #[doc = "wl_surface or surface role was destroyed before the cutouts object"]
+            DefunctCutoutsObject = 1u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidRole),
+                    1u32 => Ok(Self::DefunctCutoutsObject),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_cutouts_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XxCutoutsManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_cutouts_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Using this request a client can tell the server that it is not"]
+            #[doc = "going to use the xx_cutouts_manger object anymore."]
+            #[doc = ""]
+            #[doc = "Any objects already created through this instance are not affected."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This creates a new xx_cutouts object for the given"]
+            #[doc = "surface. The role of the surface must be xdg_toplevel"]
+            #[doc = "otherwise an invalid_role protocol error will be raised. Later"]
+            #[doc = "versions of this protocol might allow for other surface roles."]
+            fn get_cutouts(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_cutouts_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_cutouts_manager_v1#{}.get_cutouts({}, {})",
+                                sender_id,
+                                id,
+                                surface
+                            );
+                            self.get_cutouts(connection, sender_id, id, surface).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An xx_cutouts describes the areas currently \"cut out\" of a"]
+    #[doc = "toplevel."]
+    #[doc = ""]
+    #[doc = "Each cutout event carries an id that identifies the"]
+    #[doc = "physical element. If the compositor describes an element by"]
+    #[doc = "multiple cutout events these should use the same element"]
+    #[doc = "id. A typical example is a curved notch that is approximated"]
+    #[doc = "by several cutout_box elements. Using the same element"]
+    #[doc = "id allows the client to identify that these belong to the"]
+    #[doc = "same physical object. Ids are only valid during one configure"]
+    #[doc = "sequence. No guarantee is given that the same id identifies"]
+    #[doc = "the same element in different configure sequences."]
+    #[doc = ""]
+    #[doc = "Typically compositors would only send cutout information when"]
+    #[doc = "the toplevel enters fullscreen or maxmized state (as specified"]
+    #[doc = "in the xdg_shell protocol)."]
+    #[doc = ""]
+    #[doc = "The xx_cutouts_v1 object must be destroyed before its"]
+    #[doc = "underlying xdg_toplevel and wl_surface. Otherwise the"]
+    #[doc = "defunct_cutouts_object protocol error will be send."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_cutouts_v1 {
+        #[doc = "These values indicate the type of cutout. The information is"]
+        #[doc = "meant to help clients to decide whether they can possibly"]
+        #[doc = "ignore the element."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Type {
+            Cutout = 0u32,
+            Notch = 1u32,
+            Waterfall = 2u32,
+        }
+        impl From<Type> for u32 {
+            fn from(value: Type) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Type {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Cutout),
+                    1u32 => Ok(Self::Notch),
+                    2u32 => Ok(Self::Waterfall),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Type {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "The position of a corner on a surface"]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum CornerPosition {
+            TopLeft = 0u32,
+            TopRight = 1u32,
+            BottomRight = 2u32,
+            BottomLeft = 3u32,
+        }
+        impl From<CornerPosition> for u32 {
+            fn from(value: CornerPosition) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for CornerPosition {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::TopLeft),
+                    1u32 => Ok(Self::TopRight),
+                    2u32 => Ok(Self::BottomRight),
+                    3u32 => Ok(Self::BottomLeft),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for CornerPosition {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "Invalid element id in a set_unhandled request"]
+            InvalidElementId = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidElementId),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_cutouts_v1 interface. See the module level documentation for more info"]
+        pub trait XxCutoutsV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_cutouts_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Using this request a client can tell the server that it is not"]
+            #[doc = "going to use the xx_cutouts object anymore."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "If a client doesn't handle one or more cutouts in the to be"]
+            #[doc = "acked sequence, it can add their element's id to the"]
+            #[doc = "unhandled array. The compositor might then try to reposition"]
+            #[doc = "the surface in a way that avoids these elements in a future"]
+            #[doc = "configure sequence."]
+            #[doc = ""]
+            #[doc = "The request (if used) must be sent before acking the configure"]
+            #[doc = "sequence. State set with this request is double-buffered. It"]
+            #[doc = "will get applied on the next ack_configure and stay valid"]
+            #[doc = "until the next configure event."]
+            fn set_unhandled(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                unhandled: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The cutout_box event describes a rectangular cutout area in"]
+            #[doc = "surface-local coordinates."]
+            #[doc = ""]
+            #[doc = "This can be an approximation of e.g. a circular camera notch."]
+            fn cutout_box(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+                r#type: Type,
+                id: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_cutouts_v1#{}.cutout_box({}, {}, {}, {}, {}, {})",
+                        sender_id,
+                        x,
+                        y,
+                        width,
+                        height,
+                        r#type,
+                        id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(x)
+                        .put_int(y)
+                        .put_int(width)
+                        .put_int(height)
+                        .put_uint(r#type.into())
+                        .put_uint(id)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The cutout_corner event describes a rounded corner in"]
+            #[doc = "surface-local coordinates. The area towards the screen edge is"]
+            #[doc = "the cutout corner part."]
+            fn cutout_corner(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                position: CornerPosition,
+                radius: u32,
+                id: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_cutouts_v1#{}.cutout_corner({}, {}, {})",
+                        sender_id,
+                        position,
+                        radius,
+                        id
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(position.into())
+                        .put_uint(radius)
+                        .put_uint(id)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The configure event marks the end of a configure sequence. A"]
+            #[doc = "configure sequence is a set of zero or more cutout events and"]
+            #[doc = "the final xx_cutout.configure event."]
+            #[doc = ""]
+            #[doc = "In the case of a xdg_toplevel clients should arrange their"]
+            #[doc = "surface for the new cutouts, and then send an"]
+            #[doc = "xdg_surface.ack_configure request at some point before"]
+            #[doc = "committing the new surface. See xdg_surface.configure and"]
+            #[doc = "xdg_surface.ack_configure in the xdg_shell protocol for"]
+            #[doc = "details."]
+            #[doc = ""]
+            #[doc = "If the cutout sequence consists of only a configure event and"]
+            #[doc = "contains no cutout or corner events this indicates that the"]
+            #[doc = "surface isn't overlapping with any cutouts or corners."]
+            #[doc = ""]
+            #[doc = "If the client receives multiple configure events before it can"]
+            #[doc = "respond to one, it is free to discard all but the last event"]
+            #[doc = "it received."]
+            fn configure(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_cutouts_v1#{}.configure()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_cutouts_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let unhandled = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_cutouts_v1#{}.set_unhandled(array[{}])",
+                                sender_id,
+                                unhandled.len()
+                            );
+                            self.set_unhandled(connection, sender_id, unhandled).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
 #[doc = "This protocol allows applications to act as input methods for compositors."]
 #[doc = ""]
 #[doc = "An input method context is used to manage the state of the input method."]
@@ -60,6 +470,35 @@ pub mod input_method_experimental_v2 {
                 (*self as u32).fmt(f)
             }
         }
+        #[doc = "Tells the input method client what kinds of events the text input client supports."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ProtocolCompat {
+            #[doc = "zwp-text-input-v3 semantics"]
+            TextInputV3 = 0u32,
+            XxTextInput = 1u32,
+        }
+        impl From<ProtocolCompat> for u32 {
+            fn from(value: ProtocolCompat) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ProtocolCompat {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::TextInputV3),
+                    1u32 => Ok(Self::XxTextInput),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ProtocolCompat {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xx_input_method_v1 interface. See the module level documentation for more info"]
         pub trait XxInputMethodV1
         where
@@ -67,7 +506,19 @@ pub mod input_method_experimental_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "xx_input_method_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 4u32;
+            #[doc = "Perform an action on this text input."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next commit request."]
+            #[doc = ""]
+            #[doc = "The initial value of action is none."]
+            fn perform_action(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                action : super :: super :: super :: experimental :: xx_text_input_unstable_v3 :: xx_text_input_v3 :: Action,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Send the commit string text for insertion to the application."]
             #[doc = ""]
             #[doc = "Inserts a string at current cursor position (see commit event"]
@@ -109,7 +560,7 @@ pub mod input_method_experimental_v2 {
             #[doc = ""]
             #[doc = "Values set with this request are double-buffered. They must be applied on"]
             #[doc = "the next xx_input_method_v1.commit request."]
-            #[doc = "They must be reset to initial on the next committed disable event."]
+            #[doc = "They must be reset to initial on the next committed .deactivate event."]
             #[doc = ""]
             #[doc = "The initial value of text is an empty string. The initial value of"]
             #[doc = "cursor_begin, and cursor_end are both 0."]
@@ -125,6 +576,11 @@ pub mod input_method_experimental_v2 {
             #[doc = ""]
             #[doc = "before_length and after_length are the number of bytes before and after"]
             #[doc = "the current cursor index (excluding the preedit text) to delete."]
+            #[doc = ""]
+            #[doc = "If text is selected, it must be deleted."]
+            #[doc = ""]
+            #[doc = "If indices exceed the available text boundaries, they should be adjusted to fit in boundaries and deletion reattempted."]
+            #[doc = "If indices do not lie on byte boundaries, then the text input client should delete at least that many bytes. In this case, the client decides the end point, but a character boundary same as when deleting using the keyboard is recommended."]
             #[doc = ""]
             #[doc = "If any preedit text is present, it is replaced with the cursor for the"]
             #[doc = "purpose of this event. In effect before_length is counted from the"]
@@ -142,6 +598,34 @@ pub mod input_method_experimental_v2 {
                 before_length: u32,
                 after_length: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Unselects text, moves the cursor and selects text."]
+            #[doc = ""]
+            #[doc = "This is equivalent to dragging the mouse over some text: it deselects whatever might be currently selected and selects a new range of text."]
+            #[doc = ""]
+            #[doc = "The offsets used in arguments are in bytes relative to the current cursor position. Cursor is the new position of the cursor, and anchor is the opposite end of selection. If there's no selection, anchor should be equal to cursor."]
+            #[doc = ""]
+            #[doc = "The offsets do not take preedit contents into account, nor is preedit changed in any way with this request."]
+            #[doc = ""]
+            #[doc = "Both cursor and anchor must fall on code point boundaries, otherwise text input client may ignore the request. It is therefore not recommended for an input method to move any of them beyond the text received in surrounding_text."]
+            #[doc = ""]
+            #[doc = "When surrounding_text is not supported, the offsets must not be interpreted as bytes, but as some human-readable unit at least as big as a code point, for example a grapheme."]
+            #[doc = ""]
+            #[doc = "The cursor and anchor arguments can also take the following special values:"]
+            #[doc = "BEGINNING := 0x8000_0000 = i32::MIN"]
+            #[doc = "END := 0x7fff_ffff = i32::MAX"]
+            #[doc = "meaning, respectively, the beginning and the end of of all text in the input field."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next commit request."]
+            #[doc = ""]
+            #[doc = "The initial values of both cursor and anchor are 0."]
+            fn move_cursor(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                cursor: i32,
+                anchor: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Apply state changes from commit_string, set_preedit_string and"]
             #[doc = "delete_surrounding_text requests."]
             #[doc = ""]
@@ -155,9 +639,19 @@ pub mod input_method_experimental_v2 {
             #[doc = "1. Replace existing preedit string with the cursor."]
             #[doc = "2. Delete requested surrounding text."]
             #[doc = "3. Insert commit string with the cursor at its end."]
-            #[doc = "4. Calculate surrounding text to send."]
-            #[doc = "5. Insert new preedit text in cursor position."]
-            #[doc = "6. Place cursor inside preedit text."]
+            #[doc = "4. Move the cursor and selection."]
+            #[doc = "5. Calculate surrounding text to send."]
+            #[doc = "6. Insert new preedit text in cursor position."]
+            #[doc = "7. Place cursor inside preedit text."]
+            #[doc = "8. Perform the requested action."]
+            #[doc = ""]
+            #[doc = "Note that the input method can not receive more than 4000 bytes of selection text, which might be the case for example when the entire document is selected. Nevertheless, the text input must delete the entire selected range before inserting the commit string."]
+            #[doc = ""]
+            #[doc = "Serial handling with protocol_compat == xx_text_input"]
+            #[doc = ""]
+            #[doc = "The serial number should be set to 0."]
+            #[doc = ""]
+            #[doc = "Serial handling with protocol_compat == text_input_v3"]
             #[doc = ""]
             #[doc = "The serial number reflects the last state of the xx_input_method_v1"]
             #[doc = "object known to the client. The value of the serial argument must be"]
@@ -340,7 +834,7 @@ pub mod input_method_experimental_v2 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                cause : super :: super :: super :: unstable :: text_input_unstable_v3 :: zwp_text_input_v3 :: ChangeCause,
+                cause : super :: super :: super :: experimental :: xx_text_input_unstable_v3 :: xx_text_input_v3 :: ChangeCause,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -374,8 +868,8 @@ pub mod input_method_experimental_v2 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
-                hint : super :: super :: super :: unstable :: text_input_unstable_v3 :: zwp_text_input_v3 :: ContentHint,
-                purpose : super :: super :: super :: unstable :: text_input_unstable_v3 :: zwp_text_input_v3 :: ContentPurpose,
+                hint : super :: super :: super :: experimental :: xx_text_input_unstable_v3 :: xx_text_input_v3 :: ContentHint,
+                purpose : super :: super :: super :: experimental :: xx_text_input_unstable_v3 :: xx_text_input_v3 :: ContentPurpose,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -393,6 +887,110 @@ pub mod input_method_experimental_v2 {
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Announces the actions available for the currently active text input."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They will get applied"]
+            #[doc = "on the next .done event."]
+            #[doc = "They get reset to the initial value on the next committed deactivate event."]
+            #[doc = ""]
+            #[doc = "The initial value is an empty set: no actions are available."]
+            #[doc = ""]
+            #[doc = "Values in the available_actions array come from text-input-v3.action."]
+            fn set_available_actions(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                available_actions: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_input_method_v1#{}.set_available_actions(array[{}])",
+                        sender_id,
+                        available_actions.len()
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_array(available_actions)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notifies the input method what the currently active text input client is able to do."]
+            #[doc = ""]
+            #[doc = "This event should come within the same .done sequence as .activate. Otherwise, the input method may ignore it."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They will get applied"]
+            #[doc = "on the next .done event."]
+            #[doc = "They get reset to initial on the next committed deactivate event."]
+            #[doc = ""]
+            #[doc = "The initial value for features is none."]
+            fn announce_supported_features(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                features : super :: super :: super :: experimental :: xx_text_input_unstable_v3 :: xx_text_input_v3 :: SupportedFeatures,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_input_method_v1#{}.announce_supported_features({})",
+                        sender_id,
+                        features
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(features.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Tells the input method client what kinds of events the text input client supports."]
+            #[doc = ""]
+            #[doc = ""]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They will get applied"]
+            #[doc = "on the next .done event."]
+            #[doc = "They get reset to initial on the next committed deactivate event."]
+            #[doc = ""]
+            #[doc = "The compositor may send this event as part of a .done chain that switches the active state from inactive to active. It must not send this event otherwise."]
+            #[doc = ""]
+            #[doc = "The initial value for version is text_input_v3."]
+            fn announce_protocol_compat(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                compat_level: ProtocolCompat,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_input_method_v1#{}.announce_protocol_compat({})",
+                        sender_id,
+                        compat_level
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(compat_level.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -427,7 +1025,7 @@ pub mod input_method_experimental_v2 {
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 8u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -440,7 +1038,7 @@ pub mod input_method_experimental_v2 {
             #[doc = "the time of its creation."]
             #[doc = ""]
             #[doc = "The compositor must issue this request when the object is no longer"]
-            #[doc = "useable, e.g. due to seat removal."]
+            #[doc = "usable, e.g. due to seat removal."]
             #[doc = ""]
             #[doc = "The input method context becomes inert and should be destroyed after"]
             #[doc = "deactivation is handled. Any further requests and events except for the"]
@@ -457,7 +1055,7 @@ pub mod input_method_experimental_v2 {
                     let (payload, fds) = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 9u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -474,6 +1072,17 @@ pub mod input_method_experimental_v2 {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
                         0u16 => {
+                            let action = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_input_method_v1#{}.perform_action({})",
+                                sender_id,
+                                action
+                            );
+                            self.perform_action(connection, sender_id, action.try_into()?)
+                                .await
+                        }
+                        1u16 => {
                             let text = message
                                 .string()?
                                 .ok_or(waynest::ProtocolError::MalformedPayload)?;
@@ -485,7 +1094,7 @@ pub mod input_method_experimental_v2 {
                             );
                             self.commit_string(connection, sender_id, text).await
                         }
-                        1u16 => {
+                        2u16 => {
                             let text = message
                                 .string()?
                                 .ok_or(waynest::ProtocolError::MalformedPayload)?;
@@ -508,7 +1117,7 @@ pub mod input_method_experimental_v2 {
                             )
                             .await
                         }
-                        2u16 => {
+                        3u16 => {
                             let before_length = message.uint()?;
                             let after_length = message.uint()?;
                             #[cfg(feature = "tracing")]
@@ -526,13 +1135,26 @@ pub mod input_method_experimental_v2 {
                             )
                             .await
                         }
-                        3u16 => {
+                        4u16 => {
+                            let cursor = message.int()?;
+                            let anchor = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_input_method_v1#{}.move_cursor({}, {})",
+                                sender_id,
+                                cursor,
+                                anchor
+                            );
+                            self.move_cursor(connection, sender_id, cursor, anchor)
+                                .await
+                        }
+                        5u16 => {
                             let serial = message.uint()?;
                             #[cfg(feature = "tracing")]
                             tracing::debug!("xx_input_method_v1#{}.commit({})", sender_id, serial);
                             self.commit(connection, sender_id, serial).await
                         }
-                        4u16 => {
+                        6u16 => {
                             let id = message
                                 .object()?
                                 .ok_or(waynest::ProtocolError::MalformedPayload)?;
@@ -555,7 +1177,7 @@ pub mod input_method_experimental_v2 {
                             )
                             .await
                         }
-                        5u16 => {
+                        7u16 => {
                             #[cfg(feature = "tracing")]
                             tracing::debug!("xx_input_method_v1#{}.destroy()", sender_id,);
                             self.destroy(connection, sender_id).await
@@ -602,7 +1224,7 @@ pub mod input_method_experimental_v2 {
     #[doc = ""]
     #[doc = "A typical sequence resulting from the user selecting a new text field and typing some text:"]
     #[doc = ""]
-    #[doc = "1. compositor (Co): input_method.enable()"]
+    #[doc = "1. compositor (Co): input_method.activate()"]
     #[doc = "2. Co: input_method.done()"]
     #[doc = "3. [init sequence]"]
     #[doc = "4. Co: input_method.set_surrounding_text(\"new text\")"]
@@ -611,7 +1233,7 @@ pub mod input_method_experimental_v2 {
     #[doc = "7. client (Cl): ack_configure()"]
     #[doc = "8. Cl: wl_surface.commit()"]
     #[doc = ""]
-    #[doc = "When the corresponding input_method receives a commited .disable event, the popup gets destroyed and becomes invalid and its surface gets unmapped."]
+    #[doc = "When the corresponding input_method receives a committed .deactivate event, the popup gets destroyed and becomes invalid and its surface gets unmapped."]
     #[doc = ""]
     #[doc = "The client must not destroy the underlying wl_surface while the"]
     #[doc = "xx_input_popup_surface_v2 object exists."]
@@ -654,7 +1276,7 @@ pub mod input_method_experimental_v2 {
             #[doc = "This request notifies the compositor that the client updated its surface in response to a configure sequence."]
             #[doc = ""]
             #[doc = "The purpose of this request is to synchronize the updates of the surface geometry with the surface contents."]
-            #[doc = "For example, when the compositor assigns a size larger than prevously, the client must fill the additional space before the popup gets displayed to the user with the new size. When the compositor receives .ack_configure, it can proceed to draw the new size."]
+            #[doc = "For example, when the compositor assigns a size larger than previously, the client must fill the additional space before the popup gets displayed to the user with the new size. When the compositor receives .ack_configure, it can proceed to draw the new size."]
             #[doc = ""]
             #[doc = ".ack_configure should be sent after every submitted configure sequence, passing along the serial received in it."]
             #[doc = ""]
@@ -918,7 +1540,7 @@ pub mod input_method_experimental_v2 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Anchor {
-            #[doc = "no edge, specfies center"]
+            #[doc = "no edge, specifies center"]
             None = 0u32,
             Top = 1u32,
             Bottom = 2u32,
@@ -1217,7 +1839,7 @@ pub mod input_method_experimental_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "xx_input_method_manager_v2";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 4u32;
             #[doc = "Request a new input xx_input_method_v1 object associated with a given"]
             #[doc = "seat."]
             fn get_input_method(
@@ -1286,6 +1908,333 @@ pub mod input_method_experimental_v2 {
                         2u16 => {
                             #[cfg(feature = "tracing")]
                             tracing::debug!("xx_input_method_manager_v2#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[doc = "The keyboard_filter protocol allows a client to intercept selected keyboard events and prevent them from reaching the focused surface."]
+#[doc = ""]
+#[doc = "This protocol offers a way to alter events reaching an application without the need to allow generating arbitrary keyboard events."]
+#[doc = ""]
+#[doc = "High-level overview of the interfaces:"]
+#[doc = ""]
+#[doc = "The keyboard_filter_manager exposes the bind_to_input_method request which binds a wl_keyboard to an xx_input_method."]
+#[doc = "The resulting keyboard_filter object has the can be then used for intercepting keyboard events in accordance to input method needs."]
+#[doc = ""]
+#[doc = "This document adheres to the RFC 2119 when using words like \"must\","]
+#[doc = "\"should\", \"may\", etc."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the"]
+#[doc = "experimental phase. Backwards incompatible major versions of the"]
+#[doc = "protocol are to be expected. Exposing this protocol without an opt-in"]
+#[doc = "mechanism is discouraged."]
+#[allow(clippy::module_inception)]
+pub mod keyboard_filter_experimental_v1 {
+    #[doc = "Manages the filtering of key presses."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_keyboard_filter_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "compositor received serial not adhering to requirements"]
+            InvalidSerial = 1u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::InvalidSerial),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum FilterAction {
+            #[doc = "consume the key event"]
+            Consume = 0u32,
+            #[doc = "pass the key event to the text input client"]
+            Passthrough = 1u32,
+        }
+        impl From<FilterAction> for u32 {
+            fn from(value: FilterAction) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for FilterAction {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Consume),
+                    1u32 => Ok(Self::Passthrough),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for FilterAction {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_keyboard_filter_v1 interface. See the module level documentation for more info"]
+        pub trait XxKeyboardFilterV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_keyboard_filter_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Unbind the keyboard and stop intercepting events."]
+            #[doc = ""]
+            #[doc = "Unbinds the bound keyboard and the input method. the compositor must stop redirecting keyboard events. Events that the keyboard_filter client has not yet responded to are treated as if they received the \"passthrough\" action."]
+            #[doc = ""]
+            #[doc = "This request takes effect immediately."]
+            fn unbind(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This request controls the filtering of keyboard input events before reaching the focused surface."]
+            #[doc = ""]
+            #[doc = "Usage:"]
+            #[doc = ""]
+            #[doc = "While keyboard_filter is intercepting, the compositor must send every intercepted event to its bound wl_keyboard, and hold a copy of it in an internal queue."]
+            #[doc = "When the client responds with the .filter request, the compositor either removes the event from the queue (filter_action.consume), or sends the copy to the original wl_keyboard objects (filter_action.passthrough)."]
+            #[doc = ""]
+            #[doc = "The compositor must process .filter the oldest event in the queue before processing more recent ones."]
+            #[doc = "For this reason, the client sets the argument \"serial\" to the serial of the corresponding event it received."]
+            #[doc = ""]
+            #[doc = "Exceptions:"]
+            #[doc = ""]
+            #[doc = "If the event is other than wl_keyboard.key or contains no serial, it cannot be filtered. The keyboard_filter client must not respond to it with .filter request. When such an event is oldest in the queue, the compositor must proceed as if the event had received a \"passthrough\" reply."]
+            #[doc = ""]
+            #[doc = "As of wl_keyboard v10 and keyboard_filter_v1, the only event that can be filtered is the wl_keyboard.key event."]
+            #[doc = ""]
+            #[doc = "Sequence:"]
+            #[doc = ""]
+            #[doc = "The wl_keyboard begins to receive events after input_method.activate is committed."]
+            #[doc = "The valid serial is the serial of the oldest wl_keyboard event which has been sent after input_method.activate but which hasn't yet received a .filter confirmation."]
+            #[doc = "The compositor may raise the invalid_serial error in response to events with serials it had not issued."]
+            #[doc = "The compositor must ignore events with all other serials. (Particularly, this means events with repeating serials are accepted normally and are not ignored)."]
+            #[doc = "Events must be filtered in order of arrival."]
+            fn filter(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                serial: u32,
+                action: FilterAction,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Destroys the keyboard_filter object, stops event interception, and unbinds the wl_keyboard and input_method objects bound to it."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_keyboard_filter_v1#{}.unbind()", sender_id,);
+                            self.unbind(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let serial = message.uint()?;
+                            let action = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_keyboard_filter_v1#{}.filter({}, {})",
+                                sender_id,
+                                serial,
+                                action
+                            );
+                            self.filter(connection, sender_id, serial, action.try_into()?)
+                                .await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_keyboard_filter_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_keyboard_filter_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "an argument is already bound"]
+            AlreadyBound = 1u32,
+            #[doc = "the keyboard i attached to the wrong seat for this operation"]
+            WrongSeat = 2u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::AlreadyBound),
+                    2u32 => Ok(Self::WrongSeat),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_keyboard_filter_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XxKeyboardFilterManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_keyboard_filter_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Bind a keyboard to an input method for the purpose of capturing key presses before they reach the text input client."]
+            #[doc = ""]
+            #[doc = "When a wl_keyboard is bound, the compositor must redirect to it the input events intended for the focused surface with text input enabled. The wl_keyboard instance receives no other events from then on."]
+            #[doc = "See keyboard_filter.filter."]
+            #[doc = ""]
+            #[doc = "For the bound wl_keyboard instance to intercept events, the following conditions must be fulfilled:"]
+            #[doc = "- there's a focused surface,"]
+            #[doc = "- the surface has an enabled text input object,"]
+            #[doc = "- the bound input method is active (for the meaning of \"active\", see input_method.activate, input_method.deactivate)."]
+            #[doc = ""]
+            #[doc = "When those conditions are fulfilled, the compositor must start redirecting input events intended for the text input surface to the wl_keyboard bound with this request. Otherwise, the text input surface receives events without intercepting them."]
+            #[doc = ""]
+            #[doc = "Be aware that the text input client might use a wl_keyboard object(s) of different version(s) than the one used by the input method. The compositor should issue events as it would normally do for the versions in question. This protocol assumes that events to multiple keyboards of different protocol versions are equivalent."]
+            #[doc = ""]
+            #[doc = "Background:"]
+            #[doc = ""]
+            #[doc = "Whenever the input method is activated, the compositor must start sending it keyboard events intended for the text-input client, so that the input method can be controlled using a keyboard."]
+            #[doc = "Traditionally, from the user perspective, input methods receive keys as if they were an overlay: keys which are interesting to the input method gain a special input method meaning, all others work as usual."]
+            #[doc = "The binding and the keyboard_filter.filter request together make this possible by letting the input method indicate which events it is interested in."]
+            #[doc = ""]
+            #[doc = "Conceptually, when a wl_keyboard is bound to an input_method, the compositor prevents all keyboard events directed to the text input client from reaching it. They are delayed until the input method decides how to filter them using the keyboard_filter.filter request."]
+            #[doc = ""]
+            #[doc = "Arguments:"]
+            #[doc = ""]
+            #[doc = "The wl_keyboard must not be already bound to another interface."]
+            #[doc = "The wl_keyboard must only receive events between committed .activate and .deactivate."]
+            #[doc = ""]
+            #[doc = "The surface argument represents an arbitrary wl_surface. When issuing wl_keyboard.enter and wl_keyboard.leave on the bound wl_keyboard, the compositor must replace the original surface argument with the one provided by the input method in this request."]
+            #[doc = ""]
+            #[doc = "Because the wl_keyboard.enter and wl_keyboard.leave events require a surface as the target, one must be provided even if the input method doesn't display one. A dummy one is sufficient. The provided wl_surface will not be used for any other purpose than explained above."]
+            #[doc = ""]
+            #[doc = "The surface must outlive the input method."]
+            #[doc = ""]
+            #[doc = "NOTE: This feature works much better with compositor-side key repeat introduced in wl_seat version 10. This protocol doesn't provide controls for filtering repeat key events generated client-side."]
+            #[doc = "A compositor implementing this protocol should implement compositor-side key repeat."]
+            #[doc = ""]
+            #[doc = "This request takes effect immediately."]
+            #[doc = ""]
+            #[doc = "Attempting to bind a keyboard to an input method which is already bound must cause the already_bound error."]
+            #[doc = "Attempting to bind a keyboard object which was already bound must cause the already_bound error."]
+            #[doc = "Attempting to bind a keyboard object to an input method acting on a different seat must cause the wrong_seat error."]
+            #[doc = ""]
+            #[doc = "Once any of the bound objects are destroyed, the xx_keyboard_filter_v1 instance becomes disabled and it must ignore all following requests."]
+            #[doc = ""]
+            #[doc = "When the input method gets destroyed, the compositor must stop issuing events to the keyboard and ignore any further requests to keyboard_filter, except keyboard_filter.destroy."]
+            fn bind_to_input_method(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                keyboard: waynest::ObjectId,
+                input_method: waynest::ObjectId,
+                surface: waynest::ObjectId,
+                extensions: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Destroys the xx_keyboard_filter_manager_v1 object."]
+            #[doc = ""]
+            #[doc = "The xx_keyboard_filter_v1 objects originating from it remain unaffected."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let keyboard = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let input_method = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let surface = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let extensions = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_keyboard_filter_manager_v1#{}.bind_to_input_method({}, {}, {}, {})",
+                                sender_id,
+                                keyboard,
+                                input_method,
+                                surface,
+                                extensions
+                            );
+                            self.bind_to_input_method(
+                                connection,
+                                sender_id,
+                                keyboard,
+                                input_method,
+                                surface,
+                                extensions,
+                            )
+                            .await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_keyboard_filter_manager_v1#{}.destroy()",
+                                sender_id,
+                            );
                             self.destroy(connection, sender_id).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
@@ -1950,6 +2899,51 @@ pub mod xx_text_input_unstable_v3 {
                 (*self as u32).fmt(f)
             }
         }
+        #[doc = "A possible action to perform on a text input."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Action {
+            None = 1u32,
+            Finish = 0u32,
+        }
+        impl From<Action> for u32 {
+            fn from(value: Action) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Action {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::None),
+                    0u32 => Ok(Self::Finish),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Action {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [doc = "Client functionality over the baseline that isn't indicated implicitly."] # [doc = ""] # [doc = "This does not include events coming with .enable: when the input method receives such an event, it is clear the text input supports it, e.g. content_type, available_actions."] # [doc = ""] # [doc = "Baseline functionality like commit_string, set_preedit_string must always be supported for the protocol to be useful."] # [doc = ""] # [doc = "The flags match text-input protocol versions, but should be kept general enough to support other protocols."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct SupportedFeatures : u32 { # [doc = "no extra functionality supported"] const None = 0u32 ; # [doc = "the move_cursor request"] const MoveCursor = 1u32 ; } }
+        impl From<SupportedFeatures> for u32 {
+            fn from(value: SupportedFeatures) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for SupportedFeatures {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for SupportedFeatures {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
         #[doc = "Trait to implement the xx_text_input_v3 interface. See the module level documentation for more info"]
         pub trait XxTextInputV3
         where
@@ -1957,7 +2951,7 @@ pub mod xx_text_input_unstable_v3 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "xx_text_input_v3";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy the xx_text_input object. Also disables all surfaces enabled"]
             #[doc = "through this xx_text_input object."]
             fn destroy(
@@ -1982,7 +2976,8 @@ pub mod xx_text_input_unstable_v3 {
             #[doc = "This request resets all state associated with previous enable, disable,"]
             #[doc = "set_surrounding_text, set_text_change_cause, set_content_type, and"]
             #[doc = "set_cursor_rectangle requests, as well as the state associated with"]
-            #[doc = "preedit_string, commit_string, and delete_surrounding_text events."]
+            #[doc = "preedit_string, commit_string, delete_surrounding_text, and action"]
+            #[doc = "events."]
             #[doc = ""]
             #[doc = "The set_surrounding_text, set_content_type and set_cursor_rectangle"]
             #[doc = "requests must follow if the text input supports the necessary"]
@@ -2140,6 +3135,36 @@ pub mod xx_text_input_unstable_v3 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Announces the actions available for the currently active text input."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They will get applied"]
+            #[doc = "on the next .done event."]
+            #[doc = "They get reset to the initial value on the next committed deactivate event."]
+            #[doc = ""]
+            #[doc = "The initial value is an empty set: no actions are available."]
+            #[doc = ""]
+            #[doc = "Values in the available_actions array come from text-input-v3.action."]
+            fn set_available_actions(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                available_actions: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Notifies the input method what the currently active text input client is able to do."]
+            #[doc = ""]
+            #[doc = "This event should come within the same .done sequence as .activate. Otherwise, the input method may ignore it."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They will get applied"]
+            #[doc = "on the next .done event."]
+            #[doc = "They get reset to initial on the next committed deactivate event."]
+            #[doc = ""]
+            #[doc = "The initial value for features is none."]
+            fn announce_supported_features(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                features : super :: super :: super :: experimental :: xx_text_input_unstable_v3 :: xx_text_input_v3 :: SupportedFeatures,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Notification that this seat's text-input focus is on a certain surface."]
             #[doc = ""]
             #[doc = "If client has created multiple text input objects, compositor must send"]
@@ -2287,6 +3312,11 @@ pub mod xx_text_input_unstable_v3 {
             #[doc = "Before_length and after_length are the number of bytes before and after"]
             #[doc = "the current cursor index (excluding the selection) to delete."]
             #[doc = ""]
+            #[doc = "If text is selected, it must be deleted."]
+            #[doc = ""]
+            #[doc = "If indices exceed the available text boundaries, they should be adjusted to fit in boundaries and deletion reattempted."]
+            #[doc = "If indices do not lie on byte boundaries, then the text input client should delete at least that many bytes. In this case, the client decides the end point, but a character boundary same as when deleting using the keyboard is recommended."]
+            #[doc = ""]
             #[doc = "If a preedit text is present, in effect before_length is counted from"]
             #[doc = "the beginning of it, and after_length from its end (see done event"]
             #[doc = "sequence)."]
@@ -2323,9 +3353,61 @@ pub mod xx_text_input_unstable_v3 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "Unselects text, moves the cursor and selects text."]
+            #[doc = ""]
+            #[doc = "This is equivalent to dragging the mouse over some text: it deselects whatever might be currently selected and selects a new range of text."]
+            #[doc = ""]
+            #[doc = "The offsets used in arguments are in bytes relative to the current cursor position. Cursor is the new position of the cursor, and anchor is the opposite end of selection. If there's no selection, anchor should be equal to cursor."]
+            #[doc = "In terms of dragging the mouse, the anchor is the start, and cursor the end."]
+            #[doc = ""]
+            #[doc = "The offsets do not take preedit contents into account, nor is preedit changed in any way with this request."]
+            #[doc = ""]
+            #[doc = "Both cursor and anchor must fall on code point boundaries, otherwise text input client may ignore the request. It is therefore not recommended for an input method to move any of them beyond the text received in surrounding_text."]
+            #[doc = ""]
+            #[doc = ""]
+            #[doc = "When surrounding_text is not supported, the offsets must not be interpreted as bytes, but as some human-readable unit at least as big as a code point, for example a grapheme."]
+            #[doc = ""]
+            #[doc = "The cursor and anchor arguments can also take the following special values:"]
+            #[doc = "BEGINNING := 0x8000_0000 = i32::MIN"]
+            #[doc = "END := 0x7fff_ffff = i32::MAX"]
+            #[doc = "meaning, respectively, the beginning and the end of of all text in the input field."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next commit request."]
+            #[doc = ""]
+            #[doc = "The initial values of both cursor and anchor are 0."]
+            fn move_cursor(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                cursor: i32,
+                anchor: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_text_input_v3#{}.move_cursor({}, {})",
+                        sender_id,
+                        cursor,
+                        anchor
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(cursor)
+                        .put_int(anchor)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
             #[doc = "Instruct the application to apply changes to state requested by the"]
-            #[doc = "preedit_string, commit_string and delete_surrounding_text events. The"]
-            #[doc = "state relating to these events is double-buffered, and each one"]
+            #[doc = "preedit_string, commit_string delete_surrounding_text, and action"]
+            #[doc = "events."]
+            #[doc = "The state relating to these events is double-buffered, and each one"]
             #[doc = "modifies the pending state. This event replaces the current state with"]
             #[doc = "the pending state."]
             #[doc = ""]
@@ -2335,9 +3417,17 @@ pub mod xx_text_input_unstable_v3 {
             #[doc = "1. Replace existing preedit string with the cursor."]
             #[doc = "2. Delete requested surrounding text."]
             #[doc = "3. Insert commit string with the cursor at its end."]
-            #[doc = "4. Calculate surrounding text to send."]
-            #[doc = "5. Insert new preedit text in cursor position."]
-            #[doc = "6. Place cursor inside preedit text."]
+            #[doc = "4. Move the cursor and selection."]
+            #[doc = "5. Calculate surrounding text to send."]
+            #[doc = "6. Insert new preedit text in cursor position."]
+            #[doc = "7. Place cursor inside preedit text."]
+            #[doc = "8. Perform the requested action."]
+            #[doc = ""]
+            #[doc = "Serial handling starting version 2:"]
+            #[doc = ""]
+            #[doc = "The argument \"serial\" is ignored."]
+            #[doc = ""]
+            #[doc = "Serial handling version 1:"]
             #[doc = ""]
             #[doc = "The serial number reflects the last state of the xx_text_input_v3"]
             #[doc = "object known to the compositor. The value of the serial argument must"]
@@ -2363,7 +3453,38 @@ pub mod xx_text_input_unstable_v3 {
                     let (payload, fds) = waynest::PayloadBuilder::new().put_uint(serial).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The input method issued an action to perform on this text input."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next .done event."]
+            #[doc = ""]
+            #[doc = "The initial value of action is none."]
+            fn perform_action(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                action: Action,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_text_input_v3#{}.perform_action({})",
+                        sender_id,
+                        action
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_uint(action.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload, fds),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2462,6 +3583,32 @@ pub mod xx_text_input_unstable_v3 {
                             tracing::debug!("xx_text_input_v3#{}.commit()", sender_id,);
                             self.commit(connection, sender_id).await
                         }
+                        8u16 => {
+                            let available_actions = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_text_input_v3#{}.set_available_actions(array[{}])",
+                                sender_id,
+                                available_actions.len()
+                            );
+                            self.set_available_actions(connection, sender_id, available_actions)
+                                .await
+                        }
+                        9u16 => {
+                            let features = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_text_input_v3#{}.announce_supported_features({})",
+                                sender_id,
+                                features
+                            );
+                            self.announce_supported_features(
+                                connection,
+                                sender_id,
+                                features.try_into()?,
+                            )
+                            .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -2478,7 +3625,7 @@ pub mod xx_text_input_unstable_v3 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "xx_text_input_manager_v3";
-            const VERSION: u32 = 1u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy the xx_text_input_manager object."]
             fn destroy(
                 &self,
@@ -2523,6 +3670,796 @@ pub mod xx_text_input_unstable_v3 {
                                 seat
                             );
                             self.get_text_input(connection, sender_id, id, seat).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[doc = "This protocol provides a way for clients to create and add toplevel windows"]
+#[doc = "to \"zones\"."]
+#[doc = ""]
+#[doc = "A zone is an environment with its own coordinate space where clients can"]
+#[doc = "add and arrange windows that logically belong and relate to each other."]
+#[doc = "It provides means for, among other things, requesting that windows are"]
+#[doc = "placed at specific coordinates within the zone coordinate space."]
+#[doc = "See the description of \"xx_zone_v1\" for more details."]
+#[doc = ""]
+#[doc = "This document adheres to RFC 2119 when using words like \"must\","]
+#[doc = "\"should\", \"may\", etc."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is currently in the testing"]
+#[doc = "phase. Backward compatible changes may be added together with the"]
+#[doc = "corresponding interface version bump. Backward incompatible changes can"]
+#[doc = "only be done by creating a new major version of the extension."]
+#[allow(clippy::module_inception)]
+pub mod xx_zones_v1 {
+    #[doc = "The 'xx_zone_manager' interface defines base requests for obtaining and"]
+    #[doc = "managing zones for a client."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_zone_manager_v1 {
+        #[doc = "Trait to implement the xx_zone_manager_v1 interface. See the module level documentation for more info"]
+        pub trait XxZoneManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_zone_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "This has no effect other than to destroy the xx_zone_manager object."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new positionable zone item from an 'xdg_toplevel'."]
+            #[doc = "The resulting wrapper object can then be used to position the"]
+            #[doc = "toplevel window in a zone."]
+            fn get_zone_item(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                toplevel: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new zone. While the zone object exists, the compositor"]
+            #[doc = "must consider it \"used\" and keep track of it."]
+            #[doc = ""]
+            #[doc = "A zone is represented by a string 'handle'."]
+            #[doc = ""]
+            #[doc = "The compositor must keep zone handles valid while any client is"]
+            #[doc = "referencing the corresponding zone."]
+            #[doc = "The compositor may always give a client the same zone for a given"]
+            #[doc = "output, and remember its position and size for the client, but"]
+            #[doc = "clients should not rely on this behavior."]
+            #[doc = ""]
+            #[doc = "A client can request a zone to be placed on a specific"]
+            #[doc = "output by passing a wl_output as 'output'. If a valid output"]
+            #[doc = "is set, the compositor should place the zone on that output."]
+            #[doc = "If NULL is passed, the compositor decides the output."]
+            #[doc = ""]
+            #[doc = "The compositor should provide the biggest reasonable zone space"]
+            #[doc = "for the client, governed by its own policy."]
+            #[doc = ""]
+            #[doc = "If the compositor wants to deny zone creation (e.g. on a specific"]
+            #[doc = "output), the returned zone must be \"invalid\". A zone is invalid"]
+            #[doc = "if it has a negative size, in which case the client is forbidden"]
+            #[doc = "to place items in it."]
+            fn get_zone(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                output: Option<waynest::ObjectId>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Create a new zone object using the zone's handle."]
+            #[doc = "For the returned zone, the same rules as described in"]
+            #[doc = "'get_zone' apply."]
+            #[doc = ""]
+            #[doc = "This request returns a reference to an existing or remembered zone"]
+            #[doc = "that is represented by 'handle'."]
+            #[doc = "The zone may potentially have been created by a different client."]
+            #[doc = ""]
+            #[doc = "This allows cooperating clients to share the same coordinate space."]
+            #[doc = ""]
+            #[doc = "If the zone handle was invalid or unknown, a new zone must"]
+            #[doc = "be created and returned instead, following the rules outlined"]
+            #[doc = "in 'get_zone' and assuming no output preference."]
+            #[doc = ""]
+            #[doc = "Every new zone object created by this request emits its initial event"]
+            #[doc = "sequence, including the 'handle' event, which must return a different"]
+            #[doc = "handle from the one passed to this request in case the existing zone"]
+            #[doc = "could not be joined."]
+            fn get_zone_from_handle(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                handle: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_zone_manager_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_zone_manager_v1#{}.get_zone_item({}, {})",
+                                sender_id,
+                                id,
+                                toplevel
+                            );
+                            self.get_zone_item(connection, sender_id, id, toplevel)
+                                .await
+                        }
+                        2u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let output = message.object()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_zone_manager_v1#{}.get_zone({}, {})",
+                                sender_id,
+                                id,
+                                output
+                                    .as_ref()
+                                    .map_or("null".to_string(), |v| v.to_string())
+                            );
+                            self.get_zone(connection, sender_id, id, output).await
+                        }
+                        3u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let handle = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_zone_manager_v1#{}.get_zone_from_handle({}, \"{}\")",
+                                sender_id,
+                                id,
+                                handle
+                            );
+                            self.get_zone_from_handle(connection, sender_id, id, handle)
+                                .await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "The zone item object is an opaque descriptor for a positionable"]
+    #[doc = "element, such as a toplevel window."]
+    #[doc = "It currently can only be created from an 'xdg_toplevel' via the"]
+    #[doc = "'get_zone_item' request on a 'xx_zone_manager'."]
+    #[doc = ""]
+    #[doc = "The lifetime of a zone item is tied to its referenced item (usually"]
+    #[doc = "a toplevel)."]
+    #[doc = "When the reference is destroyed, the compositor must send a 'closed'"]
+    #[doc = "event and the zone item becomes inert."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_zone_item_v1 {
+        #[doc = "Trait to implement the xx_zone_item_v1 interface. See the module level documentation for more info"]
+        pub trait XxZoneItemV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_zone_item_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Destroys the zone item. This request may be sent at any time by the"]
+            #[doc = "client."]
+            #[doc = "By destroying the object, the respective item surface remains at its"]
+            #[doc = "last position, but its association with its zone is lost."]
+            #[doc = "This will also cause it to lose any other attached state described by"]
+            #[doc = "this protocol."]
+            #[doc = ""]
+            #[doc = "If the item was associated with a zone when this request is sent,"]
+            #[doc = "the compositor must emit 'item_left' on the respective zone, unless"]
+            #[doc = "it had already been emitted before a 'closed' event."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Request a preferred position (x, y) for the specified item"]
+            #[doc = "surface to be placed at, relative to its associated zone."]
+            #[doc = "This state is double-buffered and is applied on the next"]
+            #[doc = "wl_surface.commit of the surface represented by 'item'."]
+            #[doc = ""]
+            #[doc = "X and Y coordinates are relative to the zone this item is associated"]
+            #[doc = "with, and must not be larger than the dimensions set by the zone size."]
+            #[doc = "They may be smaller than zero, if the item's top-left edge is to be"]
+            #[doc = "placed beyond the zone's top-left sides, but clients should expect the"]
+            #[doc = "compositor to more aggressively sanitize the coordinate values in that"]
+            #[doc = "case."]
+            #[doc = "If a coordinate exceeds the zone's maximum bounds, the compositor must"]
+            #[doc = "sanitize it to more appropriate values (e.g. by clamping the values to"]
+            #[doc = "the maximum size)."]
+            #[doc = "For infinite zones, the client may pick any coordinate."]
+            #[doc = ""]
+            #[doc = "Compositors implementing this protocol should try to place an item"]
+            #[doc = "at the requested coordinates relative to the item's zone, unless doing"]
+            #[doc = "so is not allowed by compositor policy (because e.g. the user has set"]
+            #[doc = "custom rules for the surface represented by the respective item, the"]
+            #[doc = "surface overlaps with a protected shell component, session management"]
+            #[doc = "has loaded previous surface positions or the placement request would"]
+            #[doc = "send the item out of bounds)."]
+            #[doc = ""]
+            #[doc = "Clients should be aware that their placement preferences might not"]
+            #[doc = "always be followed and must be prepared to handle the case where the"]
+            #[doc = "item is placed at a different position by the compositor."]
+            #[doc = ""]
+            #[doc = "Once an item has been mapped, a change to its preferred placement can"]
+            #[doc = "still be requested and should be applied, but must not be followed"]
+            #[doc = "by the compositor while the user is interacting with the affected item"]
+            #[doc = "surface (e.g. clicking & dragging within the window, or resizing it)."]
+            #[doc = ""]
+            #[doc = "After a call to this request, a 'position' event must be emitted with the"]
+            #[doc = "item's new actual position."]
+            #[doc = "If the current item has no zone associated with it, a 'position_failed'"]
+            #[doc = "event must be emitted."]
+            #[doc = "If the compositor did not move the item at all, not even with sanitized"]
+            #[doc = "values, a 'position_failed' event must be emitted as well."]
+            fn set_position(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The 'frame_extents' event describes the current extents of the frame"]
+            #[doc = "bordering the item's content area."]
+            #[doc = ""]
+            #[doc = "This event is sent immediately after the item joins a zone, or if"]
+            #[doc = "the item frame extents have been changed by other means (e.g. toggled"]
+            #[doc = "by a client request, or compositor involvement). The dimensions are in"]
+            #[doc = "the same coordinate space as the item's zone (the surface coordinate"]
+            #[doc = "space)."]
+            #[doc = ""]
+            #[doc = "This event must be followed by a 'position' event, even if the item's"]
+            #[doc = "coordinates did not change as a result of the frame extents changing."]
+            #[doc = ""]
+            #[doc = "If the item has no associated frame, the event should still be sent,"]
+            #[doc = "but extents must be set to zero."]
+            #[doc = ""]
+            #[doc = "This event can only be emitted if the item is currently associated"]
+            #[doc = "with a zone."]
+            fn frame_extents(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                top: i32,
+                bottom: i32,
+                left: i32,
+                right: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_zone_item_v1#{}.frame_extents({}, {}, {}, {})",
+                        sender_id,
+                        top,
+                        bottom,
+                        left,
+                        right
+                    );
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(top)
+                        .put_int(bottom)
+                        .put_int(left)
+                        .put_int(right)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event notifies the client of the current position (x, y) of"]
+            #[doc = "the item relative to its zone."]
+            #[doc = "Coordinates are relative to the zone this item belongs to, and only"]
+            #[doc = "valid within it."]
+            #[doc = "Negative coordinates are possible, if the user has moved an item"]
+            #[doc = "surface beyond the zone's top-left boundary."]
+            #[doc = ""]
+            #[doc = "This event is sent in response to a 'set_position' request,"]
+            #[doc = "or if the item position has been changed by other means"]
+            #[doc = "(e.g. user interaction or compositor involvement)."]
+            #[doc = ""]
+            #[doc = "This event can only be emitted if the item is currently associated"]
+            #[doc = "with a zone."]
+            fn position(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_item_v1#{}.position({}, {})", sender_id, x, y);
+                    let (payload, fds) =
+                        waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The compositor was unable to set the position of this item entirely,"]
+            #[doc = "and could not even find sanitized coordinates to place the item at"]
+            #[doc = "instead."]
+            #[doc = ""]
+            #[doc = "This event will also be emitted if 'set_position' was called while the"]
+            #[doc = "item had no zone associated with it."]
+            fn position_failed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_item_v1#{}.position_failed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event indicates that the surface wrapped by this"]
+            #[doc = "zone item has been destroyed."]
+            #[doc = ""]
+            #[doc = "The 'xx_zone_item_v1' object becomes inert and the client should"]
+            #[doc = "destroy it. Any requests made on an inert zone item must be silently"]
+            #[doc = "ignored by the compositor, and no further events will be sent for this"]
+            #[doc = "item."]
+            #[doc = ""]
+            #[doc = "If the item was associated with a zone when this event is sent,"]
+            #[doc = "the compositor must also emit 'item_left' on the respective zone"]
+            #[doc = "before sending this event."]
+            fn closed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_item_v1#{}.closed()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_zone_item_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_zone_item_v1#{}.set_position({}, {})",
+                                sender_id,
+                                x,
+                                y
+                            );
+                            self.set_position(connection, sender_id, x, y).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An 'xx_zone' describes a display area provided by the compositor in"]
+    #[doc = "which a client can place windows and move them around."]
+    #[doc = ""]
+    #[doc = "A zone's area could, for example, correspond to the space usable for"]
+    #[doc = "placing windows on a specific output (space without panels or other"]
+    #[doc = "restricted elements) or it could be an area of the output the compositor"]
+    #[doc = "has specifically chosen for a client to place its surfaces in."]
+    #[doc = ""]
+    #[doc = "Clients should make no assumptions about how a zone is presented to the"]
+    #[doc = "user (e.g. compositors may visually distinguish what makes up a zone)."]
+    #[doc = ""]
+    #[doc = "Items are added to a zone as 'xx_zone_item' objects."]
+    #[doc = ""]
+    #[doc = "All item surface position coordinates (x, y) are relative to the selected"]
+    #[doc = "zone."]
+    #[doc = "They are using the 'size' of the respective zone as coordinate system,"]
+    #[doc = "with (0, 0) being in the top left corner."]
+    #[doc = ""]
+    #[doc = "If a zone item is moved out of the top/left boundaries of the zone by"]
+    #[doc = "user interaction, its coordinates must become negative, relative to the"]
+    #[doc = "zone's top-left coordinate origin. A client may position an item at negative"]
+    #[doc = "coordinates."]
+    #[doc = ""]
+    #[doc = "The compositor must ensure that any item positioned by the client is"]
+    #[doc = "visible and accessible to the user, and is not moved into invisible space"]
+    #[doc = "outside of a zone."]
+    #[doc = "Positioning requests may be rejected or altered by the compositor, depending"]
+    #[doc = "on its policy."]
+    #[doc = ""]
+    #[doc = "The absolute position of the zone within the compositor's coordinate space"]
+    #[doc = "is opaque to the client and the compositor may move the entire zone without"]
+    #[doc = "the client noticing it. A zone may also be arbitrarily resized, in which"]
+    #[doc = "case the respective 'size' event must be emitted again to notify the client."]
+    #[doc = ""]
+    #[doc = "A zone is always tied to an output and does not extend beyond it."]
+    #[doc = ""]
+    #[doc = "A zone may be \"invalid\". An invalid zone is created with a negative"]
+    #[doc = "'size' and must not be used for item arrangement."]
+    #[doc = ""]
+    #[doc = "Upon creation the compositor must emit 'size' and 'handle' events for the"]
+    #[doc = "newly created 'xx_zone', followed by 'done'."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_zone_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "an invalid value has been submitted"]
+            Invalid = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Invalid),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_zone_v1 interface. See the module level documentation for more info"]
+        pub trait XxZoneV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_zone_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Using this request a client can tell the compositor that it is not"]
+            #[doc = "going to use the 'xx_zone' object anymore."]
+            #[doc = "The zone itself must only be destroyed if no other client"]
+            #[doc = "is currently referencing it, so this request may only destroy the"]
+            #[doc = "object reference owned by the client."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Make 'item' a member of this zone."]
+            #[doc = "This state is double-buffered and is applied on the next"]
+            #[doc = "'wl_surface.commit' of the surface represented by 'item'."]
+            #[doc = ""]
+            #[doc = "This request associates an item with this zone."]
+            #[doc = "If this request is called on an item that already has a zone"]
+            #[doc = "association with a different zone, the item must leave its old zone"]
+            #[doc = "(with 'item_left' being emitted on its old zone) and will instead"]
+            #[doc = "be associated with this zone."]
+            #[doc = ""]
+            #[doc = "Upon receiving this request and if the target zone is allowed for 'item',"]
+            #[doc = "a compositor must emit 'item_entered' to confirm the zone association."]
+            #[doc = "It must even emit this event if the item was already associated with this"]
+            #[doc = "zone before."]
+            #[doc = ""]
+            #[doc = "The compositor must move the surface represented by 'item' into the"]
+            #[doc = "boundary of this zone upon receiving this request and accepting it"]
+            #[doc = "(either by extending the zone size, or by moving the item surface)."]
+            #[doc = ""]
+            #[doc = "If the compositor does not allow the item to switch zone associations,"]
+            #[doc = "and wants it to remain in its previous zone, it must emit"]
+            #[doc = "'item_blocked' instead."]
+            #[doc = "Compositors might want to prevent zone associations if they"]
+            #[doc = "perform specialized window management (e.g. autotiling) that would"]
+            #[doc = "make clients moving items between certain zones undesirable."]
+            #[doc = ""]
+            #[doc = "Once the 'item' is added to its zone, the compositor must first send"]
+            #[doc = "a 'frame_extents' event on the item, followed by an initial 'position'"]
+            #[doc = "event with the item's current position."]
+            #[doc = "The compositor must then send 'position' events when the position"]
+            #[doc = "of the item in its zone is changed, for as long as the item is"]
+            #[doc = "associated with a zone."]
+            #[doc = ""]
+            #[doc = "If the zone is invalid, an 'invalid' error must be raised and the item"]
+            #[doc = "must not be associated with the invalid zone."]
+            #[doc = "If the referenced item is inert (its underlying surface has been"]
+            #[doc = "destroyed), the request must be silently ignored."]
+            fn add_item(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                item: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Remove 'item' as a member of this zone."]
+            #[doc = "This state is double-buffered and is applied on the next"]
+            #[doc = "'wl_surface.commit' of the surface represented by 'item'."]
+            #[doc = ""]
+            #[doc = "This request removes the item from this zone explicitly,"]
+            #[doc = "making the client unable to retrieve coordinates again."]
+            #[doc = ""]
+            #[doc = "Upon receiving this request, the compositor should not change the"]
+            #[doc = "item surface position on screen, and must emit 'item_left' to confirm"]
+            #[doc = "the item's removal. It must even emit this event if the"]
+            #[doc = "item was never associated with this zone."]
+            #[doc = ""]
+            #[doc = "If the referenced item is inert (its underlying surface has been"]
+            #[doc = "destroyed), the request must be silently ignored."]
+            fn remove_item(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                item: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The 'size' event describes the size of this zone."]
+            #[doc = ""]
+            #[doc = "It is a rectangle with its origin in the top-left corner, using"]
+            #[doc = "the surface coordinate space (device pixels divided by the scaling"]
+            #[doc = "factor of the output this zone is attached to)."]
+            #[doc = ""]
+            #[doc = "If a width or height value is zero, the zone is infinite"]
+            #[doc = "in that direction."]
+            #[doc = ""]
+            #[doc = "If the width and height values are negative, the zone is considered"]
+            #[doc = "\"invalid\" and must not be used."]
+            #[doc = "A size event declaring the zone invalid may only be emitted immediately"]
+            #[doc = "after the zone was created."]
+            #[doc = "A zone must not become invalid at a later time by sending a negative"]
+            #[doc = "'size' after the zone has been established."]
+            #[doc = ""]
+            #[doc = "The 'size' event is sent immediately after creating an 'xx_zone_v1',"]
+            #[doc = "and whenever the size of the zone changes. A zone size can change at"]
+            #[doc = "any time, for any reason, for example due to output size or scaling"]
+            #[doc = "changes, or by compositor policy."]
+            #[doc = ""]
+            #[doc = "Upon subsequent emissions of 'size' after 'xx_zone' has already"]
+            #[doc = "been created, the 'done' event does not have to be sent again."]
+            fn size(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                width: i32,
+                height: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_v1#{}.size({}, {})", sender_id, width, height);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_int(width)
+                        .put_int(height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The handle event provides the unique handle of this zone."]
+            #[doc = "The handle may be shared with any client, which then can use it to"]
+            #[doc = "join this client's zone by calling"]
+            #[doc = "'xx_zone_manager.get_zone_from_handle'."]
+            #[doc = ""]
+            #[doc = "This event must only be emitted once after the zone was created."]
+            #[doc = "If this zone is invalid, the handle must be an empty string."]
+            fn handle(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                handle: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_v1#{}.handle(\"{}\")", sender_id, handle);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_string(Some(handle))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event is sent after all other properties (size, handle) of an"]
+            #[doc = "'xx_zone' have been sent."]
+            #[doc = ""]
+            #[doc = "This allows changes to the xx_zone properties to be seen as"]
+            #[doc = "atomic, even if they happen via multiple events."]
+            fn done(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_v1#{}.done()", sender_id,);
+                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event notifies the client that an item was prevented from"]
+            #[doc = "joining this zone."]
+            #[doc = ""]
+            #[doc = "It is emitted as a response to 'add_item' if the compositor did not"]
+            #[doc = "allow the item to join this particular zone."]
+            fn item_blocked(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                item: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_v1#{}.item_blocked({})", sender_id, item);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(item))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event notifies the client of an item joining this zone."]
+            #[doc = ""]
+            #[doc = "It is emitted as a response to 'add_item' or if the compositor"]
+            #[doc = "automatically had the item surface (re)join an existing zone."]
+            fn item_entered(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                item: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_v1#{}.item_entered({})", sender_id, item);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(item))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event notifies the client of an item leaving this zone, and"]
+            #[doc = "therefore the client will no longer receive updated coordinates"]
+            #[doc = "or frame extents for this item."]
+            #[doc = "If the client still wishes to adjust the item surface coordinates, it"]
+            #[doc = "may associate the item with a zone again by calling 'add_item'."]
+            #[doc = ""]
+            #[doc = "This event is emitted for example if the user moved an item surface out"]
+            #[doc = "of a smaller zone's boundaries, or onto a different screen where the"]
+            #[doc = "previous zone can not expand to. It is also emitted in response to"]
+            #[doc = "explicitly removing an item via 'remove_item'."]
+            fn item_left(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                item: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_zone_v1#{}.item_left({})", sender_id, item);
+                    let (payload, fds) = waynest::PayloadBuilder::new()
+                        .put_object(Some(item))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_zone_v1#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let item = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_zone_v1#{}.add_item({})", sender_id, item);
+                            self.add_item(connection, sender_id, item).await
+                        }
+                        2u16 => {
+                            let item = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("xx_zone_v1#{}.remove_item({})", sender_id, item);
+                            self.remove_item(connection, sender_id, item).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
