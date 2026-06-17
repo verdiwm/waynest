@@ -46,11 +46,14 @@ const PROTOCOLS: [(&str, &str); 16] = [
     ("river", "river/protocol"),
 ];
 
-const SKIP: [(&str, &str); 4] = [
+const SKIP: [(&str, &str); 7] = [
     ("core", "tests.xml"),
     ("cosmic", "cosmic-image-source-unstable-v1.xml"),
     ("river", "wlr-layer-shell-unstable-v1.xml"),
     ("river", "wlr-output-power-management-unstable-v1.xml"),
+    ("weston", "ivi-application.xml"),
+    ("mutter", "text-input-unstable-v3.xml"),
+    ("mutter", "session-management-v1.xml"),
 ];
 
 fn generate() -> Result<()> {
