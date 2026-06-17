@@ -536,7 +536,7 @@ pub mod river_input_management_v1 {
     }
 }
 #[doc = "This protocol allows the river-window-management-v1 window manager to"]
-#[doc = "support the wlr-layer-shell-v1 protocol."]
+#[doc = "support the wlr-layer-shell-unstable-v1 protocol."]
 #[doc = ""]
 #[doc = "The key words \"must\", \"must not\", \"required\", \"shall\", \"shall not\","]
 #[doc = "\"should\", \"should not\", \"recommended\", \"may\", and \"optional\" in this"]
@@ -857,6 +857,10 @@ pub mod river_layer_shell_v1 {
             #[doc = "focus during the same manage sequence in which this event is sent, the"]
             #[doc = "layer surface will not be focused."]
             #[doc = ""]
+            #[doc = "If the layer surface with non-exclusive focus is closed or the window"]
+            #[doc = "manager chooses to move focus away from the layer surface, a focus_none"]
+            #[doc = "event will be sent in the next manage sequence."]
+            #[doc = ""]
             #[doc = "This event will be followed by a manage_start event after all other new"]
             #[doc = "state has been sent by the server."]
             fn focus_non_exclusive(
@@ -916,6 +920,10 @@ pub mod river_layer_shell_v1 {
 #[doc = "This protocol exposes libinput device configuration APIs. The libinput"]
 #[doc = "documentation should be referred to for detailed information on libinput's"]
 #[doc = "behavior."]
+#[doc = ""]
+#[doc = "Note that the compositor will not be able to expose libinput devices through"]
+#[doc = "this protocol when it does not have access to the hardware, for example when"]
+#[doc = "running nested in another Wayland compositor or X11 session."]
 #[doc = ""]
 #[doc = "This protocol is designed so that (hopefully) any backwards compatible"]
 #[doc = "change to libinput's API can be matched with a backwards compatible change"]
@@ -3527,14 +3535,14 @@ pub mod river_window_management_v1 {
     #[doc = ""]
     #[doc = "There are two disjoint categories of state managed by this protocol:"]
     #[doc = ""]
-    #[doc = "Window management state influences the communication between the server"]
-    #[doc = "and individual window clients (e.g. xdg_toplevels). Window management"]
+    #[doc = "Window management state influences the communication between the"]
+    #[doc = "compositor and individual windows (e.g. xdg_toplevels). Window management"]
     #[doc = "state includes window dimensions, fullscreen state, keyboard focus,"]
     #[doc = "keyboard bindings, and more."]
     #[doc = ""]
     #[doc = "Rendering state only affects the rendered output of the compositor and"]
-    #[doc = "does not influence communication between the server and individual window"]
-    #[doc = "clients. Rendering state includes the position and rendering order of"]
+    #[doc = "does not influence communication between the compositor and individual"]
+    #[doc = "windows. Rendering state includes the position and rendering order of"]
     #[doc = "windows, shell surfaces, decoration surfaces, borders, and more."]
     #[doc = ""]
     #[doc = "Window management state may only be modified by the window manager as part"]
@@ -3634,7 +3642,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_window_manager_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client no longer wishes to receive"]
             #[doc = "events on this object."]
             #[doc = ""]
@@ -3803,6 +3811,31 @@ pub mod river_window_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "End the current Wayland session and exit the compositor."]
+            #[doc = "All Wayland clients running in the current session, including"]
+            #[doc = "the window manager, will be disconnected."]
+            #[doc = ""]
+            #[doc = "Window managers should only make this request if the user explicitly"]
+            #[doc = "asks to exit the Wayland session, not for example on normal window"]
+            #[doc = "manager termination."]
+            fn exit_session(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> river_window_manager_v1#{}.exit_session()", sender_id,);
+                    let payload = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
             #[doc = "This event indicates that window management is not available to the"]
             #[doc = "client, perhaps due to another window management client already running."]
             #[doc = "The circumstances causing this event to be sent are compositor policy."]
@@ -3839,8 +3872,8 @@ pub mod river_window_management_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event indicates that the server has sent all river_node_v1.position"]
-            #[doc = "and river_window_v1.dimensions events necessary."]
+            #[doc = "This event indicates that the server has sent all"]
+            #[doc = "river_window_v1.dimensions events necessary."]
             #[doc = ""]
             #[doc = "In response to this event, the client should make requests modifying"]
             #[doc = "rendering state as it chooses. Then, the client must make the"]
@@ -3986,9 +4019,9 @@ pub mod river_window_management_v1 {
     #[doc = "an xdg_toplevel or Xwayland window."]
     #[doc = ""]
     #[doc = "A newly created window will not be displayed until the window manager"]
-    #[doc = "proposes window dimensions with the propose_dimensions request as part of"]
-    #[doc = "a manage sequence, the server replies with a dimensions event as part of"]
-    #[doc = "a render sequence, and that render sequence is finished."]
+    #[doc = "makes a propose_dimensions or fullscreen request as part of a manage"]
+    #[doc = "sequence, the server replies with a dimensions event as part of a render"]
+    #[doc = "sequence, and that render sequence is finished."]
     #[allow(clippy::too_many_arguments)]
     pub mod river_window_v1 {
         #[repr(u32)]
@@ -4102,7 +4135,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_window_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the window"]
             #[doc = "object and that it may be safely destroyed."]
             #[doc = ""]
@@ -4192,10 +4225,9 @@ pub mod river_window_management_v1 {
             #[doc = "When a propose_dimensions request is made, the server must send a"]
             #[doc = "dimensions event in response as soon as possible. It may not be possible"]
             #[doc = "to send a dimensions event in the very next render sequence if, for"]
-            #[doc = "example, the window takes too long to respond to the first proposed"]
+            #[doc = "example, the window takes too long to respond to the proposed"]
             #[doc = "dimensions. In this case, the server will send the dimensions event in a"]
-            #[doc = "future render sequence. The window will not be displayed until the first"]
-            #[doc = "dimensions event is received and the render sequence is finished."]
+            #[doc = "future render sequence."]
             #[doc = ""]
             #[doc = "Note that the dimensions of a river_window_v1 refer to the dimensions of"]
             #[doc = "the window content and are unaffected by the presence of borders or"]
@@ -4711,6 +4743,12 @@ pub mod river_window_management_v1 {
             #[doc = "shall not affect the current position and dimensions of a fullscreen"]
             #[doc = "window."]
             #[doc = ""]
+            #[doc = "When a fullscreen request is made, the server must send a dimensions"]
+            #[doc = "event in response as soon as possible. It may not be possible to send a"]
+            #[doc = "dimensions event in the very next render sequence if, for example, the"]
+            #[doc = "window takes too long to respond. In this case, the server will send the"]
+            #[doc = "dimensions event in a future render sequence."]
+            #[doc = ""]
             #[doc = "The compositor will clip window content, decoration surfaces, and"]
             #[doc = "borders to the given output's dimensions while the window is fullscreen."]
             #[doc = "The effects of set_clip_box and set_content_clip_box are ignored while"]
@@ -4880,6 +4918,48 @@ pub mod river_window_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "Recommend that the window keep its dimensions within a given"]
+            #[doc = "maximum width/height. This recommendation is only a hint and the window"]
+            #[doc = "may ignore it."]
+            #[doc = ""]
+            #[doc = "Setting the width and height to 0 indicates that there are no bounds"]
+            #[doc = "and is equivalent to having never made this request."]
+            #[doc = ""]
+            #[doc = "Setting width or height to a negative value is a protocol error."]
+            #[doc = ""]
+            #[doc = "The server should communicate this hint to an xdg_toplevel window with"]
+            #[doc = "the xdg_toplevel.configure_bounds event for example."]
+            #[doc = ""]
+            #[doc = "This request modifies window management state and may only be made as"]
+            #[doc = "part of a manage sequence, see the river_window_manager_v1 description."]
+            fn set_dimension_bounds(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                max_width: i32,
+                max_height: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> river_window_v1#{}.set_dimension_bounds({}, {})",
+                        sender_id,
+                        max_width,
+                        max_height
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_int(max_width)
+                        .put_int(max_height)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 23u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
             #[doc = "The window has been closed by the server, perhaps due to an"]
             #[doc = "xdg_toplevel.close request or similar."]
             #[doc = ""]
@@ -4928,9 +5008,12 @@ pub mod river_window_management_v1 {
             #[doc = "This event is sent as part of a render sequence before the render_start"]
             #[doc = "event."]
             #[doc = ""]
-            #[doc = "It may be sent due to a propose_dimensions request in a previous manage"]
-            #[doc = "sequence or because a window independently decides to change its"]
-            #[doc = "dimensions."]
+            #[doc = "It may be sent due to a propose_dimensions or fullscreen request in a"]
+            #[doc = "previous manage sequence or because a window independently decides to"]
+            #[doc = "change its dimensions."]
+            #[doc = ""]
+            #[doc = "The window will not be displayed until the first dimensions event is"]
+            #[doc = "received and the render sequence is finished."]
             fn dimensions(
                 &self,
                 connection: &mut Self::Connection,
@@ -5067,7 +5150,7 @@ pub mod river_window_management_v1 {
             #[doc = "maximized."]
             #[doc = ""]
             #[doc = "The window manager is free to honor this request using"]
-            #[doc = "river_window_v1.inform_maximize or ignore it."]
+            #[doc = "river_window_v1.inform_maximized or ignore it."]
             #[doc = ""]
             #[doc = "This event will be followed by a manage_start event after all other new"]
             #[doc = "state has been sent by the server."]
@@ -5090,7 +5173,10 @@ pub mod river_window_management_v1 {
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The xdg-shell protocol for example allows windows to request that they"]
-            #[doc = "be made fullscreen and allows them to provide an output preference."]
+            #[doc = "be made fullscreen and allows them to provide an optional output hint."]
+            #[doc = ""]
+            #[doc = "If the output argument is null, the window has no preference and the"]
+            #[doc = "window manager should choose an output."]
             #[doc = ""]
             #[doc = "The window manager is free to honor this request using"]
             #[doc = "river_window_v1.fullscreen or ignore it."]
@@ -5144,6 +5230,40 @@ pub mod river_window_management_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 unreliable_pid: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event communicates the window's preferred presentation mode."]
+            #[doc = ""]
+            #[doc = "This event will be followed by a render_start event after all other new"]
+            #[doc = "state has been sent by the server."]
+            fn presentation_hint(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                hint : super :: super :: super :: river :: river_window_management_v1 :: river_output_v1 :: PresentationMode,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The identifier is a string that contains up to 32 printable ASCII bytes."]
+            #[doc = "The identifier must not be an empty string."]
+            #[doc = ""]
+            #[doc = "It is compositor policy how the identifier is generated, but the following"]
+            #[doc = "properties must be upheld:"]
+            #[doc = ""]
+            #[doc = "1. The identifier must uniquely identify the window. Two windows must not"]
+            #[doc = "share the same identifier."]
+            #[doc = ""]
+            #[doc = "2. The identifier must not be reused. This avoids races around window"]
+            #[doc = "creation/destruction when identifiers are used in out-of-band IPC."]
+            #[doc = ""]
+            #[doc = "If the compositor implements the ext-foreign-toplevel-list-v1 protocol,"]
+            #[doc = "the river_window_v1.identifier event must match the corresponding"]
+            #[doc = "ext_foreign_toplevel_handle_v1.identifier event."]
+            #[doc = ""]
+            #[doc = "This event is sent once when the river_window_v1 is created and never"]
+            #[doc = "sent again."]
+            fn identifier(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                identifier: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_event(
                 &self,
@@ -5329,6 +5449,29 @@ pub mod river_window_management_v1 {
                             self.unreliable_pid(connection, sender_id, unreliable_pid)
                                 .await
                         }
+                        16u16 => {
+                            let hint = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "river_window_v1#{}.presentation_hint({})",
+                                sender_id,
+                                hint
+                            );
+                            self.presentation_hint(connection, sender_id, hint.try_into()?)
+                                .await
+                        }
+                        17u16 => {
+                            let identifier = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "river_window_v1#{}.identifier(\"{}\")",
+                                sender_id,
+                                identifier
+                            );
+                            self.identifier(connection, sender_id, identifier).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -5379,7 +5522,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_decoration_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the decoration"]
             #[doc = "object and that it may be safely destroyed."]
             fn destroy(
@@ -5518,7 +5661,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_shell_surface_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the shell"]
             #[doc = "surface object and that it may be safely destroyed."]
             fn destroy(
@@ -5623,7 +5766,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_node_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the node"]
             #[doc = "object and that it may be safely destroyed."]
             fn destroy(
@@ -5801,6 +5944,59 @@ pub mod river_window_management_v1 {
     #[doc = "compositor configuration."]
     #[allow(clippy::too_many_arguments)]
     pub mod river_output_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "invalid presentation mode enum value"]
+            InvalidPresentationMode = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidPresentationMode),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum PresentationMode {
+            Vsync = 0u32,
+            Async = 1u32,
+        }
+        impl From<PresentationMode> for u32 {
+            fn from(value: PresentationMode) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for PresentationMode {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Vsync),
+                    1u32 => Ok(Self::Async),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for PresentationMode {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
         #[doc = "Trait to implement the river_output_v1 interface. See the module level documentation for more info"]
         pub trait RiverOutputV1
         where
@@ -5808,7 +6004,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_output_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the output"]
             #[doc = "object and that it may be safely destroyed."]
             #[doc = ""]
@@ -5827,6 +6023,35 @@ pub mod river_window_management_v1 {
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Set the preferred presentation mode of the output. The compositor should"]
+            #[doc = "always respect the preference of the window manager if possible. If this"]
+            #[doc = "request is never made, the preferred presentation mode is vsync."]
+            #[doc = ""]
+            #[doc = "This request modifies rendering state and may only be made as part of a"]
+            #[doc = "render sequence, see the river_window_manager_v1 description."]
+            fn set_presentation_mode(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                mode: PresentationMode,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> river_output_v1#{}.set_presentation_mode({})",
+                        sender_id,
+                        mode
+                    );
+                    let payload = waynest::PayloadBuilder::new().put_uint(mode.into()).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5861,7 +6086,7 @@ pub mod river_window_management_v1 {
             #[doc = "mapping between wl_output and river_output_v1 objects."]
             #[doc = ""]
             #[doc = "The global_remove event for the corresponding wl_output may be sent"]
-            #[doc = "before the river_output_v1.remove event. This is due to the fact that"]
+            #[doc = "before the river_output_v1.removed event. This is due to the fact that"]
             #[doc = "river_output_v1 state changes are synced to the river window management"]
             #[doc = "manage sequence while changes to globals are not."]
             #[doc = ""]
@@ -5962,12 +6187,21 @@ pub mod river_window_management_v1 {
     }
     #[doc = "This object represents a single user's collection of input devices. It"]
     #[doc = "allows the window manager to route keyboard input to windows, get"]
-    #[doc = "high-level information about pointer input, define keyboard and pointer"]
-    #[doc = "bindings, etc."]
+    #[doc = "high-level information about pointer input, define pointer bindings, etc."]
     #[doc = ""]
-    #[doc = "TODO:"]
-    #[doc = "- touch input"]
-    #[doc = "- tablet input"]
+    #[doc = "For keyboard bindings, see the river-xkb-bindings-v1 protocol."]
+    #[doc = ""]
+    #[doc = "Since version 4: The cursor surface/shape set by the window manager on the"]
+    #[doc = "wl_pointer of this seat is used when no client has pointer focus, for"]
+    #[doc = "example during a pointer operation. Since the window manager is allowed to"]
+    #[doc = "set cursor surface/shape even when it does not have pointer focus, the"]
+    #[doc = "compositor must ignore the serial argument of wl_pointer.set_cursor and"]
+    #[doc = "wp_cursor_shape_device_v1.set_shape requests made by the window manager."]
+    #[doc = ""]
+    #[doc = "The most recent cursor surface/shape set by the window manager is"]
+    #[doc = "remembered by the compositor and restored whenever no client has pointer"]
+    #[doc = "focus. If the window manager never sets a cursor surface/shape, the"]
+    #[doc = "\"default\" shape is used."]
     #[allow(clippy::too_many_arguments)]
     pub mod river_seat_v1 {
         bitflags::bitflags! { # [doc = "This enum is used to describe the keyboard modifiers that must be held"] # [doc = "down to trigger a key binding or pointer binding."] # [doc = ""] # [doc = "Note that river and wlroots use the values 2 and 16 for capslock and"] # [doc = "numlock internally. It doesn't make sense to use locked modifiers for"] # [doc = "bindings however so these values are not included in this enum."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Modifiers : u32 { const None = 0u32 ; const Shift = 1u32 ; const Ctrl = 4u32 ; # [doc = "commonly called alt"] const Mod1 = 8u32 ; const Mod3 = 32u32 ; # [doc = "commonly called super or logo"] const Mod4 = 64u32 ; const Mod5 = 128u32 ; } }
@@ -5994,7 +6228,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_seat_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the seat"]
             #[doc = "object and that it may be safely destroyed."]
             #[doc = ""]
@@ -6109,6 +6343,11 @@ pub mod river_window_management_v1 {
             #[doc = ""]
             #[doc = "This request is ignored if an operation is already in progress."]
             #[doc = ""]
+            #[doc = "The compositor must ensure that no client has pointer focus from this"]
+            #[doc = "seat during the pointer operation. This means that the window manager"]
+            #[doc = "has control over the pointer's cursor surface/shape during the pointer"]
+            #[doc = "operation. See the river_seat_v1 description."]
+            #[doc = ""]
             #[doc = "This request modifies window management state and may only be made as"]
             #[doc = "part of a manage sequence, see the river_window_manager_v1 description."]
             fn op_start_pointer(
@@ -6153,8 +6392,8 @@ pub mod river_window_management_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "Define a pointer binding in terms of a pointer button, modifiers, and"]
-            #[doc = "other configurable properties."]
+            #[doc = "Define a pointer binding in terms of a pointer button, keyboard"]
+            #[doc = "modifiers, and other configurable properties."]
             #[doc = ""]
             #[doc = "The button argument is a Linux input event code defined in the"]
             #[doc = "linux/input-event-codes.h header file (e.g. BTN_RIGHT)."]
@@ -6280,7 +6519,7 @@ pub mod river_window_management_v1 {
             #[doc = "mapping between wl_seat and river_seat_v1 objects."]
             #[doc = ""]
             #[doc = "The global_remove event for the corresponding wl_seat may be sent before"]
-            #[doc = "the river_seat_v1.remove event. This is due to the fact that"]
+            #[doc = "the river_seat_v1.removed event. This is due to the fact that"]
             #[doc = "river_seat_v1 state changes are synced to the river window management"]
             #[doc = "manage sequence while changes to globals are not."]
             #[doc = ""]
@@ -6525,7 +6764,7 @@ pub mod river_window_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_pointer_binding_v1";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "This request indicates that the client will no longer use the pointer"]
             #[doc = "binding object and that it may be safely destroyed."]
             fn destroy(
@@ -6704,7 +6943,7 @@ pub mod river_xkb_bindings_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_xkb_bindings_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client will no longer use the"]
             #[doc = "river_xkb_bindings_v1 object."]
             fn destroy(
@@ -6840,7 +7079,7 @@ pub mod river_xkb_bindings_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_xkb_binding_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client will no longer use the xkb key"]
             #[doc = "binding object and that it may be safely destroyed."]
             fn destroy(
@@ -7038,7 +7277,7 @@ pub mod river_xkb_bindings_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "river_xkb_bindings_seat_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "This request indicates that the client will no longer use the object and"]
             #[doc = "that it may be safely destroyed."]
             fn destroy(
@@ -7134,6 +7373,41 @@ pub mod river_xkb_bindings_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "Request that the server send the modifiers_update event whenever a state"]
+            #[doc = "change occurs for at least one of the modifiers specified by the"]
+            #[doc = "modifiers argument."]
+            #[doc = ""]
+            #[doc = "The window manager should make this request with the modifiers argument"]
+            #[doc = "set to 0 when it no longer wishes to take action based on a change in"]
+            #[doc = "modifiers."]
+            #[doc = ""]
+            #[doc = "This request modifies window management state and may only be made as"]
+            #[doc = "part of a manage sequence, see the river_window_manager_v1 description."]
+            fn modifiers_watch(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                modifiers : super :: super :: super :: river :: river_window_management_v1 :: river_seat_v1 :: Modifiers,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> river_xkb_bindings_seat_v1#{}.modifiers_watch({})",
+                        sender_id,
+                        modifiers
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(modifiers.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
             #[doc = "An unbound key press event was eaten due to the ensure_next_key_eaten"]
             #[doc = "request."]
             #[doc = ""]
@@ -7143,6 +7417,34 @@ pub mod river_xkb_bindings_v1 {
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "The set of currently active modifiers for the seat changed. This event"]
+            #[doc = "is only sent when there is a change in state for modifiers marked as"]
+            #[doc = "watched using the modifiers_watch request."]
+            #[doc = ""]
+            #[doc = "The old and new arguments convey the set of modifiers active before and"]
+            #[doc = "after the change. All modifiers are included in the old and new"]
+            #[doc = "arguments, including modifiers that are not watched."]
+            #[doc = ""]
+            #[doc = "Since this event is only sent when there is a change in state for"]
+            #[doc = "watched modifiers, it follows that at least one watched modifier is"]
+            #[doc = "active in old but inactive in new or vice-versa."]
+            #[doc = ""]
+            #[doc = "This event will be followed by a manage_start event after all other new"]
+            #[doc = "state has been sent by the server."]
+            #[doc = ""]
+            #[doc = "The compositor should wait for the manage sequence to complete before"]
+            #[doc = "processing further input events. This allows the window manager client"]
+            #[doc = "to, for example, modify key bindings and keyboard focus without racing"]
+            #[doc = "against future input events. The window manager should of course respond"]
+            #[doc = "as soon as possible as the capacity of the compositor to buffer incoming"]
+            #[doc = "input events is finite."]
+            fn modifiers_update(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                old : super :: super :: super :: river :: river_window_management_v1 :: river_seat_v1 :: Modifiers,
+                new : super :: super :: super :: river :: river_window_management_v1 :: river_seat_v1 :: Modifiers,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn handle_event(
                 &self,
@@ -7161,6 +7463,24 @@ pub mod river_xkb_bindings_v1 {
                                 sender_id,
                             );
                             self.ate_unbound_key(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let old = message.uint()?;
+                            let new = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "river_xkb_bindings_seat_v1#{}.modifiers_update({}, {})",
+                                sender_id,
+                                old,
+                                new
+                            );
+                            self.modifiers_update(
+                                connection,
+                                sender_id,
+                                old.try_into()?,
+                                new.try_into()?,
+                            )
+                            .await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -7525,6 +7845,8 @@ pub mod river_xkb_config_v1 {
             }
             #[doc = "Set the keymap for the keyboard."]
             #[doc = ""]
+            #[doc = "Setting a keymap will reset all layout/modifier state."]
+            #[doc = ""]
             #[doc = "It is a protocol error to pass a keymap object for which the"]
             #[doc = "river_xkb_keymap_v1.success event was not received."]
             fn set_keymap(
@@ -7819,6 +8141,286 @@ pub mod river_xkb_config_v1 {
                             );
                             self.numlock_disabled(connection, sender_id).await
                         }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[allow(clippy::module_inception)]
+pub mod virtual_keyboard_unstable_v1 {
+    #[doc = "The virtual keyboard provides an application with requests which emulate"]
+    #[doc = "the behaviour of a physical keyboard."]
+    #[doc = ""]
+    #[doc = "This interface can be used by clients on its own to provide raw input"]
+    #[doc = "events, or it can accompany the input method protocol."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_virtual_keyboard_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "No keymap was set"]
+            NoKeymap = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::NoKeymap),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zwp_virtual_keyboard_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpVirtualKeyboardV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "zwp_virtual_keyboard_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Provide a file descriptor to the compositor which can be"]
+            #[doc = "memory-mapped to provide a keyboard mapping description."]
+            #[doc = ""]
+            #[doc = "Format carries a value from the keymap_format enumeration."]
+            fn keymap(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                format: u32,
+                fd: std::os::fd::OwnedFd,
+                size: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_virtual_keyboard_v1#{}.keymap({}, {}, {})",
+                        sender_id,
+                        format,
+                        std::os::fd::AsRawFd::as_raw_fd(&fd),
+                        size
+                    );
+                    waynest::Connection::push_fd(connection, fd);
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(format)
+                        .put_uint(size)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "A key was pressed or released."]
+            #[doc = "The time argument is a timestamp with millisecond granularity, with an"]
+            #[doc = "undefined base. All requests regarding a single object must share the"]
+            #[doc = "same clock."]
+            #[doc = ""]
+            #[doc = "Keymap must be set before issuing this request."]
+            #[doc = ""]
+            #[doc = "State carries a value from the key_state enumeration."]
+            fn key(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                time: u32,
+                key: u32,
+                state: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_virtual_keyboard_v1#{}.key({}, {}, {})",
+                        sender_id,
+                        time,
+                        key,
+                        state
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(time)
+                        .put_uint(key)
+                        .put_uint(state)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notifies the compositor that the modifier and/or group state has"]
+            #[doc = "changed, and it should update state."]
+            #[doc = ""]
+            #[doc = "The client should use wl_keyboard.modifiers event to synchronize its"]
+            #[doc = "internal state with seat state."]
+            #[doc = ""]
+            #[doc = "Keymap must be set before issuing this request."]
+            fn modifiers(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                mods_depressed: u32,
+                mods_latched: u32,
+                mods_locked: u32,
+                group: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_virtual_keyboard_v1#{}.modifiers({}, {}, {}, {})",
+                        sender_id,
+                        mods_depressed,
+                        mods_latched,
+                        mods_locked,
+                        group
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(mods_depressed)
+                        .put_uint(mods_latched)
+                        .put_uint(mods_locked)
+                        .put_uint(group)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_virtual_keyboard_v1#{}.destroy()", sender_id,);
+                    let payload = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "A virtual keyboard manager allows an application to provide keyboard"]
+    #[doc = "input events as if they came from a physical keyboard."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_virtual_keyboard_manager_v1 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "client not authorized to use the interface"]
+            Unauthorized = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Unauthorized),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zwp_virtual_keyboard_manager_v1 interface. See the module level documentation for more info"]
+        pub trait ZwpVirtualKeyboardManagerV1
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "zwp_virtual_keyboard_manager_v1";
+            const VERSION: u32 = 1u32;
+            #[doc = "Creates a new virtual keyboard associated to a seat."]
+            #[doc = ""]
+            #[doc = "If the compositor enables a keyboard to perform arbitrary actions, it"]
+            #[doc = "should present an error when an untrusted client requests a new"]
+            #[doc = "keyboard."]
+            fn create_virtual_keyboard(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                seat: waynest::ObjectId,
+                id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_virtual_keyboard_manager_v1#{}.create_virtual_keyboard({}, {})",
+                        sender_id,
+                        seat,
+                        id
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_object(Some(seat))
+                        .put_object(Some(id))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }

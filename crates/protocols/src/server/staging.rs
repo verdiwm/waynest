@@ -352,6 +352,8 @@ pub mod color_management_v1 {
             ExtendedTargetVolume = 6u32,
             #[doc = "create_windows_scrgb request"]
             WindowsScrgb = 7u32,
+            #[doc = "create_windows_bt2100 request"]
+            WindowsBt2100 = 8u32,
         }
         impl From<Feature> for u32 {
             fn from(value: Feature) -> Self {
@@ -370,6 +372,7 @@ pub mod color_management_v1 {
                     5u32 => Ok(Self::SetMasteringDisplayPrimaries),
                     6u32 => Ok(Self::ExtendedTargetVolume),
                     7u32 => Ok(Self::WindowsScrgb),
+                    8u32 => Ok(Self::WindowsBt2100),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -489,7 +492,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_manager_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy the wp_color_manager_v1 object. This does not affect any other"]
             #[doc = "objects in any way."]
             fn destroy(
@@ -622,6 +625,36 @@ pub mod color_management_v1 {
                 sender_id: waynest::ObjectId,
                 image_description: waynest::ObjectId,
                 reference: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This creates a pre-defined image description for the so-called"]
+            #[doc = "Windows-BT.2100 stimulus encoding. This comes from the Windows 10"]
+            #[doc = "handling of its own definition of a BT.2100 color space for an HDR"]
+            #[doc = "screen driven in BT.2100/PQ signalling mode."]
+            #[doc = ""]
+            #[doc = "Windows-BT.2100 uses BT.2020 color primaries and white point."]
+            #[doc = "The transfer characteristic is st2084_pq."]
+            #[doc = ""]
+            #[doc = "Windows-BT.2100 is generally displayed by Windows 10 without any"]
+            #[doc = "adjustments to the signal to account for viewing conditions."]
+            #[doc = ""]
+            #[doc = "The reference white level of Windows-BT.2100 is unknown. If a"]
+            #[doc = "reference white level must be assumed for compositor processing, it"]
+            #[doc = "should be 203 cd/m² of Report ITU-R BT.2408-7."]
+            #[doc = ""]
+            #[doc = "The target color volume of Windows-BT.2100 is unknown. The color gamut"]
+            #[doc = "may be anything up to BT.2100."]
+            #[doc = ""]
+            #[doc = "This request can be used when the compositor advertises"]
+            #[doc = "wp_color_manager_v1.feature.windows_bt2100."]
+            #[doc = "Otherwise this request raises the protocol error unsupported_feature."]
+            #[doc = ""]
+            #[doc = "The resulting image description object does not allow get_information"]
+            #[doc = "request. The wp_image_description_v1.ready event shall be sent."]
+            fn create_windows_bt2100(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                image_description: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "When this object is created, it shall immediately send this event once"]
             #[doc = "for each rendering intent the compositor supports."]
@@ -887,6 +920,19 @@ pub mod color_management_v1 {
                             )
                             .await
                         }
+                        8u16 => {
+                            let image_description = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "wp_color_manager_v1#{}.create_windows_bt2100({})",
+                                sender_id,
+                                image_description
+                            );
+                            self.create_windows_bt2100(connection, sender_id, image_description)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -909,7 +955,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_management_output_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy the color wp_color_management_output_v1 object. This does not"]
             #[doc = "affect any remaining protocol objects."]
             fn destroy(
@@ -1065,7 +1111,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_management_surface_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy the wp_color_management_surface_v1 object and do the same as"]
             #[doc = "unset_image_description."]
             fn destroy(
@@ -1225,7 +1271,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_color_management_surface_feedback_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy the wp_color_management_surface_feedback_v1 object."]
             fn destroy(
                 &self,
@@ -1467,7 +1513,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_creator_icc_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Create an image description object based on the ICC information"]
             #[doc = "previously set on this object. A compositor must parse the ICC data in"]
             #[doc = "some undefined but finite amount of time."]
@@ -1674,7 +1720,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_creator_params_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Create an image description object based on the parameters previously"]
             #[doc = "set on this object."]
             #[doc = ""]
@@ -2232,7 +2278,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Destroy this object. It is safe to destroy an object which is not ready."]
             #[doc = ""]
             #[doc = "Destroying a wp_image_description_v1 object has no side-effects, not"]
@@ -2444,7 +2490,7 @@ pub mod color_management_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "wp_image_description_info_v1";
-            const VERSION: u32 = 2u32;
+            const VERSION: u32 = 3u32;
             #[doc = "Signals the end of information events and destroys the object."]
             fn done(
                 &self,

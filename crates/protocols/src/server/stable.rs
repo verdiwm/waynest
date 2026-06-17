@@ -35,7 +35,7 @@ pub mod linux_dmabuf_v1 {
     #[doc = "import later fails."]
     #[doc = ""]
     #[doc = "To create a wl_buffer from one or more dmabufs, a client creates a"]
-    #[doc = "zwp_linux_dmabuf_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
+    #[doc = "zwp_linux_buffer_params_v1 object with a zwp_linux_dmabuf_v1.create_params"]
     #[doc = "request. All planes required by the intended format are added with"]
     #[doc = "the 'add' request. Finally, a 'create' or 'create_immed' request is"]
     #[doc = "issued, which has the following outcome depending on the import success."]
@@ -71,7 +71,7 @@ pub mod linux_dmabuf_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_linux_dmabuf_v1";
-            const VERSION: u32 = 5u32;
+            const VERSION: u32 = 6u32;
             #[doc = "Objects created through this interface, especially wl_buffers, will"]
             #[doc = "remain valid."]
             fn destroy(
@@ -89,7 +89,7 @@ pub mod linux_dmabuf_v1 {
                 sender_id: waynest::ObjectId,
                 params_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This request creates a new wp_linux_dmabuf_feedback object not bound"]
+            #[doc = "This request creates a new zwp_linux_dmabuf_feedback_v1 object not bound"]
             #[doc = "to a particular surface. This object will deliver feedback about dmabuf"]
             #[doc = "parameters to use if the client doesn't support per-surface feedback"]
             #[doc = "(see get_surface_feedback)."]
@@ -99,11 +99,11 @@ pub mod linux_dmabuf_v1 {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This request creates a new wp_linux_dmabuf_feedback object for the"]
+            #[doc = "This request creates a new zwp_linux_dmabuf_feedback_v1 object for the"]
             #[doc = "specified wl_surface. This object will deliver feedback about dmabuf"]
             #[doc = "parameters to use for buffers attached to this surface."]
             #[doc = ""]
-            #[doc = "If the surface is destroyed before the wp_linux_dmabuf_feedback object,"]
+            #[doc = "If the surface is destroyed before the zwp_linux_dmabuf_feedback_v1 object,"]
             #[doc = "the feedback object becomes inert."]
             fn get_surface_feedback(
                 &self,
@@ -280,7 +280,7 @@ pub mod linux_dmabuf_v1 {
         #[non_exhaustive]
         #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
         pub enum Error {
-            #[doc = "the dmabuf_batch object has already been used to create a wl_buffer"]
+            #[doc = "the zwp_linux_buffer_params_v1 object has already been used to create a wl_buffer"]
             AlreadyUsed = 0u32,
             #[doc = "plane index out of bounds"]
             PlaneIdx = 1u32,
@@ -296,6 +296,8 @@ pub mod linux_dmabuf_v1 {
             OutOfBounds = 6u32,
             #[doc = "invalid wl_buffer resulted from importing dmabufs via                the create_immed request on given buffer_params"]
             InvalidWlBuffer = 7u32,
+            #[doc = "an array with mismatching size for a dev_t was used"]
+            InvalidDevTSize = 8u32,
         }
         impl From<Error> for u32 {
             fn from(value: Error) -> Self {
@@ -314,6 +316,7 @@ pub mod linux_dmabuf_v1 {
                     5u32 => Ok(Self::InvalidDimensions),
                     6u32 => Ok(Self::OutOfBounds),
                     7u32 => Ok(Self::InvalidWlBuffer),
+                    8u32 => Ok(Self::InvalidDevTSize),
                     _ => Err(waynest::ProtocolError::MalformedPayload),
                 }
             }
@@ -347,7 +350,7 @@ pub mod linux_dmabuf_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_linux_buffer_params_v1";
-            const VERSION: u32 = 5u32;
+            const VERSION: u32 = 6u32;
             #[doc = "Cleans up the temporary data sent to the server for dmabuf-based"]
             #[doc = "wl_buffer creation."]
             fn destroy(
@@ -396,7 +399,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = "authoritative source on how the format codes should work."]
             #[doc = ""]
             #[doc = "The 'flags' is a bitfield of the flags defined in enum \"flags\"."]
-            #[doc = "'y_invert' means the that the image needs to be y-flipped."]
+            #[doc = "'y_invert' means that the image needs to be y-flipped."]
             #[doc = ""]
             #[doc = "Flag 'interlaced' means that the frame in the buffer is not"]
             #[doc = "progressive as usual, but interlaced. An interlaced buffer as"]
@@ -440,7 +443,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = "This request can be sent only once in the object's lifetime, after"]
             #[doc = "which the only legal request is destroy. This object should be"]
             #[doc = "destroyed after issuing a 'create' request. Attempting to use this"]
-            #[doc = "object after issuing 'create' raises ALREADY_USED protocol error."]
+            #[doc = "object after issuing 'create' raises the ALREADY_USED protocol error."]
             #[doc = ""]
             #[doc = "It is not mandatory to issue 'create'. If a client wants to"]
             #[doc = "cancel the buffer creation, it can just destroy this object."]
@@ -485,6 +488,25 @@ pub mod linux_dmabuf_v1 {
                 height: i32,
                 format: u32,
                 flags: Flags,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Set the device the compositor should import the dmabufs to for sampling"]
+            #[doc = "in the next create or create_immed request."]
+            #[doc = ""]
+            #[doc = "To avoid race conditions when the compositor removes a device from the"]
+            #[doc = "tranches, it is not a protocol error if the device hasn't been advertised"]
+            #[doc = "by the compositor in a tranche with the sampling flag, but the import is"]
+            #[doc = "likely to fail in that case."]
+            #[doc = ""]
+            #[doc = "If the client doesn't know a suitable target device, it shouldn't set one,"]
+            #[doc = "and the compositor should attempt import on all devices it supports."]
+            #[doc = ""]
+            #[doc = "If the array is too small to contain a dev_t or larger than required, the"]
+            #[doc = "invalid_dev_t_size error will be emitted."]
+            fn set_sampling_device(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                device: Vec<u8>,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "This event indicates that the attempted buffer creation was"]
             #[doc = "successful. It provides the new wl_buffer referencing the dmabuf(s)."]
@@ -638,6 +660,17 @@ pub mod linux_dmabuf_v1 {
                             )
                             .await
                         }
+                        4u16 => {
+                            let device = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_linux_buffer_params_v1#{}.set_sampling_device(array[{}])",
+                                sender_id,
+                                device.len()
+                            );
+                            self.set_sampling_device(connection, sender_id, device)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -665,13 +698,16 @@ pub mod linux_dmabuf_v1 {
     #[doc = "descending order of preference. All formats and modifiers in the same"]
     #[doc = "tranche have the same preference."]
     #[doc = ""]
-    #[doc = "To send parameters, the compositor sends one main_device event, tranches"]
-    #[doc = "(each consisting of one tranche_target_device event, one tranche_flags"]
-    #[doc = "event, tranche_formats events and then a tranche_done event), then one"]
-    #[doc = "done event."]
+    #[doc = "To send parameters, the compositor sends one main_device event (unless"]
+    #[doc = "the client bound version 6 or above), tranches (each consisting of one"]
+    #[doc = "tranche_target_device event, one tranche_flags event, tranche_formats"]
+    #[doc = "events and then a tranche_done event), then one done event."]
+    #[doc = ""]
+    #[doc = "With version 6 and above, the compositor must always advertise at least"]
+    #[doc = "one tranche with the sampling flag set."]
     #[allow(clippy::too_many_arguments)]
     pub mod zwp_linux_dmabuf_feedback_v1 {
-        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { # [doc = "direct scan-out tranche"] const Scanout = 1u32 ; } }
+        bitflags::bitflags! { # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct TrancheFlags : u32 { const Scanout = 1u32 ; const Sampling = 2u32 ; } }
         impl From<TrancheFlags> for u32 {
             fn from(value: TrancheFlags) -> Self {
                 value.bits()
@@ -695,18 +731,18 @@ pub mod linux_dmabuf_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwp_linux_dmabuf_feedback_v1";
-            const VERSION: u32 = 5u32;
+            const VERSION: u32 = 6u32;
             #[doc = "Using this request a client can tell the server that it is not going to"]
-            #[doc = "use the wp_linux_dmabuf_feedback object anymore."]
+            #[doc = "use the zwp_linux_dmabuf_feedback_v1 object anymore."]
             fn destroy(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This event is sent after all parameters of a wp_linux_dmabuf_feedback"]
+            #[doc = "This event is sent after all parameters of a zwp_linux_dmabuf_feedback_v1"]
             #[doc = "object have been sent."]
             #[doc = ""]
-            #[doc = "This allows changes to the wp_linux_dmabuf_feedback parameters to be"]
+            #[doc = "This allows changes to the zwp_linux_dmabuf_feedback_v1 parameters to be"]
             #[doc = "seen as atomic, even if they happen via multiple events."]
             fn done(
                 &self,
@@ -769,14 +805,14 @@ pub mod linux_dmabuf_v1 {
             #[doc = "This event advertises the main device that the server prefers to use"]
             #[doc = "when direct scan-out to the target device isn't possible. The"]
             #[doc = "advertised main device may be different for each"]
-            #[doc = "wp_linux_dmabuf_feedback object, and may change over time."]
+            #[doc = "zwp_linux_dmabuf_feedback_v1 object, and may change over time."]
             #[doc = ""]
             #[doc = "There is exactly one main device. The compositor must send at least"]
             #[doc = "one preference tranche with tranche_target_device equal to main_device."]
             #[doc = ""]
             #[doc = "Clients need to create buffers that the main device can import and"]
             #[doc = "read from, otherwise creating the dmabuf wl_buffer will fail (see the"]
-            #[doc = "wp_linux_buffer_params.create and create_immed requests for details)."]
+            #[doc = "zwp_linux_buffer_params_v1.create and create_immed requests for details)."]
             #[doc = "The main device will also likely be kept active by the compositor,"]
             #[doc = "so clients can use it instead of waking up another device for power"]
             #[doc = "savings."]
@@ -789,6 +825,9 @@ pub mod linux_dmabuf_v1 {
             #[doc = "If explicit modifiers are not supported and the client performs buffer"]
             #[doc = "allocations on a different device than the main device, then the client"]
             #[doc = "must force the buffer to have a linear layout."]
+            #[doc = ""]
+            #[doc = "With version 6 and above, this event is no longer sent. Clients should"]
+            #[doc = "use a device with the sampling flag in the tranches instead."]
             fn main_device(
                 &self,
                 connection: &mut Self::Connection,
@@ -812,7 +851,7 @@ pub mod linux_dmabuf_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "This event splits tranche_target_device and tranche_formats events in"]
+            #[doc = "This event splits tranche_target_device and tranche_formats events into"]
             #[doc = "preference tranches. It is sent after a set of tranche_target_device"]
             #[doc = "and tranche_formats events; it represents the end of a tranche. The"]
             #[doc = "next tranche will have a lower preference."]
@@ -850,11 +889,11 @@ pub mod linux_dmabuf_v1 {
             #[doc = ""]
             #[doc = "The client can use this hint to allocate the buffer in a way that makes"]
             #[doc = "it accessible from the target device, ideally directly. The buffer must"]
-            #[doc = "still be accessible from the main device, either through direct import"]
-            #[doc = "or through a potentially more expensive fallback path. If the buffer"]
-            #[doc = "can't be directly imported from the main device then clients must be"]
+            #[doc = "still be accessible from a device with the sampling flag, either through"]
+            #[doc = "direct import or a potentially more expensive fallback path. If the"]
+            #[doc = "buffer can't be directly imported for sampling, then clients must be"]
             #[doc = "prepared for the compositor changing the tranche priority or making"]
-            #[doc = "wl_buffer creation fail (see the wp_linux_buffer_params.create and"]
+            #[doc = "wl_buffer creation fail (see the zwp_linux_buffer_params_v1.create and"]
             #[doc = "create_immed requests for details)."]
             #[doc = ""]
             #[doc = "If the device is a DRM node, the DRM node type (primary vs. render) is"]
@@ -909,7 +948,7 @@ pub mod linux_dmabuf_v1 {
             #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
             #[doc = ""]
             #[doc = "For the definition of the format and modifier codes, see the"]
-            #[doc = "wp_linux_buffer_params.create request."]
+            #[doc = "zwp_linux_buffer_params_v1.create request."]
             fn tranche_formats(
                 &self,
                 connection: &mut Self::Connection,
@@ -933,14 +972,10 @@ pub mod linux_dmabuf_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
-            #[doc = "This event sets tranche-specific flags."]
-            #[doc = ""]
-            #[doc = "The scanout flag is a hint that direct scan-out may be attempted by the"]
-            #[doc = "compositor on the target device if the client appropriately allocates a"]
-            #[doc = "buffer. How to allocate a buffer that can be scanned out on the target"]
-            #[doc = "device is implementation-defined."]
-            #[doc = ""]
-            #[doc = "This event is tied to a preference tranche, see the tranche_done event."]
+            #[doc = "This event sets tranche-specific flags. This event is tied to a"]
+            #[doc = "preference tranche, see the tranche_done event."]
+            #[doc = "With version 6 and above, the compositor must set at least one flag"]
+            #[doc = "in each tranche."]
             fn tranche_flags(
                 &self,
                 connection: &mut Self::Connection,
@@ -4354,16 +4389,15 @@ pub mod xdg_shell {
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
-            #[doc = "This creates an xdg_surface for the given surface. While xdg_surface"]
-            #[doc = "itself is not a role, the corresponding surface may only be assigned"]
-            #[doc = "a role extending xdg_surface, such as xdg_toplevel or xdg_popup. It is"]
-            #[doc = "illegal to create an xdg_surface for a wl_surface which already has an"]
-            #[doc = "assigned role and this will result in a role error."]
-            #[doc = ""]
             #[doc = "This creates an xdg_surface for the given surface. An xdg_surface is"]
             #[doc = "used as basis to define a role to a given surface, such as xdg_toplevel"]
             #[doc = "or xdg_popup. It also manages functionality shared between xdg_surface"]
             #[doc = "based surface roles."]
+            #[doc = ""]
+            #[doc = "While xdg_surface itself is not a role, the corresponding surface may"]
+            #[doc = "only be assigned a role extending xdg_surface, such as xdg_toplevel or"]
+            #[doc = "xdg_popup. It is illegal to create an xdg_surface for a wl_surface which"]
+            #[doc = "already has anassigned role and this will result in a role error."]
             #[doc = ""]
             #[doc = "See the documentation of xdg_surface for more details about what an"]
             #[doc = "xdg_surface is and how it is used."]
@@ -4659,7 +4693,7 @@ pub mod xdg_shell {
                 height: i32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Defines the anchor point for the anchor rectangle. The specified anchor"]
-            #[doc = "is used derive an anchor point that the child surface will be"]
+            #[doc = "is used to derive an anchor point that the child surface will be"]
             #[doc = "positioned relative to. If a corner anchor is set (e.g. 'top_left' or"]
             #[doc = "'bottom_right'), the anchor point will be at the specified corner;"]
             #[doc = "otherwise, the derived anchor point will be centered on the specified"]
@@ -5214,7 +5248,7 @@ pub mod xdg_shell {
     #[doc = "id, and well as trigger user interactive operations such as interactive"]
     #[doc = "resize and move."]
     #[doc = ""]
-    #[doc = "A xdg_toplevel by default is responsible for providing the full intended"]
+    #[doc = "An xdg_toplevel by default is responsible for providing the full intended"]
     #[doc = "visual representation of the toplevel, which depending on the window"]
     #[doc = "state, may mean things like a title bar, window controls and drop shadow."]
     #[doc = ""]
@@ -5597,7 +5631,7 @@ pub mod xdg_shell {
             #[doc = "a surface is illegal and will result in an invalid_size error."]
             #[doc = ""]
             #[doc = "The width and height must be greater than or equal to zero. Using"]
-            #[doc = "strictly negative values for width or height will result in a"]
+            #[doc = "strictly negative values for width or height will result in an"]
             #[doc = "invalid_size error."]
             fn set_max_size(
                 &self,
@@ -5637,7 +5671,7 @@ pub mod xdg_shell {
             #[doc = "a surface is illegal and will result in an invalid_size error."]
             #[doc = ""]
             #[doc = "The width and height must be greater than or equal to zero. Using"]
-            #[doc = "strictly negative values for width and height will result in a"]
+            #[doc = "strictly negative values for width and height will result in an"]
             #[doc = "invalid_size error."]
             fn set_min_size(
                 &self,
@@ -5711,7 +5745,7 @@ pub mod xdg_shell {
             #[doc = ""]
             #[doc = "If the surface doesn't cover the whole output, the compositor will"]
             #[doc = "position the surface in the center of the output and compensate with"]
-            #[doc = "with border fill covering the rest of the output. The content of the"]
+            #[doc = "border fill covering the rest of the output. The content of the"]
             #[doc = "border fill is undefined, but should be assumed to be in some way that"]
             #[doc = "attempts to blend into the surrounding area (e.g. solid black)."]
             #[doc = ""]
@@ -5776,6 +5810,9 @@ pub mod xdg_shell {
             #[doc = "The states listed in the event specify how the width/height"]
             #[doc = "arguments should be interpreted, and possibly how it should be"]
             #[doc = "drawn."]
+            #[doc = ""]
+            #[doc = "The states are sent as an array of 32-bit unsigned integers in"]
+            #[doc = "native endianness. State values are defined in the state enum."]
             #[doc = ""]
             #[doc = "Clients must send an ack_configure in response to this event. See"]
             #[doc = "xdg_surface.configure and xdg_surface.ack_configure for details."]
@@ -5898,7 +5935,7 @@ pub mod xdg_shell {
             #[doc = "xdg_surface.configure for details."]
             #[doc = ""]
             #[doc = "The capabilities are sent as an array of 32-bit unsigned integers in"]
-            #[doc = "native endianness."]
+            #[doc = "native endianness. Capability values are defined in the wm_capabilities enum."]
             fn wm_capabilities(
                 &self,
                 connection: &mut Self::Connection,

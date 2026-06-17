@@ -756,7 +756,7 @@ pub mod wlr_export_dmabuf_unstable_v1 {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zwlr_export_dmabuf_frame_v1";
             const VERSION: u32 = 1u32;
-            #[doc = "Unreferences the frame. This request must be called as soon as its no"]
+            #[doc = "Unreferences the frame. This request must be called as soon as it's no"]
             #[doc = "longer used."]
             #[doc = ""]
             #[doc = "It can be called at any time by the client. The client will still have"]

@@ -40,7 +40,7 @@ pub mod gtk {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "gtk_shell1";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn get_gtk_surface(
                 &self,
                 connection: &mut Self::Connection,
@@ -283,7 +283,7 @@ pub mod gtk {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "gtk_surface1";
-            const VERSION: u32 = 6u32;
+            const VERSION: u32 = 7u32;
             fn set_dbus_properties(
                 &self,
                 connection: &mut Self::Connection,
@@ -329,6 +329,13 @@ pub mod gtk {
                 serial: u32,
                 seat: waynest::ObjectId,
                 gesture: Gesture,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn set_a11y_properties(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                a11y_dbus_name: String,
+                toplevel_object_path: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             fn configure(
                 &self,
@@ -483,6 +490,28 @@ pub mod gtk {
                                 serial,
                                 seat,
                                 gesture.try_into()?,
+                            )
+                            .await
+                        }
+                        7u16 => {
+                            let a11y_dbus_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let toplevel_object_path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "gtk_surface1#{}.set_a11y_properties(\"{}\", \"{}\")",
+                                sender_id,
+                                a11y_dbus_name,
+                                toplevel_object_path
+                            );
+                            self.set_a11y_properties(
+                                connection,
+                                sender_id,
+                                a11y_dbus_name,
+                                toplevel_object_path,
                             )
                             .await
                         }
@@ -1040,6 +1069,1042 @@ pub mod xx_session_management_v1 {
                             #[cfg(feature = "tracing")]
                             tracing::debug!("xx_toplevel_session_v1#{}.remove()", sender_id,);
                             self.remove(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
+#[doc = "This protocol allows compositors to act as input methods and to send text"]
+#[doc = "to applications. A text input object is used to manage state of what are"]
+#[doc = "typically text entry fields in the application."]
+#[doc = ""]
+#[doc = "This document adheres to the RFC 2119 when using words like \"must\","]
+#[doc = "\"should\", \"may\", etc."]
+#[doc = ""]
+#[doc = "Warning! The protocol described in this file is experimental and"]
+#[doc = "backward incompatible changes may be made. Backward compatible changes"]
+#[doc = "may be added together with the corresponding interface version bump."]
+#[doc = "Backward incompatible changes are done by bumping the version number in"]
+#[doc = "the protocol and interface names and resetting the interface version."]
+#[doc = "Once the protocol is to be declared stable, the 'z' prefix and the"]
+#[doc = "version number in the protocol and interface names are removed and the"]
+#[doc = "interface version number is reset."]
+#[allow(clippy::module_inception)]
+pub mod text_input_unstable_v3 {
+    #[doc = "The zwp_text_input_v3 interface represents text input and input methods"]
+    #[doc = "associated with a seat. It provides enter/leave events to follow the"]
+    #[doc = "text input focus for a seat."]
+    #[doc = ""]
+    #[doc = "Requests are used to enable/disable the text-input object and set"]
+    #[doc = "state information like surrounding and selected text or the content type."]
+    #[doc = "The information about the entered text is sent to the text-input object"]
+    #[doc = "via the preedit_string and commit_string events."]
+    #[doc = ""]
+    #[doc = "Text is valid UTF-8 encoded, indices and lengths are in bytes. Indices"]
+    #[doc = "must not point to middle bytes inside a code point: they must either"]
+    #[doc = "point to the first byte of a code point or to the end of the buffer."]
+    #[doc = "Lengths must be measured between two valid indices."]
+    #[doc = ""]
+    #[doc = "Focus moving throughout surfaces will result in the emission of"]
+    #[doc = "zwp_text_input_v3.enter and zwp_text_input_v3.leave events. The focused"]
+    #[doc = "surface must commit zwp_text_input_v3.enable and"]
+    #[doc = "zwp_text_input_v3.disable requests as the keyboard focus moves across"]
+    #[doc = "editable and non-editable elements of the UI. Those two requests are not"]
+    #[doc = "expected to be paired with each other, the compositor must be able to"]
+    #[doc = "handle consecutive series of the same request."]
+    #[doc = ""]
+    #[doc = "State is sent by the state requests (set_surrounding_text,"]
+    #[doc = "set_content_type and set_cursor_rectangle) and a commit request. After an"]
+    #[doc = "enter event or disable request all state information is invalidated and"]
+    #[doc = "needs to be resent by the client."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_text_input_v3 {
+        #[doc = "Reason for the change of surrounding text or cursor posision."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ChangeCause {
+            #[doc = "input method caused the change"]
+            InputMethod = 0u32,
+            #[doc = "something else than the input method caused the change"]
+            Other = 1u32,
+        }
+        impl From<ChangeCause> for u32 {
+            fn from(value: ChangeCause) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ChangeCause {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InputMethod),
+                    1u32 => Ok(Self::Other),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ChangeCause {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        bitflags::bitflags! { # [doc = "Content hint is a bitmask to allow to modify the behavior of the text"] # [doc = "input."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct ContentHint : u32 { # [doc = "no special behavior"] const None = 0u32 ; # [doc = "suggest word completions"] const Completion = 1u32 ; # [doc = "suggest word corrections"] const Spellcheck = 2u32 ; # [doc = "switch to uppercase letters at the start of a sentence"] const AutoCapitalization = 4u32 ; # [doc = "prefer lowercase letters"] const Lowercase = 8u32 ; # [doc = "prefer uppercase letters"] const Uppercase = 16u32 ; # [doc = "prefer casing for titles and headings (can be language dependent)"] const Titlecase = 32u32 ; # [doc = "characters should be hidden"] const HiddenText = 64u32 ; # [doc = "typed text should not be stored"] const SensitiveData = 128u32 ; # [doc = "just Latin characters should be entered"] const Latin = 256u32 ; # [doc = "the text input is multiline"] const Multiline = 512u32 ; # [doc = "an on-screen way to fill in the input is already provided by the client"] const OnScreenInputProvided = 1024u32 ; # [doc = "prefer not offering emoji support"] const NoEmoji = 2048u32 ; # [doc = "the text input will display preedit text in place"] const PreeditShown = 4096u32 ; } }
+        impl From<ContentHint> for u32 {
+            fn from(value: ContentHint) -> Self {
+                value.bits()
+            }
+        }
+        impl TryFrom<u32> for ContentHint {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                Self::from_bits(v).ok_or(waynest::ProtocolError::MalformedPayload)
+            }
+        }
+        impl std::fmt::Display for ContentHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.bits().fmt(f)
+            }
+        }
+        #[doc = "The content purpose allows to specify the primary purpose of a text"]
+        #[doc = "input."]
+        #[doc = ""]
+        #[doc = "This allows an input method to show special purpose input panels with"]
+        #[doc = "extra characters or to disallow some characters."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum ContentPurpose {
+            #[doc = "default input, allowing all characters"]
+            Normal = 0u32,
+            #[doc = "allow only alphabetic characters"]
+            Alpha = 1u32,
+            #[doc = "allow only digits"]
+            Digits = 2u32,
+            #[doc = "input a number (including decimal separator and sign)"]
+            Number = 3u32,
+            #[doc = "input a phone number"]
+            Phone = 4u32,
+            #[doc = "input an URL"]
+            Url = 5u32,
+            #[doc = "input an email address"]
+            Email = 6u32,
+            #[doc = "input a name of a person"]
+            Name = 7u32,
+            #[doc = "input a password (combine with sensitive_data hint)"]
+            Password = 8u32,
+            #[doc = "input is a numeric password (combine with sensitive_data hint)"]
+            Pin = 9u32,
+            #[doc = "input a date"]
+            Date = 10u32,
+            #[doc = "input a time"]
+            Time = 11u32,
+            #[doc = "input a date and time"]
+            Datetime = 12u32,
+            #[doc = "input for a terminal"]
+            Terminal = 13u32,
+        }
+        impl From<ContentPurpose> for u32 {
+            fn from(value: ContentPurpose) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for ContentPurpose {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::Normal),
+                    1u32 => Ok(Self::Alpha),
+                    2u32 => Ok(Self::Digits),
+                    3u32 => Ok(Self::Number),
+                    4u32 => Ok(Self::Phone),
+                    5u32 => Ok(Self::Url),
+                    6u32 => Ok(Self::Email),
+                    7u32 => Ok(Self::Name),
+                    8u32 => Ok(Self::Password),
+                    9u32 => Ok(Self::Pin),
+                    10u32 => Ok(Self::Date),
+                    11u32 => Ok(Self::Time),
+                    12u32 => Ok(Self::Datetime),
+                    13u32 => Ok(Self::Terminal),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for ContentPurpose {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "an invalid or duplicate action was specified"]
+            InvalidAction = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidAction),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "A possible action to perform on a text input."]
+        #[doc = ""]
+        #[doc = "The submit action is intended for input entries that expect some sort of"]
+        #[doc = "activation after user interaction, e.g. the URL entry in a browser."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Action {
+            #[doc = "no action"]
+            None = 0u32,
+            #[doc = "the action is submitted"]
+            Submit = 1u32,
+        }
+        impl From<Action> for u32 {
+            fn from(value: Action) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Action {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::None),
+                    1u32 => Ok(Self::Submit),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Action {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Style hints for the preedit string."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum PreeditHint {
+            #[doc = "simple pre-edit text style, typically underlined"]
+            Whole = 1u32,
+            #[doc = "hint for a selected piece of text, e.g. per-character navigation and composition"]
+            Selection = 2u32,
+            #[doc = "predicted text, not typed by the user"]
+            Prediction = 3u32,
+            #[doc = "prefixed text not being currently edited, e.g. prior to a 'selection' section"]
+            Prefix = 4u32,
+            #[doc = "suffixed text not being currently edited, e.g. after a 'selection' section"]
+            Suffix = 5u32,
+            #[doc = "spelling error"]
+            SpellingError = 6u32,
+            #[doc = "wrong composition, e.g. user input that can not be transliterated"]
+            ComposeError = 7u32,
+        }
+        impl From<PreeditHint> for u32 {
+            fn from(value: PreeditHint) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for PreeditHint {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    1u32 => Ok(Self::Whole),
+                    2u32 => Ok(Self::Selection),
+                    3u32 => Ok(Self::Prediction),
+                    4u32 => Ok(Self::Prefix),
+                    5u32 => Ok(Self::Suffix),
+                    6u32 => Ok(Self::SpellingError),
+                    7u32 => Ok(Self::ComposeError),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for PreeditHint {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the zwp_text_input_v3 interface. See the module level documentation for more info"]
+        pub trait ZwpTextInputV3
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "zwp_text_input_v3";
+            const VERSION: u32 = 2u32;
+            #[doc = "Destroy the wp_text_input object. Also disables all surfaces enabled"]
+            #[doc = "through this wp_text_input object."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Requests text input on the surface previously obtained from the enter"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "This request must be issued every time the focused text input changes"]
+            #[doc = "to a new one, including within the current surface. Use"]
+            #[doc = "zwp_text_input_v3.disable when there is no longer any input focus on"]
+            #[doc = "the current surface."]
+            #[doc = ""]
+            #[doc = "Clients must not enable more than one text input on the single seat"]
+            #[doc = "and should disable the current text input before enabling the new one."]
+            #[doc = "Requests to enable a text input when another text input is enabled"]
+            #[doc = "on the same seat must be ignored by compositor."]
+            #[doc = ""]
+            #[doc = "This request resets all state associated with previous enable, disable,"]
+            #[doc = "set_surrounding_text, set_text_change_cause, set_content_type, and"]
+            #[doc = "set_cursor_rectangle requests, as well as the state associated with"]
+            #[doc = "preedit_string, commit_string, and delete_surrounding_text events."]
+            #[doc = ""]
+            #[doc = "The set_surrounding_text, set_content_type and set_cursor_rectangle"]
+            #[doc = "requests must follow if the text input supports the necessary"]
+            #[doc = "functionality."]
+            #[doc = ""]
+            #[doc = "State set with this request is double-buffered. It will get applied on"]
+            #[doc = "the next zwp_text_input_v3.commit request, and stay valid until the"]
+            #[doc = "next committed enable or disable request."]
+            #[doc = ""]
+            #[doc = "The changes must be applied by the compositor after issuing a"]
+            #[doc = "zwp_text_input_v3.commit request."]
+            fn enable(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Explicitly disable text input on the current surface (typically when"]
+            #[doc = "there is no focus on any text entry inside the surface)."]
+            #[doc = ""]
+            #[doc = "State set with this request is double-buffered. It will get applied on"]
+            #[doc = "the next zwp_text_input_v3.commit request."]
+            fn disable(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Sets the surrounding plain text around the input, excluding the preedit"]
+            #[doc = "text."]
+            #[doc = ""]
+            #[doc = "The client should notify the compositor of any changes in any of the"]
+            #[doc = "values carried with this request, including changes caused by handling"]
+            #[doc = "incoming text-input events as well as changes caused by other"]
+            #[doc = "mechanisms like keyboard typing."]
+            #[doc = ""]
+            #[doc = "If the client is unaware of the text around the cursor, it should not"]
+            #[doc = "issue this request, to signify lack of support to the compositor."]
+            #[doc = ""]
+            #[doc = "Text is UTF-8 encoded, and should include the cursor position, the"]
+            #[doc = "complete selection and additional characters before and after them."]
+            #[doc = "There is a maximum length of wayland messages, so text can not be"]
+            #[doc = "longer than 4000 bytes."]
+            #[doc = ""]
+            #[doc = "Cursor is the byte offset of the cursor within text buffer."]
+            #[doc = ""]
+            #[doc = "Anchor is the byte offset of the selection anchor within text buffer."]
+            #[doc = "If there is no selected text, anchor is the same as cursor."]
+            #[doc = ""]
+            #[doc = "If any preedit text is present, it is replaced with a cursor for the"]
+            #[doc = "purpose of this event."]
+            #[doc = ""]
+            #[doc = "Values set with this request are double-buffered. They will get applied"]
+            #[doc = "on the next zwp_text_input_v3.commit request, and stay valid until the"]
+            #[doc = "next committed enable or disable request."]
+            #[doc = ""]
+            #[doc = "The initial state for affected fields is empty, meaning that the text"]
+            #[doc = "input does not support sending surrounding text. If the empty values"]
+            #[doc = "get applied, subsequent attempts to change them may have no effect."]
+            fn set_surrounding_text(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                text: String,
+                cursor: i32,
+                anchor: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Tells the compositor why the text surrounding the cursor changed."]
+            #[doc = ""]
+            #[doc = "Whenever the client detects an external change in text, cursor, or"]
+            #[doc = "anchor posision, it must issue this request to the compositor. This"]
+            #[doc = "request is intended to give the input method a chance to update the"]
+            #[doc = "preedit text in an appropriate way, e.g. by removing it when the user"]
+            #[doc = "starts typing with a keyboard."]
+            #[doc = ""]
+            #[doc = "cause describes the source of the change."]
+            #[doc = ""]
+            #[doc = "The value set with this request is double-buffered. It must be applied"]
+            #[doc = "and reset to initial at the next zwp_text_input_v3.commit request."]
+            #[doc = ""]
+            #[doc = "The initial value of cause is input_method."]
+            fn set_text_change_cause(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                cause: ChangeCause,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Sets the content purpose and content hint. While the purpose is the"]
+            #[doc = "basic purpose of an input field, the hint flags allow to modify some of"]
+            #[doc = "the behavior."]
+            #[doc = ""]
+            #[doc = "Values set with this request are double-buffered. They will get applied"]
+            #[doc = "on the next zwp_text_input_v3.commit request."]
+            #[doc = "Subsequent attempts to update them may have no effect. The values"]
+            #[doc = "remain valid until the next committed enable or disable request."]
+            #[doc = ""]
+            #[doc = "The initial value for hint is none, and the initial value for purpose"]
+            #[doc = "is normal."]
+            fn set_content_type(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                hint: ContentHint,
+                purpose: ContentPurpose,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Marks an area around the cursor as a x, y, width, height rectangle in"]
+            #[doc = "surface local coordinates."]
+            #[doc = ""]
+            #[doc = "Allows the compositor to put a window with word suggestions near the"]
+            #[doc = "cursor, without obstructing the text being input."]
+            #[doc = ""]
+            #[doc = "If the client is unaware of the position of edited text, it should not"]
+            #[doc = "issue this request, to signify lack of support to the compositor."]
+            #[doc = ""]
+            #[doc = "Values set with this request are double-buffered. They will get applied"]
+            #[doc = "on the next zwp_text_input_v3.commit request, and stay valid until the"]
+            #[doc = "next committed enable or disable request."]
+            #[doc = ""]
+            #[doc = "The initial values describing a cursor rectangle are empty. That means"]
+            #[doc = "the text input does not support describing the cursor area. If the"]
+            #[doc = "empty values get applied, subsequent attempts to change them may have"]
+            #[doc = "no effect."]
+            #[doc = ""]
+            #[doc = "As of version 2, the zwp_text_input_v3.commit request does not apply"]
+            #[doc = "values sent with this request. Instead, it stores them in a separate"]
+            #[doc = "\"committed\" area. The committed values, if still valid, get applied on"]
+            #[doc = "the next wl_surface.commit request on the surface with text-input focus."]
+            #[doc = "Both committed and applied values get invalidated on:"]
+            #[doc = ""]
+            #[doc = "- the next committed enable or disable request, or"]
+            #[doc = "- a change of the focused surface of the text-input (leave or enter events)."]
+            #[doc = ""]
+            #[doc = "This double stage application allows the compositor to position"]
+            #[doc = "the input method popup in the same frame as the contents"]
+            #[doc = "of the text on the surface are updated."]
+            fn set_cursor_rectangle(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                x: i32,
+                y: i32,
+                width: i32,
+                height: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Atomically applies state changes recently sent to the compositor."]
+            #[doc = ""]
+            #[doc = "The commit request establishes and updates the state of the client, and"]
+            #[doc = "must be issued after any changes to apply them."]
+            #[doc = ""]
+            #[doc = "Text input state (enabled status, content purpose, content hint,"]
+            #[doc = "surrounding text and change cause, cursor rectangle) is conceptually"]
+            #[doc = "double-buffered within the context of a text input, i.e. between a"]
+            #[doc = "committed enable request and the following committed enable or disable"]
+            #[doc = "request."]
+            #[doc = ""]
+            #[doc = "Protocol requests modify the pending state, as opposed to the current"]
+            #[doc = "state in use by the input method. A commit request atomically applies"]
+            #[doc = "all pending state, replacing the current state. After commit, the new"]
+            #[doc = "pending state is as documented for each related request."]
+            #[doc = ""]
+            #[doc = "Requests are applied in the order of arrival."]
+            #[doc = ""]
+            #[doc = "Neither current nor pending state are modified unless noted otherwise."]
+            #[doc = ""]
+            #[doc = "The compositor must count the number of commit requests coming from"]
+            #[doc = "each zwp_text_input_v3 object and use the count as the serial in done"]
+            #[doc = "events."]
+            fn commit(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Set the actions available for this text input."]
+            #[doc = ""]
+            #[doc = "Values set with this request are double-buffered. They will get applied"]
+            #[doc = "on the next zwp_text_input_v3.commit request."]
+            #[doc = ""]
+            #[doc = "If the available_actions array contains the none action, or contains the"]
+            #[doc = "same action multiple times, the compositor must raise the invalid_action"]
+            #[doc = "protocol error."]
+            #[doc = ""]
+            #[doc = "Initially, no actions are available."]
+            fn set_available_actions(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                available_actions: Vec<u8>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Requests an input panel to be shown (e.g. a on-screen keyboard)."]
+            #[doc = ""]
+            #[doc = "This request only hints the desired interaction pattern from the"]
+            #[doc = "client side, and its effect may be ignored by compositors given"]
+            #[doc = "other environmental factors. Repeated calls will be ignored."]
+            fn show_input_panel(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Requests an input panel to be hidden."]
+            #[doc = ""]
+            #[doc = "This request only hints the desired interaction pattern from the"]
+            #[doc = "client side, and its effect may be ignored by compositors given"]
+            #[doc = "other environmental factors. Repeated calls will be ignored."]
+            fn hide_input_panel(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Notification that this seat's text-input focus is on a certain surface."]
+            #[doc = ""]
+            #[doc = "If client has created multiple text input objects, compositor must send"]
+            #[doc = "this event to all of them."]
+            #[doc = ""]
+            #[doc = "When the seat has the keyboard capability the text-input focus follows"]
+            #[doc = "the keyboard focus. This event sets the current surface for the"]
+            #[doc = "text-input object."]
+            fn enter(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.enter({})", sender_id, surface);
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notification that this seat's text-input focus is no longer on a"]
+            #[doc = "certain surface. The client should reset any preedit string previously"]
+            #[doc = "set."]
+            #[doc = ""]
+            #[doc = "The leave notification clears the current surface. It is sent before"]
+            #[doc = "the enter notification for the new focus. After leave event, compositor"]
+            #[doc = "must ignore requests from any text input instances until next enter"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "When the seat has the keyboard capability the text-input focus follows"]
+            #[doc = "the keyboard focus."]
+            fn leave(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.leave({})", sender_id, surface);
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notify when a new composing text (pre-edit) should be set at the"]
+            #[doc = "current cursor position. Any previously set composing text must be"]
+            #[doc = "removed. Any previously existing selected text must be removed."]
+            #[doc = ""]
+            #[doc = "The argument text contains the pre-edit string buffer."]
+            #[doc = ""]
+            #[doc = "The parameters cursor_begin and cursor_end are counted in bytes"]
+            #[doc = "relative to the beginning of the submitted text buffer. Cursor should"]
+            #[doc = "be hidden when both are equal to -1."]
+            #[doc = ""]
+            #[doc = "They could be represented by the client as a line if both values are"]
+            #[doc = "the same, or as a text highlight otherwise."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial value of text is an empty string, and cursor_begin,"]
+            #[doc = "cursor_end and cursor_hidden are all 0."]
+            fn preedit_string(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                text: Option<String>,
+                cursor_begin: i32,
+                cursor_end: i32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.preedit_string(\"{}\", {}, {})",
+                        sender_id,
+                        text.as_ref().map_or("null".to_string(), |v| v.to_string()),
+                        cursor_begin,
+                        cursor_end
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_string(text)
+                        .put_int(cursor_begin)
+                        .put_int(cursor_end)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 2u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notify when text should be inserted into the editor widget. The text to"]
+            #[doc = "commit could be either just a single character after a key press or the"]
+            #[doc = "result of some composing (pre-edit)."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial value of text is an empty string."]
+            fn commit_string(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                text: Option<String>,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.commit_string(\"{}\")",
+                        sender_id,
+                        text.as_ref().map_or("null".to_string(), |v| v.to_string())
+                    );
+                    let payload = waynest::PayloadBuilder::new().put_string(text).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notify when the text around the current cursor position should be"]
+            #[doc = "deleted."]
+            #[doc = ""]
+            #[doc = "Before_length and after_length are the number of bytes before and after"]
+            #[doc = "the current cursor index (excluding the selection) to delete."]
+            #[doc = ""]
+            #[doc = "If a preedit text is present, in effect before_length is counted from"]
+            #[doc = "the beginning of it, and after_length from its end (see done event"]
+            #[doc = "sequence)."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial values of both before_length and after_length are 0."]
+            fn delete_surrounding_text(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                before_length: u32,
+                after_length: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.delete_surrounding_text({}, {})",
+                        sender_id,
+                        before_length,
+                        after_length
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(before_length)
+                        .put_uint(after_length)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 4u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Instruct the application to apply changes to state requested by the"]
+            #[doc = "preedit_string, commit_string delete_surrounding_text, and action"]
+            #[doc = "events."]
+            #[doc = ""]
+            #[doc = "The state relating to these events is double-buffered, and each one"]
+            #[doc = "modifies the pending state. This event replaces the current state with"]
+            #[doc = "the pending state."]
+            #[doc = ""]
+            #[doc = "The application must proceed by evaluating the changes in the following"]
+            #[doc = "order:"]
+            #[doc = ""]
+            #[doc = "1. Replace existing preedit string with the cursor."]
+            #[doc = "2. Delete requested surrounding text."]
+            #[doc = "3. Insert commit string with the cursor at its end."]
+            #[doc = "4. Calculate surrounding text to send."]
+            #[doc = "5. Insert new preedit text in cursor position."]
+            #[doc = "6. Place cursor inside preedit text."]
+            #[doc = "7. Perform the requested action."]
+            #[doc = ""]
+            #[doc = "The serial number reflects the last state of the zwp_text_input_v3"]
+            #[doc = "object known to the compositor. The value of the serial argument must"]
+            #[doc = "be equal to the number of commit requests already issued on that object."]
+            #[doc = ""]
+            #[doc = "When the client receives a done event with a serial different than the"]
+            #[doc = "number of past commit requests, it must proceed with evaluating and"]
+            #[doc = "applying the changes as normal, except it should not change the current"]
+            #[doc = "state of the zwp_text_input_v3 object. All pending state requests"]
+            #[doc = "(set_surrounding_text, set_content_type and set_cursor_rectangle) on"]
+            #[doc = "the zwp_text_input_v3 object should be sent and committed after"]
+            #[doc = "receiving a zwp_text_input_v3.done event with a matching serial."]
+            fn done(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                serial: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> zwp_text_input_v3#{}.done({})", sender_id, serial);
+                    let payload = waynest::PayloadBuilder::new().put_uint(serial).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 5u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "An action was performed on this text input."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset to initial on the next zwp_text_input_v3.done event."]
+            #[doc = ""]
+            #[doc = "The initial value of action is none."]
+            fn action(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                action: Action,
+                serial: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.action({}, {})",
+                        sender_id,
+                        action,
+                        serial
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(action.into())
+                        .put_uint(serial)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 6u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notify the application of language used by the input method."]
+            #[doc = ""]
+            #[doc = "This event will be sent on creation if known and for all subsequent changes."]
+            #[doc = ""]
+            #[doc = "The language should be specified as an IETF BCP 47 tag."]
+            #[doc = "Setting an empty string will reset any known language back to the default unknown state."]
+            fn language(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                language: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.language(\"{}\")",
+                        sender_id,
+                        language
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_string(Some(language))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Notify of contextual hints for the pre-edit string. This"]
+            #[doc = "event is always sent together with a zwp_text_input_v3.preedit_string"]
+            #[doc = "event."]
+            #[doc = ""]
+            #[doc = "The parameters start and end are counted in bytes relative to the"]
+            #[doc = "beginning of the text buffer submitted through"]
+            #[doc = "zwp_text_input_v3.preedit_string, and represent the substring in the"]
+            #[doc = "pre-edit text affected by the hint."]
+            #[doc = ""]
+            #[doc = "Multiple events may be submitted if the preedit string has different"]
+            #[doc = "sections. The extent of hints may overlap. The parts of the preedit"]
+            #[doc = "string that are not covered by any zwp_text_input_v3.preedit_hint event,"]
+            #[doc = "the text will be considered unhinted. This is also the case if no"]
+            #[doc = "preedit_hint event is sent."]
+            #[doc = ""]
+            #[doc = "Clients should provide recognizable visuals to these hints. if they are"]
+            #[doc = "unable to comply with this requisition, it may be preferable for them"]
+            #[doc = "keep the preedit_shown content hint disabled."]
+            #[doc = ""]
+            #[doc = "Values set with this event are double-buffered. They must be applied"]
+            #[doc = "and reset on the next zwp_text_input_v3.done event."]
+            fn preedit_hint(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                start: u32,
+                end: u32,
+                hint: PreeditHint,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zwp_text_input_v3#{}.preedit_hint({}, {}, {})",
+                        sender_id,
+                        start,
+                        end,
+                        hint
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(start)
+                        .put_uint(end)
+                        .put_uint(hint.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 8u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v3#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v3#{}.enable()", sender_id,);
+                            self.enable(connection, sender_id).await
+                        }
+                        2u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v3#{}.disable()", sender_id,);
+                            self.disable(connection, sender_id).await
+                        }
+                        3u16 => {
+                            let text = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let cursor = message.int()?;
+                            let anchor = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v3#{}.set_surrounding_text(\"{}\", {}, {})",
+                                sender_id,
+                                text,
+                                cursor,
+                                anchor
+                            );
+                            self.set_surrounding_text(connection, sender_id, text, cursor, anchor)
+                                .await
+                        }
+                        4u16 => {
+                            let cause = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v3#{}.set_text_change_cause({})",
+                                sender_id,
+                                cause
+                            );
+                            self.set_text_change_cause(connection, sender_id, cause.try_into()?)
+                                .await
+                        }
+                        5u16 => {
+                            let hint = message.uint()?;
+                            let purpose = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v3#{}.set_content_type({}, {})",
+                                sender_id,
+                                hint,
+                                purpose
+                            );
+                            self.set_content_type(
+                                connection,
+                                sender_id,
+                                hint.try_into()?,
+                                purpose.try_into()?,
+                            )
+                            .await
+                        }
+                        6u16 => {
+                            let x = message.int()?;
+                            let y = message.int()?;
+                            let width = message.int()?;
+                            let height = message.int()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v3#{}.set_cursor_rectangle({}, {}, {}, {})",
+                                sender_id,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                            self.set_cursor_rectangle(connection, sender_id, x, y, width, height)
+                                .await
+                        }
+                        7u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v3#{}.commit()", sender_id,);
+                            self.commit(connection, sender_id).await
+                        }
+                        8u16 => {
+                            let available_actions = message.array()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_v3#{}.set_available_actions(array[{}])",
+                                sender_id,
+                                available_actions.len()
+                            );
+                            self.set_available_actions(connection, sender_id, available_actions)
+                                .await
+                        }
+                        9u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v3#{}.show_input_panel()", sender_id,);
+                            self.show_input_panel(connection, sender_id).await
+                        }
+                        10u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_v3#{}.hide_input_panel()", sender_id,);
+                            self.hide_input_panel(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "A factory for text-input objects. This object is a global singleton."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod zwp_text_input_manager_v3 {
+        #[doc = "Trait to implement the zwp_text_input_manager_v3 interface. See the module level documentation for more info"]
+        pub trait ZwpTextInputManagerV3
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "zwp_text_input_manager_v3";
+            const VERSION: u32 = 2u32;
+            #[doc = "Destroy the wp_text_input_manager object."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Creates a new text-input object for a given seat."]
+            fn get_text_input(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                seat: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("zwp_text_input_manager_v3#{}.destroy()", sender_id,);
+                            self.destroy(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let id = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let seat = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "zwp_text_input_manager_v3#{}.get_text_input({}, {})",
+                                sender_id,
+                                id,
+                                seat
+                            );
+                            self.get_text_input(connection, sender_id, id, seat).await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }

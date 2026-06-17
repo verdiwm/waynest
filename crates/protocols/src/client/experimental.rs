@@ -427,6 +427,265 @@ pub mod xx_cutouts_unstable_v1 {
         }
     }
 }
+#[doc = "This protocol allows compositors and clients to communicate the"]
+#[doc = "coordinate space their surfaces act in."]
+#[allow(clippy::module_inception)]
+pub mod xx_fractional_scale_v2 {
+    #[doc = "A global interface to create xx_fractional_scale_v2 interfaces."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_fractional_scale_manager_v2 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "xx_fractional_scale_v2 for the surface already exists"]
+            FractionalScaleExists = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::FractionalScaleExists),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_fractional_scale_manager_v2 interface. See the module level documentation for more info"]
+        pub trait XxFractionalScaleManagerV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_fractional_scale_manager_v2";
+            const VERSION: u32 = 1u32;
+            #[doc = "Informs the server that the client will not be using this protocol"]
+            #[doc = "object anymore. This does not affect any other objects."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_fractional_scale_manager_v2#{}.destroy()", sender_id,);
+                    let payload = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Create an interface object for a wl_surface to communicate scale."]
+            #[doc = "If the given wl_surface already has a xx_fractional_scale_v2 object"]
+            #[doc = "associated, the fractional_scale_exists protocol error is raised."]
+            fn get_fractional_scale(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                id: waynest::ObjectId,
+                surface: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_fractional_scale_manager_v2#{}.get_fractional_scale({}, {})",
+                        sender_id,
+                        id,
+                        surface
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_object(Some(id))
+                        .put_object(Some(surface))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_event(
+                &self,
+                _connection: &mut Self::Connection,
+                _sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+    #[doc = "An additional interface for a wl_surface object that allows compositor and"]
+    #[doc = "client to communicate in a different coordinate space, in order to enable"]
+    #[doc = "them to accurately describe coordinates and sizes in pixels."]
+    #[doc = "The two coordinate spaces in consideration are logical and pixels, where"]
+    #[doc = "logical coordinates describe the size content should have and pixels"]
+    #[doc = "describe the size of buffers."]
+    #[doc = ""]
+    #[doc = "A scale of one equals a lack of scaling, where the communicated values"]
+    #[doc = "define both logical coordinates and pixels."]
+    #[doc = "A scale greater than one describes that for every logical coordinate,"]
+    #[doc = "more than one pixel is used, and a scale less than one describes that"]
+    #[doc = "multiple logical coordinates make up one pixel."]
+    #[doc = "In mathematical terms, logical coordinates can be obtained by dividing"]
+    #[doc = "the provided values by the currently active scale."]
+    #[doc = ""]
+    #[doc = "The initial compositor and client coordinate scale factors are 1."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod xx_fractional_scale_v2 {
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "scale value is not valid"]
+            InvalidScale = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::InvalidScale),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the xx_fractional_scale_v2 interface. See the module level documentation for more info"]
+        pub trait XxFractionalScaleV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "xx_fractional_scale_v2";
+            const VERSION: u32 = 1u32;
+            #[doc = "This request sets a scale factor for the associated wl_surface that"]
+            #[doc = "describes the coordinate system the client uses for requests following"]
+            #[doc = "xx_fractional_scale_v2.set_scale_factor."]
+            #[doc = ""]
+            #[doc = "The scale factor is encoded in a 8.24 fixed point format."]
+            #[doc = ""]
+            #[doc = "If this scale factor does not match the scale factor provided by the"]
+            #[doc = "compositor with xx_fractional_scale_v2.scale_factor, the compositor may"]
+            #[doc = "apply transformations to the wl_surface that can result in blurriness"]
+            #[doc = "or other artifacts."]
+            #[doc = ""]
+            #[doc = "If scale_8_24 is zero, the error invalid_scale will be raised."]
+            fn set_scale_factor(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                scale_8_24: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> xx_fractional_scale_v2#{}.set_scale_factor({})",
+                        sender_id,
+                        scale_8_24
+                    );
+                    let payload = waynest::PayloadBuilder::new().put_uint(scale_8_24).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The wl_surface's xx_fractional_scale_v2 object is destroyed, and the"]
+            #[doc = "associated scale is reset to 1."]
+            fn destroy(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> xx_fractional_scale_v2#{}.destroy()", sender_id,);
+                    let payload = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event sets a scale factor for the associated wl_surface that"]
+            #[doc = "describes the coordinate system the compositor will use for events"]
+            #[doc = "following xx_fractional_scale_v2.scale_factor."]
+            #[doc = ""]
+            #[doc = "The scale factor is encoded in a 8.24 fixed point format."]
+            #[doc = ""]
+            #[doc = "The compositor must not send a scale of zero."]
+            #[doc = ""]
+            #[doc = "The client should re-render and commit a new buffer with the new scale"]
+            #[doc = "as soon as possible, in order to avoid artifacts caused by the mismatch"]
+            #[doc = "in compositor and client scales."]
+            fn scale_factor(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                scale_8_24: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn handle_event(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            let scale_8_24 = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "xx_fractional_scale_v2#{}.scale_factor({})",
+                                sender_id,
+                                scale_8_24
+                            );
+                            self.scale_factor(connection, sender_id, scale_8_24).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
+}
 #[doc = "This protocol allows applications to act as input methods for compositors."]
 #[doc = ""]
 #[doc = "An input method context is used to manage the state of the input method."]

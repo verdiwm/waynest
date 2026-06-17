@@ -1916,6 +1916,125 @@ pub mod kde_lockscreen_overlay_v1 {
 }
 #[allow(clippy::module_inception)]
 pub mod kde_output_device_v2 {
+    #[doc = "This interface can be used to list output devices."]
+    #[doc = ""]
+    #[doc = "If this global is bound with a version less than 21, the unsupported_version"]
+    #[doc = "protocol error will be posted."]
+    #[allow(clippy::too_many_arguments)]
+    pub mod kde_output_device_registry_v2 {
+        #[doc = "These errors can be emitted in response to some requests."]
+        #[repr(u32)]
+        #[non_exhaustive]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
+        pub enum Error {
+            #[doc = "the registry was bound with an unsupported version"]
+            UnsupportedVersion = 0u32,
+        }
+        impl From<Error> for u32 {
+            fn from(value: Error) -> Self {
+                value as u32
+            }
+        }
+        impl TryFrom<u32> for Error {
+            type Error = waynest::ProtocolError;
+            fn try_from(v: u32) -> Result<Self, Self::Error> {
+                match v {
+                    0u32 => Ok(Self::UnsupportedVersion),
+                    _ => Err(waynest::ProtocolError::MalformedPayload),
+                }
+            }
+        }
+        impl std::fmt::Display for Error {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                (*self as u32).fmt(f)
+            }
+        }
+        #[doc = "Trait to implement the kde_output_device_registry_v2 interface. See the module level documentation for more info"]
+        pub trait KdeOutputDeviceRegistryV2
+        where
+            Self: std::marker::Sync,
+        {
+            type Connection: waynest::Connection;
+            const INTERFACE: &'static str = "kde_output_device_registry_v2";
+            const VERSION: u32 = 23u32;
+            #[doc = "This request indicates that the client no longer wants to receive new"]
+            #[doc = "output announcements. The compositor will send the"]
+            #[doc = "kde_output_device_registry_v2.finished event in response to this request."]
+            #[doc = "The compositor may still send new output announcements after calling this"]
+            #[doc = "request until the kde_output_device_registry_v2.finished event is sent."]
+            fn stop(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "This event is sent in response to the stop request. The compositor will"]
+            #[doc = "immediately destroy the object after sending this event."]
+            fn finished(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_registry_v2#{}.finished()", sender_id,);
+                    let payload = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 0u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "This event is sent when a new output is connected or after binding this"]
+            #[doc = "global to list all available outputs."]
+            fn output(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_registry_v2#{}.output({})",
+                        sender_id,
+                        output
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_object(Some(output))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 1u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn handle_request(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                message: &mut waynest::Message,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[allow(clippy::match_single_binding)]
+                    match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_registry_v2#{}.stop()", sender_id,);
+                            self.stop(connection, sender_id).await
+                        }
+                        opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
+                    }
+                }
+            }
+        }
+    }
     #[doc = "An output device describes a display device available to the compositor."]
     #[doc = "output_device is similar to wl_output, but focuses on output"]
     #[doc = "configuration management."]
@@ -2025,7 +2144,7 @@ pub mod kde_output_device_v2 {
                 (*self as u32).fmt(f)
             }
         }
-        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; # [doc = "if this outputdevice supports the sharpness setting"] const Sharpness = 4096u32 ; # [doc = "if this outputdevice supports custom modes"] const CustomModes = 8192u32 ; const AutoBrightness = 16384u32 ; } }
+        bitflags::bitflags! { # [doc = "Describes what capabilities this device has."] # [derive (Debug , PartialEq , Eq , PartialOrd , Ord , Hash , Clone , Copy)] pub struct Capability : u32 { # [doc = "if this output_device can use overscan"] const Overscan = 1u32 ; # [doc = "if this outputdevice supports variable refresh rate"] const Vrr = 2u32 ; # [doc = "if setting the rgb range is possible"] const RgbRange = 4u32 ; # [doc = "if this outputdevice supports high dynamic range"] const HighDynamicRange = 8u32 ; # [doc = "if this outputdevice supports a wide color gamut"] const WideColorGamut = 16u32 ; # [doc = "if this outputdevice supports autorotation"] const AutoRotate = 32u32 ; # [doc = "if this outputdevice supports icc profiles"] const IccProfile = 64u32 ; # [doc = "if this outputdevice supports the brightness setting"] const Brightness = 128u32 ; # [doc = "if this outputdevice supports the built-in color profile"] const BuiltInColor = 256u32 ; # [doc = "if this outputdevice supports DDC/CI"] const DdcCi = 512u32 ; # [doc = "if this outputdevice supports setting max bpc"] const MaxBitsPerColor = 1024u32 ; # [doc = "if this outputdevice supports EDR"] const Edr = 2048u32 ; # [doc = "if this outputdevice supports the sharpness setting"] const Sharpness = 4096u32 ; # [doc = "if this outputdevice supports custom modes"] const CustomModes = 8192u32 ; const AutoBrightness = 16384u32 ; # [doc = "if this outputdevice supports HDR ICC profiles"] const HdrIccProfile = 32768u32 ; # [doc = "if this outputdevice supports the abm level setting"] const AbmLevel = 65536u32 ; } }
         impl From<Capability> for u32 {
             fn from(value: Capability) -> Self {
                 value.bits()
@@ -2227,7 +2346,14 @@ pub mod kde_output_device_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_device_v2";
-            const VERSION: u32 = 20u32;
+            const VERSION: u32 = 23u32;
+            #[doc = "This notifies the compositor that the client no longer wishes to use"]
+            #[doc = "the kde_output_device_v2 object."]
+            fn release(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The geometry event describes geometric properties of the output."]
             #[doc = "The event is sent when binding to the output object and whenever"]
             #[doc = "any of the properties change."]
@@ -3214,16 +3340,113 @@ pub mod kde_output_device_v2 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "This event is sent when the output device is disconnected and no new"]
+            #[doc = "updates will be sent. The client should call the kde_output_device_v2.release"]
+            #[doc = "request after receiving this event."]
+            fn removed(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.removed()", sender_id,);
+                    let payload = waynest::PayloadBuilder::new().build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 36u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn hdr_icc_profile_path(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                profile_path: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.hdr_icc_profile_path(\"{}\")",
+                        sender_id,
+                        profile_path
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_string(Some(profile_path))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 37u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            fn hdr_color_profile_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                source: ColorProfileSource,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> kde_output_device_v2#{}.hdr_color_profile_source({})",
+                        sender_id,
+                        source
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(source.into())
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 38u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "Adaptive backlight modulation is a feature that reduces the backlight"]
+            #[doc = "and increases contrast of colors on the screen to improve power usage."]
+            fn abm_level(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                level: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!("-> kde_output_device_v2#{}.abm_level({})", sender_id, level);
+                    let payload = waynest::PayloadBuilder::new().put_uint(level).build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 39u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
             fn handle_request(
                 &self,
-                _connection: &mut Self::Connection,
-                _sender_id: waynest::ObjectId,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
                 message: &mut waynest::Message,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
                     #[allow(clippy::match_single_binding)]
                     match message.opcode() {
+                        0u16 => {
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!("kde_output_device_v2#{}.release()", sender_id,);
+                            self.release(connection, sender_id).await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -3274,7 +3497,7 @@ pub mod kde_output_device_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_device_mode_v2";
-            const VERSION: u32 = 20u32;
+            const VERSION: u32 = 22u32;
             #[doc = "This event describes the mode size. The size is given in physical"]
             #[doc = "hardware units of the output device. This is not necessarily the same as"]
             #[doc = "the output size in the global compositor space. For instance, the output"]
@@ -3468,7 +3691,7 @@ pub mod kde_output_management_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_management_v2";
-            const VERSION: u32 = 19u32;
+            const VERSION: u32 = 21u32;
             #[doc = "Request an outputconfiguration object through which the client can configure"]
             #[doc = "output devices."]
             fn create_configuration(
@@ -3751,7 +3974,7 @@ pub mod kde_output_management_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_output_configuration_v2";
-            const VERSION: u32 = 19u32;
+            const VERSION: u32 = 21u32;
             #[doc = "Mark the output as enabled or disabled."]
             fn enable(
                 &self,
@@ -4029,6 +4252,29 @@ pub mod kde_output_management_v2 {
                 sender_id: waynest::ObjectId,
                 outputdevice: waynest::ObjectId,
                 enabled: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn set_hdr_icc_profile_path(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                profile_path: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            fn set_hdr_color_profile_source(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                color_profile_source: ColorProfileSource,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Adaptive backlight modulation is a feature that reduces the backlight"]
+            #[doc = "and increases contrast of colors on the screen to improve power usage."]
+            fn set_abm_level(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                outputdevice: waynest::ObjectId,
+                level: u32,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "Sent after the server has successfully applied the changes."]
             #[doc = "."]
@@ -4612,6 +4858,63 @@ pub mod kde_output_management_v2 {
                             self.set_auto_brightness(connection, sender_id, outputdevice, enabled)
                                 .await
                         }
+                        30u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let profile_path = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_hdr_icc_profile_path({}, \"{}\")",
+                                sender_id,
+                                outputdevice,
+                                profile_path
+                            );
+                            self.set_hdr_icc_profile_path(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                profile_path,
+                            )
+                            .await
+                        }
+                        31u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let color_profile_source = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_hdr_color_profile_source({}, {})",
+                                sender_id,
+                                outputdevice,
+                                color_profile_source
+                            );
+                            self.set_hdr_color_profile_source(
+                                connection,
+                                sender_id,
+                                outputdevice,
+                                color_profile_source.try_into()?,
+                            )
+                            .await
+                        }
+                        32u16 => {
+                            let outputdevice = message
+                                .object()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            let level = message.uint()?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "kde_output_configuration_v2#{}.set_abm_level({}, {})",
+                                sender_id,
+                                outputdevice,
+                                level
+                            );
+                            self.set_abm_level(connection, sender_id, outputdevice, level)
+                                .await
+                        }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
                 }
@@ -4670,7 +4973,7 @@ pub mod kde_output_management_v2 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "kde_mode_list_v2";
-            const VERSION: u32 = 18u32;
+            const VERSION: u32 = 20u32;
             fn destroy(
                 &self,
                 connection: &mut Self::Connection,
@@ -5334,7 +5637,7 @@ pub mod org_kde_plasma_virtual_desktop {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop_management";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "Given the id of a particular virtual desktop, get the corresponding org_kde_plasma_virtual_desktop which represents only the desktop with that id."]
             #[doc = ""]
             #[doc = "Warning! The protocol described in this file is a desktop environment"]
@@ -5540,12 +5843,22 @@ pub mod org_kde_plasma_virtual_desktop {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "org_kde_plasma_virtual_desktop";
-            const VERSION: u32 = 3u32;
+            const VERSION: u32 = 4u32;
             #[doc = "Request the server to set the status of this desktop to active: The server is free to consent or deny the request. This will be the new \"current\" virtual desktop of the system."]
             fn request_activate(
                 &self,
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
+            #[doc = "Request the server to activate the desktop on a given output."]
+            #[doc = "The server may deny the request."]
+            #[doc = "If the request is granted, the server will deactivate the previous desktop on the output."]
+            #[doc = "The server may activate the desktop on other outputs as well."]
+            fn request_enter_output(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output_name: String,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send;
             #[doc = "The format of the id is decided by the compositor implementation. A desktop id univocally identifies a virtual desktop and must be guaranteed to never exist two desktops with the same id. The format of the string id is up to the server implementation."]
             fn desktop_id(
@@ -5712,6 +6025,33 @@ pub mod org_kde_plasma_virtual_desktop {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "This event is sent when the desktop becomes active on an output. The desktop can be active on multiple"]
+            #[doc = "outputs simultaneously. Each output has exactly one active desktop at a time (the one that entered it last)."]
+            fn output_entered(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                output_name: String,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> org_kde_plasma_virtual_desktop#{}.output_entered(\"{}\")",
+                        sender_id,
+                        output_name
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_string(Some(output_name))
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 7u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
             fn handle_request(
                 &self,
                 connection: &mut Self::Connection,
@@ -5729,6 +6069,19 @@ pub mod org_kde_plasma_virtual_desktop {
                                 sender_id,
                             );
                             self.request_activate(connection, sender_id).await
+                        }
+                        1u16 => {
+                            let output_name = message
+                                .string()?
+                                .ok_or(waynest::ProtocolError::MalformedPayload)?;
+                            #[cfg(feature = "tracing")]
+                            tracing::debug!(
+                                "org_kde_plasma_virtual_desktop#{}.request_enter_output(\"{}\")",
+                                sender_id,
+                                output_name
+                            );
+                            self.request_enter_output(connection, sender_id, output_name)
+                                .await
                         }
                         opcode => Err(waynest::ProtocolError::UnknownOpcode(opcode).into()),
                     }
@@ -12393,7 +12746,7 @@ pub mod zkde_screencast_unstable_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zkde_screencast_unstable_v1";
-            const VERSION: u32 = 5u32;
+            const VERSION: u32 = 6u32;
             fn stream_output(
                 &self,
                 connection: &mut Self::Connection,
@@ -12614,7 +12967,7 @@ pub mod zkde_screencast_unstable_v1 {
         {
             type Connection: waynest::Connection;
             const INTERFACE: &'static str = "zkde_screencast_stream_unstable_v1";
-            const VERSION: u32 = 5u32;
+            const VERSION: u32 = 6u32;
             fn close(
                 &self,
                 connection: &mut Self::Connection,
@@ -12641,6 +12994,7 @@ pub mod zkde_screencast_unstable_v1 {
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
                 }
             }
+            #[doc = "Deprecated since version 6, use the object serial from the serial event instead"]
             fn created(
                 &self,
                 connection: &mut Self::Connection,
@@ -12684,6 +13038,36 @@ pub mod zkde_screencast_unstable_v1 {
                     futures_util::SinkExt::send(
                         connection,
                         waynest::Message::new(sender_id, 2u16, payload),
+                    )
+                    .await
+                    .map_err(<Self::Connection as waynest::Connection>::Error::from)
+                }
+            }
+            #[doc = "The pipewire object serial of the stream. Should be preferred over the node id which is prone to id reuse."]
+            #[doc = "Will be sent before the created event."]
+            fn serial(
+                &self,
+                connection: &mut Self::Connection,
+                sender_id: waynest::ObjectId,
+                object_serial_hi: u32,
+                object_serial_low: u32,
+            ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
+            {
+                async move {
+                    #[cfg(feature = "tracing")]
+                    tracing::debug!(
+                        "-> zkde_screencast_stream_unstable_v1#{}.serial({}, {})",
+                        sender_id,
+                        object_serial_hi,
+                        object_serial_low
+                    );
+                    let payload = waynest::PayloadBuilder::new()
+                        .put_uint(object_serial_hi)
+                        .put_uint(object_serial_low)
+                        .build();
+                    futures_util::SinkExt::send(
+                        connection,
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
