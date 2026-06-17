@@ -44,13 +44,13 @@ pub mod ivi_application {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -244,14 +244,14 @@ pub mod ivi_input {
                         capabilities,
                         is_default
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(capabilities)
                         .put_int(is_default)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -273,13 +273,13 @@ pub mod ivi_input {
                         name,
                         capabilities
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(capabilities)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -295,12 +295,12 @@ pub mod ivi_input {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_input#{}.seat_destroyed(\"{}\")", sender_id, name);
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -327,14 +327,14 @@ pub mod ivi_input {
                         device,
                         enabled
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface)
                         .put_uint(device)
                         .put_int(enabled)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -363,14 +363,14 @@ pub mod ivi_input {
                         seat,
                         accepted
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface)
                         .put_string(Some(seat))
                         .put_int(accepted)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -530,10 +530,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_wm_screen#{}.screen_id({})", sender_id, id);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -550,10 +550,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_wm_screen#{}.layer_added({})", sender_id, layer_id);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -574,12 +574,12 @@ pub mod ivi_wm {
                         sender_id,
                         process_name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(process_name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -602,13 +602,13 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -748,10 +748,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_screenshot#{}.done({})", sender_id, timestamp);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(timestamp).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(timestamp).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -774,13 +774,13 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(error.into())
                         .put_string(Some(message))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1205,13 +1205,13 @@ pub mod ivi_wm {
                         surface_id,
                         visibility
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(visibility)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1236,13 +1236,13 @@ pub mod ivi_wm {
                         layer_id,
                         visibility
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(visibility)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1266,13 +1266,13 @@ pub mod ivi_wm {
                         surface_id,
                         opacity
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_fixed(opacity)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1296,13 +1296,13 @@ pub mod ivi_wm {
                         layer_id,
                         opacity
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_fixed(opacity)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1336,7 +1336,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(x)
                         .put_int(y)
@@ -1345,7 +1345,7 @@ pub mod ivi_wm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1379,7 +1379,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(x)
                         .put_int(y)
@@ -1388,7 +1388,7 @@ pub mod ivi_wm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1421,7 +1421,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(x)
                         .put_int(y)
@@ -1430,7 +1430,7 @@ pub mod ivi_wm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1463,7 +1463,7 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_int(x)
                         .put_int(y)
@@ -1472,7 +1472,7 @@ pub mod ivi_wm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                        waynest::Message::new(sender_id, 7u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1488,11 +1488,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_wm#{}.surface_created({})", sender_id, surface_id);
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_uint(surface_id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(surface_id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                        waynest::Message::new(sender_id, 8u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1508,10 +1507,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_wm#{}.layer_created({})", sender_id, layer_id);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                        waynest::Message::new(sender_id, 9u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1527,11 +1526,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_wm#{}.surface_destroyed({})", sender_id, surface_id);
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_uint(surface_id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(surface_id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                        waynest::Message::new(sender_id, 10u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1547,10 +1545,10 @@ pub mod ivi_wm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> ivi_wm#{}.layer_destroyed({})", sender_id, layer_id);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layer_id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(layer_id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                        waynest::Message::new(sender_id, 11u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1575,14 +1573,14 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(object_id)
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                        waynest::Message::new(sender_id, 12u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1607,14 +1605,14 @@ pub mod ivi_wm {
                         error,
                         message
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(object_id)
                         .put_uint(error)
                         .put_string(Some(message))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                        waynest::Message::new(sender_id, 13u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1640,14 +1638,14 @@ pub mod ivi_wm {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_int(width)
                         .put_int(height)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                        waynest::Message::new(sender_id, 14u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1673,14 +1671,14 @@ pub mod ivi_wm {
                         frame_count,
                         pid
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(surface_id)
                         .put_uint(frame_count)
                         .put_uint(pid)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 15u16, payload, fds),
+                        waynest::Message::new(sender_id, 15u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1703,13 +1701,13 @@ pub mod ivi_wm {
                         layer_id,
                         surface_id
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(layer_id)
                         .put_uint(surface_id)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 16u16, payload, fds),
+                        waynest::Message::new(sender_id, 16u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)

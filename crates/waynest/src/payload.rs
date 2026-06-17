@@ -1,8 +1,3 @@
-use std::{
-    collections::VecDeque,
-    os::fd::{AsFd, AsRawFd as _, RawFd},
-};
-
 use bytes::{BufMut, Bytes, BytesMut};
 
 use super::{Fixed, NewId, ObjectId};
@@ -10,7 +5,6 @@ use super::{Fixed, NewId, ObjectId};
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct PayloadBuilder {
     payload: BytesMut,
-    fds: VecDeque<RawFd>,
 }
 
 impl Default for PayloadBuilder {
@@ -23,7 +17,6 @@ impl PayloadBuilder {
     pub fn new() -> Self {
         Self {
             payload: BytesMut::new(),
-            fds: VecDeque::new(),
         }
     }
 
@@ -107,13 +100,7 @@ impl PayloadBuilder {
         self
     }
 
-    pub fn put_fd<Fd: AsFd>(mut self, fd: Fd) -> Self {
-        self.fds.push_back(fd.as_fd().as_raw_fd());
-
-        self
-    }
-
-    pub fn build(self) -> (Bytes, VecDeque<RawFd>) {
-        (self.payload.freeze(), self.fds)
+    pub fn build(self) -> Bytes {
+        self.payload.freeze()
     }
 }

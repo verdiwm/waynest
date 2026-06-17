@@ -221,10 +221,10 @@ pub mod drm {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> wl_drm#{}.authenticate({})", sender_id, id);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(id).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -254,7 +254,7 @@ pub mod drm {
                         stride,
                         format
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_uint(name)
                         .put_int(width)
@@ -264,7 +264,7 @@ pub mod drm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -304,7 +304,7 @@ pub mod drm {
                         offset2,
                         stride2
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_uint(name)
                         .put_int(width)
@@ -319,7 +319,7 @@ pub mod drm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -330,7 +330,7 @@ pub mod drm {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-                name: std::os::fd::BorrowedFd,
+                name: std::os::fd::OwnedFd,
                 width: i32,
                 height: i32,
                 format: u32,
@@ -359,9 +359,9 @@ pub mod drm {
                         offset2,
                         stride2
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    waynest::Connection::push_fd(connection, name);
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
-                        .put_fd(name)
                         .put_int(width)
                         .put_int(height)
                         .put_uint(format)
@@ -374,7 +374,7 @@ pub mod drm {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)

@@ -58,10 +58,10 @@ pub mod river_input_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_input_manager_v1#{}.stop()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -87,10 +87,10 @@ pub mod river_input_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_input_manager_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -115,12 +115,12 @@ pub mod river_input_management_v1 {
                         sender_id,
                         name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -148,12 +148,12 @@ pub mod river_input_management_v1 {
                         sender_id,
                         name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -291,10 +291,10 @@ pub mod river_input_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_input_device_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -318,12 +318,12 @@ pub mod river_input_management_v1 {
                         sender_id,
                         name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -350,13 +350,13 @@ pub mod river_input_management_v1 {
                         rate,
                         delay
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(rate)
                         .put_int(delay)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -383,10 +383,10 @@ pub mod river_input_management_v1 {
                         sender_id,
                         factor
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(factor).build();
+                    let payload = waynest::PayloadBuilder::new().put_fixed(factor).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -414,10 +414,10 @@ pub mod river_input_management_v1 {
                             .as_ref()
                             .map_or("null".to_string(), |v| v.to_string())
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_object(output).build();
+                    let payload = waynest::PayloadBuilder::new().put_object(output).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -452,7 +452,7 @@ pub mod river_input_management_v1 {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
                         .put_int(width)
@@ -460,7 +460,7 @@ pub mod river_input_management_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -597,10 +597,10 @@ pub mod river_layer_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_layer_shell_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -624,13 +624,13 @@ pub mod river_layer_shell_v1 {
                         id,
                         output
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(output))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -654,13 +654,13 @@ pub mod river_layer_shell_v1 {
                         id,
                         seat
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(seat))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -709,10 +709,10 @@ pub mod river_layer_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_layer_shell_output_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -736,10 +736,10 @@ pub mod river_layer_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_layer_shell_output_v1#{}.set_default()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -823,10 +823,10 @@ pub mod river_layer_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_layer_shell_seat_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -988,10 +988,10 @@ pub mod river_libinput_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_libinput_config_v1#{}.stop()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1017,10 +1017,10 @@ pub mod river_libinput_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_libinput_config_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1044,13 +1044,13 @@ pub mod river_libinput_config_v1 {
                         id,
                         profile
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_uint(profile.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1646,10 +1646,10 @@ pub mod river_libinput_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_libinput_device_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1672,13 +1672,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         mode
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(mode.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1702,13 +1702,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1733,13 +1733,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         button_map
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(button_map.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1762,13 +1762,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1795,13 +1795,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1824,13 +1824,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1853,13 +1853,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         matrix.len()
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_array(matrix)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                        waynest::Message::new(sender_id, 7u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1882,13 +1882,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         profile
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(profile.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                        waynest::Message::new(sender_id, 8u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1913,13 +1913,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         speed.len()
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_array(speed)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                        waynest::Message::new(sender_id, 9u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1942,13 +1942,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         config
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_object(Some(config))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                        waynest::Message::new(sender_id, 10u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1971,13 +1971,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                        waynest::Message::new(sender_id, 11u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2000,13 +2000,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                        waynest::Message::new(sender_id, 12u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2029,13 +2029,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         method
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(method.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                        waynest::Message::new(sender_id, 13u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2059,13 +2059,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         button_map
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(button_map.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                        waynest::Message::new(sender_id, 14u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2088,13 +2088,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 15u16, payload, fds),
+                        waynest::Message::new(sender_id, 15u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2117,13 +2117,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         method
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(method.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 16u16, payload, fds),
+                        waynest::Message::new(sender_id, 16u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2147,13 +2147,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         button
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(button)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 17u16, payload, fds),
+                        waynest::Message::new(sender_id, 17u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2177,13 +2177,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 18u16, payload, fds),
+                        waynest::Message::new(sender_id, 18u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2206,13 +2206,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 19u16, payload, fds),
+                        waynest::Message::new(sender_id, 19u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2235,13 +2235,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(state.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 20u16, payload, fds),
+                        waynest::Message::new(sender_id, 20u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2265,13 +2265,13 @@ pub mod river_libinput_config_v1 {
                         result,
                         angle
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(angle)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 21u16, payload, fds),
+                        waynest::Message::new(sender_id, 21u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3389,10 +3389,10 @@ pub mod river_libinput_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_libinput_accel_config_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3420,7 +3420,7 @@ pub mod river_libinput_config_v1 {
                         step.len(),
                         points.len()
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(result))
                         .put_uint(r#type.into())
                         .put_array(step)
@@ -3428,7 +3428,7 @@ pub mod river_libinput_config_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3651,10 +3651,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_manager_v1#{}.stop()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3677,10 +3677,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_manager_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3706,10 +3706,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_manager_v1#{}.manage_finish()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3732,10 +3732,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_manager_v1#{}.manage_dirty()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3761,10 +3761,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_manager_v1#{}.render_finish()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3791,13 +3791,13 @@ pub mod river_window_management_v1 {
                         id,
                         surface
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4118,10 +4118,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4145,10 +4145,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.close()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4168,11 +4168,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.get_node({})", sender_id, id);
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_object(Some(id)).build();
+                    let payload = waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4220,13 +4219,13 @@ pub mod river_window_management_v1 {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(width)
                         .put_int(height)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4249,10 +4248,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.hide()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4276,10 +4275,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.show()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4302,10 +4301,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.use_csd()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4328,10 +4327,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.use_ssd()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                        waynest::Message::new(sender_id, 7u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4387,7 +4386,7 @@ pub mod river_window_management_v1 {
                         b,
                         a
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(edges.into())
                         .put_int(width)
                         .put_uint(r)
@@ -4397,7 +4396,7 @@ pub mod river_window_management_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                        waynest::Message::new(sender_id, 8u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4426,12 +4425,12 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.set_tiled({})", sender_id, edges);
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(edges.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                        waynest::Message::new(sender_id, 9u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4459,13 +4458,13 @@ pub mod river_window_management_v1 {
                         id,
                         surface
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 10u16, payload, fds),
+                        waynest::Message::new(sender_id, 10u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4493,13 +4492,13 @@ pub mod river_window_management_v1 {
                         id,
                         surface
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(surface))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 11u16, payload, fds),
+                        waynest::Message::new(sender_id, 11u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4523,10 +4522,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.inform_resize_start()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 12u16, payload, fds),
+                        waynest::Message::new(sender_id, 12u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4547,10 +4546,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.inform_resize_end()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 13u16, payload, fds),
+                        waynest::Message::new(sender_id, 13u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4584,11 +4583,10 @@ pub mod river_window_management_v1 {
                         sender_id,
                         caps
                     );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_uint(caps.into()).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(caps.into()).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 14u16, payload, fds),
+                        waynest::Message::new(sender_id, 14u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4612,10 +4610,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.inform_maximized()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 15u16, payload, fds),
+                        waynest::Message::new(sender_id, 15u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4636,10 +4634,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.inform_unmaximized()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 16u16, payload, fds),
+                        waynest::Message::new(sender_id, 16u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4664,10 +4662,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.inform_fullscreen()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 17u16, payload, fds),
+                        waynest::Message::new(sender_id, 17u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4692,10 +4690,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.inform_not_fullscreen()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 18u16, payload, fds),
+                        waynest::Message::new(sender_id, 18u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4737,12 +4735,12 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.fullscreen({})", sender_id, output);
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 19u16, payload, fds),
+                        waynest::Message::new(sender_id, 19u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4772,10 +4770,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_window_v1#{}.exit_fullscreen()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 20u16, payload, fds),
+                        waynest::Message::new(sender_id, 20u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4815,7 +4813,7 @@ pub mod river_window_management_v1 {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
                         .put_int(width)
@@ -4823,7 +4821,7 @@ pub mod river_window_management_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 21u16, payload, fds),
+                        waynest::Message::new(sender_id, 21u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4868,7 +4866,7 @@ pub mod river_window_management_v1 {
                         width,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(x)
                         .put_int(y)
                         .put_int(width)
@@ -4876,7 +4874,7 @@ pub mod river_window_management_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 22u16, payload, fds),
+                        waynest::Message::new(sender_id, 22u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5393,10 +5391,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_decoration_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5426,11 +5424,10 @@ pub mod river_window_management_v1 {
                         x,
                         y
                     );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5455,10 +5452,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_decoration_v1#{}.sync_next_commit()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5533,10 +5530,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_shell_surface_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5556,11 +5553,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_shell_surface_v1#{}.get_node({})", sender_id, id);
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_object(Some(id)).build();
+                    let payload = waynest::PayloadBuilder::new().put_object(Some(id)).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5585,10 +5581,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_shell_surface_v1#{}.sync_next_commit()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5639,10 +5635,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_node_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5671,11 +5667,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_node_v1#{}.set_position({}, {})", sender_id, x, y);
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5695,10 +5690,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_node_v1#{}.place_top()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5718,10 +5713,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_node_v1#{}.place_bottom()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5744,12 +5739,12 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_node_v1#{}.place_above({})", sender_id, other);
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(other))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5772,12 +5767,12 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_node_v1#{}.place_below({})", sender_id, other);
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(other))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5828,10 +5823,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_output_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6014,10 +6009,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_seat_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6037,12 +6032,12 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_seat_v1#{}.focus_window({})", sender_id, window);
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(window))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6067,12 +6062,12 @@ pub mod river_window_management_v1 {
                         sender_id,
                         shell_surface
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(shell_surface))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6091,10 +6086,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_seat_v1#{}.clear_focus()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6125,10 +6120,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_seat_v1#{}.op_start_pointer()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6149,10 +6144,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_seat_v1#{}.op_end()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6184,14 +6179,14 @@ pub mod river_window_management_v1 {
                         button,
                         modifiers
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_uint(button)
                         .put_uint(modifiers.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6219,13 +6214,13 @@ pub mod river_window_management_v1 {
                         name,
                         size
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(size)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                        waynest::Message::new(sender_id, 7u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6250,11 +6245,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_seat_v1#{}.pointer_warp({}, {})", sender_id, x, y);
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(x).put_int(y).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                        waynest::Message::new(sender_id, 8u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6543,10 +6537,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_pointer_binding_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6567,10 +6561,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_pointer_binding_v1#{}.enable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6590,10 +6584,10 @@ pub mod river_window_management_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_pointer_binding_v1#{}.disable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6722,10 +6716,10 @@ pub mod river_xkb_bindings_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_bindings_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6756,7 +6750,7 @@ pub mod river_xkb_bindings_v1 {
                         keysym,
                         modifiers
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(seat))
                         .put_object(Some(id))
                         .put_uint(keysym)
@@ -6764,7 +6758,7 @@ pub mod river_xkb_bindings_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6790,13 +6784,13 @@ pub mod river_xkb_bindings_v1 {
                         id,
                         seat
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
                         .put_object(Some(seat))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6858,10 +6852,10 @@ pub mod river_xkb_bindings_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_binding_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6893,10 +6887,10 @@ pub mod river_xkb_bindings_v1 {
                         sender_id,
                         layout
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(layout).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(layout).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6917,10 +6911,10 @@ pub mod river_xkb_bindings_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_binding_v1#{}.enable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6940,10 +6934,10 @@ pub mod river_xkb_bindings_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_binding_v1#{}.disable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7056,10 +7050,10 @@ pub mod river_xkb_bindings_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_bindings_seat_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7096,10 +7090,10 @@ pub mod river_xkb_bindings_v1 {
                         "-> river_xkb_bindings_seat_v1#{}.ensure_next_key_eaten()",
                         sender_id,
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7131,10 +7125,10 @@ pub mod river_xkb_bindings_v1 {
                         "-> river_xkb_bindings_seat_v1#{}.cancel_ensure_next_key_eaten()",
                         sender_id,
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7269,10 +7263,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_config_v1#{}.stop()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7298,10 +7292,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_config_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7316,7 +7310,7 @@ pub mod river_xkb_config_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 id: waynest::ObjectId,
-                fd: std::os::fd::BorrowedFd,
+                fd: std::os::fd::OwnedFd,
                 format: KeymapFormat,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
@@ -7329,14 +7323,14 @@ pub mod river_xkb_config_v1 {
                         std::os::fd::AsRawFd::as_raw_fd(&fd),
                         format
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    waynest::Connection::push_fd(connection, fd);
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(id))
-                        .put_fd(fd)
                         .put_uint(format.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7413,10 +7407,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_keymap_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7520,10 +7514,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_keyboard_v1#{}.destroy()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7547,12 +7541,12 @@ pub mod river_xkb_config_v1 {
                         sender_id,
                         keymap
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(keymap))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7574,10 +7568,10 @@ pub mod river_xkb_config_v1 {
                         sender_id,
                         index
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(index).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(index).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7599,12 +7593,12 @@ pub mod river_xkb_config_v1 {
                         sender_id,
                         name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7620,10 +7614,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_keyboard_v1#{}.capslock_enable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7639,10 +7633,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_keyboard_v1#{}.capslock_disable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7658,10 +7652,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_keyboard_v1#{}.numlock_enable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -7677,10 +7671,10 @@ pub mod river_xkb_config_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> river_xkb_keyboard_v1#{}.numlock_disable()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                        waynest::Message::new(sender_id, 7u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)

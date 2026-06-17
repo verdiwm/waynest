@@ -285,7 +285,7 @@ pub mod frog_color_management_v1 {
                         min_luminance,
                         max_full_frame_luminance
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(transfer_function.into())
                         .put_uint(output_display_primary_red_x)
                         .put_uint(output_display_primary_red_y)
@@ -301,7 +301,7 @@ pub mod frog_color_management_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)

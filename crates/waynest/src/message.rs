@@ -1,5 +1,3 @@
-use std::{collections::VecDeque, os::fd::RawFd};
-
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 use super::{Fixed, NewId, ObjectId, ProtocolError};
@@ -9,7 +7,6 @@ pub struct Message {
     object_id: ObjectId,
     opcode: u16,
     payload: Bytes,
-    pub(crate) fds: VecDeque<RawFd>,
 }
 
 #[cfg(feature = "fuzz")]
@@ -23,23 +20,16 @@ impl<'a> arbitrary::Arbitrary<'a> for Message {
             object_id: ObjectId::arbitrary(u)?,
             opcode: u16::arbitrary(u)?,
             payload,
-            fds: VecDeque::<RawFd>::arbitrary(u)?,
         })
     }
 }
 
 impl Message {
-    pub const fn new(
-        object_id: ObjectId,
-        opcode: u16,
-        payload: Bytes,
-        fds: VecDeque<RawFd>,
-    ) -> Self {
+    pub const fn new(object_id: ObjectId, opcode: u16, payload: Bytes) -> Self {
         Self {
             object_id,
             opcode,
             payload,
-            fds,
         }
     }
 
@@ -91,7 +81,6 @@ impl Message {
             object_id,
             opcode,
             payload,
-            fds: VecDeque::new(),
         }))
     }
 

@@ -15,4 +15,5 @@ pub trait Connection:
     type Error: From<crate::ProtocolError>;
 
     fn fd(&mut self) -> Result<OwnedFd, <Self as Connection>::Error>;
+    fn push_fd(&mut self, fd: OwnedFd);
 }

@@ -11,8 +11,9 @@ authors = ["Matilde Morrone <contact@morrone.dev>"]
 repository = "https://github.com/verdiwm/waynest"
 
 [workspace.dependencies]
-waynest = { version = "0.2.0-rc1", path = "./crates/core" }
+waynest = { version = "0.2.0-rc1", path = "./crates/waynest" }
 waynest-client = { version = "0.2.0-rc1", path = "./crates/client" }
+waynest-core = { version = "0.2.0-rc1", path = "./crates/core" }
 waynest-gen = { version = "0.2.0-rc1", path = "./crates/gen" }
 waynest-macros = { version = "0.2.0-rc1", path = "./crates/macros" }
 waynest-protocols = { version = "0.2.0-rc1", path = "./crates/protocols" }

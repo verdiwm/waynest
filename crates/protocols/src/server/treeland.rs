@@ -126,7 +126,7 @@ pub mod treeland_app_id_resolver_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 request_id: u32,
-                pidfd: std::os::fd::BorrowedFd,
+                pidfd: std::os::fd::OwnedFd,
             ) -> impl Future<Output = Result<(), <Self::Connection as waynest::Connection>::Error>> + Send
             {
                 async move {
@@ -137,13 +137,11 @@ pub mod treeland_app_id_resolver_v1 {
                         request_id,
                         std::os::fd::AsRawFd::as_raw_fd(&pidfd)
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
-                        .put_uint(request_id)
-                        .put_fd(pidfd)
-                        .build();
+                    waynest::Connection::push_fd(connection, pidfd);
+                    let payload = waynest::PayloadBuilder::new().put_uint(request_id).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -318,7 +316,7 @@ pub mod treeland_capture_unstable_v1 {
                         mod_low,
                         num_objects
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(offset_x)
                         .put_int(offset_y)
                         .put_uint(width)
@@ -332,7 +330,7 @@ pub mod treeland_capture_unstable_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -343,7 +341,7 @@ pub mod treeland_capture_unstable_v1 {
                 connection: &mut Self::Connection,
                 sender_id: waynest::ObjectId,
                 index: u32,
-                fd: std::os::fd::BorrowedFd,
+                fd: std::os::fd::OwnedFd,
                 size: u32,
                 offset: u32,
                 stride: u32,
@@ -362,9 +360,9 @@ pub mod treeland_capture_unstable_v1 {
                         stride,
                         plane_index
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    waynest::Connection::push_fd(connection, fd);
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(index)
-                        .put_fd(fd)
                         .put_uint(size)
                         .put_uint(offset)
                         .put_uint(stride)
@@ -372,7 +370,7 @@ pub mod treeland_capture_unstable_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -398,14 +396,14 @@ pub mod treeland_capture_unstable_v1 {
                         tv_sec_lo,
                         tv_nsec
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(tv_sec_hi)
                         .put_uint(tv_sec_lo)
                         .put_uint(tv_nsec)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -427,12 +425,12 @@ pub mod treeland_capture_unstable_v1 {
                         sender_id,
                         reason
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(reason.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -540,7 +538,7 @@ pub mod treeland_capture_unstable_v1 {
                         height,
                         stride
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(format.into())
                         .put_uint(width)
                         .put_uint(height)
@@ -548,7 +546,7 @@ pub mod treeland_capture_unstable_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -564,10 +562,10 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_capture_frame_v1#{}.buffer_done()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -589,12 +587,12 @@ pub mod treeland_capture_unstable_v1 {
                         sender_id,
                         flags
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(flags.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -610,10 +608,10 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_capture_frame_v1#{}.ready()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -629,10 +627,10 @@ pub mod treeland_capture_unstable_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_capture_frame_v1#{}.failed()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -789,7 +787,7 @@ pub mod treeland_capture_unstable_v1 {
                         region_height,
                         source_type
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_int(region_x)
                         .put_int(region_y)
                         .put_uint(region_width)
@@ -798,7 +796,7 @@ pub mod treeland_capture_unstable_v1 {
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -819,12 +817,12 @@ pub mod treeland_capture_unstable_v1 {
                         sender_id,
                         reason
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(reason.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1234,10 +1232,10 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_window_overlap_checker#{}.enter()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1254,10 +1252,10 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_window_overlap_checker#{}.leave()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1593,12 +1591,12 @@ pub mod treeland_dde_shell_v1 {
                         sender_id,
                         reason
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(reason.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1618,12 +1616,12 @@ pub mod treeland_dde_shell_v1 {
                         sender_id,
                         reason
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(reason.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1638,10 +1636,10 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_dde_active_v1#{}.start_drag()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1656,10 +1654,10 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_dde_active_v1#{}.drop()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1768,10 +1766,10 @@ pub mod treeland_dde_shell_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_window_picker_v1#{}.window({})", sender_id, pid);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(pid).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(pid).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1951,10 +1949,10 @@ pub mod treeland_ddm_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_ddm_v1#{}.switch_to_vt({})", sender_id, vtnr);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(vtnr).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(vtnr).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -1972,10 +1970,10 @@ pub mod treeland_ddm_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_ddm_v1#{}.acquire_vt({})", sender_id, vtnr);
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(vtnr).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(vtnr).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2098,12 +2096,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         toplevel
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(toplevel))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2125,10 +2123,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         "-> treeland_foreign_toplevel_manager_v1#{}.finished()",
                         sender_id,
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2375,10 +2373,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         pid
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(pid).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(pid).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2399,12 +2397,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         title
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(title))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2425,12 +2423,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         app_id
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(app_id))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2456,11 +2454,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         identifier
                     );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_uint(identifier).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(identifier).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2482,12 +2479,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         output
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2510,12 +2507,12 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         output
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_object(Some(output))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2538,10 +2535,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         sender_id,
                         state.len()
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(state).build();
+                    let payload = waynest::PayloadBuilder::new().put_array(state).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 6u16, payload, fds),
+                        waynest::Message::new(sender_id, 6u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2564,10 +2561,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         "-> treeland_foreign_toplevel_handle_v1#{}.done()",
                         sender_id,
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 7u16, payload, fds),
+                        waynest::Message::new(sender_id, 7u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2589,10 +2586,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                         "-> treeland_foreign_toplevel_handle_v1#{}.closed()",
                         sender_id,
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 8u16, payload, fds),
+                        waynest::Message::new(sender_id, 8u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2617,10 +2614,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                             .as_ref()
                             .map_or("null".to_string(), |v| v.to_string())
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_object(parent).build();
+                    let payload = waynest::PayloadBuilder::new().put_object(parent).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 9u16, payload, fds),
+                        waynest::Message::new(sender_id, 9u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2836,10 +2833,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_dock_preview_context_v1#{}.enter()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2855,10 +2852,10 @@ pub mod treeland_foreign_toplevel_manager_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_dock_preview_context_v1#{}.leave()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -2980,12 +2977,12 @@ pub mod treeland_output_manager_v1 {
                         sender_id,
                         output_name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(output_name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3121,10 +3118,10 @@ pub mod treeland_output_manager_v1 {
                         sender_id,
                         success
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(success).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(success).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3151,11 +3148,10 @@ pub mod treeland_output_manager_v1 {
                         sender_id,
                         temperature
                     );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_uint(temperature).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(temperature).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3179,11 +3175,10 @@ pub mod treeland_output_manager_v1 {
                         sender_id,
                         brightness
                     );
-                    let (payload, fds) =
-                        waynest::PayloadBuilder::new().put_fixed(brightness).build();
+                    let payload = waynest::PayloadBuilder::new().put_fixed(brightness).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3489,12 +3484,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         metadata
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(metadata))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3664,10 +3659,10 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         success
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(success).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(success).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3688,12 +3683,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -3714,10 +3709,10 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         size
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(size).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(size).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4108,12 +4103,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         font_name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(font_name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4134,12 +4129,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         font_name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(font_name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4160,10 +4155,10 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         font_size
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(font_size).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(font_size).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4440,10 +4435,10 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         radius
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_int(radius).build();
+                    let payload = waynest::PayloadBuilder::new().put_int(radius).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4464,12 +4459,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         theme_name
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(theme_name))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4490,12 +4485,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         active_color
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(active_color))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4516,10 +4511,10 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         opacity
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(opacity).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(opacity).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4540,12 +4535,12 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         r#type
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(r#type.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -4566,10 +4561,10 @@ pub mod treeland_personalization_manager_v1 {
                         sender_id,
                         height
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(height).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(height).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 5u16, payload, fds),
+                        waynest::Message::new(sender_id, 5u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5051,10 +5046,10 @@ pub mod treeland_shortcut_manager_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_shortcut_context_v1#{}.shortcut()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5441,13 +5436,13 @@ pub mod treeland_shortcut_manager_v2 {
                         name,
                         flags
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(flags.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5467,10 +5462,10 @@ pub mod treeland_shortcut_manager_v2 {
                         "-> treeland_shortcut_manager_v2#{}.commit_success()",
                         sender_id,
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5496,13 +5491,13 @@ pub mod treeland_shortcut_manager_v2 {
                         name,
                         error
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_uint(error.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5691,10 +5686,10 @@ pub mod treeland_virtual_output_manager_v1 {
                         sender_id,
                         names.len()
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_array(names).build();
+                    let payload = waynest::PayloadBuilder::new().put_array(names).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5835,13 +5830,13 @@ pub mod treeland_virtual_output_manager_v1 {
                         name,
                         outputs.len()
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(name))
                         .put_array(outputs)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5865,13 +5860,13 @@ pub mod treeland_virtual_output_manager_v1 {
                         code,
                         message
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(code)
                         .put_string(Some(message))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -5949,13 +5944,13 @@ pub mod treeland_wallpaper_color_v1 {
                         output,
                         isdark
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(output))
                         .put_uint(isdark)
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6293,13 +6288,13 @@ pub mod treeland_wallpaper_manager_unstable_v1 {
                         file_source,
                         error
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(file_source))
                         .put_uint(error.into())
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6339,14 +6334,14 @@ pub mod treeland_wallpaper_manager_unstable_v1 {
                         source_type,
                         file_source
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(role.into())
                         .put_uint(source_type.into())
                         .put_string(Some(file_source))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6484,13 +6479,13 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                         source_type,
                         file_source
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_uint(source_type.into())
                         .put_string(Some(file_source))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6516,12 +6511,12 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                         sender_id,
                         file_source
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new()
+                    let payload = waynest::PayloadBuilder::new()
                         .put_string(Some(file_source))
                         .build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6750,10 +6745,10 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                         sender_id,
                         position
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(position).build();
+                    let payload = waynest::PayloadBuilder::new().put_fixed(position).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6774,10 +6769,10 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_wallpaper_surface_v1#{}.pause()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 1u16, payload, fds),
+                        waynest::Message::new(sender_id, 1u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6801,10 +6796,10 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                         sender_id,
                         rate
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_fixed(rate).build();
+                    let payload = waynest::PayloadBuilder::new().put_fixed(rate).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 2u16, payload, fds),
+                        waynest::Message::new(sender_id, 2u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6821,10 +6816,10 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                 async move {
                     #[cfg(feature = "tracing")]
                     tracing::debug!("-> treeland_wallpaper_surface_v1#{}.play()", sender_id,);
-                    let (payload, fds) = waynest::PayloadBuilder::new().build();
+                    let payload = waynest::PayloadBuilder::new().build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 3u16, payload, fds),
+                        waynest::Message::new(sender_id, 3u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6855,10 +6850,10 @@ pub mod treeland_wallpaper_shell_unstable_v1 {
                         sender_id,
                         duration
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(duration).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(duration).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 4u16, payload, fds),
+                        waynest::Message::new(sender_id, 4u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)
@@ -6978,10 +6973,10 @@ pub mod treeland_window_management_v1 {
                         sender_id,
                         state
                     );
-                    let (payload, fds) = waynest::PayloadBuilder::new().put_uint(state).build();
+                    let payload = waynest::PayloadBuilder::new().put_uint(state).build();
                     futures_util::SinkExt::send(
                         connection,
-                        waynest::Message::new(sender_id, 0u16, payload, fds),
+                        waynest::Message::new(sender_id, 0u16, payload),
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)

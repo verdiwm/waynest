@@ -32,7 +32,7 @@ river = []
 tracing = ["dep:tracing"]
 
 [dependencies]
-bitflags = { version = "2.11.0", features = ["std"] }
+bitflags = { version = "2.13.0", features = ["std"] }
 futures-core = "0.3.32"
 futures-sink = "0.3.32"
 futures-util = { version = "0.3.32", default-features = false, features = [

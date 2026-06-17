@@ -1,13 +1,14 @@
-mod args;
-mod connection;
-mod error;
-mod message;
-mod payload;
-mod socket;
+pub fn add(left: u64, right: u64) -> u64 {
+    left + right
+}
 
-pub use args::{Fixed, NewId, ObjectId};
-pub use connection::Connection;
-pub use error::ProtocolError;
-pub use message::Message;
-pub use payload::PayloadBuilder;
-pub use socket::Socket;
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
+    }
+}

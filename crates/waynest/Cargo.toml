@@ -1,0 +1,29 @@
+[package]
+name = "waynest"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Core wayland stuff"
+documentation = "https://docs.rs/waynest"
+include = ["src/**/*.rs", "../../README.md", "../../LICENSE"]
+
+[features]
+# Internal features     
+fuzz = ["dep:arbitrary"]
+
+[dependencies]
+bytes = "1.11.1"
+pin-project-lite = "0.2.17"
+tokio-util = { version = "0.7.18", features = ["codec"] }
+futures-core = "0.3.32"
+futures-sink = "0.3.32"
+anchovy = "0.3.0"
+
+# Internal features
+arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

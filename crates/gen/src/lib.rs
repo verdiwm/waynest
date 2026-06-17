@@ -222,12 +222,20 @@ impl<'a> ProtocolGenerator<'a> {
         opcode: u16,
     ) -> TokenStream {
         let mut build_args = Vec::new();
+        let mut fd_pushes = Vec::new();
 
         for arg in &message.args {
-            let build_ty = format_ident!("put_{}", arg.to_caller());
+            let name = make_ident(arg.name.to_snek_case());
 
-            let build_name = make_ident(arg.name.to_snek_case());
-            let mut build_name = quote! { #build_name };
+            if matches!(arg.ty, ArgType::Fd) {
+                fd_pushes.push(quote! {
+                    waynest::Connection::push_fd(connection, #name);
+                });
+                continue;
+            }
+
+            let build_ty = format_ident!("put_{}", arg.to_caller());
+            let mut build_name = quote! { #name };
 
             if arg.r#enum.is_some() {
                 build_name = quote! { #build_name.into() }
@@ -254,12 +262,14 @@ impl<'a> ProtocolGenerator<'a> {
                 async move {
                     #tracing
 
-                    let (payload,fds) = waynest::PayloadBuilder::new()
+                    #(#fd_pushes)*
+
+                    let payload = waynest::PayloadBuilder::new()
                         #(#build_args)*
                         .build();
 
                     futures_util::SinkExt::send(
-                        connection, waynest::Message::new(sender_id, #opcode, payload, fds)
+                        connection, waynest::Message::new(sender_id, #opcode, payload)
                     )
                     .await
                     .map_err(<Self::Connection as waynest::Connection>::Error::from)

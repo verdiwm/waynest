@@ -15,7 +15,7 @@ gen = ["dep:waynest-gen"]
 [dependencies]
 darling = "0.23.0"
 quote = "1.0.45"
-syn = { version = "2.0.117", features = ["full"] }
+syn = { version = "2.0.118", features = ["full"] }
 waynest-gen = { workspace = true, optional = true }
 
 [lib]
