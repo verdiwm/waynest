@@ -19,7 +19,7 @@ pin-project-lite = "0.2.17"
 tokio-util = { version = "0.7.18", features = ["codec"] }
 futures-core = "0.3.32"
 futures-sink = "0.3.32"
-anchovy = "0.3.0"
+anchovy = "0.4.1"
 
 # Internal features
 arbitrary = { version = "1.4.2", optional = true, features = ["derive"] }
