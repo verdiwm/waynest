@@ -3,7 +3,7 @@ name = "xtask"
 version = "0.1.0"
 edition = "2024"
 publish = false
-authors = ["Matilde Morrone <contact@morrone.dev>"]
+authors = ["Matilde Morrone <contact@rosymati.com>"]
 repository = "https://github.com/verdiwm/waynest"
 
 [dependencies]
